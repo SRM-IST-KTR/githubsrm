@@ -11,7 +11,7 @@ os:
   - linux
 deploy:
   provider: pages
-  skip_cleanup: true
+  cleanup: false
   fqdn: githubsrm.tech
   github_token: $github_token
   local_dir: out
