@@ -9,7 +9,7 @@ const Hero = () => {
         src="https://assets9.lottiefiles.com/packages/lf20_S6vWEd.json"
         background="transparent"
         speed={1}
-        className="w-96 h-96"
+        className="w-64 md:w-96"
         loop
         autoplay
       />
