@@ -1,34 +1,84 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center">
+  <img alt="GitHub Community SRM Logo" src="docs/githubsrm.jpg" height="56" />
+</div>
+<div align="center">
+  <img alt="GitHub Community SRM Cover" src="docs/cover.jpg" height="65" />
+</div>
 
-## Getting Started
+<br>
+<p align="center">
+<b> GitHub Community SRM is the foremost student-led community spearheading the Open Source Revolution at SRMIST, Chennai.</b>
+</p>
+<blockquote align="center"> 
+  rendered with <span style="color: #8b0000;">&hearts;</span> by your friends at <a href="https://githubsrm.tech">GitHub Community SRM</a>.
 
-First, run the development server:
+</blockquote> 
+<p align="center">
+  <!-- replace 'githubsrm' with your repository name -->
+ <img src="https://img.shields.io/github/issues/srm-ist-ktr/githubsrm"/>
+ <img src="https://img.shields.io/github/forks/srm-ist-ktr/githubsrm"/>
+ <img src="https://img.shields.io/github/stars/srm-ist-ktr/githubsrm?style=social"/>
+    <img src="https://img.shields.io/badge/version-1.1.0-yellowgreen" alt="version 1.0.0"/>
+    <img src="https://img.shields.io/badge/license-MIT-blue" alt="license MIT"/>
+    <img src="https://img.shields.io/badge/author-GitHub%20Community%20SRM-green" alt="author githubsrm"/>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
+## 💡 Project Description
+
+Homepage of the foremost student-led community spearheading the Open Source Revolution at SRMIST, Chennai.
+
+## 📺 Preview
+
+<div align="center">
+  <img alt="Screenshot" src="docs/preview.png" />
+</div>
+
+## 📌 Prerequisites
+
+### 💻 System requirement :
+
+1. Any system with basic configuration.
+2. Operating System : Any (Windows / Linux / Mac).
+
+### 💿 Software requirement :
+
+1. Updated browser
+2. Node.js installed (If not download it [here](https://nodejs.org/en/download/)).
+3. Any text editor of your choice.
+
+## Installation 🔧
+
+Install dependencies and build the server
+
+```
+$ yarn install && yarn build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start the development server
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```
+$ yarn dev
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## 📜 License
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+`githubsrm` is available under the MIT license. See the LICENSE file for more info.
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Please read [`Contributing.md`](https://github.com/SRM-IST-KTR/template/blob/main/Contributing.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 💥 Contributors
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+  <!-- replace 'githubsrm' with your repository name -->
+<a href="https://github.com/SRM-IST-KTR/githubsrm/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=srm-ist-ktr/githubsrm" alt="Contributors">
+</a>
+                                                                                  
+## 🚨 Forking this repo
 
-## Deploy on Vercel
+Many people have contacted us asking if they can use this code for their own websites. The answer to that question is usually "yes", with attribution. There are some cases, such as using this code for a business or something that is greater than a personal project, that we may be less comfortable saying yes to. If in doubt, please don't hesitate to ask us.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+We value keeping this site open source, but as you all know, _**plagiarism is bad**_. We spent a non-negligible amount of effort developing, designing, and trying to perfect this iteration of our website, and we are proud of it! All we ask is to not claim this effort as your own.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+So, feel free to fork this repo. If you do, please just give us proper credit by linking back to our website, https://githubsrm.tech. Refer to this handy [quora post](https://www.quora.com/Is-it-bad-to-copy-other-peoples-code) if you're not sure what to do. Thanks!

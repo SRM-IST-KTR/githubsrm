@@ -7,9 +7,13 @@ cache:
 script:
   - npm run build
   - touch out/.nojekyll
+os:
+  - linux
 deploy:
   provider: pages
+  cleanup: false
   skip_cleanup: true
+  fqdn: githubsrm.tech
   github_token: $github_token
   local_dir: out
   on:
