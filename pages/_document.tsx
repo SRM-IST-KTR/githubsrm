@@ -10,7 +10,6 @@ class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <title>GitHub Community SRM</title>
           <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -29,14 +28,11 @@ class MyDocument extends Document {
             href="/favicon/favicon-16x16.png"
           />
           <link rel="manifest" href="/favicon/site.webmanifest" />
+
           <meta name="msapplication-TileColor" content="#0D1117" />
           <meta name="theme-color" content="#C9D1D9" />
           <meta charSet="utf-8" />
           <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
-          <meta
-            name="viewport"
-            content="initial-scale=1.0, width=device-width"
-          />
           <meta name="title" content="GitHub Community SRM" />
           <meta
             name="description"
@@ -53,6 +49,7 @@ class MyDocument extends Document {
             content="All rights reserved | GitHub Community SRM"
           />
           <meta httpEquiv="content-language" content="en" />
+
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://githubsrm.tech" />
           <meta property="og:title" content="GitHub Community SRM" />
@@ -61,6 +58,7 @@ class MyDocument extends Document {
             content="Open Source Software (OSS) is the rock-solid foundation of the modern-day Internet. Right from the Android OS on your smartphone to the protocols that enable your IoT devices to communicate with each other, open-source software plays an important role in the software market share. With $66.05 Billion Open Source Services out in the market, it is imperative for developers to know this development ecosystem and be a part of the open-source revolution."
           />
           <meta property="og:image" content="/og.jpg" />
+
           <meta property="twitter:card" content="summary_large_image" />
           <meta property="twitter:url" content="https://githubsrm.tech" />
           <meta property="twitter:site" content="@githubsrm" />
@@ -73,6 +71,7 @@ class MyDocument extends Document {
             content="Open Source Software (OSS) is the rock-solid foundation of the modern-day Internet. Right from the Android OS on your smartphone to the protocols that enable your IoT devices to communicate with each other, open-source software plays an important role in the software market share. With $66.05 Billion Open Source Services out in the market, it is imperative for developers to know this development ecosystem and be a part of the open-source revolution."
           />
           <meta property="twitter:image" content="/og.jpg" />
+
           <script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-3P9G0G50X8"
