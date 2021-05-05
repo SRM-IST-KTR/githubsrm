@@ -1,6 +1,6 @@
 import { Player } from "@lottiefiles/react-lottie-player";
 
-import { Soon } from "./";
+import { Soon, Socials } from "./";
 
 const Hero = () => {
   return (
@@ -15,6 +15,8 @@ const Hero = () => {
       />
 
       <Soon />
+
+      <Socials />
     </div>
   );
 };
