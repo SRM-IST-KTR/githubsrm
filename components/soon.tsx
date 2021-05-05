@@ -4,7 +4,7 @@ const Soon = () => {
       viewBox="0 0 867 161"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-10/12 md:w-6/12 max-w-3xl"
+      className="w-10/12 md:w-6/12 max-w-3xl mb-5 md:mb-10"
     >
       <rect
         x="0.5"
