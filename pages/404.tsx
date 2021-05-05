@@ -1,17 +1,7 @@
-import { GetServerSidePropsResult } from "next";
+import { Hero } from "../components";
 
 const NotFound = () => {
-  return <></>;
+  return <Hero />;
 };
 
 export default NotFound;
-
-export async function getServerSideProps(): Promise<
-  GetServerSidePropsResult<{}>
-> {
-  try {
-    return { redirect: { destination: "/", permanent: false } };
-  } catch (err) {
-    return { redirect: { destination: "/", permanent: false } };
-  }
-}
