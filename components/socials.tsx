@@ -7,7 +7,7 @@ const Socials = () => {
       icon: <FaGithub />,
     },
     {
-      href: "https://www.linkedin.com/in/githubsrm",
+      href: "https://www.linkedin.com/company/githubsrm/",
       icon: <FaLinkedin />,
     },
     {
