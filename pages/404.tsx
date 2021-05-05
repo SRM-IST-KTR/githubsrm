@@ -1,4 +1,4 @@
-import { GetStaticPropsResult } from "next";
+import { GetServerSidePropsResult } from "next";
 
 const NotFound = () => {
   return <></>;
@@ -6,7 +6,9 @@ const NotFound = () => {
 
 export default NotFound;
 
-export async function getStaticProps(): Promise<GetStaticPropsResult<{}>> {
+export async function getServerSideProps(): Promise<
+  GetServerSidePropsResult<{}>
+> {
   try {
     return { redirect: { destination: "/", permanent: false } };
   } catch (err) {
