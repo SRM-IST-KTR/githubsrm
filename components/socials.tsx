@@ -24,6 +24,7 @@ const Socials = () => {
     <div className="flex">
       {socials.map((social) => (
         <a
+          key={social.href}
           href={social.href}
           target="_blank"
           rel="noopener noreferrer"
