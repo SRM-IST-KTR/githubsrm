@@ -6,6 +6,10 @@ authors = ["saxenabhishek <as7122000@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+Django = "^3.2.4"
+djangorestframework = "^3.12.4"
+djangorestframework-simplejwt = "^4.7.1"
+python-dotenv = "^0.18.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
