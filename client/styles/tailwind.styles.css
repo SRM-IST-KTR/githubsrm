@@ -7,6 +7,11 @@
 
   html,
   body {
+    background: linear-gradient(
+      0deg,
+      rgba(53, 53, 53, 1) 0%,
+      rgba(40, 75, 99, 1) 100%
+    );
     padding: 0;
     margin: 0;
   }
