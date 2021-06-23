@@ -4,11 +4,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        baseBlack: "#353535",
-        baseGreen: "#79BA6E",
-        baseSmoke: "#D9D9D9",
-        baseBlue: "#284B63",
-        baseTeal: "#6CAEB2",
+        "base-black": "#353535",
+        "base-green": "#79BA6E",
+        "base-smoke": "#D9D9D9",
+        "base-blue": "#284B63",
+        "base-teal": "#6CAEB2",
       },
       fontFamily: {
         montserrat: ["Montserrat", "sans-serif"],
