@@ -1,4 +1,4 @@
-import { Hero } from "../components";
+import { Hero } from "../components/index";
 
 const IndexPage = () => {
   return <Hero />;
