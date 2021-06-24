@@ -1,7 +1,5 @@
-import { Hero } from "../components";
-
 const NotFound = () => {
-  return <Hero />;
+  return <div>404</div>;
 };
 
 export default NotFound;
