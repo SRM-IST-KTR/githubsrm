@@ -1,11 +1,14 @@
-import { Navbar } from "./";
-import { BGText } from "../../utils";
-import { motion, useElementScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useRouter } from "next/router";
+import { motion, useElementScroll, useTransform } from "framer-motion";
+
+import { Navbar } from "./";
+import { OSS, Team } from "../../utils/titles";
 
 const Layout: React.FC = ({ children }) => {
-  const ref = useRef();
-  const { scrollYProgress } = useElementScroll(ref);
+  const { pathname } = useRouter();
+  const scrollDivRef = useRef<HTMLDivElement>();
+  const { scrollYProgress } = useElementScroll(scrollDivRef);
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
   return (
@@ -16,14 +19,14 @@ const Layout: React.FC = ({ children }) => {
 
         {/* scrollable */}
         <div
-          ref={ref}
+          ref={scrollDivRef}
           className="w-full relative mx-auto h-full bg-base-black overflow-scroll no-scrollbar"
         >
           <motion.figure
-            className="flex sticky top-14 justify-center"
+            className="flex sticky top-0 justify-center w-full px-12"
             style={{ opacity }}
           >
-            <BGText title="OSS" />
+            {pathname === "/" ? <OSS /> : <Team />}
           </motion.figure>
 
           <div className="absolute w-full top-0 z-10">
