@@ -1,9 +1,10 @@
 import { Layout } from "../components/shared/index";
-import { Profile } from "../components/team";
+import { Team } from "../components/team";
+
 const Teams = () => {
   return (
     <Layout>
-      <Profile />
+      <Team />
     </Layout>
   );
 };
