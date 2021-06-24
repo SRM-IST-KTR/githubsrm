@@ -1,5 +1,5 @@
-import re
-from django.test import TestCase
+
+from unittest import TestCase
 from githubsrm.apis.definations import TeamSchema, CommonSchema
 
 
