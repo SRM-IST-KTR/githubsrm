@@ -1,5 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .schemas import ContributorSchema
+from .definations import *
+
+
 class Contribute(APIView):
-    pass 
+    pass
