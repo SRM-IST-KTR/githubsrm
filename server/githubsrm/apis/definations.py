@@ -18,16 +18,17 @@ class CommonSchema:
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
             "srm_email": str,
             "reg_number": And(str, lambda reg: len(reg) == 15),
-            "branch": str,
-            "github_id": str,
+            "branch": str
         }
 
         self.maintainer = {
+            "github_id": list,
             Optional("project_url"): And(str, lambda url: self.url_re.fullmatch(url)),
             "poa": str
         }
 
         self.contributor = {
+            "github_id": str,
             "interested_project": str,
             Optional("feature", default=None): str
         }

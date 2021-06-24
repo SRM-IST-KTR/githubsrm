@@ -78,20 +78,13 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'contirbutor': '5/min',
+        'common': '5/min',
     }
 }
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'GitHubSRM'
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

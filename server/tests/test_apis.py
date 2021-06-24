@@ -41,7 +41,7 @@ class TestSchema(TestCase):
             "srm_email": "tu6969@srmist.edu.in",
             "reg_number": "RA1911004010187",
             "branch": "ECE",
-            "github_id": "Test-User",
+            "github_id": ["Test-User", "Test-User2"],
             "project_url": "https://github.com",
             "poa": "This is the POA"
 
@@ -58,7 +58,7 @@ class TestSchema(TestCase):
             "srm_email": "tu6969@srmist.edu.in",
             "reg_number": "RA1911004010187",
             "branch": "ECE",
-            "github_id": "Test-User",
+            "github_id": ["Test-User"],
             "poa": "This is the poa"
 
         }, headers={
@@ -71,7 +71,7 @@ class TestSchema(TestCase):
             "srm_email": "tu6969@srmist.edu.in",
             "reg_number": "RA1911004010187",
             "branch": "ECE",
-            "github_id": "Test-User",
+            "github_id": ["Test-User"],
             "project_url": "github.com"
 
         }, headers={
