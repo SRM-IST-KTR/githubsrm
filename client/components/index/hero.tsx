@@ -85,13 +85,21 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="flex my-10 items-center flex-col   justify-items-center ">
-        <div>
-          <div className="p-32 bg-pink-100 mb-10 shadow-xl rounded-xl">abc</div>
-          <div className="p-32 bg-pink-100 shadow-xl rounded-xl">abc</div>
-        </div>
-        <div className="flex flex-col ml-10 items-center justify-center">
-          <div className="p-32 bg-pink-100  shadow-xl rounded-xl">abc</div>
+      <div className="flex flex-col justify-items-center my-20  items-center">
+        <div className="flex my-10  justify-items-center ">
+          <div>
+            <div className="px-32 py-48 bg-gray-100 mb-5 shadow-xl rounded-xl">
+              abc
+            </div>
+          </div>
+          <div className="flex flex-col ml-5 ">
+            <div className="py-32 px-44 mb-5 bg-gray-100 shadow-xl rounded-xl">
+              abc
+            </div>
+            <div className="w-3/4 py-20 text-center bg-gray-100  shadow-xl rounded-xl">
+              abc
+            </div>
+          </div>
         </div>
       </div>
     </div>

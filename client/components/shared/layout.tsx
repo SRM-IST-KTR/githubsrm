@@ -3,13 +3,32 @@ import { useRouter } from "next/router";
 import { motion, useElementScroll, useTransform } from "framer-motion";
 
 import { Navbar } from "./";
-import { OSS, Team } from "../../utils/titles";
+import { OSS, Team, JoinUs, Projects } from "../../utils/titles";
 
 const Layout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
   const scrollDivRef = useRef<HTMLDivElement>();
   const { scrollYProgress } = useElementScroll(scrollDivRef);
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+
+  const title = () => {
+    switch (pathname) {
+      case "/": {
+        return <OSS />;
+      }
+      case "/team": {
+        return <Team />;
+      }
+      case "/join-us": {
+        return <JoinUs />;
+      }
+      case "/projects":
+        <Projects />;
+      default: {
+        return <OSS />;
+      }
+    }
+  };
 
   return (
     <>
@@ -24,9 +43,10 @@ const Layout: React.FC = ({ children }) => {
         >
           <motion.figure
             className="flex sticky top-0 justify-center w-full px-12"
+            animate={{ y: 4 }}
             style={{ opacity }}
           >
-            {pathname === "/" ? <OSS /> : <Team />}
+            {title()}
           </motion.figure>
 
           <div className="absolute w-full top-0 z-10">
