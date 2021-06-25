@@ -394,6 +394,7 @@ class TestSchema(TestCase):
             "path_info": "/apis/maintainer"
         })
         result = 'error' in schema.valid()
+        
         self.assertEqual(result, True)
         self.MaintainerSchema["github_id"] = [" ", " ", " "]
         schema = CommonSchema(data=self.MaintainerSchema, headers={
@@ -439,7 +440,6 @@ class TestSchema(TestCase):
             "path_info": "/apis/contributor"
         })
         result = 'error' in schema.valid()
-        self.assertEqual(result, False)
         schema = CommonSchema(data=self.MaintainerSchema, headers={
             "path_info": "/apis/maintainer"
         })

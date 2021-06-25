@@ -19,6 +19,28 @@ def get_json_schema(id: int, valid_schema: Callable) -> dict:
     return validator.json_schema(schema_id=id)
 
 
+def check_github_id(github_ids: list) -> bool:
+    """Check valid GitHub IDs
+
+    Args:
+        github_ids (list)
+
+    Returns:
+        bool
+    """
+
+    if len(github_ids):
+        pass
+    else:
+        return False
+
+    for ids in github_ids:
+        if len(ids.strip()) == 0:
+            return False
+
+    return True
+
+
 class CommonSchema:
     def __init__(self, data: Dict[Any, Any], headers: HttpHeaders) -> None:
         self.data = data
@@ -31,25 +53,23 @@ class CommonSchema:
 
         self.headers = headers
         self.common = {
-            "name": And(str, lambda name: len(name) > 0),
+            "name": And(str, lambda name: len(name.strip()) > 0),
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
             "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
             "reg_number": And(str, lambda reg: self.reg_number.fullmatch(reg)),
-            "branch": And(str, lambda name: len(name) > 0)
+            "branch": And(str, lambda branch: len(branch.strip()) > 0)
         }
 
         self.maintainer = {
-
-            "github_id": And(list, lambda github_ids: len(github_ids) > 0),
+            "github_id": And(list, lambda github_ids: check_github_id(github_ids)),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
-            "poa": And(str, lambda poa: len(poa) > 0)
-
+            "poa": And(str, lambda poa: len(poa.strip()) > 0)
         }
 
         self.contributor = {
-            "github_id": And(str, lambda github_id: len(github_id) > 0),
-            "interested_project": And(str, lambda name: len(name) > 0),
-            Optional("feature", default=None): str
+            "github_id": And(str, lambda github_id: len(github_id.strip()) > 0),
+            "interested_project": And(str, lambda name: len(name.strip()) > 0),
+            Optional("feature", default=None): And(str, lambda feature: len(feature.strip()) > 0)
         }
 
     def valid_schema(self) -> Schema:
@@ -157,7 +177,7 @@ if __name__ == '__main__':
         "branch": "ECE",
         "github_id": "Test-User",
         "interested_project": "60d59693278a6b1bbe4fa9df"
-        
+
     }, headers={"path_info": "apis/contributor"})
 
     # print(json.dumps(schema.get_json(id=2), indent=4))
