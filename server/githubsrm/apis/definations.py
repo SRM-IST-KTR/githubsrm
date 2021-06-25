@@ -3,7 +3,7 @@ from schema import Optional, Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
 from django.http.request import HttpHeaders
-import json 
+import json
 
 
 def get_json_schema(id: int, valid_schema: Callable) -> dict:
@@ -39,15 +39,11 @@ class CommonSchema:
         }
 
         self.maintainer = {
-<<<<<<< HEAD
+
             "github_id": And(list, lambda github_ids: len(github_ids) > 0),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             "poa": And(str, lambda poa: len(poa) > 0)
-=======
-            "github_id": list,
-            Optional("project_url"): And(str, lambda url: self.url_re.fullmatch(url)),
-            "poa": str
->>>>>>> 0f17b68e6085e512a697a1c550e18aad415b6b2d
+
         }
 
         self.contributor = {
@@ -153,7 +149,7 @@ if __name__ == '__main__':
     print(json.dumps(schema.get_json(id=1), indent=4))
 
     schema = CommonSchema(data={
-        
+
         "name": "Aradhya",
         "email": "testuser@localhost.com",
         "srm_email": "tu6969@srmist.edu.in",
@@ -161,7 +157,7 @@ if __name__ == '__main__':
         "branch": "ECE",
         "github_id": "Test-User",
         "interested_project": "60d59693278a6b1bbe4fa9df"
-        
+
     }, headers={"path_info": "apis/contribute"})
 
     # print(json.dumps(schema.get_json(id=2), indent=4))
