@@ -15,7 +15,7 @@ class TestSchema(TestCase):
             "interested_project": "TestProject",
 
         }, headers={
-            "path_info": "/apis/contributor"
+            "path_info": "/apis/contribute"
         })
 
         result = 'error' in schema.valid()
@@ -29,7 +29,7 @@ class TestSchema(TestCase):
             "branch": "ECE",
             "github_id": "Test-User",
         }, headers={
-            "path_info": "/apis/contributor"
+            "path_info": "/apis/contribute"
         })
 
         result = 'error' in schema.valid()

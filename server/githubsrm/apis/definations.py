@@ -31,22 +31,22 @@ class CommonSchema:
 
         self.headers = headers
         self.common = {
-            "name": str,
+            "name": And(str, lambda name: len(name) > 0),
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
-            "srm_email": str,
+            "srm_email": And(str, lambda email: email.endswith('srmist.edu.in')),
             "reg_number": And(str, lambda reg: self.reg_number.fullmatch(reg)),
-            "branch": str
+            "branch": And(str, lambda name: len(name) > 0)
         }
 
         self.maintainer = {
-            "github_id": list,
+            "github_id": And(list, lambda github_ids: len(github_ids) > 0),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
-            "poa": str
+            "poa": And(str, lambda poa: len(poa) > 0)
         }
 
         self.contributor = {
-            "github_id": str,
-            "interested_project": str,
+            "github_id": And(str, lambda github_id: len(github_id) > 0),
+            "interested_project": And(str, lambda name: len(name) > 0),
             Optional("feature", default=None): str
         }
 
@@ -99,13 +99,13 @@ class TeamSchema:
 
     def valid_schema(self) -> Schema:
         valdiator = Schema(schema={
-            "name": str,
-            "github_id": str,
+            "name": And(str, lambda name: len(name) > 0),
+            "github_id": And(str, lambda github_id: len(github_id) > 0),
             "linkedin": And(str, lambda url: self.url_re.fullmatch(url)),
             Optional("twitter", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             Optional("portfolio", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             "img_url": And(str, lambda url: self.url_re.fullmatch(url)),
-            "tagline": str
+            "tagline": And(str, lambda tagline: len(tagline) > 0)
         })
 
         return valdiator
