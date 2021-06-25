@@ -14,6 +14,10 @@ const Navbar = () => {
       name: "Team",
       href: "/team",
     },
+    {
+      name: "Join Us",
+      href: "/join-us",
+    },
   ];
 
   return (
@@ -22,7 +26,7 @@ const Navbar = () => {
         {links.map((link) => (
           <li
             key={link.href}
-            className="mx-8 border-base-green transform hover:border-b-2"
+            className="mx-4 border-base-green transform hover:border-b-2"
           >
             <Link href={link.href}>
               <a className="relative py-2 px-4 text-xl transition-all duration-500 hover:text-base-green hover:z-1 underline-animation">

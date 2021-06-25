@@ -39,9 +39,15 @@ class CommonSchema:
         }
 
         self.maintainer = {
+<<<<<<< HEAD
             "github_id": And(list, lambda github_ids: len(github_ids) > 0),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             "poa": And(str, lambda poa: len(poa) > 0)
+=======
+            "github_id": list,
+            Optional("project_url"): And(str, lambda url: self.url_re.fullmatch(url)),
+            "poa": str
+>>>>>>> 0f17b68e6085e512a697a1c550e18aad415b6b2d
         }
 
         self.contributor = {

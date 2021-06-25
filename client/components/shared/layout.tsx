@@ -9,7 +9,7 @@ const Layout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
   const scrollDivRef = useRef<HTMLDivElement>();
   const { scrollYProgress } = useElementScroll(scrollDivRef);
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
   return (
     <>

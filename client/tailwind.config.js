@@ -33,6 +33,7 @@ module.exports = {
   variants: {
     extend: {
       zIndex: ["hover"],
+      padding: ["hover"],
     },
   },
   plugins: [],
