@@ -1,21 +1,38 @@
-language: node_js
-node_js:
-  - lts/*
-cache:
-  directories:
-    - node_modules
-script:
-  - npm run build
-  - touch out/.nojekyll
-os:
-  - linux
-deploy:
-  provider: pages
-  cleanup: false
-  skip_cleanup: true
-  fqdn: githubsrm.tech
-  github_token: $github_token
-  local_dir: out
-  on:
-    all_branches: true
-    condition: $TRAVIS_BRANCH =~ ^(master|main)$
+os: linux
+jobs:
+  include:
+    - stage: Test
+      language: node_js
+      node_js:
+        - lts/*
+      cache:
+        directories:
+          - node_modules
+      script:
+        - cd client
+        - npm install
+    - stage: Test
+      language: python
+      python:
+        - "3.9"
+      install:
+        - cd server/
+        - pip install -r requirements.txt
+      script:
+        - cd server/
+        - bash run_tests.sh
+    - stage: Deploy
+      script: skip
+      deploy:
+        provider: script
+        skip_cleanup: false
+        script: ssh -o "StrictHostKeyChecking no" $ssh_server $ssh_command
+        on:
+          branch: dev
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_2fc69c4133c3_key -iv $encrypted_2fc69c4133c3_iv
+    -in id_rsa.enc -out /tmp/id_rsa -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 /tmp/id_rsa
+  - ssh-add /tmp/id_rsa
