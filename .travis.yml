@@ -19,7 +19,6 @@ jobs:
         - cd server/
         - pip install -r requirements.txt
       script:
-        - cd server/
         - bash run_tests.sh
     - stage: Deploy
       script: skip
