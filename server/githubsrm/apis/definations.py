@@ -40,7 +40,7 @@ class CommonSchema:
 
         self.maintainer = {
             "github_id": list,
-            Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
+            Optional("project_url"): And(str, lambda url: self.url_re.fullmatch(url)),
             "poa": str
         }
 
