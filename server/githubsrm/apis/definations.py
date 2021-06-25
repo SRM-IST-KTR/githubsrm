@@ -1,7 +1,22 @@
+from bson.json_util import default
 from schema import Optional, Schema, And, SchemaError
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 import re
 from django.http.request import HttpHeaders
+import json 
+
+
+def get_json_schema(id: int, valid_schema: Callable) -> dict:
+    """Generate json schema
+
+    Args:
+        id (int)
+
+    Returns:
+        dict
+    """
+    validator = valid_schema()
+    return validator.json_schema(schema_id=id)
 
 
 class CommonSchema:
@@ -12,18 +27,20 @@ class CommonSchema:
         self.url_re = re.compile(
             '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
+        self.reg_number = re.compile("^RA[0-9]{13}$")
+
         self.headers = headers
         self.common = {
             "name": str,
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
             "srm_email": str,
-            "reg_number": And(str, lambda reg: len(reg) == 15),
+            "reg_number": And(str, lambda reg: self.reg_number.fullmatch(reg)),
             "branch": str
         }
 
         self.maintainer = {
             "github_id": list,
-            Optional("project_url"): And(str, lambda url: self.url_re.fullmatch(url)),
+            Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             "poa": str
         }
 
@@ -43,8 +60,19 @@ class CommonSchema:
         validator = Schema(schema=self.merge(self.common, self.maintainer))
         return validator
 
+    def get_json(self, id: int) -> dict:
+        """Generate schema
+
+        Args:
+            id (int)
+
+        Returns:
+            dict
+        """
+        return get_json_schema(id=id, valid_schema=self.valid_schema)
+
     def check_path(self, path_info: str) -> str:
-        if 'contributor' in path_info:
+        if 'contribute' in path_info:
             return 'contrib'
         return 'maintainer'
 
@@ -82,6 +110,17 @@ class TeamSchema:
 
         return valdiator
 
+    def get_json(self, id: int) -> dict:
+        """Generate schema
+
+        Args:
+            id (int)
+
+        Returns:
+            dict
+        """
+        return get_json_schema(id=id, valid_schema=self.valid_schema)
+
     def valid(self) -> Dict[str, Any]:
         try:
             return self.valid_schema().validate(self.data)
@@ -90,3 +129,33 @@ class TeamSchema:
                 "invalid data": self.data,
                 "error": str(e)
             }
+
+
+if __name__ == '__main__':
+    schema = CommonSchema(data={
+
+        "name": "Aradhya",
+        "email": "testuser@localhost.com",
+        "srm_email": "tu6969@srmist.edu.in",
+        "reg_number": "RA1911004010187",
+        "branch": "ECE",
+        "github_id": ["Test-User"],
+        "poa": "TestProject"
+
+    }, headers={"path_info": "apis/maintainer"})
+
+    print(json.dumps(schema.get_json(id=1), indent=4))
+
+    schema = CommonSchema(data={
+        
+        "name": "Aradhya",
+        "email": "testuser@localhost.com",
+        "srm_email": "tu6969@srmist.edu.in",
+        "reg_number": "RA1911004010187",
+        "branch": "ECE",
+        "github_id": "Test-User",
+        "interested_project": "60d59693278a6b1bbe4fa9df"
+        
+    }, headers={"path_info": "apis/contribute"})
+
+    # print(json.dumps(schema.get_json(id=2), indent=4))

@@ -4,7 +4,8 @@ import os
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import pymongo
-from pymongo.helpers import _index_document
+from bson import json_util
+
 
 load_dotenv()
 
@@ -40,7 +41,7 @@ class Entry:
         if one:
             try:
                 # Check if contributor exists
-                contributor = one["contributor_id"]
+                one["contributor_id"]
                 self.db.project.update_one({"_id": project_id}, {
                     "$push": {"contributor_id": identifier}})
                 return True
@@ -74,9 +75,11 @@ class Entry:
         try:
             self.db.maintainer.insert_one(doc)
 
+            # Default approve to false
             self._enter_project({
                 "project_url": project_url,
-                "poa": poa
+                "poa": poa,
+                "approved": False
             }, maintainer_id={
                 "maintainer_id": _id
             })
@@ -98,11 +101,41 @@ class Entry:
         doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
         try:
+            project_id = ObjectId(doc['interested_project'])
+        except Exception as e:
+            return
+
+        if len(list(self.db.project.find({"_id": project_id}))) == 0:
+            return
+
+        try:
             self.db.contributor.insert_one(doc)
             return True
 
         except Exception as e:
             print(e)
+
+    def approve_project(self, identifier: ObjectId) -> bool:
+        """Approve maintainers
+
+        Args:
+            identifier (ObjectId): Project ID
+
+        Returns:
+            bool
+        """
+        try:
+            identifier = ObjectId(identifier)
+        except Exception as e:
+            return
+
+        project = self.db.project.find({"_id": identifier})
+
+        if project:
+            self.db.project.update_one({"_id": identifier}, {
+                "$set": {"approved": True}})
+            return True
+        return
 
     def approve_contributor(self, identifier: ObjectId, project_id: ObjectId) -> bool:
         """Approve contributors to projects
@@ -134,16 +167,47 @@ class Entry:
         """
         return self.db.project.find({})
 
-    def get_contributors(self):
+    def get_contributors(self) -> object:
         """Get all existing contributors
 
         Returns:
-            [type]: [description]
+            [type]: MongoDB cursor
         """
-        return self.db.contributors.find({})
+        return self.db.contributor.find({})
 
-    def get_maintainers(self):
+    def get_maintainers(self) -> object:
+        """Get all maintainers and status
+
+        Returns:
+            [type]: MongoDB cursor 
+        """
         return self.db.maintainer.find({})
+
+    def check_existing(self, poa: str) -> bool:
+        result = list(self.db.project.find({"poa": poa}))
+        if len(result) != 0:
+            return True
+        return
+
+    def check_existing_contributor(self, interested_project: str,
+                                   reg_number: str) -> bool:
+        """Existing contributor to same project
+
+        Args:
+            interested_project (str): Project ID
+            reg_number (str): Contributor Registration Number
+
+        Returns:
+            bool
+        """
+        contributor = list(self.db.contributor.find({
+            "interested_project": interested_project,
+            "reg_number": reg_number
+        }))
+
+        if len(contributor):
+            return True
+        return
 
 
 if __name__ == '__main__':
@@ -160,6 +224,8 @@ if __name__ == '__main__':
         }
     )
 
+    entry.approve_project(identifier="60d59a80b4dbf235af1e3092")
+
     entry.enter_contributor(
         {
             "name": "Aradhya",
@@ -172,8 +238,8 @@ if __name__ == '__main__':
         }
     )
 
-    entry.approve_contributor(
-        identifier="60d596b85972c9bfc0ed74a4", project_id="60d59693278a6b1bbe4fa9df")
+    # entry.approve_contributor(
+    #     identifier="60d596b85972c9bfc0ed74a4", project_id="60d59693278a6b1bbe4fa9df")
 
     for objects in entry.get_projects():
         print(objects)
