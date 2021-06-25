@@ -1,6 +1,6 @@
 
 from unittest import TestCase
-from githubsrm.apis.definations import TeamSchema, CommonSchema
+from githubsrm.apis.definitions import TeamSchema, CommonSchema
 
 
 class TestSchema(TestCase):
