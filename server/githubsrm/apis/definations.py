@@ -1,27 +1,85 @@
+from bson.json_util import default
 from schema import Optional, Schema, And, SchemaError
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict
 import re
+from django.http.request import HttpHeaders
+import json 
+
+
+def get_json_schema(id: int, valid_schema: Callable) -> dict:
+    """Generate json schema
+
+    Args:
+        id (int)
+
+    Returns:
+        dict
+    """
+    validator = valid_schema()
+    return validator.json_schema(schema_id=id)
 
 
 class CommonSchema:
-    def __init__(self, data: Dict[Any, Any]) -> None:
+    def __init__(self, data: Dict[Any, Any], headers: HttpHeaders) -> None:
         self.data = data
         self.email_re = re.compile(
             '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
+        self.url_re = re.compile(
+            '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
-    def valid_schema(self) -> Schema:
-        validator = Schema(schema={
+        self.reg_number = re.compile("^RA[0-9]{13}$")
+
+        self.headers = headers
+        self.common = {
             "name": str,
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
             "srm_email": str,
-            "reg_number": And(str, lambda reg: len(reg) == 15),
-            "branch": str,
+            "reg_number": And(str, lambda reg: self.reg_number.fullmatch(reg)),
+            "branch": str
+        }
+
+        self.maintainer = {
+            "github_id": list,
+            Optional("project_url"): And(str, lambda url: self.url_re.fullmatch(url)),
+            "poa": str
+        }
+
+        self.contributor = {
             "github_id": str,
             "interested_project": str,
             Optional("feature", default=None): str
-        })
+        }
 
+    def valid_schema(self) -> Schema:
+
+        if self.check_path(self.headers.get('path_info')) == 'contrib':
+            validator = Schema(schema=self.merge(
+                self.common, self.contributor))
+            return validator
+
+        validator = Schema(schema=self.merge(self.common, self.maintainer))
         return validator
+
+    def get_json(self, id: int) -> dict:
+        """Generate schema
+
+        Args:
+            id (int)
+
+        Returns:
+            dict
+        """
+        return get_json_schema(id=id, valid_schema=self.valid_schema)
+
+    def check_path(self, path_info: str) -> str:
+        if 'contribute' in path_info:
+            return 'contrib'
+        return 'maintainer'
+
+    @staticmethod
+    def merge(schema_1: Dict[str, Any], schema_2: Dict[str, Any]):
+        schema_1.update(schema_2)
+        return schema_1
 
     def valid(self) -> Dict[str, Any]:
         try:
@@ -52,6 +110,17 @@ class TeamSchema:
 
         return valdiator
 
+    def get_json(self, id: int) -> dict:
+        """Generate schema
+
+        Args:
+            id (int)
+
+        Returns:
+            dict
+        """
+        return get_json_schema(id=id, valid_schema=self.valid_schema)
+
     def valid(self) -> Dict[str, Any]:
         try:
             return self.valid_schema().validate(self.data)
@@ -60,3 +129,33 @@ class TeamSchema:
                 "invalid data": self.data,
                 "error": str(e)
             }
+
+
+if __name__ == '__main__':
+    schema = CommonSchema(data={
+
+        "name": "Aradhya",
+        "email": "testuser@localhost.com",
+        "srm_email": "tu6969@srmist.edu.in",
+        "reg_number": "RA1911004010187",
+        "branch": "ECE",
+        "github_id": ["Test-User"],
+        "poa": "TestProject"
+
+    }, headers={"path_info": "apis/maintainer"})
+
+    print(json.dumps(schema.get_json(id=1), indent=4))
+
+    schema = CommonSchema(data={
+        
+        "name": "Aradhya",
+        "email": "testuser@localhost.com",
+        "srm_email": "tu6969@srmist.edu.in",
+        "reg_number": "RA1911004010187",
+        "branch": "ECE",
+        "github_id": "Test-User",
+        "interested_project": "60d59693278a6b1bbe4fa9df"
+        
+    }, headers={"path_info": "apis/contribute"})
+
+    # print(json.dumps(schema.get_json(id=2), indent=4))
