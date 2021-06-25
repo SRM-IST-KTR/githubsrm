@@ -11,7 +11,7 @@ load_dotenv()
 class Entry:
 
     def __init__(self):
-        client = pymongo.MongoClient(os.getenv('mongo_uri'), port=27017)
+        client = pymongo.MongoClient(os.getenv('mongo_uri'))
         self.db = client[os.getenv('mongo_db')]
 
     def _enter_project(self, doc: Dict[str, str], maintainer_id: ObjectId) -> None:
@@ -32,9 +32,24 @@ class Entry:
             identifier (ObjectId): Contributor ID
             project_id: (ObjectId): Project to add contributors to
         """
-        #TODO: Set -> Push
-        self.db.project.update_one({"_id": project_id}, {
-                                   "$set": {"contributor_id": identifier}})
+
+        # Check if project exists
+        one = self.db.project.find_one({"_id": project_id})
+
+        if one:
+            try:
+                # Check if contributor exists
+                contributor = one["contributor_id"]
+                self.db.project.update_one({"_id": project_id}, {
+                    "$push": {"contributor_id": identifier}})
+                return True
+            except Exception as e:
+                # Creates new contributor if no contributor present
+                self.db.project.update_one({"_id": project_id}, {"$set": {
+                    "contributor_id": [project_id]
+                }})
+                return
+        return
 
     def enter_maintainer(self, doc: Dict[str, str]) -> Any:
         """Enter Maintainers
@@ -70,7 +85,6 @@ class Entry:
             print(e)
             return False
 
-    # TODO: Fix contributor update in project collection
     def enter_contributor(self, doc: Dict[str, Any]) -> None:
         """Addition of contributors for avaliable Projects
 
@@ -87,14 +101,16 @@ class Entry:
 
         _id = ObjectId()
         doc = {**doc, **{"_id": _id}}
-        try:
 
+        self._update_project(_id, project_id)
+
+        try:
             self.db.contributor.insert_one(doc)
-            self._update_project(_id, project_id)
             return True
 
         except Exception as e:
             print(e)
+
 
 if __name__ == '__main__':
     entry = Entry()
@@ -118,6 +134,6 @@ if __name__ == '__main__':
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": "Test-User",
-            "interested_project": "60d5025ddd176dddd9f89405"
+            "interested_project": "60d589f19ec07193bf30d87d"
         }
     )
