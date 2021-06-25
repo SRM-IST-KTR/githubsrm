@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from .definations import *
+from .definitions import *
 from rest_framework import response, status
 from .models import Entry
 from bson import json_util
