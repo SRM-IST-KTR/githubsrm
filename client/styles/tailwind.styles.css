@@ -11,6 +11,12 @@
     margin: 0;
   }
 
+  input,
+  textarea,
+  select {
+    @apply outline-none focus:outline-none;
+  }
+
   * {
     box-sizing: border-box;
   }
