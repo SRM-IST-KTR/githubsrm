@@ -46,7 +46,7 @@ class Entry:
             except Exception as e:
                 # Creates new contributor if no contributor present
                 self.db.project.update_one({"_id": project_id}, {"$set": {
-                    "contributor_id": [project_id]
+                    "contributor_id": [identifier]
                 }})
                 return
         return
