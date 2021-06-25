@@ -1,12 +1,12 @@
 import { Layout } from "../components/shared";
-import Register from "../components/joinus/register";
+import { JoinUs } from "../components/join-us";
 
-const JoinusPage = () => {
+const JoinUsPage = () => {
   return (
     <Layout>
-      <Register />
+      <JoinUs />
     </Layout>
   );
 };
 
-export default JoinusPage;
+export default JoinUsPage;
