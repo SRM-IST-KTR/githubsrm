@@ -4,6 +4,7 @@ import os
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import pymongo
+from pymongo.helpers import _index_document
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ load_dotenv()
 class Entry:
 
     def __init__(self):
-        client = pymongo.MongoClient(os.getenv('mongo_uri'))
+        client = pymongo.MongoClient(os.getenv('mongo_uri'), port=27017)
         self.db = client[os.getenv('mongo_db')]
 
     def _enter_project(self, doc: Dict[str, str], maintainer_id: ObjectId) -> None:
@@ -48,7 +49,8 @@ class Entry:
                 self.db.project.update_one({"_id": project_id}, {"$set": {
                     "contributor_id": [identifier]
                 }})
-                return
+
+                return True
         return
 
     def enter_maintainer(self, doc: Dict[str, str]) -> Any:
@@ -92,17 +94,8 @@ class Entry:
             doc (Dict[str, Any])
         """
 
-        project_id = doc['interested_project']
-        try:
-            project_id = ObjectId(project_id)
-        except Exception as e:
-            print(e)
-            return
-
         _id = ObjectId()
-        doc = {**doc, **{"_id": _id}}
-
-        self._update_project(_id, project_id)
+        doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
         try:
             self.db.contributor.insert_one(doc)
@@ -110,6 +103,47 @@ class Entry:
 
         except Exception as e:
             print(e)
+
+    def approve_contributor(self, identifier: ObjectId, project_id: ObjectId) -> bool:
+        """Approve contributors to projects
+
+        Returns:
+            bool
+            identifier: Contributor ID
+            project_id: Project ID
+        """
+        try:
+            identifier = ObjectId(identifier)
+            project_id = ObjectId(project_id)
+
+        except Exception as e:
+            return
+
+        if self._update_project(identifier=identifier, project_id=project_id):
+            print("IN")
+            self.db.contributor.update({"_id": identifier}, {
+                "$set": {"approved": True}})
+            return True
+        return
+
+    def get_projects(self) -> object:
+        """Get all projects
+
+        Returns:
+            object: MongoDB cursor
+        """
+        return self.db.project.find({})
+
+    def get_contributors(self):
+        """Get all existing contributors
+
+        Returns:
+            [type]: [description]
+        """
+        return self.db.contributors.find({})
+
+    def get_maintainers(self):
+        return self.db.maintainer.find({})
 
 
 if __name__ == '__main__':
@@ -134,6 +168,12 @@ if __name__ == '__main__':
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": "Test-User",
-            "interested_project": "60d589f19ec07193bf30d87d"
+            "interested_project": "60d59693278a6b1bbe4fa9df"
         }
     )
+
+    entry.approve_contributor(
+        identifier="60d596b85972c9bfc0ed74a4", project_id="60d59693278a6b1bbe4fa9df")
+
+    for objects in entry.get_projects():
+        print(objects)
