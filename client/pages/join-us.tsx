@@ -1,5 +1,6 @@
-import { Layout } from "../components/shared/index";
+import { Layout } from "../components/shared";
 import Register from "../components/joinus/register";
+
 const JoinusPage = () => {
   return (
     <Layout>
