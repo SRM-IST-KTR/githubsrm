@@ -4,6 +4,9 @@ from rest_framework import response, status
 from .models import Entry
 from bson import json_util
 import json
+import psutil
+import time
+
 
 
 class Contributor(APIView):
@@ -99,4 +102,28 @@ class Maintainer(APIView):
 
         return response.Response({
             "projects": result
+        }, status=status.HTTP_200_OK)
+
+
+class HealthCheck(APIView):
+    """Health Checker route
+
+    Args:
+        APIView 
+    """
+
+    throttle_scope = 'common'
+
+    def get(self, request, **kwargs):
+        """Get Process UpTime
+
+        Args:
+            request 
+        """
+        uptime = time.time() - psutil.boot_time()
+
+        return response.Response({
+            "uptime": uptime,
+            "status": "OK",
+            "timeStamp": time.time()
         }, status=status.HTTP_200_OK)
