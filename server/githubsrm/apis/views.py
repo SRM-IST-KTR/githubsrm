@@ -6,7 +6,7 @@ from bson import json_util
 import json
 
 
-class Contribute(APIView):
+class Contributor(APIView):
     '''
     Contributors API Allows additon of contributors to the database
     '''

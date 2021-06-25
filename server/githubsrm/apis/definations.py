@@ -33,7 +33,7 @@ class CommonSchema:
         self.common = {
             "name": And(str, lambda name: len(name) > 0),
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
-            "srm_email": And(str, lambda email: email.endswith('srmist.edu.in')),
+            "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
             "reg_number": And(str, lambda reg: self.reg_number.fullmatch(reg)),
             "branch": And(str, lambda name: len(name) > 0)
         }
@@ -74,7 +74,7 @@ class CommonSchema:
         return get_json_schema(id=id, valid_schema=self.valid_schema)
 
     def check_path(self, path_info: str) -> str:
-        if 'contribute' in path_info:
+        if 'contributor' in path_info:
             return 'contrib'
         return 'maintainer'
 
@@ -157,7 +157,7 @@ if __name__ == '__main__':
         "branch": "ECE",
         "github_id": "Test-User",
         "interested_project": "60d59693278a6b1bbe4fa9df"
-
-    }, headers={"path_info": "apis/contribute"})
+        
+    }, headers={"path_info": "apis/contributor"})
 
     # print(json.dumps(schema.get_json(id=2), indent=4))

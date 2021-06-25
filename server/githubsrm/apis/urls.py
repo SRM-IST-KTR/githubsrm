@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import Contribute, Maintainer
+from .views import Contributor, Maintainer
 
 urlpatterns = [
-    path('contribute', Contribute.as_view()),
+    path('contributor', Contributor.as_view()),
     path('maintainer', Maintainer.as_view())
 ]
