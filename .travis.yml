@@ -24,8 +24,9 @@ jobs:
         - cd server/
         - pip install -r requirements.txt
         - cd ..
-      script: bash ./run.sh
-      script: bash ./run_tests.sh
+      script:
+        - chmod +x ./test-runner
+        - ./test-runner
     - stage: Deploy
       script: skip
       deploy:
