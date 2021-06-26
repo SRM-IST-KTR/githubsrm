@@ -1,4 +1,10 @@
-const Hero = () => {
+import { motion, useViewportScroll, useTransform } from "framer-motion";
+
+interface HeroProps {
+  reference?: HTMLDivElement;
+}
+
+const Hero = ({ reference }: HeroProps) => {
   const domainData: Array<{ img: string; alt: string; text: string }> = [
     {
       img: "https://img.stackshare.io/service/10608/default_2e4e6445d2b6326eb7c7748f17ae5109a99121fc.png",
@@ -32,11 +38,17 @@ const Hero = () => {
     },
   ];
 
+  const { scrollYProgress } = useViewportScroll();
+  const y = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+
   return (
     <div>
-      <h1 className="flex justify-center text-base-black text-5xl lg:text-7xl font-bold mb-6">
+      <motion.h1
+        style={{ y: y }}
+        className="flex justify-center text-base-black text-5xl lg:text-7xl font-bold mb-6"
+      >
         GitHub SRM
-      </h1>
+      </motion.h1>
 
       <div>
         <h2 className="text-4xl font-semibold text-base-black py-4 my-4 text-center">

@@ -10,6 +10,7 @@ const Layout: React.FC = ({ children }) => {
   const scrollDivRef = useRef<HTMLDivElement>();
   const { scrollYProgress } = useElementScroll(scrollDivRef);
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const Y = useTransform(scrollYProgress, [0, 0.6], [0, 100]);
 
   const title = () => {
     switch (pathname) {
@@ -22,29 +23,29 @@ const Layout: React.FC = ({ children }) => {
       case "/join-us": {
         return <JoinUs />;
       }
-      case "/projects":
-        <Projects />;
+      case "/projects": {
+        return <Projects />;
+      }
       default: {
-        return <OSS />;
+        return <Projects />;
       }
     }
   };
 
   return (
     <>
-      <div className="fixed w-full h-screen bg-gradient-to-b from-base-blue to-base-black -z-10" />
-      <div className="flex flex-col w-11/12 h-screen pt-16 mx-auto">
+      <div className="fixed w-full h-screen bg-gradient-to-b from-blue-100 to-base-black -z-10" />
+      <div className="flex flex-col w-11/12 h-screen pt-12 mx-auto">
         <Navbar />
 
-        {/* scrollable */}
+        {/* * INFO: scrollable div below */}
         <div
           ref={scrollDivRef}
           className="w-full relative mx-auto h-full bg-base-black overflow-scroll no-scrollbar"
         >
           <motion.figure
             className="flex sticky top-0 justify-center w-full px-12"
-            animate={{ y: 4 }}
-            style={{ opacity }}
+            style={{ opacity, y: Y }}
           >
             {title()}
           </motion.figure>
