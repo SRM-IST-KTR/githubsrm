@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from corsheaders.defaults import default_headers
 import os
 
 load_dotenv()
@@ -62,7 +63,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000"
 ]
 
+
 CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'X-Recaptcha-Token',
+]
 
 ROOT_URLCONF = 'core.urls'
 
