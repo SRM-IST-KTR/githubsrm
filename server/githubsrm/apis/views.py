@@ -83,19 +83,19 @@ class Maintainer(APIView):
         Returns:
             Response
         """
-        # if checkToken(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
-        validate = CommonSchema(request.data, headers={
-            "path_info": request.path_info
-        }).valid()
-        if 'error' not in validate:
-            if self.entry.check_existing(poa=validate['poa'], project_name=validate['project_name']):
-                return response.Response({
-                    "invalid": "Project exists"
-                }, status=status.HTTP_400_BAD_REQUEST)
+        if checkToken(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+            validate = CommonSchema(request.data, headers={
+                "path_info": request.path_info
+            }).valid()
+            if 'error' not in validate:
+                if self.entry.check_existing(poa=validate['poa'], project_name=validate['project_name']):
+                    return response.Response({
+                        "invalid": "Project exists"
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
-            if self.entry.enter_maintainer(validate):
-                return response.Response(validate, status=status.HTTP_200_OK)
-        return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
+                if self.entry.enter_maintainer(validate):
+                    return response.Response(validate, status=status.HTTP_200_OK)
+            return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
         return response.Response({
             "error": "Invalid reCaptcha"
         }, status=status.HTTP_401_UNAUTHORIZED)
@@ -122,7 +122,7 @@ class HealthCheck(APIView):
 
     throttle_scope = 'common'
 
-    def get(self, request, **kwargs):
+    def get(self, request, **kwargs) -> response.Response:
         """Get Process UpTime
 
         Args:
@@ -147,7 +147,7 @@ class Team(APIView):
     throttle_scope = 'common'
     entry = Entry()
 
-    def get(self, request, **kwargs):
+    def get(self, request, **kwargs) -> response.Response:
         """
         Get Full team data
 

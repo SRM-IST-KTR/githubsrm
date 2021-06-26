@@ -4,7 +4,7 @@ import os
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import pymongo
-
+from django.conf import settings
 
 load_dotenv()
 
@@ -12,8 +12,8 @@ load_dotenv()
 class Entry:
 
     def __init__(self):
-        client = pymongo.MongoClient(os.getenv('MONGO_URI'))
-        self.db = client[os.getenv('MONGO_DB')]
+        client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
+        self.db = client[settings.DATABASE['db']]
 
     def _enter_project(self, doc: Dict[str, str], maintainer_id: ObjectId) -> None:
         """Project Entry (only accessed by maintainer)

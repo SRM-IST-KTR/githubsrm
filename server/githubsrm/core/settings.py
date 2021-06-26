@@ -105,9 +105,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+if DEBUG:
+    DATABASE = {
+        "mongo_uri": os.getenv("MONGO_URI"),
+        "db": os.getenv("TEST_MONGO_DB")
+    }
+else:
+    DATABASE = {
+        "mongo_uri": os.getenv("MONGO_URI"),
+        "db": os.getenv("MONGO_DB")
+    }
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
