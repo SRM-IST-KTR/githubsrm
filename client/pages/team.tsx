@@ -1,12 +1,39 @@
+import { GetServerSidePropsResult } from "next";
+
 import { Layout } from "../components/shared/index";
 import { Team } from "../components/team";
+import { MemberProps } from "../utils/interfaces";
+import { getTeam } from "../services/api";
 
-const Teams = () => {
+interface TeamPageProps {
+  team: MemberProps[];
+}
+
+const TeamPage = ({ team }: TeamPageProps) => {
   return (
     <Layout>
-      <Team />
+      <Team team={team} />
     </Layout>
   );
 };
 
-export default Teams;
+export default TeamPage;
+
+export const getServerSideProps = async (): Promise<
+  GetServerSidePropsResult<TeamPageProps>
+> => {
+  try {
+    const res = await getTeam();
+    return {
+      props: { team: res as MemberProps[] },
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/500",
+      },
+    };
+  }
+};

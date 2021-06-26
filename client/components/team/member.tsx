@@ -1,5 +1,5 @@
 import Socials from "./socials";
-import { motion, useElementScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { MemberProps } from "./../../utils/interfaces";
 
@@ -10,7 +10,7 @@ interface MemberProp {
 const Profile = ({ member }: MemberProp) => {
   const holder = {
     initial: { scale: 1 },
-    hover: { scale: 1.05 },
+    hover: { scale: 1.1 },
   };
   const img = {
     initial: { scale: 1 },
@@ -22,7 +22,7 @@ const Profile = ({ member }: MemberProp) => {
       <motion.div
         variants={holder}
         whileHover="hover"
-        className="rounded-full ring-2 ring-black p-4 relative"
+        className="rounded-full transform border-2 hover:border-base-teal hover:border-4 border-black p-4 relative"
       >
         <motion.img
           variants={img}
@@ -30,14 +30,17 @@ const Profile = ({ member }: MemberProp) => {
           className="rounded-full relative w-48 h-48 object-cover z-10"
           src={member.img_url}
         />
-        <Socials handles={member.handles} />
+        <Socials
+          handles={[
+            { github_id: member.github_id },
+            { linkedin: member.linkedin },
+            { twitter: member.twitter },
+            { portfolio: member.portfolio },
+          ]}
+        />
       </motion.div>
-      <div className="text-lg font-montserrat my-2 font-normal">
-        {member.name}
-      </div>
-      <div className="text-lg font-montserrat font-extralight">
-        {`"${member.tagline}"`}
-      </div>
+      <h5 className="text-lg mt-6 font-medium">{member.name}</h5>
+      <p className="text-sm">{`"${member.tagline}"`}</p>
     </div>
   );
 };

@@ -1,7 +1,16 @@
-export interface MemberProps {
+import * as Yup from "yup";
+
+import { maintainerValidationSchema,contributorValidationSchema } from "./constants";
+
+interface Id {
+  id: string;
+}
+export interface MemberProps extends Id {
   name: string;
-  gitHub_id: string;
-  handles?: { [handle: string]: string }[];
+  github_id: string;
+  linkedin: string;
+  twitter: string;
+  portfolio: string;
   img_url: string;
   tagline: string;
 }
@@ -10,7 +19,7 @@ export interface ProjectProps {
   name: string;
   description: string;
   src: string;
-  tags:string[]
+  tags: string[];
 }
 
 export interface InputProps {
@@ -22,10 +31,16 @@ export interface InputProps {
     options: { value: string; name: string }[];
     optionClassName?: string;
   };
-  description?: { content: string; class?:string};
+  description?: { content: string; class?: string };
   textareaOptions?: { rows?: number; cols?: number };
   onError?: boolean;
   wrapperClassName?: { default?: string; onError?: string };
   inputClassName?: { default?: string; onError?: string };
   labelClassName?: { default?: string; onError?: string };
 }
+
+export interface MaintainerFormData
+  extends Yup.InferType<typeof maintainerValidationSchema> {}
+
+export interface ContributorFormData
+  extends Yup.InferType<typeof contributorValidationSchema> {}
