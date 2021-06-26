@@ -16,6 +16,9 @@ contextlib2==0.6.0.post1; python_version >= "2.7" and python_full_version < "3.0
 dataclasses==0.6; python_version >= "3.6" \
     --hash=sha256:454a69d788c7fda44efd71e259be79577822f5e3f53f029a22d08004e951dc9f \
     --hash=sha256:6988bd2b895eef432d562370bb707d540f32f7360ab13da45340101bc2307d84
+django-cors-headers==3.7.0; python_version >= "3.6" \
+    --hash=sha256:96069c4aaacace786a34ee7894ff680780ec2644e4268b31181044410fecd12e \
+    --hash=sha256:1ac2b1213de75a251e2ba04448da15f99bcfcbe164288ae6b5ff929dc49b372f
 django==3.2.4; python_version >= "3.6" \
     --hash=sha256:ea735cbbbb3b2fba6d4da4784a0043d84c67c92f1fdf15ad6db69900e792c10f \
     --hash=sha256:66c9d8db8cc6fe938a28b7887c1596e42d522e27618562517cc8929eb7e7f296
