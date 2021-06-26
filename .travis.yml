@@ -13,6 +13,10 @@ jobs:
         - npm install
     - stage: Test
       language: python
+      env: 
+        - SECRET_KEY=$DEV_SECRET_KEY
+        - TEST_MONGO_DB=$DEV_DB
+        - MONGO_URI=$DEV_MONGO_URI
       python:
         - "3.9"
       install:
