@@ -13,7 +13,7 @@ jobs:
         - npm install
     - stage: Test
       language: python
-      env: 
+      env:
         - SECRET_KEY=$DEV_SECRET_KEY
         - TEST_MONGO_DB=$DEV_DB
         - MONGO_URI=$DEV_MONGO_URI
@@ -24,7 +24,6 @@ jobs:
         - pip install -r requirements.txt
         - cd ..
       script:
-        - bash ./run.sh
         - bash ./run_tests.sh
     - stage: Deploy
       script: skip
