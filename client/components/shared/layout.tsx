@@ -51,7 +51,7 @@ const Layout: React.FC = ({ children }) => {
           </motion.figure>
 
           <div className="absolute w-full top-0 z-10">
-            <div className="w-11/12 mx-auto bg-white mt-80 mb-10 p-10 overflow-auto rounded-2xl">
+            <div className="w-11/12 mx-auto bg-white mt-80 mb-10 p-6 md:p-10 overflow-auto rounded-2xl">
               {children}
             </div>
           </div>

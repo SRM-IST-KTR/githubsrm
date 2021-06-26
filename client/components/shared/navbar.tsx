@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
+  const { asPath } = useRouter();
+
   const links: { name: string; href: string }[] = [
     {
       name: "Home",
@@ -22,16 +25,16 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 w-full z-0 bg-base-black rounded-t-2xl shadow-lg">
-      <ul className="flex z-40 font-semibold text-lg text-white mx-14 my-8">
+      <ul className="flex justify-between z-40 text-white mx-10 my-8 w-6/12 text-center">
         {links.map((link) => (
           <li
             key={link.href}
-            className="mx-4 border-base-green transform hover:border-b-2"
+            className={`${
+              asPath === link.href ? "font-semibold" : ""
+            } w-full transform hover:-translate-y-1`}
           >
             <Link href={link.href}>
-              <a className="relative py-2 px-4 text-xl transition-all duration-500 hover:text-base-green hover:z-1 underline-animation">
-                {link.name}
-              </a>
+              <a className="my-2 text-xl">{link.name}</a>
             </Link>
           </li>
         ))}
