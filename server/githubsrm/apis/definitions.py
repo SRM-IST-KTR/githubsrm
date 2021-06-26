@@ -1,4 +1,3 @@
-from bson.json_util import default
 from schema import Optional, Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re

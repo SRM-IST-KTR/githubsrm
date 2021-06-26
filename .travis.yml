@@ -19,6 +19,7 @@ jobs:
         - cd server/
         - pip install -r requirements.txt
         - cd ..
+        - pwd
       script:
         - bash ./run_tests.sh
     - stage: Deploy
