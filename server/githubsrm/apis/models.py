@@ -189,6 +189,14 @@ class Entry:
             return True
         return
 
+    def get_team_data(self) -> object:
+        """Get all team data
+
+        Returns:
+            [type]: MongoDB cursor 
+        """
+        return self.db.team.find({})
+
     def check_existing_contributor(self, interested_project: str,
                                    reg_number: str) -> bool:
         """Existing contributor to same project

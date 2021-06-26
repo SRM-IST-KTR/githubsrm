@@ -135,3 +135,27 @@ class HealthCheck(APIView):
             "status": "OK",
             "timeStamp": time.time()
         }, status=status.HTTP_200_OK)
+
+class Team(APIView):
+    """
+    Team data route
+
+    Args:
+        APIView
+    """
+    throttle_scope = 'common'
+    entry = Entry()
+
+    def get(self, request, **kwargs):
+        """
+        Get Full team data
+
+        Args:
+            request
+        """
+        result = self.entry.get_team_data()
+        return response.Response({
+            "team_data": result
+        }, status=status.HTTP_200_OK)
+
+
