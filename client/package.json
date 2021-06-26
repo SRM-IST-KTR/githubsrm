@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "autoprefixer": "^10.2.3",
+    "axios": "^0.21.1",
     "formik": "^2.2.9",
     "framer-motion": "^4.1.17",
     "next": "10.0.5",
@@ -16,6 +17,8 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-markdown": "^6.0.2",
+    "react-toastify": "^7.0.4",
+    "recaptcha-v3": "^1.9.1",
     "tailwindcss": "^2.0.2",
     "yup": "^0.32.9"
   },
