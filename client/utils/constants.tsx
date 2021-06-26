@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 import { PersonIcon, BookIcon, BranchIcon } from "./icons";
 import { InputProps, ProjectProps } from "./interfaces";
 
@@ -159,7 +161,7 @@ export const maintainerInputs: {
       },
       {
         id: "reg_number",
-        label: "Reg No.",
+        label: "Registration Number or Employee ID",
         type: "text",
         placeholder: "RAXXXXXXXXXXXXX",
       },
@@ -214,6 +216,41 @@ export const maintainerInputs: {
   },
 ];
 
+export const maintainerValidationSchema = Yup.object().shape({
+  name: Yup.string().trim().required("**Name**: Missing"),
+  email: Yup.string()
+    .trim()
+    .required("**Email**: Missing")
+    .email("**Email**: Invalid"),
+  github_id: Yup.string().trim().required("**GitHub ID**: Missing"),
+  srm_email: Yup.string()
+    .trim()
+    .required("**SRM Email ID**: Missing")
+    .test("test-srm-email", "**SRM Email ID**: Invalid", (value) =>
+      value?.endsWith("@srmist.edu.in")
+    ),
+  reg_number: Yup.string().trim().required("**Registration Number**: Missing"),
+  branch: Yup.string().trim().required("**Branch**: Missing"),
+  project_url: Yup.string()
+    .trim()
+    .required("**Project URL**: Missing")
+    .url("**Project URL**: Invalid"),
+  tags: Yup.string()
+    .trim()
+    .required("**Tags:** Missing")
+    .test(
+      "test-tags",
+      "**Tags**: Invalid Quantity",
+      (value) =>
+        value?.split(",").filter((i) => i.trim().length > 0).length >= 2 &&
+        value?.split(",").filter((i) => i.trim().length > 0).length <= 4
+    ),
+  poa: Yup.string()
+    .trim()
+    .required("**Feature or Bugfix:** Missing")
+    .min(30, "**Feature or Bugfix:** Too small"),
+});
+
 export const contributorInputs: {
   section: string;
   description: string;
@@ -254,7 +291,7 @@ export const contributorInputs: {
       },
       {
         id: "reg_number",
-        label: "Reg No.",
+        label: "Registration Number or Employee ID",
         type: "text",
         placeholder: "RAXXXXXXXXXXXXX",
       },
@@ -289,3 +326,23 @@ export const contributorInputs: {
     ],
   },
 ];
+
+export const contributorValidationSchema = Yup.object().shape({
+  name: Yup.string().trim().required("**Name**: Missing"),
+  email: Yup.string()
+    .trim()
+    .required("**Email**: Missing")
+    .email("**Email**: Invalid"),
+  github_id: Yup.string().trim().required("**GitHub ID**: Missing"),
+  srm_email: Yup.string()
+    .trim()
+    .required("**SRM Email ID**: Missing")
+    .test("test-srm-email", "**SRM Email ID**: Invalid", (value) =>
+      value?.endsWith("@srmist.edu.in")
+    ),
+  reg_number: Yup.string().trim().required("**Registration Number**: Missing"),
+  branch: Yup.string().trim().required("**Branch**: Missing"),
+  interested_project: Yup.string().trim(),
+  // .required("**Interested Project**: Missing"),
+  feature: Yup.string().trim(),
+});

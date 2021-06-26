@@ -1,5 +1,5 @@
-import { Layout } from "../components/shared";
-import { JoinUs } from "../components/join-us";
+import { Layout } from "../../components/shared";
+import { JoinUs } from "../../components/join-us";
 
 const JoinUsPage = () => {
   return (
