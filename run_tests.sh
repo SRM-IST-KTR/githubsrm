@@ -1,1 +1,1 @@
-python3 -m unittest tests/test_apis.py 
+python3 -m unittest server/tests/test_apis.py 

@@ -41,6 +41,23 @@ def check_github_id(github_ids: list) -> bool:
     return True
 
 
+def check_tags(tags: list) -> bool:
+    """Checks available tags 
+
+    Args:
+        tags
+
+    Returns:
+        bool
+    """
+
+    for tag in tags:
+        if len(tag.strip()) == 0:
+            return False
+
+    return len(tags) >= 2 and len(tags) <= 4
+
+
 class CommonSchema:
     def __init__(self, data: Dict[Any, Any], headers: HttpHeaders) -> None:
         self.data = data
@@ -61,15 +78,18 @@ class CommonSchema:
         }
 
         self.maintainer = {
+            "project_name": And(str, lambda project_name: len(project_name.strip()) > 0), 
             "github_id": And(list, lambda github_ids: check_github_id(github_ids)),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
-            "poa": And(str, lambda poa: len(poa.strip()) > 0)
+            "poa": And(str, lambda poa: len(poa.strip()) > 0),
+            "tags": And(list, lambda tags: check_tags(tags=tags))
         }
 
         self.contributor = {
             "github_id": And(str, lambda github_id: len(github_id.strip()) > 0),
             "interested_project": And(str, lambda name: len(name.strip()) > 0),
             Optional("feature", default=None): And(str, lambda feature: len(feature.strip()) > 0)
+
         }
 
     def valid_schema(self) -> Schema:

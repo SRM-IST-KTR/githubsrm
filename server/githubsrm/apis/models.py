@@ -36,16 +36,14 @@ class Entry:
         """
 
         # Check if project exists
-        one = self.db.project.find_one({"_id": project_id})
-
-        if one:
-            try:
-                # Check if contributor exists
-                one["contributor_id"]
+        project = self.db.project.find_one({"_id": project_id})
+        if project:
+            # Check if contributors exists
+            if "contributor_id" in project:
                 self.db.project.update_one({"_id": project_id}, {
                     "$push": {"contributor_id": identifier}})
                 return True
-            except Exception as e:
+            else:
                 # Creates new contributor if no contributor present
                 self.db.project.update_one({"_id": project_id}, {"$set": {
                     "contributor_id": [identifier]
@@ -53,6 +51,22 @@ class Entry:
 
                 return True
         return
+
+        # if one:
+        #     try:
+        #         # Check if contributor exists
+        #         one["contributor_id"]
+        #         self.db.project.update_one({"_id": project_id}, {
+        #             "$push": {"contributor_id": identifier}})
+        #         return True
+        #     except Exception as e:
+        #         # Creates new contributor if no contributor present
+        #         self.db.project.update_one({"_id": project_id}, {"$set": {
+        #             "contributor_id": [identifier]
+        #         }})
+
+        #         return True
+        # return
 
     def enter_maintainer(self, doc: Dict[str, str]) -> Any:
         """Enter Maintainers
@@ -66,8 +80,10 @@ class Entry:
         try:
             project_url = doc.pop("project_url")
         except Exception as e:
-            project_url = None
+            project_url = ""
+        
         poa = doc.pop("poa")
+        tags = doc.pop("tags")
 
         _id = ObjectId()
         doc = {**doc, **{"_id": _id}}
@@ -79,6 +95,7 @@ class Entry:
             self._enter_project({
                 "project_url": project_url,
                 "poa": poa,
+                "tags": tags,
                 "approved": False
             }, maintainer_id={
                 "maintainer_id": _id
@@ -153,7 +170,6 @@ class Entry:
             return
 
         if self._update_project(identifier=identifier, project_id=project_id):
-            print("IN")
             self.db.contributor.update({"_id": identifier}, {
                 "$set": {"approved": True}})
             return True

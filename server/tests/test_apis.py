@@ -21,7 +21,9 @@ class TestSchema(TestCase):
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": ["Test-User"],
-            "poa": "TestProject"
+            "poa": "TestProject",
+            "tags": ["AI", "ML", "ECE"],
+            "project_name": "ProjectName"
         }
 
     def test_1(self):
@@ -394,7 +396,7 @@ class TestSchema(TestCase):
             "path_info": "/apis/maintainer"
         })
         result = 'error' in schema.valid()
-        
+
         self.assertEqual(result, True)
         self.MaintainerSchema["github_id"] = [" ", " ", " "]
         schema = CommonSchema(data=self.MaintainerSchema, headers={
@@ -467,6 +469,42 @@ class TestSchema(TestCase):
         })
 
         result = 'error' in schema.valid()
+        self.assertEqual(result, True)
+
+    def test_20(self):
+        """
+        Test missing tags
+        """
+        self.MaintainerSchema["tags"] = ["AI", " "]
+        schema = CommonSchema(data=self.MaintainerSchema, headers={
+            "path_info": "apis/maintainer"
+        })
+        result = 'error' in schema.valid()
+        self.assertEqual(result, True)
+
+    def test_21(self):
+        '''
+        Test Project Name
+        '''
+        self.MaintainerSchema["project_name"] = "  "
+        schema = CommonSchema(data=self.MaintainerSchema, headers={
+            "path_info": "apis/maintainer"
+        })
+
+        result = 'error' in schema.valid()
+        self.assertEqual(result, True)
+
+    def test_21(self):
+        '''
+        Test no project name
+        '''
+
+        del self.MaintainerSchema["project_name"]
+        schema = CommonSchema(data=self.MaintainerSchema, headers={
+            "path_info": "apis/maintainer"
+        })
+        result = 'error' in schema.valid()
+
         self.assertEqual(result, True)
 
     def tearDown(self) -> None:
