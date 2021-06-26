@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Formik, Form } from "formik";
-import * as Yup from "yup";
 import Markdown from "react-markdown";
 
 import { Section, Input } from "../";

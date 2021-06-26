@@ -112,14 +112,6 @@ export const projectCardDetails: ProjectProps[] = [
   },
 ];
 
-//* INFO: will be fetched from backend
-const projects: { value: string; name: string }[] = [
-  { name: "Project 1", value: "project1" },
-  { name: "Project 2", value: "project2" },
-  { name: "Project 3", value: "project3" },
-  { name: "Project 4", value: "project4" },
-];
-
 // TODO: combine section props in one key
 export const maintainerInputs: {
   section: string;
@@ -251,12 +243,14 @@ export const maintainerValidationSchema = Yup.object().shape({
     .min(30, "**Feature or Bugfix:** Too small"),
 });
 
-export const contributorInputs: {
+export const contributorInputs = (
+  selectProjects: { value: string; name: string }[]
+): {
   section: string;
   description: string;
   icon: JSX.Element;
   inputs: InputProps[];
-}[] = [
+}[] => [
   {
     section: "Personal",
     icon: <PersonIcon />,
@@ -313,8 +307,8 @@ export const contributorInputs: {
         id: "interested_project",
         label: "Project",
         type: "select",
-        placeholder: "Calculator",
-        selectOptions: { options: projects },
+        placeholder: "Select your preferred project!",
+        selectOptions: { options: selectProjects },
       },
       {
         id: "feature",
@@ -342,7 +336,13 @@ export const contributorValidationSchema = Yup.object().shape({
     ),
   reg_number: Yup.string().trim().required("**Registration Number**: Missing"),
   branch: Yup.string().trim().required("**Branch**: Missing"),
-  interested_project: Yup.string().trim(),
-  // .required("**Interested Project**: Missing"),
+  interested_project: Yup.string()
+    .trim()
+    .required("**Interested Project**: Missing")
+    .test(
+      "formik-workoud",
+      "**Interested Project**: Missing",
+      (value) => value !== "placeholder"
+    ),
   feature: Yup.string().trim(),
 });

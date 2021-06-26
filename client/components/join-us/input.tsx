@@ -76,6 +76,12 @@ const Input = (props: InputProps) => {
               props.inputClassName?.default
             }`}
           >
+            <option
+              className={props.selectOptions?.optionClassName}
+              value="placeholder"
+            >
+              {props.placeholder}
+            </option>
             {props.selectOptions?.options.map((option) => (
               <option
                 key={option.value.trim()}

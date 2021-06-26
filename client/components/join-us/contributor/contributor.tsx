@@ -14,9 +14,14 @@ import {
 import { ContributorFormData } from "../../../utils/interfaces";
 import { postContributor } from "../../../services/api";
 
-const Contributor = () => {
+interface ContributorProps {
+  projectOption: { value: string; name: string }[];
+}
+
+const Contributor = ({ projectOption }: ContributorProps) => {
   let [stage, setStage] = useState<number>(0);
 
+  const parsedContributorInputs = contributorInputs(projectOption);
   const initialValues: Partial<ContributorFormData> = {};
 
   const submitValues = async (values: ContributorFormData) => {
@@ -29,7 +34,7 @@ const Contributor = () => {
 
   const changePage = (next: boolean) => {
     if (next) {
-      if (stage !== contributorInputs.length - 1) setStage(stage + 1);
+      if (stage !== parsedContributorInputs.length - 1) setStage(stage + 1);
     } else {
       if (stage !== 0) setStage(stage - 1);
     }
@@ -55,7 +60,7 @@ const Contributor = () => {
             <>
               <div className="flex justify-evenly">
                 <div className="w-4/12 flex flex-col items-center justify-between min-h-lg border-r-2">
-                  {contributorInputs.map((item, index) => (
+                  {parsedContributorInputs.map((item, index) => (
                     <Section
                       key={item.section}
                       name={item.section}
@@ -73,7 +78,7 @@ const Contributor = () => {
 
                 <div className="w-full max-w-3xl flex flex-col justify-between">
                   <div>
-                    {contributorInputs.map((section, index) => (
+                    {parsedContributorInputs.map((section, index) => (
                       <div
                         key={section.inputs[0].id}
                         className={`${
@@ -128,7 +133,7 @@ const Contributor = () => {
                         </button>
                       )}
 
-                      {stage !== contributorInputs.length - 1 ? (
+                      {stage !== parsedContributorInputs.length - 1 ? (
                         <button
                           type="button"
                           onClick={() => changePage(true)}
