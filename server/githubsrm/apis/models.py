@@ -1,10 +1,9 @@
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 import os
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import pymongo
-from bson import json_util
 
 
 load_dotenv()
@@ -23,7 +22,8 @@ class Entry:
             doc (Dict[str, str]): post to be entred
             maintainer_id (ObjectId): maintainer id 
         """
-        doc = {**doc, **maintainer_id}
+        _id = str(ObjectId())
+        doc = {**doc, **maintainer_id, **{"_id": _id}}
         self.db.project.insert_one(doc)
 
     def _update_project(self, identifier: ObjectId,
@@ -70,7 +70,7 @@ class Entry:
         tags = doc.pop("tags")
         project_name = doc.pop('project_name')
 
-        _id = ObjectId()
+        _id = str(ObjectId())
         doc = {**doc, **{"_id": _id}}
 
         try:
@@ -100,11 +100,11 @@ class Entry:
             doc (Dict[str, Any])
         """
 
-        _id = ObjectId()
+        _id = str(ObjectId())
         doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
         try:
-            project_id = ObjectId(doc['interested_project'])
+            project_id = str(ObjectId(doc['interested_project']))
         except Exception as e:
             return
 
@@ -128,7 +128,7 @@ class Entry:
             bool
         """
         try:
-            identifier = ObjectId(identifier)
+            identifier = str(ObjectId(identifier))
         except Exception as e:
             return
 
@@ -149,8 +149,8 @@ class Entry:
             project_id: Project ID
         """
         try:
-            identifier = ObjectId(identifier)
-            project_id = ObjectId(project_id)
+            identifier = (ObjectId(identifier))
+            project_id = (ObjectId(project_id))
 
         except Exception as e:
             return

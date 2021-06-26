@@ -154,5 +154,6 @@ class Team(APIView):
         Args:
             request
         """
-        result = self.entry.get_team_data()
-        return response.Response(json.loads(json_util.dumps(result)), status=status.HTTP_200_OK)
+
+        result = json.loads(json_util.dumps(self.entry.get_team_data()))
+        return response.Response(result, status=status.HTTP_200_OK)
