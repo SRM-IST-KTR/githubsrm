@@ -13,7 +13,7 @@ load_dotenv()
 class Entry:
 
     def __init__(self):
-        client = pymongo.MongoClient(os.getenv('MONGO_URI'))
+        client = pymongo.MongoClient(os.getenv('MONGO_URI'), port=27017)
         self.db = client[os.getenv('MONGO_DB')]
 
     def _enter_project(self, doc: Dict[str, str], maintainer_id: ObjectId) -> None:
@@ -52,22 +52,6 @@ class Entry:
                 return True
         return
 
-        # if one:
-        #     try:
-        #         # Check if contributor exists
-        #         one["contributor_id"]
-        #         self.db.project.update_one({"_id": project_id}, {
-        #             "$push": {"contributor_id": identifier}})
-        #         return True
-        #     except Exception as e:
-        #         # Creates new contributor if no contributor present
-        #         self.db.project.update_one({"_id": project_id}, {"$set": {
-        #             "contributor_id": [identifier]
-        #         }})
-
-        #         return True
-        # return
-
     def enter_maintainer(self, doc: Dict[str, str]) -> Any:
         """Enter Maintainers
 
@@ -81,9 +65,10 @@ class Entry:
             project_url = doc.pop("project_url")
         except Exception as e:
             project_url = ""
-        
+
         poa = doc.pop("poa")
         tags = doc.pop("tags")
+        project_name = doc.pop('project_name')
 
         _id = ObjectId()
         doc = {**doc, **{"_id": _id}}
@@ -96,7 +81,8 @@ class Entry:
                 "project_url": project_url,
                 "poa": poa,
                 "tags": tags,
-                "approved": False
+                "approved": False,
+                "project_name": project_name
             }, maintainer_id={
                 "maintainer_id": _id
             })
@@ -199,9 +185,14 @@ class Entry:
         """
         return self.db.maintainer.find({})
 
-    def check_existing(self, poa: str) -> bool:
-        result = list(self.db.project.find({"poa": poa}))
-        if len(result) != 0:
+    def check_existing(self, poa: str, project_name: str) -> bool:
+        result_poa = list(self.db.project.find(
+            {"poa": poa}))
+
+        result_project_name = list(
+            self.db.project.find({"project_name": project_name}))
+
+        if len(result_poa) != 0 or len(result_project_name) != 0:
             return True
         return
 

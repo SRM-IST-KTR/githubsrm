@@ -83,19 +83,19 @@ class Maintainer(APIView):
         Returns:
             Response
         """
-        if checkToken(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
-            validate = CommonSchema(request.data, headers={
-                "path_info": request.path_info
-            }).valid()
-            if 'error' not in validate:
-                if self.entry.check_existing(validate['poa']):
-                    return response.Response({
-                        "invalid": "Project exists"
-                    }, status=status.HTTP_400_BAD_REQUEST)
+        # if checkToken(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+        validate = CommonSchema(request.data, headers={
+            "path_info": request.path_info
+        }).valid()
+        if 'error' not in validate:
+            if self.entry.check_existing(poa=validate['poa'], project_name=validate['project_name']):
+                return response.Response({
+                    "invalid": "Project exists"
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                if self.entry.enter_maintainer(validate):
-                    return response.Response(validate, status=status.HTTP_200_OK)
-            return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
+            if self.entry.enter_maintainer(validate):
+                return response.Response(validate, status=status.HTTP_200_OK)
+        return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
         return response.Response({
             "error": "Invalid reCaptcha"
         }, status=status.HTTP_401_UNAUTHORIZED)
@@ -128,13 +128,14 @@ class HealthCheck(APIView):
         Args:
             request 
         """
-        
+
         uptime = time.time() - psutil.Process(os.getpid()).create_time()
         return response.Response({
             "uptime": uptime,
             "status": "OK",
             "timeStamp": time.time()
         }, status=status.HTTP_200_OK)
+
 
 class Team(APIView):
     """
@@ -155,5 +156,3 @@ class Team(APIView):
         """
         result = self.entry.get_team_data()
         return response.Response(json.loads(json_util.dumps(result)), status=status.HTTP_200_OK)
-
-
