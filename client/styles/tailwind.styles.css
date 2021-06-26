@@ -21,6 +21,12 @@
     @apply box-border font-sans-serif transition-all;
   }
 
+  /* * INFO: only used to prevent classes from purging; ignore the 'alert' */
+  .purge-prevention {
+    @apply bg-base-black bg-base-green bg-base-smoke bg-base-blue bg-base-teal;
+    @apply border-base-black border-base-green border-base-smoke border-base-blue border-base-teal;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -31,27 +37,5 @@
 
   .position-cover {
     @apply bottom-0 top-0 right-0 left-0;
-  }
-
-  .underline-animation:after {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 0%;
-    content: ".";
-    color: transparent;
-    background: #aaa;
-    height: 1px;
-    opacity: 0;
-    border-radius: 5px;
-  }
-
-  .underline-animation:hover:after {
-    z-index: -10;
-    animation: fill 1s forwards;
-    -webkit-animation: fill 1s forwards;
-    -moz-animation: fill 1s forwards;
-    opacity: 1;
   }
 }
