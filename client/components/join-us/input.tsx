@@ -69,9 +69,9 @@ const Input = (props: InputProps) => {
               {props.label}
             </label>
           )}
-          <select
+          <Field
+            as="select"
             name={props.id}
-            id={props.id}
             className={`${props.onError ? props.inputClassName?.onError : ""} ${
               props.inputClassName?.default
             }`}
@@ -80,11 +80,12 @@ const Input = (props: InputProps) => {
               <option
                 key={option.value.trim()}
                 className={props.selectOptions?.optionClassName}
+                value={option.value}
               >
                 {option.name}
               </option>
             ))}
-          </select>
+          </Field>
         </div>
       );
     }
