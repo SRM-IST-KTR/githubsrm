@@ -9,20 +9,16 @@ const Input = (props: InputProps) => {
     case "textarea": {
       return (
         <div
-          className={
-            props.onError
-              ? props.wrapperClassName?.onError
-              : props.wrapperClassName?.default
-          }
+          className={`${props.onError ? props.wrapperClassName?.onError : ""} ${
+            props.wrapperClassName?.default
+          }`}
         >
           {props.label && (
             <label
               htmlFor={props.id}
-              className={
-                props.onError
-                  ? props.labelClassName?.onError
-                  : props.labelClassName?.default
-              }
+              className={`${
+                props.onError ? props.labelClassName?.onError : ""
+              } ${props.labelClassName?.default}`}
             >
               {props.label}
             </label>
@@ -34,22 +30,18 @@ const Input = (props: InputProps) => {
               placeholder={props.placeholder || ""}
               rows={props.textareaOptions?.rows}
               cols={props.textareaOptions?.cols}
-              className={
-                props.onError
-                  ? props.inputClassName?.onError
-                  : props.inputClassName?.default
-              }
+              className={`${
+                props.onError ? props.inputClassName?.onError : ""
+              } ${props.inputClassName?.default}`}
             />
           ) : (
             <Field
               type={props.type}
               name={props.id}
               placeholder={props.placeholder || ""}
-              className={
-                props.onError
-                  ? props.inputClassName?.onError
-                  : props.inputClassName?.default
-              }
+              className={`${
+                props.onError ? props.inputClassName?.onError : ""
+              } ${props.inputClassName?.default}`}
             />
           )}
         </div>
@@ -58,20 +50,16 @@ const Input = (props: InputProps) => {
     case "select": {
       return (
         <div
-          className={
-            props.onError
-              ? props.wrapperClassName?.onError
-              : props.wrapperClassName?.default
-          }
+          className={`${props.onError ? props.wrapperClassName?.onError : ""} ${
+            props.wrapperClassName?.default
+          }`}
         >
           {props.label && (
             <label
               htmlFor={props.id}
-              className={
-                props.onError
-                  ? props.labelClassName?.onError
-                  : props.labelClassName?.default
-              }
+              className={`${
+                props.onError ? props.labelClassName?.onError : ""
+              } ${props.labelClassName?.default}`}
             >
               {props.label}
             </label>
@@ -79,11 +67,9 @@ const Input = (props: InputProps) => {
           <select
             name={props.id}
             id={props.id}
-            className={
-              props.onError
-                ? props.labelClassName?.onError
-                : props.labelClassName?.default
-            }
+            className={`${props.onError ? props.inputClassName?.onError : ""} ${
+              props.inputClassName?.default
+            }`}
           >
             {props.selectOptions?.options.map((option) => (
               <option

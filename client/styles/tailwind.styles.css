@@ -7,18 +7,18 @@
 
   html,
   body {
-    padding: 0;
-    margin: 0;
+    @apply m-0 p-0;
   }
 
   input,
   textarea,
-  select {
+  select,
+  button {
     @apply outline-none focus:outline-none;
   }
 
   * {
-    box-sizing: border-box;
+    @apply box-border font-sans-serif transition-all;
   }
 
   .no-scrollbar::-webkit-scrollbar {
