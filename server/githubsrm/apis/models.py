@@ -12,7 +12,7 @@ load_dotenv()
 class Entry:
 
     def __init__(self):
-        client = pymongo.MongoClient(os.getenv('MONGO_URI'), port=27017)
+        client = pymongo.MongoClient(os.getenv('MONGO_URI'))
         self.db = client[os.getenv('MONGO_DB')]
 
     def _enter_project(self, doc: Dict[str, str], maintainer_id: ObjectId) -> None:
