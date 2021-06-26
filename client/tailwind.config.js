@@ -14,7 +14,6 @@ module.exports = {
         "sans-serif": ["Montserrat", "sans-serif"],
       },
       zIndex: {
-        1: 1,
         "-10": "-10",
       },
       minHeight: {
@@ -50,16 +49,6 @@ module.exports = {
         "5xl": "64rem",
         "6xl": "72rem",
         "7xl": "80rem",
-      },
-      keyframes: {
-        fill: {
-          "0%": { width: "0%", height: "1px" },
-          "50%": { width: "100%", height: "1px" },
-          "100%": { width: "100%", height: "100%", background: "#FFFFFF" },
-        },
-      },
-      animation: {
-        fill: "fill 1s forwards",
       },
     },
   },
