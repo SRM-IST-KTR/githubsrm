@@ -1,1 +1,2 @@
-python3 -m unittest server/tests/test_apis.py 
+cd server
+python3 -m unittest tests/test_apis.py 
