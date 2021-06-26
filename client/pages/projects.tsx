@@ -1,10 +1,10 @@
-import ProjectCard from "../components/project/projectCard";
 import { Layout } from "../components/shared";
+import { Projects } from "../components/projects";
 
 const Project = () => {
   return (
     <Layout>
-      <ProjectCard />
+      <Projects />
     </Layout>
   );
 };

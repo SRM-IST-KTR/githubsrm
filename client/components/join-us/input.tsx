@@ -44,6 +44,11 @@ const Input = (props: InputProps) => {
               } ${props.inputClassName?.default}`}
             />
           )}
+          {props.description && (
+            <p className={props.description.class}>
+              {props.description.content}
+            </p>
+          )}
         </div>
       );
     }

@@ -6,6 +6,13 @@ export interface MemberProps {
   tagline: string;
 }
 
+export interface ProjectProps {
+  name: string;
+  description: string;
+  src: string;
+  tags:string[]
+}
+
 export interface InputProps {
   type: "text" | "textarea" | "select" | "email";
   id: string;
@@ -15,6 +22,7 @@ export interface InputProps {
     options: { value: string; name: string }[];
     optionClassName?: string;
   };
+  description?: { content: string; class?:string};
   textareaOptions?: { rows?: number; cols?: number };
   onError?: boolean;
   wrapperClassName?: { default?: string; onError?: string };
