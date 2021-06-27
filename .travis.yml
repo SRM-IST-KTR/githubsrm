@@ -12,6 +12,9 @@ jobs:
         - cd client
         - npm install
     - stage: Test
+      addons:
+        apt_packages:
+          - parallel
       language: python
       env:
         - SECRET_KEY=$DEV_SECRET_KEY
@@ -25,8 +28,7 @@ jobs:
         - pip install -r requirements.txt
         - cd ..
       script:
-        - chmod +x ./test-runner
-        - ./test-runner
+        - bash ./test-runner.sh
     - stage: Deploy
       script: skip
       deploy:
