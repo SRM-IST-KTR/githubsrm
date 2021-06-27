@@ -78,7 +78,7 @@ const Hero = ({ reference }: HeroProps) => {
             <br />
           </div>
           <div className="flex justify-items-center z-10 items-center flex-col">
-            <div className="absolute rounded-full bg-base-blue p-28 md:p-32 lg:p-56 "></div>
+            <div className="absolute rounded-full bg-base-blue p-28 md:p-32 lg:p-52 "></div>
             <motion.div
               animate={{ y: 100 }}
               transition={{
@@ -94,7 +94,7 @@ const Hero = ({ reference }: HeroProps) => {
           </div>
 
           <div className="grid grid-rows-3 w-full lg:p-7">
-            <div className="my-2 lg:my-5 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
+            <div className="my-2 lg:my-5 bg-base-green rounded-2xl flex justify-center items-center flex-col">
               <p className="text-center mx-2 p-2 font-semibold text-gray-100">
                 We plan on administering the SRMIST KTR GitHub Enterprise
                 organization
@@ -105,7 +105,7 @@ const Hero = ({ reference }: HeroProps) => {
                 Help the faculties in managing student projects
               </p>
             </div>
-            <div className="my-2 lg:my-5 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
+            <div className="my-2 lg:my-5 bg-base-green  rounded-2xl flex justify-center items-center flex-col">
               <p className="text-center mx-2 p-2 font-semibold text-gray-100">
                 Help the students get onboarded and get started with their
                 projects.
@@ -115,8 +115,8 @@ const Hero = ({ reference }: HeroProps) => {
         </div>
       </div>
       <div className="flex flex-col justify-center">
-        <p className="text-4xl font-semibold text-base-black py-4 my-4 text-center">
-          Benefits of being a GitHub Campus Partner Program
+        <p className="text-2xl lg:text-5xl font-semibold text-base-black py-4 my-4 text-center">
+          Benefits of GitHub Campus Partner Program
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-1">
@@ -127,7 +127,9 @@ const Hero = ({ reference }: HeroProps) => {
                   <img src={data.img} alt={data.alt} />
                 </figure>
 
-                <p className="text-md mt-5">{data.text}</p>
+                <p className="text-gray-600 font-regular text-sm lg:text-lg">
+                  {data.text}
+                </p>
               </div>
             </div>
           ))}
