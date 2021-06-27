@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { errorPage, meteor } from "../utils/icons";
+import { ErrorPage, Meteor } from "../utils/icons";
 import { Navbar } from "../components/shared";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
@@ -74,7 +74,7 @@ const NotFound = () => {
               animate={{ x: "60%" }}
               className="absolute w-1/2"
             >
-              <Errorpage />
+              <ErrorPage />
             </motion.div>
           </div>
         </div>
