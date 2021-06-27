@@ -1,6 +1,6 @@
 import { ServerStreamFileResponseOptionsWithError } from "http2";
 
-const ErrorPage = () => {
+const errorPage = () => {
   return (
     <svg
       className="w-full h-full"
@@ -35,4 +35,4 @@ const ErrorPage = () => {
   );
 };
 
-export default ErrorPage;
+export default errorPage;

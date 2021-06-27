@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Errorpage, Meteor } from "../utils/icons";
+import { errorPage, meteor } from "../utils/icons";
 import { Navbar } from "../components/shared";
 import { useEffect } from "react";
 import { useRouter } from "next/router";

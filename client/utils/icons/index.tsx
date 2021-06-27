@@ -8,5 +8,6 @@ export { default as BranchIcon } from "./branch";
 export { default as ArrowIcon } from "./arrow";
 export { default as Travis } from "./travis";
 export { default as CoderOcto } from "./coderocto";
-export { default as Meteor } from "./meteor";
+export { default as meteor } from "./meteor";
 export { default as ServerError } from "./500";
+export { default as errorPage } from "./404";
