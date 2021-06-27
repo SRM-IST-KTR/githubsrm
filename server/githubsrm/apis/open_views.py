@@ -9,13 +9,14 @@ import psutil
 import time
 import os
 
+entry = Entry()
+
 
 class Contributor(APIView):
     '''
     Contributors API Allows additon of contributors to the database
     '''
     throttle_scope = 'common'
-    entry = Entry()
 
     def post(self, request, **kwargs) -> response.Response:
         """Adding Contributors to Projects
@@ -32,12 +33,12 @@ class Contributor(APIView):
             }).valid()
 
             if 'error' not in validate:
-                if self.entry.check_existing_contributor(validate['interested_project'], validate['reg_number']):
+                if entry.check_existing_contributor(validate['interested_project'], validate['reg_number']):
                     return response.Response({
                         "invalid data": "Contributor For project exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                if self.entry.enter_contributor(validate):
+                if entry.enter_contributor(validate):
                     return response.Response({
                         "valid": validate
                     }, status=status.HTTP_201_CREATED)
@@ -61,7 +62,7 @@ class Contributor(APIView):
             response.Response
         """
 
-        result = json.loads(json_util.dumps(self.entry.get_contributors()))
+        result = json.loads(json_util.dumps(entry.get_contributors()))
         return response.Response({
             "contributors": result
         }, status=status.HTTP_200_OK)
@@ -72,7 +73,6 @@ class Maintainer(APIView):
     Maintainer API to Allow addition of maintainers to the database 
     '''
     throttle_scope = 'common'
-    entry = Entry()
 
     def post(self, request, **kwargs) -> response.Response:
         """Accept Maintainers
@@ -88,12 +88,13 @@ class Maintainer(APIView):
                 "path_info": request.path_info
             }).valid()
             if 'error' not in validate:
-                if self.entry.check_existing(poa=validate['poa'], project_name=validate['project_name']):
+                if entry.check_existing(poa=validate['poa'],
+                                             project_name=validate['project_name']):
                     return response.Response({
                         "invalid": "Project exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                if self.entry.enter_maintainer(validate):
+                if entry.enter_maintainer(validate):
                     return response.Response(validate, status=status.HTTP_200_OK)
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
         return response.Response({
@@ -106,11 +107,33 @@ class Maintainer(APIView):
         Args:
             request ([type])
         """
-        result = json.loads(json_util.dumps(self.entry.get_projects()))
+
+        result = json.loads(json_util.dumps(entry.get_projects()))
 
         return response.Response({
             "projects": result
         }, status=status.HTTP_200_OK)
+
+
+class Team(APIView):
+    """
+    Team data route
+
+    Args:
+        APIView
+    """
+    throttle_scope = 'common'
+
+    def get(self, request, **kwargs) -> response.Response:
+        """
+        Get Full team data
+
+        Args:
+            request
+        """
+
+        result = json.loads(json_util.dumps(entry.get_team_data()))
+        return response.Response(result, status=status.HTTP_200_OK)
 
 
 class HealthCheck(APIView):
@@ -135,25 +158,3 @@ class HealthCheck(APIView):
             "status": "OK",
             "timeStamp": time.time()
         }, status=status.HTTP_200_OK)
-
-
-class Team(APIView):
-    """
-    Team data route
-
-    Args:
-        APIView
-    """
-    throttle_scope = 'common'
-    entry = Entry()
-
-    def get(self, request, **kwargs) -> response.Response:
-        """
-        Get Full team data
-
-        Args:
-            request
-        """
-
-        result = json.loads(json_util.dumps(self.entry.get_team_data()))
-        return response.Response(result, status=status.HTTP_200_OK)

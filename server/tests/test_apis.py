@@ -23,7 +23,7 @@ class TestClient(TestCase):
         cls.pymongo_client = pymongo.MongoClient(DATABASE['mongo_uri'])
         cls.db = cls.pymongo_client[DATABASE['db']]
 
-        cls.base_url = "http://localhost:5000/"
+        cls.base_url = "http://localhost:8000/"
 
     def test_team_data(self):
         '''

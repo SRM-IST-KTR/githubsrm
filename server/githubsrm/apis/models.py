@@ -138,8 +138,27 @@ class Entry:
         except Exception as e:
             print(e)
 
+    def delete_contributor(self, identifier: str) -> bool:
+        """Delete Contributos
+
+        Args:
+            identifier (str): Contributor ID
+
+        Returns:
+            bool
+        """
+        try:
+            # project_contributor = self.db.project.find({"contributor_id": identifier})
+            # if len(list(project_contributor)) > 0:
+            self.db.project.delete_one({"contributor_id": identifier})
+
+            self.db.contributor.delete_one({"_id": identifier})
+            return True
+        except Exception as e:
+            return
+
     def approve_project(self, identifier: str) -> bool:
-        """Approve maintainers
+        """Approve project
 
         Args:
             identifier (str): Project ID
@@ -164,20 +183,23 @@ class Entry:
             identifier: Contributor ID
             project_id: Project ID
         """
-
-        if self._update_project(identifier=identifier, project_id=project_id):
-            self.db.contributor.update({"_id": identifier}, {
-                "$set": {"approved": True}})
-            return True
+        if len(list(self.db.contributor.find({"_id": identifier}))) > 0: 
+            if self._update_project(identifier=identifier, project_id=project_id):
+                self.db.contributor.update({"_id": identifier}, {
+                    "$set": {"approved": True}})
+                return True
         return
 
-    def get_projects(self) -> object:
-        """Get all projects
+    def get_projects(self, admin: bool = False) -> object:
+        """Get all public projects / all project for admin
 
         Returns:
             object: MongoDB cursor
+            admin (bool): admin access
         """
-        return self.db.project.find({})
+        if admin:
+            self.db.project.find({})
+        return self.db.project.find({"private": False, "approved": True})
 
     def get_contributors(self) -> object:
         """Get all existing contributors
