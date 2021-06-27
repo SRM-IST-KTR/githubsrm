@@ -1,35 +1,34 @@
 import { useState } from "react";
+import Link from "next/link";
 import { Formik, Form } from "formik";
 import Markdown from "react-markdown";
 
 import { Section, Input } from "../";
-import {
-  contributorInputs,
-  contributorValidationSchema,
-  inputClassName,
-  inputClassNameError,
-  labelClassName,
-  wrapperClassName,
-} from "../../../utils/constants";
+import * as FormConstants from "../../../utils/constants";
+import { LoadingIcon } from "../../../utils/icons";
 import { ContributorFormData } from "../../../utils/interfaces";
 import { postContributor } from "../../../services/api";
 
 const Contributor = () => {
   let [stage, setStage] = useState<number>(0);
+  let [loading, setLoading] = useState<boolean>(false);
 
   const initialValues: Partial<ContributorFormData> = {};
 
   const submitValues = async (values: ContributorFormData) => {
+    setLoading(true);
     try {
       const res = await postContributor(values);
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const changePage = (next: boolean) => {
     if (next) {
-      if (stage !== contributorInputs.length - 1) setStage(stage + 1);
+      if (stage !== FormConstants.contributorInputs.length - 1)
+        setStage(stage + 1);
     } else {
       if (stage !== 0) setStage(stage - 1);
     }
@@ -40,22 +39,33 @@ const Contributor = () => {
 
   return (
     <div>
-      <div className="font-medium">
-        <h1 className="text-4xl">Big text here</h1>
-        <h2 className="text-xl mt-2">small text here</h2>
+      <div>
+        <div className="font-medium">
+          <h1 className="text-4xl">Big text here</h1>
+          <h2 className="text-xl mt-2">small text here</h2>
+        </div>
+
+        <p className="text-right text-lg">
+          Join us as a{" "}
+          <Link href="/join-us/maintainer">
+            <a className="text-base-green font-bold hover:underline">
+              Maintainer
+            </a>
+          </Link>
+        </p>
       </div>
 
       <Formik
         initialValues={initialValues}
         onSubmit={submitValues}
-        validationSchema={contributorValidationSchema}
+        validationSchema={FormConstants.contributorValidation}
       >
         {({ errors, touched }) => (
           <Form className="w-11/12 my-8 mx-auto">
             <>
               <div className="flex justify-evenly">
                 <div className="w-4/12 flex flex-col items-center justify-between min-h-lg border-r-2">
-                  {contributorInputs.map((item, index) => (
+                  {FormConstants.contributorInputs.map((item, index) => (
                     <Section
                       key={item.section}
                       name={item.section}
@@ -73,7 +83,7 @@ const Contributor = () => {
 
                 <div className="w-full max-w-3xl flex flex-col justify-between">
                   <div>
-                    {contributorInputs.map((section, index) => (
+                    {FormConstants.contributorInputs.map((section, index) => (
                       <div
                         key={section.inputs[0].id}
                         className={`${
@@ -88,14 +98,16 @@ const Contributor = () => {
                             key={field.id}
                             {...field}
                             wrapperClassName={{
-                              default: wrapperClassName,
-                              onError: wrapperClassName,
+                              default: FormConstants.wrapperClassName,
+                              onError: FormConstants.wrapperClassName,
                             }}
                             inputClassName={{
-                              default: inputClassName,
-                              onError: inputClassNameError,
+                              default: FormConstants.inputClassName,
+                              onError: FormConstants.inputClassNameError,
                             }}
-                            labelClassName={{ default: labelClassName }}
+                            labelClassName={{
+                              default: FormConstants.labelClassName,
+                            }}
                           />
                         ))}
                       </div>
@@ -106,7 +118,10 @@ const Contributor = () => {
                     {Object.keys(errors).map((error) => {
                       if (touched[error]) {
                         return (
-                          <Markdown className="text-red-500 my-1">
+                          <Markdown
+                            key={error.trim()}
+                            className="text-red-500 my-1"
+                          >
                             {errors[error] as string}
                           </Markdown>
                         );
@@ -115,10 +130,11 @@ const Contributor = () => {
                   </div>
 
                   <div>
-                    <div className="grid grid-cols-3 gap-x-16 items-center justify-center">
+                    <div className="w-11/12 mx-auto grid grid-cols-3 gap-x-10 items-center justify-center">
                       <div />
-                      {stage == 0 && <div />}
-                      {stage !== 0 && (
+                      {stage == 0 ? (
+                        <div />
+                      ) : (
                         <button
                           type="button"
                           onClick={() => changePage(false)}
@@ -128,7 +144,7 @@ const Contributor = () => {
                         </button>
                       )}
 
-                      {stage !== contributorInputs.length - 1 ? (
+                      {stage !== FormConstants.contributorInputs.length - 1 ? (
                         <button
                           type="button"
                           onClick={() => changePage(true)}
@@ -146,7 +162,13 @@ const Contributor = () => {
                               : "cursor-pointer"
                           } text-white bg-base-green py-3 font-semibold rounded-lg`}
                         >
-                          Submit
+                          {!loading ? (
+                            "Submit"
+                          ) : (
+                            <span className="flex w-6 mx-auto">
+                              <LoadingIcon />
+                            </span>
+                          )}
                         </button>
                       )}
                     </div>

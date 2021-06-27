@@ -20,7 +20,10 @@ const Input = (props: InputProps) => {
                 props.onError ? props.labelClassName?.onError : ""
               } ${props.labelClassName?.default}`}
             >
-              {props.label}
+              {props.label}{" "}
+              {props.required && (
+                <span className="text-red-500 font-bold">*</span>
+              )}
             </label>
           )}
           {props.type === "textarea" ? (
@@ -66,7 +69,10 @@ const Input = (props: InputProps) => {
                 props.onError ? props.labelClassName?.onError : ""
               } ${props.labelClassName?.default}`}
             >
-              {props.label}
+              {props.label}{" "}
+              {props.required && (
+                <span className="text-red-500 font-bold">*</span>
+              )}
             </label>
           )}
           <Field

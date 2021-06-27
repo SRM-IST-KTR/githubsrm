@@ -1,8 +1,9 @@
 import * as Yup from "yup";
 
 import {
-  maintainerValidationSchema,
-  contributorValidationSchema,
+  alphaMaintainerValidation,
+  betaMaintainerValidation,
+  contributorValidation,
 } from "./constants";
 
 interface Id {
@@ -28,6 +29,7 @@ export interface ProjectProps {
 
 export interface InputProps {
   type: "text" | "textarea" | "select" | "email";
+  required?:boolean;
   id: string;
   label?: string;
   placeholder?: string;
@@ -43,8 +45,11 @@ export interface InputProps {
   labelClassName?: { default?: string; onError?: string };
 }
 
-export interface MaintainerFormData
-  extends Yup.InferType<typeof maintainerValidationSchema> {}
+export interface AlphaMaintainerForm
+  extends Yup.InferType<typeof alphaMaintainerValidation> { }
+
+export interface BetaMaintainerForm
+  extends Yup.InferType<typeof betaMaintainerValidation> {}
 
 export interface ContributorFormData
-  extends Yup.InferType<typeof contributorValidationSchema> {}
+  extends Yup.InferType<typeof contributorValidation> {}

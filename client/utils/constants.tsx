@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 
 import { PersonIcon, BookIcon, BranchIcon } from "./icons";
-import { InputProps, ProjectProps } from "./interfaces";
+import { InputProps } from "./interfaces";
 
 export const wrapperClassName: string = "flex flex-col mb-8";
 export const inputClassName: string =
@@ -18,47 +18,7 @@ export const colors: string[] = [
   "base-teal",
 ];
 
-// * INFO: will be fetched
-export const projectCardDetails: ProjectProps[] = [
-  {
-    _id: "hell",
-    project_name: "Project Name",
-    description: "Lorem in a veritatis pariatur minus consequuntur!",
-    project_url:
-      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["tailwind ", "javascript ", "typescript "],
-  },
-  {
-    _id: "hesll",
-    project_name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    project_url:
-      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["python ", "django ", "vue"],
-  },
-  {
-    _id: "helfl",
-    project_name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    project_url:
-      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    _id: "hel4l",
-    project_name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    project_url:
-      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-];
-
-// TODO: combine section props in one key
-export const maintainerInputs: {
+export const alphaMaintainerInputs: {
   section: string;
   description: string;
   icon: JSX.Element;
@@ -70,18 +30,26 @@ export const maintainerInputs: {
     description:
       "Ipsum id ullamco ipsum qui voluptate esse ad excepteur dolore commodo.",
     inputs: [
-      { id: "name", label: "Name", type: "text", placeholder: "GithubSRM" },
+      {
+        id: "name",
+        label: "Name",
+        type: "text",
+        placeholder: "GithubSRM",
+        required: true,
+      },
       {
         id: "email",
         label: "Email",
         type: "email",
         placeholder: "johndoe@mail.com",
+        required: true,
       },
       {
         id: "github_id",
         label: "Github Id",
         type: "text",
         placeholder: "srm-ist-ktr",
+        required: true,
       },
     ],
   },
@@ -95,18 +63,21 @@ export const maintainerInputs: {
         label: "SRM Email",
         type: "email",
         placeholder: "gs123@srmist.edu.in",
+        required: true,
       },
       {
         id: "reg_number",
         label: "Registration Number or Employee ID",
         type: "text",
         placeholder: "RAXXXXXXXXXXXXX",
+        required: true,
       },
       {
         id: "branch",
         label: "Branch",
         type: "text",
         placeholder: "CSE-BD",
+        required: true,
       },
     ],
   },
@@ -121,6 +92,7 @@ export const maintainerInputs: {
         label: "Project Name",
         type: "text",
         placeholder: "GitHubSRM",
+        required: true,
       },
       {
         id: "project_url",
@@ -132,6 +104,7 @@ export const maintainerInputs: {
             "If an existing project, please give its Public Project GitHub URL! ",
           class: descriptionClass,
         },
+        required: true,
       },
       {
         id: "tags",
@@ -142,6 +115,7 @@ export const maintainerInputs: {
           content: "2-4 Comma separated values please!",
           class: descriptionClass,
         },
+        required: true,
       },
       {
         id: "description",
@@ -154,7 +128,7 @@ export const maintainerInputs: {
   },
 ];
 
-export const maintainerValidationSchema = Yup.object().shape({
+export const alphaMaintainerValidation = Yup.object().shape({
   name: Yup.string().trim().required("**Name**: Missing"),
   email: Yup.string()
     .trim()
@@ -187,7 +161,7 @@ export const maintainerValidationSchema = Yup.object().shape({
     .min(30, "**Feature or Bugfix:** Too small"),
 });
 
-export const contributorInputs: {
+export const betaMaintainerInputs: {
   section: string;
   description: string;
   icon: JSX.Element;
@@ -199,18 +173,26 @@ export const contributorInputs: {
     description:
       "Ipsum id ullamco ipsum qui voluptate esse ad excepteur dolore commodo.",
     inputs: [
-      { id: "name", label: "Name", type: "text", placeholder: "GithubSRM" },
+      {
+        id: "name",
+        label: "Name",
+        type: "text",
+        placeholder: "GithubSRM",
+        required: true,
+      },
       {
         id: "email",
         label: "Email",
         type: "email",
         placeholder: "johndoe@mail.com",
+        required: true,
       },
       {
         id: "github_id",
         label: "Github Id",
         type: "text",
         placeholder: "srm-ist-ktr",
+        required: true,
       },
     ],
   },
@@ -224,18 +206,119 @@ export const contributorInputs: {
         label: "SRM Email",
         type: "email",
         placeholder: "gs123@srmist.edu.in",
+        required: true,
       },
       {
         id: "reg_number",
         label: "Registration Number or Employee ID",
         type: "text",
         placeholder: "RAXXXXXXXXXXXXX",
+        required: true,
       },
       {
         id: "branch",
         label: "Branch",
         type: "text",
         placeholder: "CSE-BD",
+        required: true,
+      },
+    ],
+  },
+  {
+    section: "Projects",
+    icon: <BranchIcon />,
+    description:
+      "Incididunt aute quis culpa aute in dolor aliqua laboris commodo exercitation laboris.",
+    inputs: [
+      {
+        id: "project_id",
+        label: "Project ID",
+        type: "text",
+        placeholder: "GitHubSRM",
+        required: true,
+      },
+    ],
+  },
+];
+
+export const betaMaintainerValidation = Yup.object().shape({
+  name: Yup.string().trim().required("**Name**: Missing"),
+  email: Yup.string()
+    .trim()
+    .required("**Email**: Missing")
+    .email("**Email**: Invalid"),
+  github_id: Yup.string().trim().required("**GitHub ID**: Missing"),
+  srm_email: Yup.string()
+    .trim()
+    .required("**SRM Email ID**: Missing")
+    .test("test-srm-email", "**SRM Email ID**: Invalid", (value) =>
+      value?.endsWith("@srmist.edu.in")
+    ),
+  reg_number: Yup.string().trim().required("**Registration Number**: Missing"),
+  branch: Yup.string().trim().required("**Branch**: Missing"),
+  project_id: Yup.string().trim().required("**Project ID**: Missing"),
+});
+
+export const contributorInputs: {
+  section: string;
+  description: string;
+  icon: JSX.Element;
+  inputs: InputProps[];
+}[] = [
+  {
+    section: "Personal",
+    icon: <PersonIcon />,
+    description:
+      "Ipsum id ullamco ipsum qui voluptate esse ad excepteur dolore commodo.",
+    inputs: [
+      {
+        id: "name",
+        label: "Name",
+        type: "text",
+        placeholder: "GithubSRM",
+        required: true,
+      },
+      {
+        id: "email",
+        label: "Email",
+        type: "email",
+        placeholder: "johndoe@mail.com",
+        required: true,
+      },
+      {
+        id: "github_id",
+        label: "Github Id",
+        type: "text",
+        placeholder: "srm-ist-ktr",
+        required: true,
+      },
+    ],
+  },
+  {
+    section: "SRM Details",
+    icon: <BookIcon />,
+    description: "Nostrud id officia dolor Lorem mollit aute consectetur est.",
+    inputs: [
+      {
+        id: "srm_email",
+        label: "SRM Email",
+        type: "email",
+        placeholder: "gs123@srmist.edu.in",
+        required: true,
+      },
+      {
+        id: "reg_number",
+        label: "Registration Number or Employee ID",
+        type: "text",
+        placeholder: "RAXXXXXXXXXXXXX",
+        required: true,
+      },
+      {
+        id: "branch",
+        label: "Branch",
+        type: "text",
+        placeholder: "CSE-BD",
+        required: true,
       },
     ],
   },
@@ -255,6 +338,7 @@ export const contributorInputs: {
             "Please provide the Project ID given to you by your Maintainer / found on the Projects Page",
           class: descriptionClass,
         },
+        required: true,
       },
       {
         id: "poa",
@@ -267,7 +351,7 @@ export const contributorInputs: {
   },
 ];
 
-export const contributorValidationSchema = Yup.object().shape({
+export const contributorValidation = Yup.object().shape({
   name: Yup.string().trim().required("**Name**: Missing"),
   email: Yup.string()
     .trim()
