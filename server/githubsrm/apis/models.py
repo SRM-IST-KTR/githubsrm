@@ -83,7 +83,7 @@ class Entry:
         """
         project_url = doc.pop("project_url")
 
-        poa = doc.pop("poa")
+        description = doc.pop("description")
         tags = doc.pop("tags")
         project_name = doc.pop('project_name')
 
@@ -99,7 +99,7 @@ class Entry:
             # Default approve to false
             self._enter_project({
                 "project_url": project_url,
-                "poa": poa,
+                "description": description,
                 "tags": tags,
                 "approved": False,
                 "project_name": project_name
@@ -217,14 +217,14 @@ class Entry:
         """
         return self.db.maintainer.find({})
 
-    def check_existing(self, poa: str, project_name: str) -> bool:
-        result_poa = list(self.db.project.find(
-            {"poa": poa}))
+    def check_existing(self, description: str, project_name: str) -> bool:
+        result_description = list(self.db.project.find(
+            {"description": description}))
 
         result_project_name = list(
             self.db.project.find({"project_name": project_name}))
 
-        if len(result_poa) != 0 or len(result_project_name) != 0:
+        if len(result_description) != 0 or len(result_project_name) != 0:
             return True
         return
 
@@ -267,7 +267,7 @@ if __name__ == '__main__':
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": ["Test-User"],
-            "poa": "TestProject"
+            "description": "TestProject"
         }
     )
 
