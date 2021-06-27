@@ -79,9 +79,18 @@ const Hero = ({ reference }: HeroProps) => {
           </div>
           <div className="flex justify-items-center z-10 items-center flex-col">
             <div className="absolute rounded-full bg-base-blue p-28 md:p-32 lg:p-56 "></div>
-            <figure className="w-full z-50 -mt-5 mb-14">
-              <img src="octo-coder.png" className="z-50" alt="sample" />
-            </figure>
+            <motion.div
+              animate={{ y: 100 }}
+              transition={{
+                repeat: Infinity,
+                repeatType: "reverse",
+                duration: 2,
+              }}
+            >
+              <figure className="w-full z-50 -mt-5 mb-14">
+                <img src="octo-coder.png" className="z-50" alt="sample" />
+              </figure>
+            </motion.div>
           </div>
 
           <div className="grid grid-rows-3 w-full lg:p-7">
