@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 
 import {
   MemberProps,
+  ProjectProps,
   ContributorFormData,
   MaintainerFormData,
 } from "../utils/interfaces";
@@ -15,6 +16,17 @@ export const getTeam = async (): Promise<MemberProps[] | false> => {
   try {
     const team = await (await instance.get("/team")).data;
     return team;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+export const getProjects = async (): Promise<ProjectProps[] | false> => {
+  try {
+    const projects = await (await instance.get("/maintainer")).data;
+    console.log(projects);
+    return projects;
   } catch (error) {
     console.log(error);
     return false;

@@ -8,7 +8,7 @@ export const inputClassName: string =
   "text-lg py-2 w-full px-4 text-lg rounded-lg border-2 border-opacity-40 focus:border-opacity-100 mt-1 bg-white";
 export const inputClassNameError: string = "border-red-500 border-opacity-100";
 export const labelClassName: string = "font-medium";
-export const descriptionClass: string = "text-sm font-medium text-right";
+export const descriptionClass: string = "text-sm font-medium text-right mt-1";
 
 export const colors: string[] = [
   "base-black",
@@ -21,93 +21,38 @@ export const colors: string[] = [
 // * INFO: will be fetched
 export const projectCardDetails: ProjectProps[] = [
   {
-    name: "Project Name",
+    _id: "hell",
+    project_name: "Project Name",
     description: "Lorem in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+    project_url:
+      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
     tags: ["tailwind ", "javascript ", "typescript "],
   },
   {
-    name: "Project Name",
+    _id: "hesll",
+    project_name: "Project Name",
     description:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+    project_url:
+      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
     tags: ["python ", "django ", "vue"],
   },
   {
-    name: "Project Name",
+    _id: "helfl",
+    project_name: "Project Name",
     description:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+    project_url:
+      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
     tags: ["web-app ", "javascript ", "typescript "],
   },
   {
-    name: "Project Name",
+    _id: "hel4l",
+    project_name: "Project Name",
     description:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["python ", "django ", "vue"],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    tags: ["web-app ", "javascript ", "typescript "],
-  },
-  {
-    name: "Project Name",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!",
-    src: "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+    project_url:
+      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
     tags: ["web-app ", "javascript ", "typescript "],
   },
 ];
@@ -179,11 +124,12 @@ export const maintainerInputs: {
       },
       {
         id: "project_url",
-        label: "Project GitHub URL",
+        label: "Public Project GitHub URL",
         type: "text",
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
         description: {
-          content: "If an existing project, please give its GitHub URL!",
+          content:
+            "If an existing project, please give its Public Project GitHub URL! ",
           class: descriptionClass,
         },
       },
@@ -198,10 +144,10 @@ export const maintainerInputs: {
         },
       },
       {
-        id: "poa",
-        label: "Feature or Bugfix",
+        id: "description",
+        label: "Project Description",
         type: "textarea",
-        placeholder: "Your project proposal",
+        placeholder: "Your project description",
         textareaOptions: { rows: 4, cols: 30 },
       },
     ],
@@ -223,10 +169,8 @@ export const maintainerValidationSchema = Yup.object().shape({
     ),
   reg_number: Yup.string().trim().required("**Registration Number**: Missing"),
   branch: Yup.string().trim().required("**Branch**: Missing"),
-  project_url: Yup.string()
-    .trim()
-    .required("**Project URL**: Missing")
-    .url("**Project URL**: Invalid"),
+  project_name: Yup.string().trim().required("**Project URL**: Missing"),
+  project_url: Yup.string().trim().url("**Project URL**: Invalid"),
   tags: Yup.string()
     .trim()
     .required("**Tags:** Missing")
@@ -237,20 +181,18 @@ export const maintainerValidationSchema = Yup.object().shape({
         value?.split(",").filter((i) => i.trim().length > 0).length >= 2 &&
         value?.split(",").filter((i) => i.trim().length > 0).length <= 4
     ),
-  poa: Yup.string()
+  description: Yup.string()
     .trim()
     .required("**Feature or Bugfix:** Missing")
     .min(30, "**Feature or Bugfix:** Too small"),
 });
 
-export const contributorInputs = (
-  selectProjects: { value: string; name: string }[]
-): {
+export const contributorInputs: {
   section: string;
   description: string;
   icon: JSX.Element;
   inputs: InputProps[];
-}[] => [
+}[] = [
   {
     section: "Personal",
     icon: <PersonIcon />,
@@ -305,13 +247,17 @@ export const contributorInputs = (
     inputs: [
       {
         id: "interested_project",
-        label: "Project",
-        type: "select",
+        label: "Project ID",
+        type: "text",
         placeholder: "Select your preferred project!",
-        selectOptions: { options: selectProjects },
+        description: {
+          content:
+            "Please provide the Project ID given to you by your Maintainer / found on the Projects Page",
+          class: descriptionClass,
+        },
       },
       {
-        id: "feature",
+        id: "poa",
         label: "Feature or Bugfix",
         type: "textarea",
         placeholder: "Your project proposal",
@@ -338,11 +284,7 @@ export const contributorValidationSchema = Yup.object().shape({
   branch: Yup.string().trim().required("**Branch**: Missing"),
   interested_project: Yup.string()
     .trim()
-    .required("**Interested Project**: Missing")
-    .test(
-      "formik-workoud",
-      "**Interested Project**: Missing",
-      (value) => value !== "placeholder"
-    ),
-  feature: Yup.string().trim(),
+    .required("**Project ID**: Missing")
+    .test("test-srm-email", "**Project ID**: Invalid", async (value) => true),
+  poa: Yup.string().trim(),
 });

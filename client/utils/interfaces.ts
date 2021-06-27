@@ -1,6 +1,9 @@
 import * as Yup from "yup";
 
-import { maintainerValidationSchema,contributorValidationSchema } from "./constants";
+import {
+  maintainerValidationSchema,
+  contributorValidationSchema,
+} from "./constants";
 
 interface Id {
   id: string;
@@ -16,9 +19,10 @@ export interface MemberProps extends Id {
 }
 
 export interface ProjectProps {
-  name: string;
+  _id: string;
+  project_url: string;
   description: string;
-  src: string;
+  project_name: string;
   tags: string[];
 }
 
