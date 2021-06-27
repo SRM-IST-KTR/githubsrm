@@ -1,2 +1,4 @@
+chmod +x ./run.sh
+chmod +x ./run_tests.sh
 ./run.sh
 ./run_tests.sh
