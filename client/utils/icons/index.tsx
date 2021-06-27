@@ -6,3 +6,5 @@ export { default as BookIcon } from "./book";
 export { default as PersonIcon } from "./person";
 export { default as BranchIcon } from "./branch";
 export { default as ArrowIcon } from "./arrow";
+export { default as Travis } from "./travis";
+export { default as CoderOcto } from "./coderocto";
