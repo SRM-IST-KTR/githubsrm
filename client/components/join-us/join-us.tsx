@@ -2,75 +2,112 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowIcon } from "../../utils/icons";
 
-const test = () => {
-  let [formOption, setFormOption] = useState(true);
+const JoinUs = () => {
+  let [isContributor, setIsContributor] = useState<boolean>(true);
 
-  const href = ["/join-us/contributor", "/join-us/maintainer"];
+  const roles: {
+    name: string;
+    href: string;
+    statement: string;
+    description: string;
+    icon: JSX.Element;
+    isContributor: boolean;
+  }[] = [
+    {
+      name: "Contributor",
+      href: "/join-us/contributor",
+      statement: "mini desc",
+      description:
+        " Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat am ex commodi hic, suscipit in a veritatis pariatur minus               consequuntur!",
+      icon: <ArrowIcon />,
+      isContributor: true,
+    },
+    {
+      name: "Maintainer",
+      href: "/join-us/maintainer",
+      statement: "mini desc",
+      description:
+        " Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat am ex commodi hic, suscipit in a veritatis pariatur minus               consequuntur!",
+      icon: <ArrowIcon />,
+      isContributor: false,
+    },
+  ];
+
   return (
-    <>
-      <h1 className="font-medium ml-16 text-5xl">Join us as a?</h1>
-      <section className="flex flex-row h-full">
-        <div className="w-1/3 p-4">
-          <div className={`flex flex-col justify-evenly items-center`}>
-            <span
-              onClick={() => setFormOption(true)}
-              className={` ${
-                !formOption ? "text-xl" : "text-2xl text-base-green"
-              } h-48 flex flex-row items-center cursor-pointer`}
-            >
-              Contributor
-              {/* <div className="w-5 h-5">
-                <ArrowIcon />
-              </div> */}
-            </span>
-            <span
-              onClick={() => setFormOption(false)}
-              className={` ${
-                formOption ? "text-xl" : "text-2xl text-base-green"
-              } h-48 flex flex-row items-center cursor-pointer`}
-            >
-              Maintainer
-              {/* <div className="w-5 h-5">
-                <ArrowIcon />
-              </div> */}
-            </span>
+    <div>
+      <div className="font-medium">
+        <h1 className="text-4xl">There are 2</h1>
+        <h2 className="text-xl mt-2">small text here</h2>
+      </div>
+
+      <div className="flex justify-evenly mt-8">
+        <div className="w-4/12 flex flex-col items-center justify-between border-r-2">
+          {roles.map((role) => (
+            <div className="flex w-full">
+              <div
+                onClick={() => setIsContributor(role.isContributor)}
+                className={`${
+                  isContributor === role.isContributor
+                    ? "border-base-green"
+                    : "border-transparent"
+                } border-r-4 w-full cursor-pointer py-4 flex items-center justify-between transform hover:-translate-x-4`}
+              >
+                <div>
+                  <h3
+                    className={`${
+                      isContributor === role.isContributor ? "font-medium" : ""
+                    } text-xl mb-2`}
+                  >
+                    {role.name}
+                  </h3>
+                  <p className="text-sm w-full">{role.statement}</p>
+                </div>
+
+                <div className="mx-4">
+                  <span
+                    className={`${
+                      isContributor === role.isContributor
+                        ? "bg-base-green bg-opacity-80"
+                        : "bg-base-smoke"
+                    } w-12 flex justify-center items-center p-2 rounded-full`}
+                  >
+                    {role.icon}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="w-full px-8">
+          <div className="p-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
+            {roles.map((role) => (
+              <>
+                {role.isContributor === isContributor && (
+                  <div>
+                    <h2 className="text-4xl mb-4">
+                      Your Job as a <strong>{role.name}</strong>
+                    </h2>
+                    <p className="text-md">{role.description}</p>
+
+                    <div className="grid grid-cols-3 gap-x-16 items-center justify-center mt-10">
+                      <span />
+                      <span />
+                      <Link href={role.href}>
+                        <a className="text-white bg-base-green py-3 font-semibold rounded-lg text-center">
+                          Apply Now!
+                        </a>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            ))}
           </div>
         </div>
-        <div className=" w-full p-12 ">
-          <div className=" p-8 bg-base-smoke border-t-4 rounded-sm border-base-green shadow-lg">
-            {formOption ? (
-              <>
-                <h2 className="text-4xl mb-4">Your Job as a Contributor</h2>
-                <p className="text-md">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae
-                  dolores deserunt ea doloremque natus error, rerum quas quaerat
-                  nam ex commodi hic, suscipit in a veritatis pariatur minus
-                  consequuntur!
-                </p>
-              </>
-            ) : (
-              <>
-                <h2 className="text-4xl mb-4">Your Job as a Maintainer</h2>
-                <p className="text-md">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae
-                  dolores deserunt ea doloremque natus error, rerum quas quaerat
-                  nam ex commodi hic, suscipit in a veritatis pariatur minus
-                  consequuntur!o
-                </p>
-              </>
-            )}
-          </div>
-          <div className=" w-32 text-center text-white my-8 p-4 rounded-md hover:bg-base-blue bg-base-teal ml-auto mr-3">
-            {formOption ? (
-              <Link href={href[0]}>Contributor</Link>
-            ) : (
-              <Link href={href[1]}>Maintainer</Link>
-            )}
-          </div>
-        </div>
-      </section>
-    </>
+      </div>
+    </div>
   );
 };
 
-export default test;
+export default JoinUs;
