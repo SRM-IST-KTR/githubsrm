@@ -34,7 +34,8 @@ class Entry:
 
         return ''.join(gen_id)
 
-    def _enter_project(self, doc: Dict[str, str], maintainer_id: str) -> None:
+    def _enter_project(self, doc: Dict[str, str], maintainer_id: str,
+                       visibility: Dict[str, str]) -> None:
         """Project Entry (only accessed by maintainer)
 
         Args:
@@ -42,7 +43,7 @@ class Entry:
             maintainer_id (str): maintainer id 
         """
         _id = self.get_uid()
-        doc = {**doc, **maintainer_id, **{"_id": _id}}
+        doc = {**doc, **maintainer_id, **{"_id": _id}, **visibility}
         self.db.project.insert_one(doc)
 
     def _update_project(self, identifier: str,
@@ -80,10 +81,7 @@ class Entry:
         Returns:
             Any
         """
-        try:
-            project_url = doc.pop("project_url")
-        except Exception as e:
-            project_url = ""
+        project_url = doc.pop("project_url")
 
         poa = doc.pop("poa")
         tags = doc.pop("tags")
@@ -94,7 +92,10 @@ class Entry:
 
         try:
             self.db.maintainer.insert_one(doc)
-
+            if project_url:
+                visibility = {"private": False}
+            else:
+                visibility = {"private": True}
             # Default approve to false
             self._enter_project({
                 "project_url": project_url,
@@ -104,7 +105,7 @@ class Entry:
                 "project_name": project_name
             }, maintainer_id={
                 "maintainer_id": _id
-            })
+            }, visibility=visibility)
 
             return True
 
