@@ -21,7 +21,7 @@ class TestSchema(TestCase):
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": ["Test-User"],
-            "poa": "TestProject",
+            "description": "TestProject",
             "tags": ["AI", "ML", "ECE"],
             "project_name": "ProjectName"
         }
@@ -133,7 +133,7 @@ class TestSchema(TestCase):
         test 7 : no extra details
         '''
         del self.ContributorSchema["interested_project"]
-        del self.MaintainerSchema["poa"]
+        del self.MaintainerSchema["description"]
         schema = CommonSchema(data=self.ContributorSchema, headers={
             "path_info": "/apis/contributor"
         })
@@ -376,7 +376,7 @@ class TestSchema(TestCase):
         test 16 : extra details check(Empty strings and wrong details)
         '''
         self.ContributorSchema["interested_project"] = ""
-        self.MaintainerSchema["poa"] = ""
+        self.MaintainerSchema["description"] = ""
         schema = CommonSchema(data=self.ContributorSchema, headers={
             "path_info": "/apis/contributor"
         })
@@ -393,7 +393,7 @@ class TestSchema(TestCase):
         })
         result = 'error' in schema.valid()
         self.assertEqual(result, True)
-        self.MaintainerSchema["poa"] = " "
+        self.MaintainerSchema["description"] = " "
         schema = CommonSchema(data=self.MaintainerSchema, headers={
             "path_info": "/apis/maintainer"
         })
@@ -490,5 +490,5 @@ class TestSchema(TestCase):
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": ["Test-User"],
-            "poa": "TestProject"
+            "description": "TestProject"
         }

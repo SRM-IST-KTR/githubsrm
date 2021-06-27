@@ -1,4 +1,5 @@
 
+import re
 from typing import Any, Dict
 import random
 import string
@@ -83,7 +84,7 @@ class Entry:
         """
         project_url = doc.pop("project_url")
 
-        poa = doc.pop("poa")
+        description = doc.pop("description")
         tags = doc.pop("tags")
         project_name = doc.pop('project_name')
 
@@ -99,7 +100,7 @@ class Entry:
             # Default approve to false
             self._enter_project({
                 "project_url": project_url,
-                "poa": poa,
+                "description": description,
                 "tags": tags,
                 "approved": False,
                 "project_name": project_name
@@ -183,7 +184,7 @@ class Entry:
             identifier: Contributor ID
             project_id: Project ID
         """
-        if len(list(self.db.contributor.find({"_id": identifier}))) > 0: 
+        if len(list(self.db.contributor.find({"_id": identifier}))) > 0:
             if self._update_project(identifier=identifier, project_id=project_id):
                 self.db.contributor.update({"_id": identifier}, {
                     "$set": {"approved": True}})
@@ -217,15 +218,25 @@ class Entry:
         """
         return self.db.maintainer.find({})
 
-    def check_existing(self, poa: str, project_name: str) -> bool:
-        result_poa = list(self.db.project.find(
-            {"poa": poa}))
+    def check_existing(self, description: str, project_name: str) -> bool:
+        """Checks existing project proposals
 
-        result_project_name = list(
-            self.db.project.find({"project_name": project_name}))
+        Args:
+            description (str)
+            project_name (str)
 
-        if len(result_poa) != 0 or len(result_project_name) != 0:
+        Returns:
+            bool: 
+        """
+
+        result = list(self.db.project.find({"$or": [
+            {"project_name": project_name},
+            {"description": description}
+        ]}))
+
+        if len(result) > 0:
             return True
+
         return
 
     def get_team_data(self) -> object:
@@ -247,14 +258,43 @@ class Entry:
         Returns:
             bool
         """
-        contributor = list(self.db.contributor.find({
-            "interested_project": interested_project,
-            "reg_number": reg_number
-        }))
 
-        if len(contributor):
+        result = list(self.db.contributor.find({"$or": [
+            {"interested_project": interested_project},
+            {"reg_number": reg_number}
+        ]}))
+
+        if len(result) > 0:
             return True
+
         return
+
+    #TODO: FINISH
+    def enter_contactus(self, doc: Dict[str, Any]) -> bool:
+        """Enter Contact us details
+
+        Args:
+            data
+
+        Returns:
+            bool
+        """
+        try:
+            self.db.contactUs.find({
+                "$or": {
+                    "email": "someoe"
+                }
+            })
+        except Exception as e:
+            pass
+
+    def get_contactus(self) -> object:
+        """Gets all contact us data for admin
+
+        Returns:
+            type: MongoDB cursor
+        """
+        return self.db.contactus.find({})
 
 
 if __name__ == '__main__':
@@ -267,7 +307,7 @@ if __name__ == '__main__':
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": ["Test-User"],
-            "poa": "TestProject"
+            "description": "TestProject"
         }
     )
 

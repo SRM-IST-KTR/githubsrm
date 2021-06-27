@@ -1,5 +1,4 @@
 
-from pymongo.common import validate
 from schema import Optional, Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
@@ -79,14 +78,14 @@ class CommonSchema:
             "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
             "github_id": And(list, lambda github_ids: check_github_id(github_ids)),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
-            "poa": And(str, lambda poa: len(poa.strip()) > 0),
+            "description": And(str, lambda description: len(description.strip()) > 30),
             "tags": And(list, lambda tags: check_tags(tags=tags))
         }
 
         self.contributor = {
             "github_id": And(str, lambda github_id: len(github_id.strip()) > 0),
             "interested_project": And(str, lambda name: len(name.strip()) > 0),
-            Optional("feature", default=None): And(str, lambda feature: len(feature.strip()) > 0)
+            Optional("poa", default=None): And(str, lambda poa: len(poa.strip()) > 30)
 
         }
 
@@ -172,31 +171,36 @@ class TeamSchema:
             }
 
 
-if __name__ == '__main__':
-    schema = CommonSchema(data={
+class ContactUsSchema:
+    def __init__(self, data: Dict[str, Any]) -> None:
+        self.data = data
+        self.phone_re = re.compile("[0-9]{10}")
 
-        "name": "Aradhya",
-        "email": "testuser@localhost.com",
-        "srm_email": "tu6969@srmist.edu.in",
-        "reg_number": "RA1911004010187",
-        "branch": "ECE",
-        "github_id": ["Test-User"],
-        "poa": "TestProject"
+    def valid_schema(self) -> Schema:
+        """Generate valid schema for contact us route
 
-    }, headers={"path_info": "apis/maintainer"})
+        Returns:
+            Schema
+        """
+        validator = Schema(schema={
+            "name": And(str, lambda name: len(name.strip()) > 0),
+            "email": And(str, lambda email: len(email.strip()) > 0),
+            "message": And(str, lambda message: len(message.strip()) > 30),
+            Optional("phone_number", default=None): And(str, lambda phone: self.phone_re.fullmatch(phone))
+        })
 
-    print(json.dumps(schema.get_json(id=1), indent=4))
+        return validator
 
-    schema = CommonSchema(data={
+    def valid(self) -> Dict[str, Any]:
+        """Checks entry
 
-        "name": "Aradhya",
-        "email": "testuser@localhost.com",
-        "srm_email": "tu6969@srmist.edu.in",
-        "reg_number": "RA1911004010187",
-        "branch": "ECE",
-        "github_id": "Test-User",
-        "interested_project": "60d59693278a6b1bbe4fa9df"
-
-    }, headers={"path_info": "apis/contributor"})
-
-    # print(json.dumps(schema.get_json(id=2), indent=4))
+        Returns:
+            Dict[str, Any]
+        """
+        try:
+            return self.valid_schema().validate(self.data)
+        except SchemaError as e:
+            return {
+                "invalid data": self.data,
+                "error": str(e)
+            }

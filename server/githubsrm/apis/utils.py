@@ -7,7 +7,7 @@ request = requests.Session()
 load_dotenv()
 
 
-def checkToken(token) -> bool:
+def check_token(token) -> bool:
     """Check ReCaptcha token
 
     Args:

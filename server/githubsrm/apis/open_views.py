@@ -1,4 +1,4 @@
-from .utils import checkToken
+from .utils import check_token
 from rest_framework.views import APIView
 from .definitions import *
 from rest_framework import response, status
@@ -27,7 +27,7 @@ class Contributor(APIView):
         Returns:
             response.Response
         """
-        if checkToken(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
             validate = CommonSchema(request.data, headers={
                 "path_info": request.path_info
             }).valid()
@@ -83,19 +83,21 @@ class Maintainer(APIView):
         Returns:
             Response
         """
-        if checkToken(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
             validate = CommonSchema(request.data, headers={
                 "path_info": request.path_info
             }).valid()
             if 'error' not in validate:
-                if entry.check_existing(poa=validate['poa'],
-                                             project_name=validate['project_name']):
+                if entry.check_existing(description=validate['description'],
+                                        project_name=validate['project_name']):
                     return response.Response({
                         "invalid": "Project exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
                 if entry.enter_maintainer(validate):
                     return response.Response(validate, status=status.HTTP_200_OK)
+                return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
         return response.Response({
             "error": "Invalid reCaptcha"
@@ -110,9 +112,7 @@ class Maintainer(APIView):
 
         result = json.loads(json_util.dumps(entry.get_projects()))
 
-        return response.Response({
-            "projects": result
-        }, status=status.HTTP_200_OK)
+        return response.Response(data=result, status=status.HTTP_200_OK)
 
 
 class Team(APIView):
@@ -134,6 +134,42 @@ class Team(APIView):
 
         result = json.loads(json_util.dumps(entry.get_team_data()))
         return response.Response(result, status=status.HTTP_200_OK)
+
+
+class ContactUs(APIView):
+    """
+    ContactUs route
+
+    Args:
+        APIView 
+    """
+
+    def post(self, request, **kwargs) -> response.Response:
+        """Handles post data
+
+        Args:
+            request
+
+        Returns:
+            response.Response
+        """
+        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+            validate = ContactUsSchema(data=request.data).valid()
+            if 'error' in validate:
+                return response.Response(data={
+                    "error": validate.get('error')
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            result = entry.enter_contactus(doc=request.data)
+            if result:
+                return response.Response(status=status.HTTP_200_OK)
+            return response.Response(data={
+                "entry exists"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return response.Response(data={
+            "invalid reCaptcha"
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class HealthCheck(APIView):

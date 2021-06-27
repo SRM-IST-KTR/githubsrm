@@ -45,7 +45,7 @@ class TestClient(TestCase):
             "reg_number": "RA1911004010187",
             "branch": "ECE",
             "github_id": ["Test-User"],
-            "poa": "Random",
+            "description": "Random",
             "tags": ["someone", "said"],
             "project_name": "Tester"
         }

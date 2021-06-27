@@ -67,7 +67,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X_RECAPTCHA_TOKEN',
+    'X-RECAPTCHA-TOKEN',
 ]
 
 ROOT_URLCONF = 'core.urls'
