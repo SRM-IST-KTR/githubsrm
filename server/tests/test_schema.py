@@ -283,40 +283,6 @@ class TestSchema(TestCase):
         result = 'error' in schema.valid()
         self.assertEqual(result, True)
 
-    def test_12(self):
-        '''
-        test 12 : Wrong registration number(Without RA)
-        '''
-        self.ContributorSchema["reg_number"] = "1911004010187"
-        self.MaintainerSchema["reg_number"] = "1911004010187"
-        schema = CommonSchema(data=self.ContributorSchema, headers={
-            "path_info": "/apis/contributor"
-        })
-        result = 'error' in schema.valid()
-        self.assertEqual(result, True)
-        schema = CommonSchema(data=self.MaintainerSchema, headers={
-            "path_info": "/apis/maintainer"
-        })
-        result = 'error' in schema.valid()
-        self.assertEqual(result, True)
-
-    def test_13(self):
-        '''
-        test 13 : Wrong registration number (Wrong length)
-        '''
-        self.ContributorSchema["reg_number"] = "RA19110040187"
-        self.MaintainerSchema["reg_number"] = "RA19110040187"
-        schema = CommonSchema(data=self.ContributorSchema, headers={
-            "path_info": "/apis/contributor"
-        })
-        result = 'error' in schema.valid()
-        self.assertEqual(result, True)
-        schema = CommonSchema(data=self.MaintainerSchema, headers={
-            "path_info": "/apis/maintainer"
-        })
-        result = 'error' in schema.valid()
-        self.assertEqual(result, True)
-
     def test_18(self):
         '''
         test 18 : Wrong registration number (Empty)

@@ -27,10 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+USE_DATABASE  = 'MONGO'
 
 # Application definition
 
@@ -122,15 +122,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-if DEBUG:
+if USE_DATABASE == 'MONGO':
     DATABASE = {
         "mongo_uri": os.getenv("MONGO_URI"),
-        "db": os.getenv("TEST_MONGO_DB")
+        "db": os.getenv("MONGO_DB")
     }
 else:
     DATABASE = {
         "mongo_uri": os.getenv("MONGO_URI"),
-        "db": os.getenv("MONGO_DB")
+        "db": os.getenv("TEST_MONGO_DB")
     }
 
 

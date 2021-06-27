@@ -65,19 +65,17 @@ class CommonSchema:
         self.url_re = re.compile(
             '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
-        self.reg_number = re.compile("^RA[0-9]{13}$")
-
         self.headers = headers
         self.common = {
             "name": And(str, lambda name: len(name.strip()) > 0),
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
             "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
-            "reg_number": And(str, lambda reg: self.reg_number.fullmatch(reg)),
+            "reg_number": And(str, lambda reg: len(reg.strip()) > 0),
             "branch": And(str, lambda branch: len(branch.strip()) > 0)
         }
 
         self.maintainer = {
-            "project_name": And(str, lambda project_name: len(project_name.strip()) > 0), 
+            "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
             "github_id": And(list, lambda github_ids: check_github_id(github_ids)),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             "poa": And(str, lambda poa: len(poa.strip()) > 0),

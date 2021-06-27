@@ -1,5 +1,3 @@
-import os
-import unittest
 from dotenv import load_dotenv
 
 import requests
@@ -9,7 +7,7 @@ import json
 from githubsrm.core.settings import DATABASE
 from django.conf import settings
 
-settings.configure(DEBUG=True)
+settings.configure(USE_DATABASE='TESTMONGO')
 
 
 class TestClient(TestCase):
@@ -25,7 +23,7 @@ class TestClient(TestCase):
         cls.pymongo_client = pymongo.MongoClient(DATABASE['mongo_uri'])
         cls.db = cls.pymongo_client[DATABASE['db']]
 
-        cls.base_url = "http://localhost:5000/"
+        cls.base_url = "http://localhost:8000/"
 
     def test_team_data(self):
         '''
@@ -63,3 +61,5 @@ class TestClient(TestCase):
     def tearDownClass(cls) -> None:
         cls.db.project.delete_many({})
         cls.db.maintainer.delete_many({})
+        cls.pymongo_client.close()
+        cls.client.close()
