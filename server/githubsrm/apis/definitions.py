@@ -1,7 +1,8 @@
+
+from pymongo.common import validate
 from schema import Optional, Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
-from django.http.request import HttpHeaders
 import json
 
 
@@ -58,26 +59,24 @@ def check_tags(tags: list) -> bool:
 
 
 class CommonSchema:
-    def __init__(self, data: Dict[Any, Any], headers: HttpHeaders) -> None:
+    def __init__(self, data: Dict[Any, Any], headers: Dict[str, str]) -> None:
         self.data = data
         self.email_re = re.compile(
             '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
         self.url_re = re.compile(
             '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
-        self.reg_number = re.compile("^RA[0-9]{13}$")
-
         self.headers = headers
         self.common = {
             "name": And(str, lambda name: len(name.strip()) > 0),
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
             "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
-            "reg_number": And(str, lambda reg: self.reg_number.fullmatch(reg)),
+            "reg_number": And(str, lambda reg: len(reg.strip()) > 0),
             "branch": And(str, lambda branch: len(branch.strip()) > 0)
         }
 
         self.maintainer = {
-            "project_name": And(str, lambda project_name: len(project_name.strip()) > 0), 
+            "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
             "github_id": And(list, lambda github_ids: check_github_id(github_ids)),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             "poa": And(str, lambda poa: len(poa.strip()) > 0),
@@ -90,6 +89,12 @@ class CommonSchema:
             Optional("feature", default=None): And(str, lambda feature: len(feature.strip()) > 0)
 
         }
+
+    @staticmethod
+    def check_path(path_info: str) -> str:
+        if 'contributor' in path_info:
+            return 'contrib'
+        return 'maintainer'
 
     def valid_schema(self) -> Schema:
 
@@ -111,11 +116,6 @@ class CommonSchema:
             dict
         """
         return get_json_schema(id=id, valid_schema=self.valid_schema)
-
-    def check_path(self, path_info: str) -> str:
-        if 'contributor' in path_info:
-            return 'contrib'
-        return 'maintainer'
 
     @staticmethod
     def merge(schema_1: Dict[str, Any], schema_2: Dict[str, Any]):
@@ -165,6 +165,95 @@ class TeamSchema:
     def valid(self) -> Dict[str, Any]:
         try:
             return self.valid_schema().validate(self.data)
+        except SchemaError as e:
+            return {
+                "invalid data": self.data,
+                "error": str(e)
+            }
+
+
+class AdminSchema:
+    def __init__(self, data: Dict[str, Any], headers: Dict[str, str],
+                 method: str) -> None:
+        self.data = data
+        self.headers = headers
+        self.method = method
+
+    def approve_contributor_schema(self) -> Schema:
+        """Form schema for admins approve route
+
+        Returns:
+            Schema
+        """
+        validator = Schema(schema={
+            "project_id": And(str, lambda project_id: len(project_id.strip()) == 8),
+            "contributor_id": And(str, lambda project_id: len(project_id.strip()) == 8)
+        })
+
+        return validator
+
+    # TODO : Finish function
+    def delete_contributor_schema(self) -> Schema:
+        """Form schema for admins delete route
+
+        Returns:
+            Schema
+        """
+        validator = Schema(schema={
+            "contributor_id": And(str, lambda id: len(id.strip()) == 8)
+        })
+        return validator
+
+    def approve_project_schema(self) -> Schema:
+        """Form scheam for admins to approve maintainer projects
+
+        Returns:
+            Schema
+        """
+        validator = Schema(schema={
+            "project_id": And(str, lambda project: len(project) == 8)
+        })
+        return validator
+
+    def delete_project_schema(self) -> Schema:
+        """Form schema for admins to delete maintainer projects
+
+        Returns:
+            Schema
+        """
+        pass
+
+    def get_schema(self, headers: str, method: str) -> str:
+        """Returns appropriate schema 
+
+        Args:
+            headers (str)
+            method (str)
+
+        Returns:
+            str
+        """
+        if 'contributor' in headers:
+            if method == 'PUT':
+                return self.approve_contributor_schema()
+            if method == 'DELETE':
+                return self.delete_contributor_schema()
+
+        if 'maintainer' in headers:
+            if method == 'PUT':
+                return self.approve_project_schema()
+            if method == 'DELETE':
+                return self.delete_project_schema()
+
+    def valid(self):
+        """
+        Checks valid schema
+        """
+        schema = self.get_schema(headers=self.headers['path_info'],
+                                 method=self.method)
+
+        try:
+            return schema.validate(self.data)
         except SchemaError as e:
             return {
                 "invalid data": self.data,

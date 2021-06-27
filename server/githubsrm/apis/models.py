@@ -1,10 +1,11 @@
 
 from typing import Any, Dict
-import os
-from bson.objectid import ObjectId
+import random
+import string
 from dotenv import load_dotenv
 import pymongo
 from django.conf import settings
+
 
 load_dotenv()
 
@@ -15,24 +16,43 @@ class Entry:
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
 
-    def _enter_project(self, doc: Dict[str, str], maintainer_id: ObjectId) -> None:
+    def get_uid(self) -> str:
+        """Returns 8 character alpha numeric unique id
+
+        Args:
+            length (int)
+            operator (pymongo.MongoClient)
+
+        Returns:
+            str
+        """
+
+        gen_id = random.choices(string.ascii_uppercase+string.digits, k=8)
+
+        if len(list(self.db.collection.find({"_id": gen_id}))) > 0:
+            return self.get_uid(length=8)
+
+        return ''.join(gen_id)
+
+    def _enter_project(self, doc: Dict[str, str], maintainer_id: str,
+                       visibility: Dict[str, str]) -> None:
         """Project Entry (only accessed by maintainer)
 
         Args:
             doc (Dict[str, str]): post to be entred
-            maintainer_id (ObjectId): maintainer id 
+            maintainer_id (str): maintainer id 
         """
-        _id = str(ObjectId())
-        doc = {**doc, **maintainer_id, **{"_id": _id}}
+        _id = self.get_uid()
+        doc = {**doc, **maintainer_id, **{"_id": _id}, **visibility}
         self.db.project.insert_one(doc)
 
-    def _update_project(self, identifier: ObjectId,
-                        project_id: ObjectId) -> None:
+    def _update_project(self, identifier: str,
+                        project_id: str) -> None:
         """Update contributers of the project (only accessed by contributor)
 
         Args:
-            identifier (ObjectId): Contributor ID
-            project_id: (ObjectId): Project to add contributors to
+            identifier (str): Contributor ID
+            project_id: (str): Project to add contributors to
         """
 
         # Check if project exists
@@ -61,21 +81,21 @@ class Entry:
         Returns:
             Any
         """
-        try:
-            project_url = doc.pop("project_url")
-        except Exception as e:
-            project_url = ""
+        project_url = doc.pop("project_url")
 
         poa = doc.pop("poa")
         tags = doc.pop("tags")
         project_name = doc.pop('project_name')
 
-        _id = str(ObjectId())
+        _id = self.get_uid()
         doc = {**doc, **{"_id": _id}}
 
         try:
             self.db.maintainer.insert_one(doc)
-
+            if project_url:
+                visibility = {"private": False}
+            else:
+                visibility = {"private": True}
             # Default approve to false
             self._enter_project({
                 "project_url": project_url,
@@ -85,7 +105,7 @@ class Entry:
                 "project_name": project_name
             }, maintainer_id={
                 "maintainer_id": _id
-            })
+            }, visibility=visibility)
 
             return True
 
@@ -100,11 +120,11 @@ class Entry:
             doc (Dict[str, Any])
         """
 
-        _id = str(ObjectId())
+        _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
         try:
-            project_id = str(ObjectId(doc['interested_project']))
+            project_id = doc['interested_project']
         except Exception as e:
             return
 
@@ -118,19 +138,34 @@ class Entry:
         except Exception as e:
             print(e)
 
-    def approve_project(self, identifier: ObjectId) -> bool:
-        """Approve maintainers
+    def delete_contributor(self, identifier: str) -> bool:
+        """Delete Contributos
 
         Args:
-            identifier (ObjectId): Project ID
+            identifier (str): Contributor ID
 
         Returns:
             bool
         """
         try:
-            identifier = str(ObjectId(identifier))
+            # project_contributor = self.db.project.find({"contributor_id": identifier})
+            # if len(list(project_contributor)) > 0:
+            self.db.project.delete_one({"contributor_id": identifier})
+
+            self.db.contributor.delete_one({"_id": identifier})
+            return True
         except Exception as e:
             return
+
+    def approve_project(self, identifier: str) -> bool:
+        """Approve project
+
+        Args:
+            identifier (str): Project ID
+
+        Returns:
+            bool
+        """
 
         project = self.db.project.find({"_id": identifier})
 
@@ -140,7 +175,7 @@ class Entry:
             return True
         return
 
-    def approve_contributor(self, identifier: ObjectId, project_id: ObjectId) -> bool:
+    def approve_contributor(self, identifier: str, project_id: str) -> bool:
         """Approve contributors to projects
 
         Returns:
@@ -148,26 +183,23 @@ class Entry:
             identifier: Contributor ID
             project_id: Project ID
         """
-        try:
-            identifier = (ObjectId(identifier))
-            project_id = (ObjectId(project_id))
-
-        except Exception as e:
-            return
-
-        if self._update_project(identifier=identifier, project_id=project_id):
-            self.db.contributor.update({"_id": identifier}, {
-                "$set": {"approved": True}})
-            return True
+        if len(list(self.db.contributor.find({"_id": identifier}))) > 0: 
+            if self._update_project(identifier=identifier, project_id=project_id):
+                self.db.contributor.update({"_id": identifier}, {
+                    "$set": {"approved": True}})
+                return True
         return
 
-    def get_projects(self) -> object:
-        """Get all projects
+    def get_projects(self, admin: bool = False) -> object:
+        """Get all public projects / all project for admin
 
         Returns:
             object: MongoDB cursor
+            admin (bool): admin access
         """
-        return self.db.project.find({})
+        if admin:
+            self.db.project.find({})
+        return self.db.project.find({"private": False, "approved": True})
 
     def get_contributors(self) -> object:
         """Get all existing contributors
