@@ -1,10 +1,10 @@
 import { Layout } from "../components/shared/index";
-import { Hero } from "../components/index";
+import { Home } from "../components/index";
 
 const IndexPage = () => {
   return (
     <Layout>
-      <Hero />
+      <Home />
     </Layout>
   );
 };
