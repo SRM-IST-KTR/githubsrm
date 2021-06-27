@@ -61,42 +61,43 @@ const Hero = ({ reference }: HeroProps) => {
 
   return (
     <div>
-      <div className="my-20">
-        <div className="grid grid-cols-3">
+      <div className="my-10 lg:my-20">
+        <div className="grid grid-cols-1 xl:grid-cols-3 items-center mx-2">
           <div className="text-xl z-40 ">
             <motion.h1
               style={{ y: y }}
-              className="flex  -mr-52 z-40  justify-center text-base-teal text-5xl lg:text-8xl font-bold mb-6"
+              className="flex z-40  justify-center text-base-teal text-4xl lg:text-6xl font-bold mb-6"
             >
               GitHub Community SRM
             </motion.h1>
-            <p className="text-gray-600 font-regular text-md">
+            <p className="text-gray-600 font-regular text-sm lg:text-lg">
               GitHub Community SRM is the official/foremost student-led
               community spearheading the Open Source Revolution at SRMIST,
               Chennai.
             </p>
             <br />
           </div>
-          <div className="-mr-20 flex justify-items-center z-10 items-center flex-col">
-            <div className="absolute rounded-full bg-base-blue p-56 "></div>
-            <figure className="w-full z-50 -mr-44 -mt-20">
+          <div className="flex justify-items-center z-10 items-center flex-col">
+            <div className="absolute rounded-full bg-base-blue p-28 md:p-32 lg:p-56 "></div>
+            <figure className="w-full z-50 -mt-5 mb-14">
               <img src="octo-coder.png" className="z-50" alt="sample" />
             </figure>
           </div>
-          <div className="ml-10 grid grid-rows-3 w-full p-7">
-            <div className="my-5 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
-              <p className="text-center mx-2 font-semibold text-gray-100">
+
+          <div className="grid grid-rows-3 w-full lg:p-7">
+            <div className="my-2 lg:my-5 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
+              <p className="text-center mx-2 p-2 font-semibold text-gray-100">
                 We plan on administering the SRMIST KTR GitHub Enterprise
                 organization
               </p>
             </div>
-            <div className="my-5 ml-20 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
-              <p className="text-center mx-2 font-semibold text-gray-100">
+            <div className="my-2 lg:my-5 lg:ml-20 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
+              <p className="text-center mx-2 p-2 font-semibold text-gray-100">
                 Help the faculties in managing student projects
               </p>
             </div>
-            <div className="my-5 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
-              <p className="text-center mx-2 font-semibold text-gray-100">
+            <div className="my-2 lg:my-5 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
+              <p className="text-center mx-2 p-2 font-semibold text-gray-100">
                 Help the students get onboarded and get started with their
                 projects.
               </p>
