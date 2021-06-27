@@ -96,6 +96,8 @@ class Maintainer(APIView):
 
                 if entry.enter_maintainer(validate):
                     return response.Response(validate, status=status.HTTP_200_OK)
+                return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
         return response.Response({
             "error": "Invalid reCaptcha"
@@ -158,9 +160,12 @@ class ContactUs(APIView):
                     "error": validate.get('error')
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+            result = entry.enter_contactus(doc=request.data)
+            if result:
+                return response.Response(status=status.HTTP_200_OK)
             return response.Response(data={
-                "valid data": validate
-            }, status=status.HTTP_200_OK)
+                "entry exists"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         return response.Response(data={
             "invalid reCaptcha"
