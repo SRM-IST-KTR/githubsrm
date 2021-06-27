@@ -10,3 +10,4 @@ export { default as Travis } from "./travis";
 export { default as CoderOcto } from "./coderocto";
 export { default as Meteor } from "./meteor";
 export { default as ServerError } from "./500";
+export { default as ErrorPage } from "./404";
