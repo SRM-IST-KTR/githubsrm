@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Errorpage, Meteor } from "../utils/icons";
+import { ServerError, Meteor } from "../utils/icons";
 import { Navbar } from "../components/shared";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
@@ -8,9 +8,7 @@ import { useState } from "react";
 
 const NotFound = () => {
   const router = useRouter();
-
   const [vis, setVis] = useState(true);
-
   const randInt = () => Math.floor(Math.random() * 100);
 
   const ani = {
@@ -74,7 +72,7 @@ const NotFound = () => {
               animate={{ x: "60%" }}
               className="absolute w-1/2"
             >
-              <Errorpage />
+              <ServerError />
             </motion.div>
           </div>
         </div>

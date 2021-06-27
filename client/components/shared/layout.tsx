@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { motion, useElementScroll, useTransform } from "framer-motion";
 
 import { Navbar } from "./";
-import { OSS, Team, JoinUs, Projects } from "../../utils/titles";
+import { OSS, Team, JoinUs, Projects, Contact } from "../../utils/titles";
 
 const Layout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
@@ -25,6 +25,9 @@ const Layout: React.FC = ({ children }) => {
       }
       case "/projects": {
         return <Projects />;
+      }
+      case "/contact": {
+        return <Contact />;
       }
       default: {
         return <Projects />;
