@@ -9,3 +9,5 @@ export { default as ArrowIcon } from "./arrow";
 export { default as Errorpage } from "./404";
 export { default as Travis } from "./travis";
 export { default as CoderOcto } from "./coderocto";
+export { default as Meteor } from "./meteor";
+export { default as ServerError } from "./500";
