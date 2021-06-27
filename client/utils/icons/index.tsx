@@ -12,3 +12,4 @@ export { default as Meteor } from "./meteor";
 export { default as ServerError } from "./500";
 export { default as ErrorPage } from "./404";
 export { default as InstagramIcon } from "./instagram";
+export { default as CopyIcon } from "./copy";
