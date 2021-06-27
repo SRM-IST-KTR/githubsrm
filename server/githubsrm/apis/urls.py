@@ -1,5 +1,7 @@
 from django.urls import path
-from .open_views import Contributor, Maintainer, HealthCheck, Team
+from .open_views import (
+    Contributor, Maintainer, HealthCheck, Team, ContactUs
+)
 from .admin_views import AdminContributor, AdminMaintainer
 
 urlpatterns = [
@@ -7,6 +9,7 @@ urlpatterns = [
     path('maintainer', Maintainer.as_view()),
     path('healthcheck', HealthCheck.as_view()),
     path('team', Team.as_view()),
+    path('contactus', ContactUs.as_view()),
     path('admin/contributor', AdminContributor.as_view()),
     path('admin/maintainer', AdminMaintainer.as_view())
 ]

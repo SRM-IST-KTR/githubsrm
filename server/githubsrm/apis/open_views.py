@@ -110,9 +110,7 @@ class Maintainer(APIView):
 
         result = json.loads(json_util.dumps(entry.get_projects()))
 
-        return response.Response({
-            "projects": result
-        }, status=status.HTTP_200_OK)
+        return response.Response(data=result, status=status.HTTP_200_OK)
 
 
 class Team(APIView):
@@ -156,12 +154,13 @@ class ContactUs(APIView):
         if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
             validate = ContactUsSchema(data=request.data).valid()
             if 'error' in validate:
-
                 return response.Response(data={
                     "error": validate.get('error')
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            return response.Response(data=validate, status=status.HTTP_200_OK)
+            return response.Response(data={
+                "valid data": validate
+            }, status=status.HTTP_200_OK)
 
         return response.Response(data={
             "invalid reCaptcha"
