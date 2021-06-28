@@ -9,6 +9,7 @@ import * as FormConstants from "../../../../utils/constants";
 import { LoadingIcon } from "../../../../utils/icons";
 import { NewMaintainerForm } from "../../../../utils/interfaces";
 import { postMaintainer } from "../../../../services/api";
+import { getRepo, getUser } from "../../../../services/validate";
 
 const NewProject = () => {
   let [stage, setStage] = useState<number>(0);
@@ -16,17 +17,39 @@ const NewProject = () => {
 
   const initialValues: Partial<NewMaintainerForm> = {};
 
-  const submitValues = async (values: NewMaintainerForm) => {
+  const submitValues = async (
+    values: NewMaintainerForm,
+    setErrors: (errors: Partial<NewMaintainerForm>) => void
+  ) => {
     setLoading(true);
     try {
-      console.log(values);
-      const { tags, ...parsedValues } = values;
-      let parsedTags: string[] = tags
-        .split(",")
-        .filter((i) => i.trim().length > 0);
-      parsedValues.tags = parsedTags;
-      const res = await postMaintainer(parsedValues, "alpha");
-      console.log(parsedValues);
+      if (await getUser(values.github_id)) {
+        if (values.project_url.length > 0) {
+          const data = values.project_url.split("/");
+          if (!(await getRepo(data[data.length - 2], data[data.length - 1]))) {
+            setErrors({
+              project_url: "**Public Repository URL:** Invalid",
+            } as Partial<NewMaintainerForm>);
+            setLoading(false);
+            return;
+          }
+        }
+        const { tags, ...parsedValues } = values;
+        let parsedTags: string[] = tags
+          .split(",")
+          .filter((i) => i.trim().length > 0);
+        const res = await postMaintainer(
+          //@ts-ignore
+          { ...parsedValues, tags: parsedTags },
+          "alpha"
+        );
+      } else {
+        setErrors({
+          github_id: "**GitHub ID**: Invalid",
+        } as Partial<NewMaintainerForm>);
+        setLoading(false);
+        return;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -65,7 +88,9 @@ const NewProject = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={submitValues}
+        onSubmit={(values, { setErrors }) =>
+          submitValues(values as NewMaintainerForm, setErrors)
+        }
         validationSchema={FormConstants.newMaintainerValidation}
       >
         {({ errors, touched }) => (

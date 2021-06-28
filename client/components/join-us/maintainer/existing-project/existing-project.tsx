@@ -9,6 +9,7 @@ import * as FormConstants from "../../../../utils/constants";
 import { LoadingIcon } from "../../../../utils/icons";
 import { ExistingMaintainerForm } from "../../../../utils/interfaces";
 import { postMaintainer } from "../../../../services/api";
+import { getUser } from "../../../../services/validate";
 
 const ExistingProject = () => {
   let [stage, setStage] = useState<number>(0);
@@ -16,10 +17,19 @@ const ExistingProject = () => {
 
   const initialValues: Partial<ExistingMaintainerForm> = {};
 
-  const submitValues = async (values: ExistingMaintainerForm) => {
+  const submitValues = async (
+    values: ExistingMaintainerForm,
+    setErrors: (errors: Partial<ExistingMaintainerForm>) => void
+  ) => {
     setLoading(true);
     try {
-      const res = await postMaintainer(values, "beta");
+      if (await getUser(values.github_id)) {
+        const res = await postMaintainer(values, "beta");
+      } else {
+        setErrors({
+          github_id: "**GitHub ID**: Invalid",
+        } as Partial<ExistingMaintainerForm>);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +68,9 @@ const ExistingProject = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={submitValues}
+        onSubmit={(values, { setErrors }) =>
+          submitValues(values as ExistingMaintainerForm, setErrors)
+        }
         validationSchema={FormConstants.existingMaintainerValidation}
       >
         {({ errors, touched }) => (

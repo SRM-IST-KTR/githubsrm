@@ -9,17 +9,27 @@ import * as FormConstants from "../../../utils/constants";
 import { LoadingIcon } from "../../../utils/icons";
 import { ContributorFormData } from "../../../utils/interfaces";
 import { postContributor } from "../../../services/api";
+import { getUser } from "../../../services/validate";
 
 const Contributor = () => {
-  let [stage, setStage] = useState<number>(0);
-  let [loading, setLoading] = useState<boolean>(false);
+  const [stage, setStage] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const initialValues: Partial<ContributorFormData> = {};
 
-  const submitValues = async (values: ContributorFormData) => {
+  const submitValues = async (
+    values: ContributorFormData,
+    setErrors: (errors: Partial<ContributorFormData>) => void
+  ) => {
     setLoading(true);
     try {
-      const res = await postContributor(values);
+      if (await getUser(values.github_id)) {
+        const res = await postContributor(values);
+      } else {
+        setErrors({
+          github_id: "**GitHub ID**: Invalid",
+        } as Partial<ContributorFormData>);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +68,9 @@ const Contributor = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={submitValues}
+        onSubmit={(values, { setErrors }) =>
+          submitValues(values as ContributorFormData, setErrors)
+        }
         validationSchema={FormConstants.contributorValidation}
       >
         {({ errors, touched }) => (
