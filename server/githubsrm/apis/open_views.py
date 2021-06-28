@@ -1,4 +1,4 @@
-from .utils import check_token
+from .utils import check_token, BotoService
 from rest_framework.views import APIView
 from .definitions import *
 from rest_framework import response, status
@@ -10,8 +10,10 @@ import psutil
 import time
 import os
 
+
 entry = Entry()
 entry_checks = EntryCheck()
+service = BotoService()
 
 
 class Contributor(APIView):
@@ -34,15 +36,18 @@ class Contributor(APIView):
                 request.data, query_param=request.GET.get('role')).valid()
 
             if 'error' not in validate:
-                if entry_checks.check_existing_contributor(validate['interested_project'], validate['reg_number']):
+                if entry_checks.check_existing_contributor(validate['interested_project'],
+                                                           validate['reg_number']):
                     return response.Response({
                         "invalid data": "Contributor For project exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
                 if entry.enter_contributor(validate):
-                    return response.Response({
-                        "valid": validate
-                    }, status=status.HTTP_201_CREATED)
+                    if service.wrapper_email(role='contributor', data=validate):
+                        return response.Response({
+                            "valid": validate
+                        }, status=status.HTTP_201_CREATED)
+                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                 return response.Response({
                     "error": "project not approved or project does not exist"
@@ -94,8 +99,9 @@ class Maintainer(APIView):
                     # BETA MAINTAINER
                     if entry_checks.validate_beta_maintainer(doc=validate):
                         if entry.enter_beta_maintainer(doc=request.data):
-                            return response.Response(status=status.HTTP_201_CREATED)
-
+                            if service.wrapper_email(role='beta', data=validate):
+                                return response.Response(status=status.HTTP_201_CREATED)
+                            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                     return response.Response(data={
                         "error": "Invalid project Id or Beta Maintainer Exists / Project Approved"
                     }, status=status.HTTP_400_BAD_REQUEST)
@@ -108,8 +114,11 @@ class Maintainer(APIView):
                         "error": "Project Exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                if entry.enter_maintainer(validate):
-                    return response.Response(status=status.HTTP_201_CREATED)
+                if project_id := entry.enter_maintainer(validate):
+                    validate['project_id'] = project_id
+                    if service.wrapper_email(role='alpha', data=validate):
+                        return response.Response(status=status.HTTP_201_CREATED)
+
                 return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
