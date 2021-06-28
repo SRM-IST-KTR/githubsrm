@@ -43,7 +43,7 @@ const JoinUs = () => {
       <div className="flex justify-evenly mt-8">
         <div className="w-4/12 flex flex-col items-center justify-between border-r-2">
           {roles.map((role) => (
-            <div className="flex w-full">
+            <div key={role.name} className="flex w-full">
               <div
                 onClick={() => setIsContributor(role.isContributor)}
                 className={`${
@@ -81,10 +81,10 @@ const JoinUs = () => {
 
         <div className="w-full px-8">
           <div className="p-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
-            {roles.map((role) => (
-              <>
-                {role.isContributor === isContributor && (
-                  <div>
+            {roles.map(
+              (role) =>
+                role.isContributor === isContributor && (
+                  <div key={role.name}>
                     <h2 className="text-4xl mb-4">
                       Your Job as a <strong>{role.name}</strong>
                     </h2>
@@ -100,9 +100,8 @@ const JoinUs = () => {
                       </Link>
                     </div>
                   </div>
-                )}
-              </>
-            ))}
+                )
+            )}
           </div>
         </div>
       </div>

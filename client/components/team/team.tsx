@@ -1,5 +1,5 @@
 import { Member } from "./";
-import { MemberProps } from "./../../utils/interfaces";
+import { MemberProps } from "../../utils/interfaces";
 
 interface TeamProps {
   team: MemberProps[];

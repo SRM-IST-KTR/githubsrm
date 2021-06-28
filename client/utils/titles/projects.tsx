@@ -19,8 +19,8 @@ const Projects = () => {
           y2="422.348"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#284B63" />
-          <stop offset="0.791667" stop-color="white" stop-opacity="0" />
+          <stop stopColor="#284B63" />
+          <stop offset="0.791667" stopColor="white" stopOpacity="0" />
         </linearGradient>
       </defs>
     </svg>
