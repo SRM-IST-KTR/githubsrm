@@ -18,15 +18,15 @@ const Socials = ({ handles }: SocialsProps) => {
   );
   const len = filteredHandels.length;
   const hypo = 95;
-  const closeness = 0.7;
+  const closeness = 1;
   const angles = {
     1: [0],
     2: [(Math.PI / 8) * closeness, (-Math.PI / 8) * closeness],
     3: [(Math.PI / 4) * closeness, 0, (-Math.PI / 4) * closeness],
     4: [
-      (Math.PI / 8) * closeness,
       (Math.PI / 4) * closeness,
-      (-Math.PI / 4) * closeness,
+      (Math.PI / 8) * closeness,
+      0 * closeness,
       (-Math.PI / 8) * closeness,
     ],
   };
@@ -45,7 +45,7 @@ const Socials = ({ handles }: SocialsProps) => {
           key={key}
           variants={jump}
           custom={key}
-          className="w-4 h-4 absolute z-20"
+          className="w-4 h-4 absolute z-0"
           transition={{ type: "string ", default: { duration: 0.1 } }}
         >
           <SocialIcon handle={handle} />

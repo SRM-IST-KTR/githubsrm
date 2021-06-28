@@ -38,14 +38,14 @@ const Layout: React.FC = ({ children }) => {
 
   return (
     <>
-      <div className="fixed w-full h-screen bg-gradient-to-b from-blue-100 to-base-black -z-10" />
+      <div className="fixed w-full h-screen bg-gradient-to-b from-base-teal to-base-black -z-10" />
       <div className="flex flex-col w-11/12 h-screen pt-8 lg:pt-12 mx-auto">
         <Navbar />
 
         {/* * INFO: scrollable div below */}
         <div
           ref={scrollDivRef}
-          className="w-full relative mx-auto h-full bg-base-black overflow-scroll no-scrollbar"
+          className="w-full relative mx-auto h-full bg-base-black overflow-scroll no-scrollbar rounded-t-2xl pt-8"
         >
           <motion.figure
             className="flex sticky top-0 justify-center w-full lg:px-12"
