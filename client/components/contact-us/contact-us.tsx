@@ -4,7 +4,11 @@ import Markdown from "react-markdown";
 
 import { Input } from "../shared";
 import { ContactUsFormData } from "../../utils/interfaces";
-import * as FormConstants from "../../utils/constants";
+import {
+  contactUsInputs,
+  contactUsValidation,
+  customInputClasses,
+} from "../../utils/constants";
 import { LoadingIcon } from "../../utils/icons";
 import { postContactUs } from "../../services/api";
 
@@ -32,12 +36,12 @@ const ContactUs = () => {
       <Formik
         initialValues={initialValues}
         onSubmit={submitValues}
-        validationSchema={FormConstants.contactUsValidation}
+        validationSchema={contactUsValidation}
       >
         {({ errors, touched }) => (
           <Form className="w-11/12 max-w-6xl my-8 mx-auto">
             <div>
-              {FormConstants.contactUsInputs.map((section) => (
+              {contactUsInputs.map((section) => (
                 <div key={section.length} className="my-6 flex w-full">
                   {section.map((field) => (
                     <Input
@@ -46,17 +50,7 @@ const ContactUs = () => {
                       onError={Object.keys(errors)
                         .filter((i) => touched[i])
                         .includes(field.id)}
-                      wrapperClassName={{
-                        default: FormConstants.wrapperClassName,
-                        onError: FormConstants.wrapperClassName,
-                      }}
-                      inputClassName={{
-                        default: FormConstants.inputClassName,
-                        onError: FormConstants.inputClassNameError,
-                      }}
-                      labelClassName={{
-                        default: FormConstants.labelClassName,
-                      }}
+                      {...customInputClasses}
                     />
                   ))}
                 </div>

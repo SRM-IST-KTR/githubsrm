@@ -1,15 +1,22 @@
 import * as Yup from "yup";
 
 import { PersonIcon, BookIcon, BranchIcon } from "./icons";
-import { InputProps } from "./interfaces";
+import { InputClassNameProps, InputProps } from "./interfaces";
 
-export const wrapperClassName: string = "flex flex-col mb-8 w-full mx-2";
-export const inputClassName: string =
-  "w-full focus:border-base-teal w-full py-2 text-gray-700 border-b-2 bg-white border-gray-300";
-export const inputClassNameError: string = " border-red-500 border-opacity-100";
-export const labelClassName: string = "font-medium";
-export const descriptionClass: string =
-  "text-sm font-medium text-right mt-1 mb-2";
+export const customInputClasses: InputClassNameProps = {
+  wrapperClassName: { default: "flex flex-col mb-8 w-full mx-2" },
+  inputClassName: {
+    default:
+      "w-full focus:border-base-teal w-full py-2 text-gray-700 border-b-2 bg-white border-gray-300",
+    onError: " border-red-500 border-opacity-100",
+  },
+  labelClassName: {
+    default: "font-medium",
+  },
+  descriptionClassName: {
+    default: "text-sm font-medium text-right mt-1 mb-2",
+  },
+};
 
 export const colors: string[] = [
   "base-black",
@@ -100,21 +107,16 @@ export const newMaintainerInputs: {
         label: "Public Repository URL",
         type: "text",
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
-        description: {
-          content:
-            "If an existing project, please give its Public Project GitHub URL! ",
-          class: descriptionClass,
-        },
+        description:
+          "If an existing project, please give its Public Project GitHub URL! ",
       },
       {
         id: "tags",
         label: "Project Tags",
         type: "text",
         placeholder: "ReactJS, TailwindCSS, Django",
-        description: {
-          content: "2-4 Comma separated values please!",
-          class: descriptionClass,
-        },
+        description: "2-4 Comma separated values please!",
+
         required: true,
       },
       {
@@ -336,11 +338,9 @@ export const contributorInputs: {
         label: "Project ID",
         type: "text",
         placeholder: "Select your preferred project!",
-        description: {
-          content:
-            "Please provide the Project ID given to you by your Maintainer / found on the Projects Page",
-          class: descriptionClass,
-        },
+        description:
+          "Please provide the Project ID given to you by your Maintainer / found on the Projects Page",
+
         required: true,
       },
       {

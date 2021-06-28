@@ -28,7 +28,14 @@ export interface ProjectProps {
   tags: string[];
 }
 
-export interface InputProps {
+export interface InputClassNameProps {
+ wrapperClassName?: { default?: string; onError?: string };
+  inputClassName?: { default?: string; onError?: string };
+  labelClassName?: { default?: string; onError?: string };
+  descriptionClassName?: { default?: string; onError?: string };
+}
+
+export interface InputProps extends InputClassNameProps {
   type: "text" | "textarea" | "select" | "email";
   required?: boolean;
   id: string;
@@ -38,12 +45,10 @@ export interface InputProps {
     options: { value: string; name: string }[];
     optionClassName?: string;
   };
-  description?: { content: string; class?: string };
+  description?: string;
   textareaOptions?: { rows?: number; cols?: number };
   onError?: boolean;
-  wrapperClassName?: { default?: string; onError?: string };
-  inputClassName?: { default?: string; onError?: string };
-  labelClassName?: { default?: string; onError?: string };
+ 
 }
 
 export interface NewMaintainerForm

@@ -5,7 +5,11 @@ import Markdown from "react-markdown";
 
 import { Section } from "../../";
 import { Input } from "../../../shared";
-import * as FormConstants from "../../../../utils/constants";
+import {
+  newMaintainerInputs,
+  newMaintainerValidation,
+  customInputClasses,
+} from "../../../../utils/constants";
 import { LoadingIcon } from "../../../../utils/icons";
 import { NewMaintainerForm } from "../../../../utils/interfaces";
 import { postMaintainer } from "../../../../services/api";
@@ -58,8 +62,7 @@ const NewProject = () => {
 
   const changePage = (next: boolean) => {
     if (next) {
-      if (stage !== FormConstants.newMaintainerInputs.length - 1)
-        setStage(stage + 1);
+      if (stage !== newMaintainerInputs.length - 1) setStage(stage + 1);
     } else {
       if (stage !== 0) setStage(stage - 1);
     }
@@ -91,13 +94,13 @@ const NewProject = () => {
         onSubmit={(values, { setErrors }) =>
           submitValues(values as NewMaintainerForm, setErrors)
         }
-        validationSchema={FormConstants.newMaintainerValidation}
+        validationSchema={newMaintainerValidation}
       >
         {({ errors, touched }) => (
           <Form className="w-11/12 my-8 mx-auto">
             <div className="flex justify-evenly">
               <div className="w-4/12 flex flex-col items-center justify-between min-h-lg border-r-2">
-                {FormConstants.newMaintainerInputs.map((item, index) => (
+                {newMaintainerInputs.map((item, index) => (
                   <Section
                     key={item.section}
                     name={item.section}
@@ -115,7 +118,7 @@ const NewProject = () => {
 
               <div className="w-full max-w-3xl flex flex-col justify-between">
                 <div>
-                  {FormConstants.newMaintainerInputs.map((section, index) => (
+                  {newMaintainerInputs.map((section, index) => (
                     <div
                       key={section.inputs[0].id}
                       className={`${
@@ -129,17 +132,7 @@ const NewProject = () => {
                             .includes(field.id)}
                           key={field.id}
                           {...field}
-                          wrapperClassName={{
-                            default: FormConstants.wrapperClassName,
-                            onError: FormConstants.wrapperClassName,
-                          }}
-                          inputClassName={{
-                            default: FormConstants.inputClassName,
-                            onError: FormConstants.inputClassNameError,
-                          }}
-                          labelClassName={{
-                            default: FormConstants.labelClassName,
-                          }}
+                          {...customInputClasses}
                         />
                       ))}
                     </div>
@@ -182,7 +175,7 @@ const NewProject = () => {
                     </button>
                   )}
 
-                  {stage !== FormConstants.newMaintainerInputs.length - 1 ? (
+                  {stage !== newMaintainerInputs.length - 1 ? (
                     <button
                       type="button"
                       onClick={() => changePage(true)}

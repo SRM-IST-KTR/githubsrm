@@ -48,8 +48,12 @@ const Input = (props: InputProps) => {
             />
           )}
           {props.description && (
-            <p className={props.description.class}>
-              {props.description.content}
+            <p
+              className={`${
+                props.onError ? props.descriptionClassName?.onError : ""
+              } ${props.descriptionClassName?.default}`}
+            >
+              {props.description}
             </p>
           )}
         </div>

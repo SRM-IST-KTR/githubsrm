@@ -5,7 +5,11 @@ import Markdown from "react-markdown";
 
 import { Section } from "../../";
 import { Input } from "../../../shared";
-import * as FormConstants from "../../../../utils/constants";
+import {
+  existingMaintainerInputs,
+  existingMaintainerValidation,
+  customInputClasses,
+} from "../../../../utils/constants";
 import { LoadingIcon } from "../../../../utils/icons";
 import { ExistingMaintainerForm } from "../../../../utils/interfaces";
 import { postMaintainer } from "../../../../services/api";
@@ -38,8 +42,7 @@ const ExistingProject = () => {
 
   const changePage = (next: boolean) => {
     if (next) {
-      if (stage !== FormConstants.existingMaintainerInputs.length - 1)
-        setStage(stage + 1);
+      if (stage !== existingMaintainerInputs.length - 1) setStage(stage + 1);
     } else {
       if (stage !== 0) setStage(stage - 1);
     }
@@ -71,13 +74,13 @@ const ExistingProject = () => {
         onSubmit={(values, { setErrors }) =>
           submitValues(values as ExistingMaintainerForm, setErrors)
         }
-        validationSchema={FormConstants.existingMaintainerValidation}
+        validationSchema={existingMaintainerValidation}
       >
         {({ errors, touched }) => (
           <Form className="w-11/12 my-8 mx-auto">
             <div className="flex justify-evenly">
               <div className="w-4/12 flex flex-col items-center justify-between min-h-lg border-r-2">
-                {FormConstants.existingMaintainerInputs.map((item, index) => (
+                {existingMaintainerInputs.map((item, index) => (
                   <Section
                     key={item.section}
                     name={item.section}
@@ -95,37 +98,25 @@ const ExistingProject = () => {
 
               <div className="w-full max-w-3xl flex flex-col justify-between">
                 <div>
-                  {FormConstants.existingMaintainerInputs.map(
-                    (section, index) => (
-                      <div
-                        key={section.inputs[0].id}
-                        className={`${
-                          stage !== index ? "hidden" : ""
-                        } flex w-11/12 mx-auto flex-col`}
-                      >
-                        {section.inputs.map((field) => (
-                          <Input
-                            onError={Object.keys(errors)
-                              .filter((i) => touched[i])
-                              .includes(field.id)}
-                            key={field.id}
-                            {...field}
-                            wrapperClassName={{
-                              default: FormConstants.wrapperClassName,
-                              onError: FormConstants.wrapperClassName,
-                            }}
-                            inputClassName={{
-                              default: FormConstants.inputClassName,
-                              onError: FormConstants.inputClassNameError,
-                            }}
-                            labelClassName={{
-                              default: FormConstants.labelClassName,
-                            }}
-                          />
-                        ))}
-                      </div>
-                    )
-                  )}
+                  {existingMaintainerInputs.map((section, index) => (
+                    <div
+                      key={section.inputs[0].id}
+                      className={`${
+                        stage !== index ? "hidden" : ""
+                      } flex w-11/12 mx-auto flex-col`}
+                    >
+                      {section.inputs.map((field) => (
+                        <Input
+                          onError={Object.keys(errors)
+                            .filter((i) => touched[i])
+                            .includes(field.id)}
+                          key={field.id}
+                          {...field}
+                          {...customInputClasses}
+                        />
+                      ))}
+                    </div>
+                  ))}
                 </div>
 
                 <div className="w-11/12 mx-auto h-full pb-6 flex flex-col justify-end">
@@ -164,8 +155,7 @@ const ExistingProject = () => {
                     </button>
                   )}
 
-                  {stage !==
-                  FormConstants.existingMaintainerInputs.length - 1 ? (
+                  {stage !== existingMaintainerInputs.length - 1 ? (
                     <button
                       type="button"
                       onClick={() => changePage(true)}

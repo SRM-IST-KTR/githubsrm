@@ -5,7 +5,11 @@ import Markdown from "react-markdown";
 
 import { Section } from "../";
 import { Input } from "../../shared";
-import * as FormConstants from "../../../utils/constants";
+import {
+  contributorInputs,
+  contributorValidation,
+  customInputClasses,
+} from "../../../utils/constants";
 import { LoadingIcon } from "../../../utils/icons";
 import { ContributorFormData } from "../../../utils/interfaces";
 import { postContributor } from "../../../services/api";
@@ -38,8 +42,7 @@ const Contributor = () => {
 
   const changePage = (next: boolean) => {
     if (next) {
-      if (stage !== FormConstants.contributorInputs.length - 1)
-        setStage(stage + 1);
+      if (stage !== contributorInputs.length - 1) setStage(stage + 1);
     } else {
       if (stage !== 0) setStage(stage - 1);
     }
@@ -71,14 +74,14 @@ const Contributor = () => {
         onSubmit={(values, { setErrors }) =>
           submitValues(values as ContributorFormData, setErrors)
         }
-        validationSchema={FormConstants.contributorValidation}
+        validationSchema={contributorValidation}
       >
         {({ errors, touched }) => (
           <Form className="w-11/12 my-8 mx-auto">
             <>
               <div className="flex justify-evenly">
                 <div className="w-4/12 flex flex-col items-center justify-between min-h-lg border-r-2">
-                  {FormConstants.contributorInputs.map((item, index) => (
+                  {contributorInputs.map((item, index) => (
                     <Section
                       key={item.section}
                       name={item.section}
@@ -96,7 +99,7 @@ const Contributor = () => {
 
                 <div className="w-full max-w-3xl flex flex-col justify-between">
                   <div>
-                    {FormConstants.contributorInputs.map((section, index) => (
+                    {contributorInputs.map((section, index) => (
                       <div
                         key={section.inputs[0].id}
                         className={`${
@@ -110,17 +113,7 @@ const Contributor = () => {
                               .includes(field.id)}
                             key={field.id}
                             {...field}
-                            wrapperClassName={{
-                              default: FormConstants.wrapperClassName,
-                              onError: FormConstants.wrapperClassName,
-                            }}
-                            inputClassName={{
-                              default: FormConstants.inputClassName,
-                              onError: FormConstants.inputClassNameError,
-                            }}
-                            labelClassName={{
-                              default: FormConstants.labelClassName,
-                            }}
+                            {...customInputClasses}
                           />
                         ))}
                       </div>
@@ -157,7 +150,7 @@ const Contributor = () => {
                         </button>
                       )}
 
-                      {stage !== FormConstants.contributorInputs.length - 1 ? (
+                      {stage !== contributorInputs.length - 1 ? (
                         <button
                           type="button"
                           onClick={() => changePage(true)}
