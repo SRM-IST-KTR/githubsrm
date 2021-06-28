@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ErrorPage, Meteor } from "../utils/icons";
 import { Navbar } from "../components/shared";

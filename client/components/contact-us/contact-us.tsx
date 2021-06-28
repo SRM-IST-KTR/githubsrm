@@ -8,7 +8,7 @@ import * as FormConstants from "../../utils/constants";
 import { LoadingIcon } from "../../utils/icons";
 import { postContactUs } from "../../services/api";
 
-const Right = () => {
+const ContactUs = () => {
   let [loading, setLoading] = useState<boolean>(false);
 
   const initialValues: Partial<ContactUsFormData> = {};
@@ -38,7 +38,7 @@ const Right = () => {
           <Form className="w-11/12 max-w-6xl my-8 mx-auto">
             <div>
               {FormConstants.contactUsInputs.map((section) => (
-                <div className="my-6 flex w-full">
+                <div key={section.length} className="my-6 flex w-full">
                   {section.map((field) => (
                     <Input
                       key={field.id}
@@ -99,4 +99,4 @@ const Right = () => {
   );
 };
 
-export default Right;
+export default ContactUs;

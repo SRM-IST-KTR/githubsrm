@@ -1223,7 +1223,7 @@ const CoderOcto = () => {
         fill="#A34F3E"
         stroke="black"
         stroke-opacity="0.2"
-        stroke-width="0.372"
+        strokeWidth="0.372"
         stroke-miterlimit="10"
       />
       <path
