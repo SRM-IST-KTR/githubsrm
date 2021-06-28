@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useRouter } from "next/router";
 import { motion, useElementScroll, useTransform } from "framer-motion";
 
-import { Navbar } from "./";
+import { Navbar, Footer } from "./";
 import { OSS, Team, JoinUs, Projects, Contact } from "../../utils/titles";
 
 const Layout: React.FC = ({ children }) => {
@@ -10,7 +10,7 @@ const Layout: React.FC = ({ children }) => {
   const scrollDivRef = useRef<HTMLDivElement>();
   const { scrollYProgress } = useElementScroll(scrollDivRef);
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const Y = useTransform(scrollYProgress, [0, 0.6], [0, 100]);
+  const Y = useTransform(scrollYProgress, [0, 0.8], ["0%", "70%"]);
 
   const title = () => {
     switch (pathname) {
@@ -54,8 +54,11 @@ const Layout: React.FC = ({ children }) => {
           </motion.figure>
 
           <div className="absolute w-full top-0 z-10">
-            <div className="w-11/12 mx-auto bg-white mt-80 mb-10 p-6 md:p-10 overflow-auto rounded-2xl">
+            <div className="w-11/12 mx-auto bg-white mt-80  p-6 md:p-10 overflow-auto rounded-2xl rounded-b-none">
               {children}
+            </div>
+            <div className="w-11/12 mx-auto mb-10">
+              <Footer />
             </div>
           </div>
         </div>
