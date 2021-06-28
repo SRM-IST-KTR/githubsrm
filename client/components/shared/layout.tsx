@@ -10,7 +10,8 @@ const Layout: React.FC = ({ children }) => {
   const scrollDivRef = useRef<HTMLDivElement>();
   const { scrollYProgress } = useElementScroll(scrollDivRef);
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const Y = useTransform(scrollYProgress, [0, 0.8], ["0%", "70%"]);
+  const YText = useTransform(scrollYProgress, [0, 0.8], ["0%", "70%"]);
+  const YCard = useTransform(scrollYProgress, [0, 0.8], [0, -200]);
 
   const title = () => {
     switch (pathname) {
@@ -38,7 +39,7 @@ const Layout: React.FC = ({ children }) => {
   return (
     <>
       <div className="fixed w-full h-screen bg-gradient-to-b from-blue-100 to-base-black -z-10" />
-      <div className="flex flex-col w-11/12 h-screen pt-12 mx-auto">
+      <div className="flex flex-col w-11/12 h-screen pt-8 lg:pt-12 mx-auto">
         <Navbar />
 
         {/* * INFO: scrollable div below */}
@@ -47,20 +48,23 @@ const Layout: React.FC = ({ children }) => {
           className="w-full relative mx-auto h-full bg-base-black overflow-scroll no-scrollbar"
         >
           <motion.figure
-            className="flex sticky top-0 justify-center w-full px-12"
-            style={{ opacity, y: Y }}
+            className="flex sticky top-0 justify-center w-full lg:px-12"
+            style={{ opacity, y: YText }}
           >
             {title()}
           </motion.figure>
 
-          <div className="absolute w-full top-0 z-10">
-            <div className="w-11/12 mx-auto bg-white mt-80  p-6 md:p-10 overflow-auto rounded-2xl rounded-b-none">
+          <motion.div
+            style={{ y: YCard }}
+            className="absolute w-full top-0 z-10"
+          >
+            <div className="w-11/12 mx-auto bg-white mt-16 lg:mt-80  p-6 md:p-10 overflow-auto rounded-2xl rounded-b-none">
               {children}
             </div>
             <div className="w-11/12 mx-auto mb-10">
               <Footer />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </>
