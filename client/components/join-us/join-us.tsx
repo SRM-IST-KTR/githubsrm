@@ -9,7 +9,7 @@ const JoinUs = () => {
     name: string;
     href: string;
     statement: string;
-    description: string;
+    description: string[];
     icon: JSX.Element;
     isContributor: boolean;
   }[] = [
@@ -17,8 +17,11 @@ const JoinUs = () => {
       name: "Contributor",
       href: "/join-us/contributor",
       statement: "mini desc",
-      description:
-        " Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat am ex commodi hic, suscipit in a veritatis pariatur minus               consequuntur!",
+      description: [
+        "Regularly commit updates/changes to the project.",
+        "Follow the code of conduct of contributing to the projects.",
+        "Frequently update the documentation along with the code for the project.",
+      ],
       icon: <ArrowIcon />,
       isContributor: true,
     },
@@ -26,8 +29,12 @@ const JoinUs = () => {
       name: "Maintainer",
       href: "/join-us/maintainer",
       statement: "mini desc",
-      description:
-        " Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas quaerat am ex commodi hic, suscipit in a veritatis pariatur minus               consequuntur!",
+      description: [
+        "Maintain the workflow and the role assignment of all the contributors for the project.",
+        "Maintain and manage all the Pull Requests for the projects.",
+        "Keep an eye on following the rules for clean code for the projects.",
+        "Work with the team to maintain proper documentation for the project.",
+      ],
       icon: <ArrowIcon />,
       isContributor: false,
     },
@@ -88,7 +95,11 @@ const JoinUs = () => {
                     <h2 className="text-2xl md:text-4xl mb-4">
                       Your Job as a <strong>{role.name}</strong>
                     </h2>
-                    <p>{role.description}</p>
+                    <ul className="list-disc">
+                      {role.description.map((desc) => (
+                        <li>{desc}</li>
+                      ))}
+                    </ul>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 items-center justify-center mt-10">
                       <span className="hidden lg:block" />
