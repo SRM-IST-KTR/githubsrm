@@ -266,10 +266,7 @@ class Entry:
         """
 
         details = list(self.db.contactUs.find({
-            "$or": [
-                {"email": doc.get("email")},
-                {"message": doc.get("message")}
-            ]
+            "message": doc.get("message")   
         }))
 
         if len(details) > 0:
