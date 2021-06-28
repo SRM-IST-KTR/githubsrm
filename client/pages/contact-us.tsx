@@ -1,10 +1,10 @@
 import { Layout } from "../components/shared";
-import Contact from "../components/contact";
+import { ContactUs } from "../components/contact-us";
 
 const ContactPage = () => {
   return (
     <Layout>
-      <Contact />
+      <ContactUs />
     </Layout>
   );
 };

@@ -1,17 +1,16 @@
-import Left from "./left";
-import Right from "./right";
+import { Socials, Form } from "./";
 
-const Contact = () => {
+const ContactUs = () => {
   return (
     <div className="flex flex-col lg:flex-row">
       <div className="w-1/2">
-        <Left />
+        <Socials />
       </div>
       <div className="w-1/2">
-        <Right />
+        <Form />
       </div>
     </div>
   );
 };
 
-export default Contact;
+export default ContactUs;
