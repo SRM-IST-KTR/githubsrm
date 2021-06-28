@@ -1,5 +1,7 @@
+from re import T
 import pymongo
 from django.conf import settings
+from typing import Dict, Any
 
 
 class EntryCheck:
@@ -82,3 +84,31 @@ class EntryCheck:
             return True
 
         return
+
+    def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
+        """Checks for valid beta entry
+
+        Args:
+            doc (Dict[str, Any]): beta maintainer's data
+
+        Returns:
+            True If all checks pass
+
+        """
+
+        if self.check_existing_beta(github_id=doc.get('github_id'),
+                                    project_id=doc.get('project_id')):
+            return
+
+        if self.check_approved_project(
+            identifier=doc.get('project_id')
+        ) is None:
+            print("Invalid")
+            return None
+
+        if self.check_approved_project(
+            identifier=doc.get('project_id')
+        ) is False:
+            return True
+
+        return None

@@ -92,28 +92,13 @@ class Maintainer(APIView):
 
                 if 'project_id' in validate:
                     # BETA MAINTAINER
-                    approval = entry_checks.check_approved_project(
-                        validate.get('project_id'))
+                    if entry_checks.validate_beta_maintainer(doc=validate):
+                        if entry.enter_beta_maintainer(doc=request.data):
+                            return response.Response(status=status.HTTP_201_CREATED)
 
-                    if approval is None:
-                        return response.Response(data={
-                            "error": f"invalid project_id {validate.get('project_id')}" 
-                        }, status=status.HTTP_400_BAD_REQUEST)
-
-                    if approval is True:
-                        return response.Response(data={
-                            "error": "project approved"
-                        }, status=status.HTTP_400_BAD_REQUEST)
-
-                    if entry_checks.check_existing_beta(validate.get('github_id'), validate.get('project_id')):
-                        return response.Response(data={
-                            "error": "beta exists"
-                        }, status=status.HTTP_400_BAD_REQUEST)
-
-                    if entry.enter_beta_maintainer(doc=request.data):
-                        return response.Response(status=status.HTTP_201_CREATED)
-
-                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return response.Response(data={
+                        "error": "Invalid project Id or Beta Maintainer Exists / Project Approved"
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
                 if entry_checks.check_existing(description=validate['description'],
                                                project_name=validate['project_name']):
