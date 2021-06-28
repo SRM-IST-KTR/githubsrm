@@ -30,9 +30,8 @@ class Contributor(APIView):
             response.Response
         """
         if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
-            validate = CommonSchema(request.data, headers={
-                "path_info": request.path_info
-            }).valid()
+            validate = CommonSchema(
+                request.data, query_param=request.GET.get('role')).valid()
 
             if 'error' not in validate:
                 if entry_checks.check_existing_contributor(validate['interested_project'], validate['reg_number']):
@@ -46,7 +45,7 @@ class Contributor(APIView):
                     }, status=status.HTTP_201_CREATED)
 
                 return response.Response({
-                    "invalid project": validate['interested_project']
+                    "error": "project not approved or project does not exist"
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)

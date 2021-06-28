@@ -148,8 +148,13 @@ class Entry:
         _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
+
         try:
             project_id = doc['interested_project']
+            result = self.db.project.find_one({"_id": project_id})
+            if not result['approved']:
+                return
+
         except Exception as e:
             return
 
