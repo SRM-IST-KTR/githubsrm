@@ -24,9 +24,18 @@ export const getServerSideProps = async (): Promise<
 > => {
   try {
     const res = await getTeam();
-    return {
-      props: { team: res as MemberProps[] },
-    };
+    if (res) {
+      return {
+        props: { team: res as MemberProps[] },
+      };
+    } else {
+      return {
+        redirect: {
+          permanent: false,
+          destination: "/500",
+        },
+      };
+    }
   } catch (error) {
     console.log(error);
     return {

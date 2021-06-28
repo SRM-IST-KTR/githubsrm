@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikState } from "formik";
 import Markdown from "react-markdown";
 
 import { Section } from "../";
@@ -14,28 +14,45 @@ import { LoadingIcon } from "../../../utils/icons";
 import { ContributorFormData } from "../../../utils/interfaces";
 import { postContributor } from "../../../services/api";
 import { getUser } from "../../../services/validate";
+import { successToast } from "../../../utils/functions/toast";
 
 const Contributor = () => {
   const [stage, setStage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const initialValues: Partial<ContributorFormData> = {};
+  //@ts-ignore
+  const initialValues: ContributorFormData = {
+    name: "",
+    email: "",
+    github_id: "",
+    srm_email: "",
+    reg_number: "",
+    branch: "",
+    interested_project: "",
+    poa: "",
+  };
 
   const submitValues = async (
     values: ContributorFormData,
-    setErrors: (errors: Partial<ContributorFormData>) => void
+    setErrors: (errors: Partial<ContributorFormData>) => void,
+    resetForm: (nextState?: Partial<FormikState<ContributorFormData>>) => void
   ) => {
     setLoading(true);
-    try {
-      if (await getUser(values.github_id)) {
-        const res = await postContributor(values);
-      } else {
-        setErrors({
-          github_id: "**GitHub ID**: Invalid",
-        } as Partial<ContributorFormData>);
+    if (await getUser(values.github_id)) {
+      const res = await postContributor(values);
+      if (res) {
+        successToast("Registered as a Contributor!");
+        setStage(0);
+        resetForm({ values: { ...initialValues } });
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      setErrors({
+        github_id: "**GitHub ID**: Invalid",
+      } as Partial<ContributorFormData>);
+      setLoading(false);
+      return;
     }
     setLoading(false);
   };
@@ -71,8 +88,8 @@ const Contributor = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={(values, { setErrors }) =>
-          submitValues(values as ContributorFormData, setErrors)
+        onSubmit={(values, { setErrors, resetForm }) =>
+          submitValues(values as ContributorFormData, setErrors, resetForm)
         }
         validationSchema={contributorValidation}
       >
@@ -160,10 +177,10 @@ const Contributor = () => {
                         </button>
                       ) : (
                         <button
-                          disabled={Object.keys(errors).length > 0}
+                          disabled={Object.keys(errors).length > 0 || loading}
                           type="submit"
                           className={`${
-                            Object.keys(errors).length > 0
+                            Object.keys(errors).length > 0 || loading
                               ? "cursor-not-allowed bg-opacity-70"
                               : "cursor-pointer"
                           } text-white bg-base-green py-3 font-semibold rounded-lg`}

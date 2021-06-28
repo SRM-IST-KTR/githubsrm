@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikState } from "formik";
 import Markdown from "react-markdown";
 
 import { Input } from "../shared";
@@ -11,19 +11,33 @@ import {
 } from "../../utils/constants";
 import { LoadingIcon } from "../../utils/icons";
 import { postContactUs } from "../../services/api";
+import { successToast } from "../../utils/functions/toast";
 
 const ContactUs = () => {
   let [loading, setLoading] = useState<boolean>(false);
 
-  const initialValues: Partial<ContactUsFormData> = {};
+  //@ts-ignore
+  const initialValues: ContactUsFormData = {
+    name: "",
+    email: "",
+    phone_number: "",
+    message: "",
+  };
 
-  const submitValues = async (values: ContactUsFormData) => {
+  const submitValues = async (
+    values: ContactUsFormData,
+    resetForm: (nextState?: Partial<FormikState<ContactUsFormData>>) => void
+  ) => {
     setLoading(true);
-    try {
-      console.log(values);
-      const res = await postContactUs(values);
-    } catch (error) {}
 
+    console.log(values);
+    const res = await postContactUs(values);
+    if (res) {
+      successToast("Query has been Submitted!");
+      resetForm({ values: { ...initialValues } });
+      setLoading(false);
+      return;
+    }
     setLoading(false);
   };
 
@@ -35,7 +49,7 @@ const ContactUs = () => {
       </div>
       <Formik
         initialValues={initialValues}
-        onSubmit={submitValues}
+        onSubmit={(values, { resetForm }) => submitValues(values, resetForm)}
         validationSchema={contactUsValidation}
       >
         {({ errors, touched }) => (
@@ -74,10 +88,10 @@ const ContactUs = () => {
 
               <div className="flex mt-4 justify-center lg:justify-end">
                 <button
-                  disabled={Object.keys(errors).length > 0}
+                  disabled={Object.keys(errors).length > 0 || loading}
                   type="submit"
                   className={`${
-                    Object.keys(errors).length > 0
+                    Object.keys(errors).length > 0 || loading
                       ? "cursor-not-allowed bg-opacity-70"
                       : "cursor-pointer"
                   } text-white bg-base-teal w-32 py-2 font-semibold rounded-lg`}

@@ -23,16 +23,17 @@ const Maintainer = () => {
         <p className="text-lg">please choose your bid</p>
 
         <div className="grid grid-cols-3 w-8/12 mx-auto mt-8">
-          <Link href="/join-us/maintainer/existing-project">
-            <a className="bg-base-teal text-white rounded-lg text-xl py-4 font-medium">
-              Existing Project
-            </a>
-          </Link>
-          <span />
-
           <Link href="/join-us/maintainer/new-project">
             <a className="bg-base-teal text-white rounded-lg text-xl py-4 font-medium">
               New Project
+            </a>
+          </Link>
+
+          <span />
+
+          <Link href="/join-us/maintainer/existing-project">
+            <a className="bg-base-teal text-white rounded-lg text-xl py-4 font-medium">
+              Existing Project
             </a>
           </Link>
         </div>
