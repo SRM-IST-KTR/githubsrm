@@ -44,16 +44,16 @@ class TestClient(TestCase):
             "srm_email": "tu6969@srmist.edu.in",
             "reg_number": "RA1911004010187",
             "branch": "ECE",
-            "github_id": ["Test-User"],
-            "description": "Random",
+            "github_id": "Test-User",
+            "description": "RandomRandomRandomRandomRandomRandomRandomRandomRandomRandom",
             "tags": ["someone", "said"],
             "project_name": "Tester"
         }
 
-        response = self.client.post(url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
-            "Content-type": "application/json",
-            "HTTP_X_RECAPTCHA_TOKEN": "TestToken"
-        })
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
+                "Content-type": "application/json", "HTTP_X_RECAPTCHA_TOKEN": "TestToken"
+            }, params={"role": "alpha"})
 
         self.assertEqual(response.status_code, 200)
 

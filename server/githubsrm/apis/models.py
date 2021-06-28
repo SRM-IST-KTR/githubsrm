@@ -36,15 +36,16 @@ class Entry:
         return ''.join(gen_id)
 
     def _enter_project(self, doc: Dict[str, str], maintainer_id: str,
-                       visibility: Dict[str, str]) -> None:
+                       visibility: Dict[str, str], project_id: str) -> None:
         """Project Entry (only accessed by maintainer)
 
         Args:
             doc (Dict[str, str]): post to be entred
             maintainer_id (str): maintainer id 
+            project_id (str): project id
         """
-        _id = self.get_uid()
-        doc = {**doc, **maintainer_id, **{"_id": _id}, **visibility}
+
+        doc = {**doc, **maintainer_id, **{"_id": project_id}, **visibility}
         self.db.project.insert_one(doc)
 
     def _update_project(self, identifier: str,
@@ -88,9 +89,9 @@ class Entry:
         tags = doc.pop("tags")
         project_name = doc.pop('project_name')
 
+        project_id = self.get_uid()
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}}
-
+        doc = {**doc, **{"_id": _id}, **{"project_id": project_id}}
         try:
             self.db.maintainer.insert_one(doc)
             if project_url:
@@ -105,14 +106,37 @@ class Entry:
                 "approved": False,
                 "project_name": project_name
             }, maintainer_id={
-                "maintainer_id": _id
-            }, visibility=visibility)
+                "maintainer_id": [_id]
+            }, visibility=visibility, project_id=project_id)
 
             return True
 
         except Exception as e:
             print(e)
             return False
+
+    def enter_beta_maintainer(self, doc: Dict[str, Any]) -> bool:
+        """Add beta maintainers to project and updates maintainers 
+           collection.
+
+        Args:
+            doc (Dict): beta maintainer details
+
+        Returns:
+            bool: [description]
+        """
+        try:
+            _id = self.get_uid()
+            self.db.project.update_one({"_id": doc.get("project_id")}, {
+                "$push": {"maintainer_id": _id}}, upsert=True)
+
+            self.db.maintainer.insert_one(
+                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')}})
+            return True
+
+        except Exception as e:
+            print(e)
+            return
 
     def enter_contributor(self, doc: Dict[str, Any]) -> None:
         """Addition of contributors for avaliable Projects
@@ -124,8 +148,13 @@ class Entry:
         _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
+
         try:
             project_id = doc['interested_project']
+            result = self.db.project.find_one({"_id": project_id})
+            if not result['approved']:
+                return
+
         except Exception as e:
             return
 
@@ -218,27 +247,6 @@ class Entry:
         """
         return self.db.maintainer.find({})
 
-    def check_existing(self, description: str, project_name: str) -> bool:
-        """Checks existing project proposals
-
-        Args:
-            description (str)
-            project_name (str)
-
-        Returns:
-            bool: 
-        """
-
-        result = list(self.db.project.find({"$or": [
-            {"project_name": project_name},
-            {"description": description}
-        ]}))
-
-        if len(result) > 0:
-            return True
-
-        return
-
     def get_team_data(self) -> object:
         """Get all team data
 
@@ -247,29 +255,8 @@ class Entry:
         """
         return self.db.team.find({})
 
-    def check_existing_contributor(self, interested_project: str,
-                                   reg_number: str) -> bool:
-        """Existing contributor to same project
-
-        Args:
-            interested_project (str): Project ID
-            reg_number (str): Contributor Registration Number
-
-        Returns:
-            bool
-        """
-
-        result = list(self.db.contributor.find({"$or": [
-            {"interested_project": interested_project},
-            {"reg_number": reg_number}
-        ]}))
-
-        if len(result) > 0:
-            return True
-
-        return
-
     #TODO: FINISH
+
     def enter_contactus(self, doc: Dict[str, Any]) -> bool:
         """Enter Contact us details
 
@@ -295,38 +282,3 @@ class Entry:
             type: MongoDB cursor
         """
         return self.db.contactus.find({})
-
-
-if __name__ == '__main__':
-    entry = Entry()
-    entry.enter_maintainer(
-        {
-            "name": "Aradhya",
-            "email": "testuser@localhost.com",
-            "srm_email": "tu6969@srmist.edu.in",
-            "reg_number": "RA1911004010187",
-            "branch": "ECE",
-            "github_id": ["Test-User"],
-            "description": "TestProject"
-        }
-    )
-
-    entry.approve_project(identifier="60d59a80b4dbf235af1e3092")
-
-    entry.enter_contributor(
-        {
-            "name": "Aradhya",
-            "email": "testuser@localhost.com",
-            "srm_email": "tu6969@srmist.edu.in",
-            "reg_number": "RA1911004010187",
-            "branch": "ECE",
-            "github_id": "Test-User",
-            "interested_project": "60d59693278a6b1bbe4fa9df"
-        }
-    )
-
-    # entry.approve_contributor(
-    #     identifier="60d596b85972c9bfc0ed74a4", project_id="60d59693278a6b1bbe4fa9df")
-
-    for objects in entry.get_projects():
-        print(objects)
