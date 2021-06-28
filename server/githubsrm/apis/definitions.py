@@ -2,6 +2,7 @@
 from schema import Optional, Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
+import httpx
 
 
 def get_json_schema(id: int, valid_schema: Callable) -> dict:
@@ -15,6 +16,31 @@ def get_json_schema(id: int, valid_schema: Callable) -> dict:
     """
     validator = valid_schema()
     return validator.json_schema(schema_id=id)
+
+
+def check_github_id(github_id: str):
+    """Checks GitHub ID
+
+    Args:
+        github_id (str) user entred value
+    """
+    _url = f"https://api.github.com/users/{github_id}"
+
+    with httpx.Client() as client:
+        response = client.get(_url)
+
+    return response.status_code == 200
+
+
+def check_repo(url: str):
+    """Check github repo
+
+    Args:
+        url (str): [description]
+    """
+    with httpx.Client() as client:
+        response = client.get(url)
+    return response.status_code == 200
 
 
 def check_tags(tags: list) -> bool:
@@ -49,12 +75,12 @@ class CommonSchema:
             "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
             "reg_number": And(str, lambda reg: len(reg.strip()) > 0),
             "branch": And(str, lambda branch: len(branch.strip()) > 0),
-            "github_id": And(str, lambda github_id: len(github_id.strip()) > 0)
+            "github_id": And(str, lambda github_id: check_github_id(github_id=github_id))
         }
 
         self.alpha_maintainer = {
             "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
-            Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
+            Optional("project_url", default=None): And(str, lambda url: check_repo()),
             "description": And(str, lambda description: len(description.strip()) > 30),
             "tags": And(list, lambda tags: check_tags(tags=tags))
         }
@@ -64,8 +90,8 @@ class CommonSchema:
         }
 
         self.contributor = {
-            "interested_project": And(str, lambda name: len(name.strip()) > 0),
-            Optional("poa", default=None): And(str, lambda poa: len(poa.strip()) > 30)
+            "interested_project": And(str, lambda project_id: len(project_id) == 8),
+            Optional("poa", default=None): And(str, lambda poa: poa if poa else poa.strip() > 30)
         }
 
     @staticmethod

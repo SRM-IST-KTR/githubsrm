@@ -1,10 +1,8 @@
 import os
 from typing import Any, Dict
-import requests
+import httpx
 from dotenv import load_dotenv
 import boto3
-
-request = requests.Session()
 
 load_dotenv()
 email_client = boto3.client('sesv2', region_name='ap-south-1')
@@ -30,7 +28,9 @@ def check_token(token) -> bool:
         'secret': secret_key,
         'response': token,
     }
-    response = request.post(url, data=payload)
+
+    with httpx.Client() as client:
+        response = client.post(url, data=payload)
     return response.json()["success"] and response.json()["score"] >= 0.5
 
 
@@ -40,7 +40,7 @@ class BotoService:
         """Send Emails to contributors and maintainers
 
         Args:
-            role (str) alpha, beta or contributor
+            role (str)  alpha, beta or contributor
             data (dict) essential data to send mail
         Returns:
             bool
