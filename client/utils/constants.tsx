@@ -97,7 +97,7 @@ export const newMaintainerInputs: {
       },
       {
         id: "project_url",
-        label: "Public Project GitHub URL",
+        label: "Public Repository URL",
         type: "text",
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
         description: {
@@ -105,7 +105,6 @@ export const newMaintainerInputs: {
             "If an existing project, please give its Public Project GitHub URL! ",
           class: descriptionClass,
         },
-        required: true,
       },
       {
         id: "tags",
@@ -145,8 +144,10 @@ export const newMaintainerValidation = Yup.object().shape({
     ),
   reg_number: Yup.string().trim().required("**Registration Number:** Missing"),
   branch: Yup.string().trim().required("**Branch:** Missing"),
-  project_name: Yup.string().trim().required("**Project URL:** Missing"),
-  project_url: Yup.string().trim().url("**Project URL:** Invalid"),
+  project_name: Yup.string()
+    .trim()
+    .required("**Public Repository URL:** Missing"),
+  project_url: Yup.string().trim().url("**Public Repository URL:** Invalid"),
   tags: Yup.string()
     .trim()
     .required("**Tags:** Missing")
@@ -422,7 +423,7 @@ export const contactUsValidation = Yup.object().shape({
   phone_number: Yup.string()
     .trim()
     .required("**Phone Number:** Missing")
-    .matches(/[0-9]{10}/, "**Phone Number:** Invalid"),
+    .matches(/^[0-9]{10}$/, "**Phone Number:** Invalid"),
   message: Yup.string()
     .trim()
     .required("**Message:** Missing")
