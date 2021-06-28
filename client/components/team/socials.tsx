@@ -1,22 +1,21 @@
 import { motion } from "framer-motion";
-import { fileURLToPath } from "url";
 
 import { SocialIcon } from "../../utils/functions/social-icon";
 
 interface SocialsProps {
   handles: [
-    { github_id: string },
-    { linkedin: string },
-    { twitter: string },
-    { portfolio: string }
+    { github_id?: string },
+    { linkedin?: string },
+    { twitter?: string },
+    { portfolio?: string }
   ];
 }
 
 const Socials = ({ handles }: SocialsProps) => {
-  const filteredHandels = handles.filter(
+  const filteredHandles = handles.filter(
     (handle) => handle[Object.keys(handle)[0]].length !== 0
   );
-  const len = filteredHandels.length;
+  const len = filteredHandles.length;
   const hypo = 95;
   const closeness = 1;
   const angles = {
@@ -40,13 +39,13 @@ const Socials = ({ handles }: SocialsProps) => {
 
   return (
     <>
-      {filteredHandels.map((handle, key) => (
+      {filteredHandles.map((handle, key) => (
         <motion.div
           key={key}
           variants={jump}
           custom={key}
           className="w-4 h-4 absolute z-0"
-          transition={{ type: "string ", default: { duration: 0.1 } }}
+          transition={{ type: "string", default: { duration: 0.1 } }}
         >
           <SocialIcon handle={handle} />
         </motion.div>

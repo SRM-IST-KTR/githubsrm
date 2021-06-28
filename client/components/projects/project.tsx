@@ -19,7 +19,7 @@ const Project = ({ project }: ProjectProp) => {
     <div
       className={`border-${
         colors[Math.floor(Math.random() * colors.length)]
-      } p-5 border-t-8 max-w-md bg-gray-100 flex flex-col justify-between`}
+      } p-2 lg:p-6 border-t-8 max-w-md bg-gray-100 flex flex-col justify-between mx-auto`}
     >
       <div>
         <h2 className="flex w-full justify-between items-start capitalize text-gray-800 text-xl md:text-3xl font-semibold">
@@ -46,7 +46,7 @@ const Project = ({ project }: ProjectProp) => {
         </p>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-2 lg:mt-6">
         {project.tags.map((tag) => (
           <p
             key={tag.trim()}

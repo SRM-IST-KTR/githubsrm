@@ -1222,9 +1222,9 @@ const CoderOcto = () => {
         d="M126.269 95.0708C126.344 96.1744 128.6 96.0628 129.729 95.914C130.857 95.7652 132.159 94.9096 132.122 94.55C132.085 94.1904 131.242 93 128.898 93.2852C126.554 93.5704 126.269 95.0708 126.269 95.0708Z"
         fill="#A34F3E"
         stroke="black"
-        stroke-opacity="0.2"
+        strokeOpacity="0.2"
         strokeWidth="0.372"
-        stroke-miterlimit="10"
+        strokeMiterlimit="10"
       />
       <path
         opacity="0.03"

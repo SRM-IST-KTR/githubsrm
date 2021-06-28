@@ -55,11 +55,11 @@ const Contributor = () => {
     <div>
       <div>
         <div className="font-medium">
-          <h1 className="text-4xl">Big text here</h1>
-          <h2 className="text-xl mt-2">small text here</h2>
+          <h1 className="text-2xl md:text-4xl">Big text here</h1>
+          <h2 className="md:text-xl md:mt-2">small text here</h2>
         </div>
 
-        <p className="text-right text-lg">
+        <p className="md:text-right md:text-lg mt-2 md:mt-0">
           Join us as a{" "}
           <Link href="/join-us/maintainer">
             <a className="text-base-green font-bold hover:underline">

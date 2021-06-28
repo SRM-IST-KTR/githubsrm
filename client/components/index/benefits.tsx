@@ -8,29 +8,26 @@ const domainData: Array<{
   {
     icon: <Travis />,
     title: "edcfjbej",
-    text:
-      "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
+    text: "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
   },
   {
     icon: <Travis />,
     title: "edcfjbej",
-    text:
-      "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
+    text: "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
   },
   {
     icon: <Travis />,
     title: "edcfjbej",
-    text:
-      "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
+    text: "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
   },
 ];
 
 const Benefits = () => {
   return (
-    <div className="flex flex-col justify-center my-5 lg:my-20">
-      <p className="text-2xl text-justify lg:text-center font-extrabold lg:text-5xl  text-base-black py-4 my-5 ">
+    <div className="flex flex-col justify-center lg:my-20">
+      <h2 className="text-2xl lg:text-center font-extrabold lg:text-5xl text-base-black my-4">
         Benefits of GitHub Campus Partner Program
-      </p>
+      </h2>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         {domainData.map((data) => (
           <div key={data.title}>

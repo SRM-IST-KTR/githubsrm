@@ -17,6 +17,13 @@ const Profile = ({ member }: MemberProp) => {
     hover: { scale: 0.8 },
   };
 
+  const handles = [
+    { github_id: member.github_id },
+    { linkedin: member.linkedin },
+    { twitter: member.twitter },
+    { portfolio: member.portfolio },
+  ];
+
   return (
     <div className="flex flex-col items-center m-4">
       <motion.div
@@ -30,14 +37,7 @@ const Profile = ({ member }: MemberProp) => {
           className="rounded-full relative w-48 h-48 object-cover z-10 "
           src={member.img_url}
         />
-        <Socials
-          handles={[
-            { github_id: member.github_id },
-            { linkedin: member.linkedin },
-            { twitter: member.twitter },
-            { portfolio: member.portfolio },
-          ]}
-        />
+        <Socials handles={handles} />
       </motion.div>
       <h5 className="text-lg mt-6 font-medium">{member.name}</h5>
       <p className="text-sm">{`"${member.tagline}"`}</p>

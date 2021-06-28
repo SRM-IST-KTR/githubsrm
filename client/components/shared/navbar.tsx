@@ -20,15 +20,16 @@ const Navbar = () => {
     {
       name: "Join Us",
       href: "/join-us",
-    }, {
+    },
+    {
       name: "Contact Us",
       href: "/contact-us",
     },
   ];
 
   return (
-    <nav className="sticky top-0 w-full z-0 mb-4 bg-base-black rounded-2xl shadow-lg">
-      <ul className="flex justify-between z-40 text-white mx-10 my-8 w-6/12 text-center">
+    <nav className="sticky top-0 w-full z-0 mb-4 bg-base-black rounded-2xl shadow-lg overflow-auto">
+      <ul className="flex justify-between z-40 text-white mx-4 lg:mx-10 my-2 lg:my-8 w-full lg:w-6/12 text-center">
         {links.map((link) => (
           <li
             key={link.href}
@@ -36,9 +37,8 @@ const Navbar = () => {
               asPath === link.href ? "font-semibold" : ""
             } w-full transform hover:-translate-y-1`}
           >
-            
             <Link href={link.href}>
-              <a className="my-2 text-xl">{link.name}</a>
+              <a className="my-2 lg:text-xl">{link.name}</a>
             </Link>
           </li>
         ))}
