@@ -97,7 +97,7 @@ class Maintainer(APIView):
 
                     if approval is None:
                         return response.Response(data={
-                            "invalid project_id": validate.get('project_id')
+                            "error": f"invalid project_id {validate.get('project_id')}" 
                         }, status=status.HTTP_400_BAD_REQUEST)
 
                     if approval is True:
@@ -107,13 +107,11 @@ class Maintainer(APIView):
 
                     if entry_checks.check_existing_beta(validate.get('github_id'), validate.get('project_id')):
                         return response.Response(data={
-                            "beta exists"
+                            "error": "beta exists"
                         }, status=status.HTTP_400_BAD_REQUEST)
 
                     if entry.enter_beta_maintainer(doc=request.data):
-                        return response.Response(data={
-                            "Added beta"
-                        }, status=status.HTTP_200_OK)
+                        return response.Response(status=status.HTTP_201_CREATED)
 
                     return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -122,11 +120,11 @@ class Maintainer(APIView):
                     # Enter alpha maintainer
 
                     return response.Response({
-                        "invalid": "Project exists"
+                        "error": "Project Exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
                 if entry.enter_maintainer(validate):
-                    return response.Response(validate, status=status.HTTP_200_OK)
+                    return response.Response(status=status.HTTP_201_CREATED)
                 return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
@@ -167,7 +165,6 @@ class Team(APIView):
         return response.Response(result, status=status.HTTP_200_OK)
 
 
-# TODO: FINISH THIS
 class ContactUs(APIView):
     """
     ContactUs route
@@ -194,7 +191,7 @@ class ContactUs(APIView):
 
             result = entry.enter_contact_us(doc=request.data)
             if result:
-                return response.Response(status=status.HTTP_200_OK)
+                return response.Response(status=status.HTTP_201_CREATED)
             return response.Response(data={
                 "entry exists"
             }, status=status.HTTP_400_BAD_REQUEST)

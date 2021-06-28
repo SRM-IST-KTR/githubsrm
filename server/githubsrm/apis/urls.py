@@ -9,7 +9,7 @@ urlpatterns = [
     path('maintainer', Maintainer.as_view()),
     path('healthcheck', HealthCheck.as_view()),
     path('team', Team.as_view()),
-    path('contactus', ContactUs.as_view()),
+    path('contact-us', ContactUs.as_view()),
     path('admin/contributor', AdminContributor.as_view()),
     path('admin/maintainer', AdminMaintainer.as_view())
 ]
