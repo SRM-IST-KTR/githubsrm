@@ -78,7 +78,7 @@ class EntryCheck:
         result = list(self.db.maintainer.find(
             {"github_id": github_id, "project_id": project_id}))
 
-        if len(result) > 1:
+        if len(result) >= 1:
             return True
 
         return
