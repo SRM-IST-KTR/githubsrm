@@ -30,8 +30,8 @@ const ContactUs = () => {
   return (
     <div>
       <div className="font-medium">
-        <h1 className="text-4xl">Contact Us</h1>
-        <h2 className="text-xl mt-2">descrip</h2>
+        <h1 className="text-2xl lg:text-4xl">Contact Us</h1>
+        <h2 className="text-base lg:text-xl mt-2">descrip</h2>
       </div>
       <Formik
         initialValues={initialValues}
@@ -39,10 +39,13 @@ const ContactUs = () => {
         validationSchema={contactUsValidation}
       >
         {({ errors, touched }) => (
-          <Form className="w-11/12 max-w-6xl my-8 mx-auto">
+          <Form className="w-11/12 max-w-6xl my-8 mx-0 md:mx-auto">
             <div>
               {contactUsInputs.map((section) => (
-                <div key={section.length} className="my-6 flex w-full">
+                <div
+                  key={section.length}
+                  className="my-6 flex w-full flex-col md:flex-row"
+                >
                   {section.map((field) => (
                     <Input
                       key={field.id}
@@ -59,14 +62,17 @@ const ContactUs = () => {
               {Object.keys(errors).map((error) => {
                 if (touched[error]) {
                   return (
-                    <Markdown key={error.trim()} className="text-red-500 my-1">
+                    <Markdown
+                      key={error.trim()}
+                      className="text-red-500 my-2 md:my-1"
+                    >
                       {errors[error] as string}
                     </Markdown>
                   );
                 }
               })}
 
-              <div className="flex justify-end">
+              <div className="flex mt-4 justify-center md:justify-end">
                 <button
                   disabled={Object.keys(errors).length > 0}
                   type="submit"
