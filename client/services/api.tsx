@@ -4,7 +4,8 @@ import {
   MemberProps,
   ProjectProps,
   ContributorFormData,
-  MaintainerFormData,
+  NewMaintainerForm,
+  ExistingMaintainerForm,
 } from "../utils/interfaces";
 import { getRecaptchaToken } from "./recaptcha";
 
@@ -40,7 +41,7 @@ export const postContributor = async (
     const recaptchaToken = await getRecaptchaToken("post");
     const res = await instance.post("/contributor", data, {
       headers: {
-        X_RECAPTCHA_TOKEN: recaptchaToken,
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
     });
     console.log(res);
@@ -52,10 +53,22 @@ export const postContributor = async (
 };
 
 export const postMaintainer = async (
-  data: MaintainerFormData
+  data: NewMaintainerForm | ExistingMaintainerForm,
+  role: "alpha" | "beta"
 ): Promise<boolean> => {
-  console.log(data);
-  return true;
+  try {
+    const recaptchaToken = await getRecaptchaToken(`post?${role}`);
+    const res = await instance.post("/maintainer", data, {
+      headers: {
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
+      },
+    });
+    console.log(res);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 // const errorHandler = (err?: AxiosError | any) => {

@@ -1,8 +1,8 @@
 import * as Yup from "yup";
 
 import {
-  alphaMaintainerValidation,
-  betaMaintainerValidation,
+  newMaintainerValidation,
+  existingMaintainerValidation,
   contributorValidation,
 } from "./constants";
 
@@ -45,11 +45,11 @@ export interface InputProps {
   labelClassName?: { default?: string; onError?: string };
 }
 
-export interface AlphaMaintainerForm
-  extends Yup.InferType<typeof alphaMaintainerValidation> { }
+export interface NewMaintainerForm
+  extends Yup.InferType<typeof newMaintainerValidation> { }
 
-export interface BetaMaintainerForm
-  extends Yup.InferType<typeof betaMaintainerValidation> {}
+export interface ExistingMaintainerForm
+  extends Yup.InferType<typeof existingMaintainerValidation> {}
 
 export interface ContributorFormData
   extends Yup.InferType<typeof contributorValidation> {}

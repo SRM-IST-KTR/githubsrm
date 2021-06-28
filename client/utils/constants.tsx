@@ -18,7 +18,7 @@ export const colors: string[] = [
   "base-teal",
 ];
 
-export const alphaMaintainerInputs: {
+export const newMaintainerInputs: {
   section: string;
   description: string;
   icon: JSX.Element;
@@ -128,7 +128,7 @@ export const alphaMaintainerInputs: {
   },
 ];
 
-export const alphaMaintainerValidation = Yup.object().shape({
+export const newMaintainerValidation = Yup.object().shape({
   name: Yup.string().trim().required("**Name**: Missing"),
   email: Yup.string()
     .trim()
@@ -161,7 +161,7 @@ export const alphaMaintainerValidation = Yup.object().shape({
     .min(30, "**Feature or Bugfix:** Too small"),
 });
 
-export const betaMaintainerInputs: {
+export const existingMaintainerInputs: {
   section: string;
   description: string;
   icon: JSX.Element;
@@ -241,7 +241,7 @@ export const betaMaintainerInputs: {
   },
 ];
 
-export const betaMaintainerValidation = Yup.object().shape({
+export const existingMaintainerValidation = Yup.object().shape({
   name: Yup.string().trim().required("**Name**: Missing"),
   email: Yup.string()
     .trim()
