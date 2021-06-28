@@ -110,11 +110,11 @@ class Entry:
                 "maintainer_id": [_id]
             }, visibility=visibility, project_id=project_id)
 
-            return True
+            return project_id
 
         except Exception as e:
             print(e)
-            return False
+            return 
 
     def enter_beta_maintainer(self, doc: Dict[str, Any]) -> bool:
         """Add beta maintainers to project and updates maintainers 

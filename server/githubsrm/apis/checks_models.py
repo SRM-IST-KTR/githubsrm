@@ -57,7 +57,7 @@ class EntryCheck:
             bool
         """
 
-        result = list(self.db.contributor.find({"$or": [
+        result = list(self.db.contributor.find({"$and": [
             {"interested_project": interested_project},
             {"reg_number": reg_number}
         ]}))
