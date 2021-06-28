@@ -24,7 +24,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 w-full z-0 bg-base-black rounded-t-2xl shadow-lg">
+    <nav className="sticky top-0 w-full z-0 mb-4 bg-base-black rounded-2xl shadow-lg">
       <ul className="flex justify-between z-40 text-white mx-10 my-8 w-6/12 text-center">
         {links.map((link) => (
           <li

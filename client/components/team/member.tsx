@@ -22,12 +22,12 @@ const Profile = ({ member }: MemberProp) => {
       <motion.div
         variants={holder}
         whileHover="hover"
-        className="rounded-full transform border-2 hover:border-base-teal hover:border-4 border-black p-4 relative"
+        className="flex justify-center items-center rounded-full transform border-2 hover:border-base-teal hover:border-4 border-black p-4 relative"
       >
         <motion.img
           variants={img}
           alt={member.name}
-          className="rounded-full relative w-48 h-48 object-cover z-10"
+          className="rounded-full relative w-48 h-48 object-cover z-10 "
           src={member.img_url}
         />
         <Socials
