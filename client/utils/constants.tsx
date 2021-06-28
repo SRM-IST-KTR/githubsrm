@@ -4,7 +4,7 @@ import { PersonIcon, BookIcon, BranchIcon } from "./icons";
 import { InputClassNameProps, InputProps } from "./interfaces";
 
 export const customInputClasses: InputClassNameProps = {
-  wrapperClassName: { default: "flex flex-col mb-8 w-full mx-2" },
+  wrapperClassName: { default: "flex flex-col mb-8 w-full md:mx-2" },
   inputClassName: {
     default:
       "w-full focus:border-base-teal w-full py-2 text-gray-700 border-b-2 bg-white border-gray-300",
@@ -261,7 +261,10 @@ export const existingMaintainerValidation = Yup.object().shape({
     ),
   reg_number: Yup.string().trim().required("**Registration Number:** Missing"),
   branch: Yup.string().trim().required("**Branch:** Missing"),
-  project_id: Yup.string().trim().required("**Project ID:** Missing"),
+  project_id: Yup.string()
+    .trim()
+    .required("**Project ID:** Missing")
+    .matches(/^[A-Z0-9]{8}$/, "**Project ID**: Invalid"),
 });
 
 export const contributorInputs: {
@@ -348,6 +351,7 @@ export const contributorInputs: {
         label: "Feature or Bugfix",
         type: "textarea",
         placeholder: "Your project proposal",
+        description: "If given, should have atleast 30 characters.",
         textareaOptions: { rows: 4, cols: 30 },
       },
     ],
@@ -372,8 +376,8 @@ export const contributorValidation = Yup.object().shape({
   interested_project: Yup.string()
     .trim()
     .required("**Project ID**: Missing")
-    .test("test-srm-email", "**Project ID**: Invalid", async (value) => true),
-  poa: Yup.string().trim(),
+    .matches(/^[A-Z0-9]{8}$/, "**Project ID**: Invalid"),
+  poa: Yup.string().trim().min(30, "**Project ID**: Too Small"),
 });
 
 export const contactUsInputs: InputProps[][] = [
@@ -422,7 +426,6 @@ export const contactUsValidation = Yup.object().shape({
     .email("**Email:** Invalid"),
   phone_number: Yup.string()
     .trim()
-    .required("**Phone Number:** Missing")
     .matches(/^[0-9]{10}$/, "**Phone Number:** Invalid"),
   message: Yup.string()
     .trim()

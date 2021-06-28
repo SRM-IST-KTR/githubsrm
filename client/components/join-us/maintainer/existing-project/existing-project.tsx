@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikState } from "formik";
 import Markdown from "react-markdown";
 
 import { Section } from "../../";
@@ -14,28 +14,46 @@ import { LoadingIcon } from "../../../../utils/icons";
 import { ExistingMaintainerForm } from "../../../../utils/interfaces";
 import { postMaintainer } from "../../../../services/api";
 import { getUser } from "../../../../services/validate";
+import { successToast } from "../../../../utils/functions/toast";
 
 const ExistingProject = () => {
   let [stage, setStage] = useState<number>(0);
   let [loading, setLoading] = useState<boolean>(false);
 
-  const initialValues: Partial<ExistingMaintainerForm> = {};
+  //@ts-ignore
+  const initialValues: ExistingMaintainerForm = {
+    name: "",
+    email: "",
+    github_id: "",
+    srm_email: "",
+    reg_number: "",
+    branch: "",
+    project_id: "",
+  };
 
   const submitValues = async (
     values: ExistingMaintainerForm,
-    setErrors: (errors: Partial<ExistingMaintainerForm>) => void
+    setErrors: (errors: Partial<ExistingMaintainerForm>) => void,
+    resetForm: (
+      nextState?: Partial<FormikState<ExistingMaintainerForm>>
+    ) => void
   ) => {
     setLoading(true);
-    try {
-      if (await getUser(values.github_id)) {
-        const res = await postMaintainer(values, "beta");
-      } else {
-        setErrors({
-          github_id: "**GitHub ID**: Invalid",
-        } as Partial<ExistingMaintainerForm>);
+    if (await getUser(values.github_id)) {
+      const res = await postMaintainer(values, "beta");
+      if (res) {
+        successToast("Registered as a Contributor!");
+        setStage(0);
+        resetForm({ values: { ...initialValues } });
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      setErrors({
+        github_id: "**GitHub ID**: Invalid",
+      } as Partial<ExistingMaintainerForm>);
+      setLoading(false);
+      return;
     }
     setLoading(false);
   };
@@ -71,8 +89,8 @@ const ExistingProject = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={(values, { setErrors }) =>
-          submitValues(values as ExistingMaintainerForm, setErrors)
+        onSubmit={(values, { setErrors, resetForm }) =>
+          submitValues(values as ExistingMaintainerForm, setErrors, resetForm)
         }
         validationSchema={existingMaintainerValidation}
       >
@@ -165,10 +183,10 @@ const ExistingProject = () => {
                     </button>
                   ) : (
                     <button
-                      disabled={Object.keys(errors).length > 0}
+                      disabled={Object.keys(errors).length > 0 || loading}
                       type="submit"
                       className={`${
-                        Object.keys(errors).length > 0
+                        Object.keys(errors).length > 0 || loading
                           ? "cursor-not-allowed bg-opacity-70"
                           : "cursor-pointer"
                       } text-white bg-base-green py-3 font-semibold rounded-lg`}

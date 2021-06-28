@@ -1,6 +1,7 @@
 import { ProjectProps } from "../../utils/interfaces";
 import { colors } from "../../utils/constants";
 import { GitHubIcon, CopyIcon } from "../../utils/icons";
+import { successToast } from "../../utils/functions/toast";
 
 interface ProjectProp {
   project: ProjectProps;
@@ -10,6 +11,7 @@ const Project = ({ project }: ProjectProp) => {
   const onCopyId = async (id: string) => {
     try {
       await navigator.clipboard.writeText(id);
+      successToast("ID Copied");
     } catch (error) {
       console.log(error);
     }

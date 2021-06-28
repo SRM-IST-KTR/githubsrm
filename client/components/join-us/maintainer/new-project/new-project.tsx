@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikState } from "formik";
 import Markdown from "react-markdown";
 
 import { Section } from "../../";
@@ -14,48 +14,65 @@ import { LoadingIcon } from "../../../../utils/icons";
 import { NewMaintainerForm } from "../../../../utils/interfaces";
 import { postMaintainer } from "../../../../services/api";
 import { getRepo, getUser } from "../../../../services/validate";
+import { successToast } from "../../../../utils/functions/toast";
 
 const NewProject = () => {
   let [stage, setStage] = useState<number>(0);
   let [loading, setLoading] = useState<boolean>(false);
 
-  const initialValues: Partial<NewMaintainerForm> = {};
+  //@ts-ignore
+  const initialValues: NewMaintainerForm = {
+    name: "",
+    email: "",
+    github_id: "",
+    srm_email: "",
+    reg_number: "",
+    branch: "",
+    project_name: "",
+    project_url: "",
+    tags: "",
+    description: "",
+  };
 
   const submitValues = async (
     values: NewMaintainerForm,
-    setErrors: (errors: Partial<NewMaintainerForm>) => void
+    setErrors: (errors: Partial<NewMaintainerForm>) => void,
+    resetForm: (nextState?: Partial<FormikState<NewMaintainerForm>>) => void
   ) => {
     setLoading(true);
-    try {
-      if (await getUser(values.github_id)) {
-        if (values.project_url.length > 0) {
-          const data = values.project_url.split("/");
-          if (!(await getRepo(data[data.length - 2], data[data.length - 1]))) {
-            setErrors({
-              project_url: "**Public Repository URL:** Invalid",
-            } as Partial<NewMaintainerForm>);
-            setLoading(false);
-            return;
-          }
+    if (await getUser(values.github_id)) {
+      if (values.project_url?.length > 0) {
+        const data = values.project_url.split("/");
+        if (!(await getRepo(data[data.length - 2], data[data.length - 1]))) {
+          setErrors({
+            project_url: "**Public Repository URL:** Invalid",
+          } as Partial<NewMaintainerForm>);
+          setLoading(false);
+          return;
         }
-        const { tags, ...parsedValues } = values;
-        let parsedTags: string[] = tags
-          .split(",")
-          .filter((i) => i.trim().length > 0);
-        const res = await postMaintainer(
-          //@ts-ignore
-          { ...parsedValues, tags: parsedTags },
-          "alpha"
-        );
-      } else {
-        setErrors({
-          github_id: "**GitHub ID**: Invalid",
-        } as Partial<NewMaintainerForm>);
+      }
+      const { tags, ...parsedValues } = values;
+      let parsedTags: string[] = tags
+        .split(",")
+        .filter((i) => i.trim().length > 0);
+      const res = await postMaintainer(
+        //@ts-ignore
+        { ...parsedValues, tags: parsedTags },
+        "alpha"
+      );
+      if (res) {
+        successToast("Registered as a Maintainer!");
+        setStage(0);
+        resetForm({ values: { ...initialValues } });
         setLoading(false);
         return;
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      setErrors({
+        github_id: "**GitHub ID**: Invalid",
+      } as Partial<NewMaintainerForm>);
+      setLoading(false);
+      return;
     }
     setLoading(false);
   };
@@ -91,8 +108,8 @@ const NewProject = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={(values, { setErrors }) =>
-          submitValues(values as NewMaintainerForm, setErrors)
+        onSubmit={(values, { setErrors, resetForm }) =>
+          submitValues(values as NewMaintainerForm, setErrors, resetForm)
         }
         validationSchema={newMaintainerValidation}
       >
@@ -185,10 +202,10 @@ const NewProject = () => {
                     </button>
                   ) : (
                     <button
-                      disabled={Object.keys(errors).length > 0}
+                      disabled={Object.keys(errors).length > 0 || loading}
                       type="submit"
                       className={`${
-                        Object.keys(errors).length > 0
+                        Object.keys(errors).length > 0 || loading
                           ? "cursor-not-allowed bg-opacity-70"
                           : "cursor-pointer"
                       } text-white bg-base-green py-3 font-semibold rounded-lg`}

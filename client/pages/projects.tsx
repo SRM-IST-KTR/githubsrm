@@ -24,9 +24,18 @@ export const getServerSideProps = async (): Promise<
 > => {
   try {
     const res = await getProjects();
-    return {
-      props: { projects: res as ProjectProps[] },
-    };
+    if (res) {
+      return {
+        props: { projects: res as ProjectProps[] },
+      };
+    } else {
+      return {
+        redirect: {
+          permanent: false,
+          destination: "/500",
+        },
+      };
+    }
   } catch (error) {
     console.log(error);
     return {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikState } from "formik";
 import Markdown from "react-markdown";
 
 import { Section } from "../";
@@ -14,28 +14,45 @@ import { LoadingIcon } from "../../../utils/icons";
 import { ContributorFormData } from "../../../utils/interfaces";
 import { postContributor } from "../../../services/api";
 import { getUser } from "../../../services/validate";
+import { successToast } from "../../../utils/functions/toast";
 
 const Contributor = () => {
   const [stage, setStage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const initialValues: Partial<ContributorFormData> = {};
+  //@ts-ignore
+  const initialValues: ContributorFormData = {
+    name: "",
+    email: "",
+    github_id: "",
+    srm_email: "",
+    reg_number: "",
+    branch: "",
+    interested_project: "",
+    poa: "",
+  };
 
   const submitValues = async (
     values: ContributorFormData,
-    setErrors: (errors: Partial<ContributorFormData>) => void
+    setErrors: (errors: Partial<ContributorFormData>) => void,
+    resetForm: (nextState?: Partial<FormikState<ContributorFormData>>) => void
   ) => {
     setLoading(true);
-    try {
-      if (await getUser(values.github_id)) {
-        const res = await postContributor(values);
-      } else {
-        setErrors({
-          github_id: "**GitHub ID**: Invalid",
-        } as Partial<ContributorFormData>);
+    if (await getUser(values.github_id)) {
+      const res = await postContributor(values);
+      if (res) {
+        successToast("Registered as a Contributor!");
+        setStage(0);
+        resetForm({ values: { ...initialValues } });
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      setErrors({
+        github_id: "**GitHub ID**: Invalid",
+      } as Partial<ContributorFormData>);
+      setLoading(false);
+      return;
     }
     setLoading(false);
   };
@@ -55,11 +72,11 @@ const Contributor = () => {
     <div>
       <div>
         <div className="font-medium">
-          <h1 className="text-2xl md:text-4xl">Big text here</h1>
-          <h2 className="md:text-xl md:mt-2">small text here</h2>
+          <h1 className="text-2xl lg:text-4xl">Big text here</h1>
+          <h2 className="lg:text-xl lg:mt-2">small text here</h2>
         </div>
 
-        <p className="md:text-right md:text-lg mt-2 md:mt-0">
+        <p className="lg:text-right lg:text-lg mt-2 lg:mt-0">
           Join us as a{" "}
           <Link href="/join-us/maintainer">
             <a className="text-base-green font-bold hover:underline">
@@ -71,16 +88,16 @@ const Contributor = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={(values, { setErrors }) =>
-          submitValues(values as ContributorFormData, setErrors)
+        onSubmit={(values, { setErrors, resetForm }) =>
+          submitValues(values as ContributorFormData, setErrors, resetForm)
         }
         validationSchema={contributorValidation}
       >
         {({ errors, touched }) => (
           <Form className="w-11/12 my-8 mx-auto">
             <>
-              <div className="flex justify-evenly">
-                <div className="w-4/12 flex flex-col items-center justify-between min-h-lg border-r-2">
+              <div className="flex justify-evenly flex-col lg:flex-row">
+                <div className="w-full lg:w-4/12 flex flex-col items-start lg:items-center justify-between lg:min-h-lg border-t-2 lg:border-r-2 lg:border-t-0 mb-12">
                   {contributorInputs.map((item, index) => (
                     <Section
                       key={item.section}
@@ -104,7 +121,7 @@ const Contributor = () => {
                         key={section.inputs[0].id}
                         className={`${
                           stage !== index ? "hidden" : ""
-                        } flex w-11/12 mx-auto flex-col`}
+                        } flex w-11/12 mx-0 md:mx-auto flex-col`}
                       >
                         {section.inputs.map((field) => (
                           <Input
@@ -136,7 +153,7 @@ const Contributor = () => {
                   </div>
 
                   <div>
-                    <div className="w-11/12 mx-auto grid grid-cols-3 gap-x-10 items-center justify-center">
+                    <div className="w-11/12 mx-auto grid grid-flow-row gap-y-3 lg:gap-x-10 lg:items-center lg:justify-center">
                       <div />
                       {stage == 0 ? (
                         <div />
@@ -144,7 +161,7 @@ const Contributor = () => {
                         <button
                           type="button"
                           onClick={() => changePage(false)}
-                          className="bg-base-smoke py-3 rounded-lg"
+                          className="bg-base-smoke w-full py-3 rounded-lg"
                         >
                           Back
                         </button>
@@ -154,16 +171,16 @@ const Contributor = () => {
                         <button
                           type="button"
                           onClick={() => changePage(true)}
-                          className="text-white bg-base-black py-3 font-semibold rounded-lg"
+                          className="text-white  bg-base-black py-3 font-semibold rounded-lg"
                         >
                           Next
                         </button>
                       ) : (
                         <button
-                          disabled={Object.keys(errors).length > 0}
+                          disabled={Object.keys(errors).length > 0 || loading}
                           type="submit"
                           className={`${
-                            Object.keys(errors).length > 0
+                            Object.keys(errors).length > 0 || loading
                               ? "cursor-not-allowed bg-opacity-70"
                               : "cursor-pointer"
                           } text-white bg-base-green py-3 font-semibold rounded-lg`}
