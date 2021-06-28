@@ -62,6 +62,16 @@ class EntryCheck:
             {"reg_number": reg_number}
         ]}))
 
+        results = list(self.db.maintainer.find({
+            "$and": [
+                {"reg_number": reg_number},
+                {"project_id": interested_project}
+            ]
+        }))
+        
+        if len(results) > 0:
+            return True
+
         if len(result) > 0:
             return True
 

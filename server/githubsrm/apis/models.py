@@ -1,13 +1,11 @@
 
-import re
+
 from typing import Any, Dict
 import random
 import string
-from bson.json_util import default
 from dotenv import load_dotenv
 import pymongo
 from django.conf import settings
-
 
 load_dotenv()
 
@@ -110,13 +108,13 @@ class Entry:
                 "maintainer_id": [_id]
             }, visibility=visibility, project_id=project_id)
 
-            return project_id
+            return project_id, _id
 
         except Exception as e:
             print(e)
-            return 
+            return
 
-    def enter_beta_maintainer(self, doc: Dict[str, Any]) -> bool:
+    def enter_beta_maintainer(self, doc: Dict[str, Any]) -> str:
         """Add beta maintainers to project and updates maintainers 
            collection.
 
@@ -124,7 +122,7 @@ class Entry:
             doc (Dict): beta maintainer details
 
         Returns:
-            bool: [description]
+            str
         """
         try:
             _id = self.get_uid()
@@ -133,7 +131,7 @@ class Entry:
 
             self.db.maintainer.insert_one(
                 {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')}})
-            return True
+            return _id
 
         except Exception as e:
             print(e)
@@ -168,6 +166,30 @@ class Entry:
         except Exception as e:
             print(e)
 
+    def delete_beta_maintainer(self, maintainer_id: str, project_id: str) -> None:
+        """Delete beta maintainer and beta maintainer from project
+
+        Args:
+            maintainer_id (str): [description]
+            project_id (str): [description]
+        """
+        self.db.maintainer.delete_one({"_id": maintainer_id})
+        self.db.project.delete_one({
+            "$and": [
+                {"_id": project_id},
+                {"maintainer_id": maintainer_id}
+
+            ]})
+
+    def delete_alpha_maintainer(self, project_id: str, maintainer_id: str) -> None:
+        """Delete alpha maintainer and added project
+
+        Args:
+            project_id (str): [description]
+            maintainer_id (str): [description]
+        """
+        pass
+    
     def delete_contributor(self, identifier: str) -> bool:
         """Delete Contributos
 
@@ -266,7 +288,7 @@ class Entry:
         """
 
         details = list(self.db.contactUs.find({
-            "message": doc.get("message")   
+            "message": doc.get("message")
         }))
 
         if len(details) > 0:

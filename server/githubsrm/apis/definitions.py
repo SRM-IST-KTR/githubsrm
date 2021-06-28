@@ -38,6 +38,9 @@ def check_repo(url: str):
     Args:
         url (str): [description]
     """
+    if len(url) == 0:
+        return True
+
     with httpx.Client() as client:
         response = client.get(url)
     return response.status_code == 200
@@ -60,6 +63,37 @@ def check_tags(tags: list) -> bool:
     return len(tags) >= 2 and len(tags) <= 4
 
 
+def check_poa(poa: str) -> bool:
+    """Checks valid poa
+
+    Args:
+        poa (str)
+
+    Returns:
+        bool
+    """
+    if len(poa) == 0:
+        return True
+
+    return len(poa.strip()) > 30
+
+
+def check_phone(ph: str) -> bool:
+    """Check correct phone number
+
+    Args:
+        ph (str)
+
+    Returns:
+        bool
+    """
+    if len(ph) == 0:
+        return True
+
+    phone_re = re.compile("[0-9]{10}")
+    return phone_re.fullmatch(ph)
+
+
 class CommonSchema:
     def __init__(self, data: Dict[Any, Any], query_param: str) -> None:
         self.data = data
@@ -80,7 +114,7 @@ class CommonSchema:
 
         self.alpha_maintainer = {
             "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
-            Optional("project_url", default=None): And(str, lambda url: check_repo()),
+            "project_url": And(str, lambda url: check_repo(url)),
             "description": And(str, lambda description: len(description.strip()) > 30),
             "tags": And(list, lambda tags: check_tags(tags=tags))
         }
@@ -91,7 +125,7 @@ class CommonSchema:
 
         self.contributor = {
             "interested_project": And(str, lambda project_id: len(project_id) == 8),
-            Optional("poa", default=None): And(str, lambda poa: poa if poa else poa.strip() > 30)
+            "poa": And(str, lambda poa: check_poa(poa))
         }
 
     @staticmethod
@@ -189,7 +223,6 @@ class TeamSchema:
 class ContactUsSchema:
     def __init__(self, data: Dict[str, Any]) -> None:
         self.data = data
-        self.phone_re = re.compile("[0-9]{10}")
 
     def valid_schema(self) -> Schema:
         """Generate valid schema for contact us route
@@ -201,7 +234,7 @@ class ContactUsSchema:
             "name": And(str, lambda name: len(name.strip()) > 0),
             "email": And(str, lambda email: len(email.strip()) > 0),
             "message": And(str, lambda message: len(message.strip()) > 30),
-            Optional("phone_number", default=None): And(str, lambda phone: self.phone_re.fullmatch(phone))
+            "phone_number": And(str, lambda phone: check_phone(phone))
         })
 
         return validator
