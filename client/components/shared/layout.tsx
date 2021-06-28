@@ -9,8 +9,8 @@ const Layout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
   const scrollDivRef = useRef<HTMLDivElement>();
   const { scrollYProgress } = useElementScroll(scrollDivRef);
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const YText = useTransform(scrollYProgress, [0, 0.8], ["0%", "70%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.95], [1, 0.5, 0.25]);
+  const YText = useTransform(scrollYProgress, [0, 0.8], ["0%", "10%"]);
   const YCard = useTransform(scrollYProgress, [0, 0.8], [0, -90]);
 
   const title = () => {

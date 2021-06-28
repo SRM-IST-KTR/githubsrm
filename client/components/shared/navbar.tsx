@@ -28,17 +28,17 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 w-full z-0 mb-4 bg-base-black rounded-2xl shadow-lg overflow-auto">
-      <ul className="flex justify-between z-40 text-white mx-4 lg:mx-10 my-2 lg:my-8 w-full lg:w-6/12 text-center">
+    <nav className="h-fit-content w-full z-0 mb-4 bg-base-black rounded-2xl shadow-lg overflow-y-hidden  no-scrollbar ">
+      <ul className="flex justify-between z-40 text-white mx-4 lg:mx-10 my-4 lg:my-8 w-full lg:w-6/12 text-center">
         {links.map((link) => (
           <li
             key={link.href}
             className={`${
               asPath === link.href ? "font-semibold" : ""
-            } w-full transform hover:-translate-y-1`}
+            } min-w-max mx-4 transform hover:-translate-y-1`}
           >
             <Link href={link.href}>
-              <a className="my-2 lg:text-xl">{link.name}</a>
+              <a className="lg:my-2 lg:text-xl">{link.name}</a>
             </Link>
           </li>
         ))}

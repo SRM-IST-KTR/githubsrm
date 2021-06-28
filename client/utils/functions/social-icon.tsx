@@ -36,3 +36,5 @@ export const SocialIcon = ({ handle }: SocialIconProps): JSX.Element => {
 
   return <></>;
 };
+
+export default SocialIcon;
