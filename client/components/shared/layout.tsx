@@ -11,7 +11,7 @@ const Layout: React.FC = ({ children }) => {
   const { scrollYProgress } = useElementScroll(scrollDivRef);
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const YText = useTransform(scrollYProgress, [0, 0.8], ["0%", "70%"]);
-  const YCard = useTransform(scrollYProgress, [0, 0.8], [0, -200]);
+  const YCard = useTransform(scrollYProgress, [0, 0.8], [0, -90]);
 
   const title = () => {
     switch (pathname) {
