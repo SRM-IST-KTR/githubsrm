@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from .definitions import *
 from rest_framework import response, status
 from .models import Entry
+from .checks_models import EntryCheck
 from bson import json_util
 import json
 import psutil
@@ -10,6 +11,7 @@ import time
 import os
 
 entry = Entry()
+entry_checks = EntryCheck()
 
 
 class Contributor(APIView):
@@ -33,7 +35,7 @@ class Contributor(APIView):
             }).valid()
 
             if 'error' not in validate:
-                if entry.check_existing_contributor(validate['interested_project'], validate['reg_number']):
+                if entry_checks.check_existing_contributor(validate['interested_project'], validate['reg_number']):
                     return response.Response({
                         "invalid data": "Contributor For project exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
@@ -84,12 +86,42 @@ class Maintainer(APIView):
             Response
         """
         if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
-            validate = CommonSchema(request.data, headers={
-                "path_info": request.path_info
-            }).valid()
+
+            validate = CommonSchema(
+                request.data, query_param=request.GET.get('role')).valid()
             if 'error' not in validate:
-                if entry.check_existing(description=validate['description'],
-                                        project_name=validate['project_name']):
+
+                if 'project_id' in validate:
+                    # BETA MAINTAINER
+                    approval = entry_checks.check_approved_project(
+                        validate.get('project_id'))
+
+                    if approval is None:
+                        return response.Response(data={
+                            "invalid project_id": validate.get('project_id')
+                        }, status=status.HTTP_400_BAD_REQUEST)
+
+                    if approval is True:
+                        return response.Response(data={
+                            "error": "project approved"
+                        }, status=status.HTTP_400_BAD_REQUEST)
+
+                    if entry_checks.check_existing_beta(validate.get('github_id'), validate.get('project_id')):
+                        return response.Response(data={
+                            "beta exists"
+                        }, status=status.HTTP_400_BAD_REQUEST)
+
+                    if entry.enter_beta_maintainer(doc=request.data):
+                        return response.Response(data={
+                            "Added beta"
+                        }, status=status.HTTP_200_OK)
+
+                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                if entry_checks.check_existing(description=validate['description'],
+                                               project_name=validate['project_name']):
+                    # Enter alpha maintainer
+
                     return response.Response({
                         "invalid": "Project exists"
                     }, status=status.HTTP_400_BAD_REQUEST)
@@ -136,6 +168,7 @@ class Team(APIView):
         return response.Response(result, status=status.HTTP_200_OK)
 
 
+# TODO: FINISH THIS
 class ContactUs(APIView):
     """
     ContactUs route

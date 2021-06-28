@@ -2,7 +2,6 @@
 from schema import Optional, Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
-import json
 
 
 def get_json_schema(id: int, valid_schema: Callable) -> dict:
@@ -16,28 +15,6 @@ def get_json_schema(id: int, valid_schema: Callable) -> dict:
     """
     validator = valid_schema()
     return validator.json_schema(schema_id=id)
-
-
-def check_github_id(github_ids: list) -> bool:
-    """Check valid GitHub IDs
-
-    Args:
-        github_ids (list)
-
-    Returns:
-        bool
-    """
-
-    if len(github_ids):
-        pass
-    else:
-        return False
-
-    for ids in github_ids:
-        if len(ids.strip()) == 0:
-            return False
-
-    return True
 
 
 def check_tags(tags: list) -> bool:
@@ -58,52 +35,64 @@ def check_tags(tags: list) -> bool:
 
 
 class CommonSchema:
-    def __init__(self, data: Dict[Any, Any], headers: Dict[str, str]) -> None:
+    def __init__(self, data: Dict[Any, Any], query_param: str) -> None:
         self.data = data
         self.email_re = re.compile(
             '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
         self.url_re = re.compile(
             '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
-        self.headers = headers
+        self.query_params = query_param
         self.common = {
             "name": And(str, lambda name: len(name.strip()) > 0),
             "email": And(str, lambda email:  self.email_re.fullmatch(email)),
             "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
             "reg_number": And(str, lambda reg: len(reg.strip()) > 0),
-            "branch": And(str, lambda branch: len(branch.strip()) > 0)
+            "branch": And(str, lambda branch: len(branch.strip()) > 0),
+            "github_id": And(str, lambda github_id: len(github_id.strip()) > 0)
         }
 
-        self.maintainer = {
+        self.alpha_maintainer = {
             "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
-            "github_id": And(list, lambda github_ids: check_github_id(github_ids)),
             Optional("project_url", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
             "description": And(str, lambda description: len(description.strip()) > 30),
             "tags": And(list, lambda tags: check_tags(tags=tags))
         }
 
+        self.beta_maintainer = {
+            "project_id": And(str, lambda id: len(id) == 8)
+        }
+
         self.contributor = {
-            "github_id": And(str, lambda github_id: len(github_id.strip()) > 0),
             "interested_project": And(str, lambda name: len(name.strip()) > 0),
             Optional("poa", default=None): And(str, lambda poa: len(poa.strip()) > 30)
-
         }
 
     @staticmethod
-    def check_path(path_info: str) -> str:
-        if 'contributor' in path_info:
-            return 'contrib'
-        return 'maintainer'
+    def check_path(query_param: str) -> str:
+        if 'contributor' in query_param:
+            return 'contributor'
+        elif 'alpha' in query_param:
+            return 'alpha'
+        elif 'beta' in query_param:
+            return 'beta'
+        else:
+            return
 
     def valid_schema(self) -> Schema:
+        direction = self.check_path(self.query_params)
 
-        if self.check_path(self.headers.get('path_info')) == 'contrib':
-            validator = Schema(schema=self.merge(
-                self.common, self.contributor))
+        if direction == 'contributor':
+            validator = Schema(schema={**self.common, **self.contributor})
             return validator
-
-        validator = Schema(schema=self.merge(self.common, self.maintainer))
-        return validator
+        elif direction == 'alpha':
+            validator = Schema(schema={**self.common, **self.alpha_maintainer})
+            return validator
+        elif direction == 'beta':
+            validator = Schema(schema={**self.common, **self.beta_maintainer})
+            return validator
+        else:
+            return
 
     def get_json(self, id: int) -> dict:
         """Generate schema
