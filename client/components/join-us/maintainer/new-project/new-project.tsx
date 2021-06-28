@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Formik, Form } from "formik";
 import Markdown from "react-markdown";
 
-import { Section, Input } from "../../";
+import { Section } from "../../";
+import { Input } from "../../../shared";
 import * as FormConstants from "../../../../utils/constants";
 import { LoadingIcon } from "../../../../utils/icons";
 import { NewMaintainerForm } from "../../../../utils/interfaces";
@@ -18,7 +19,14 @@ const NewProject = () => {
   const submitValues = async (values: NewMaintainerForm) => {
     setLoading(true);
     try {
-      const res = await postMaintainer(values, "alpha");
+      console.log(values);
+      const { tags, ...parsedValues } = values;
+      let parsedTags: string[] = tags
+        .split(",")
+        .filter((i) => i.trim().length > 0);
+      parsedValues.tags = parsedTags;
+      const res = await postMaintainer(parsedValues, "alpha");
+      console.log(parsedValues);
     } catch (error) {
       console.log(error);
     }

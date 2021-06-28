@@ -3,12 +3,13 @@ import * as Yup from "yup";
 import { PersonIcon, BookIcon, BranchIcon } from "./icons";
 import { InputProps } from "./interfaces";
 
-export const wrapperClassName: string = "flex flex-col mb-8";
+export const wrapperClassName: string = "flex flex-col mb-8 w-full mx-2";
 export const inputClassName: string =
-  "text-lg py-2 w-full px-4 text-lg rounded-lg border-2 border-opacity-40 focus:border-opacity-100 mt-1 bg-white";
-export const inputClassNameError: string = "border-red-500 border-opacity-100";
+  "w-full focus:border-base-teal w-full py-2 text-gray-700 border-b-2 bg-white border-gray-300";
+export const inputClassNameError: string = " border-red-500 border-opacity-100";
 export const labelClassName: string = "font-medium";
-export const descriptionClass: string = "text-sm font-medium text-right mt-1";
+export const descriptionClass: string =
+  "text-sm font-medium text-right mt-1 mb-2";
 
 export const colors: string[] = [
   "base-black",
@@ -123,6 +124,7 @@ export const newMaintainerInputs: {
         type: "textarea",
         placeholder: "Your project description",
         textareaOptions: { rows: 4, cols: 30 },
+        required: true,
       },
     ],
   },
@@ -132,33 +134,33 @@ export const newMaintainerValidation = Yup.object().shape({
   name: Yup.string().trim().required("**Name**: Missing"),
   email: Yup.string()
     .trim()
-    .required("**Email**: Missing")
-    .email("**Email**: Invalid"),
+    .required("**Email:** Missing")
+    .email("**Email:** Invalid"),
   github_id: Yup.string().trim().required("**GitHub ID**: Missing"),
   srm_email: Yup.string()
     .trim()
-    .required("**SRM Email ID**: Missing")
-    .test("test-srm-email", "**SRM Email ID**: Invalid", (value) =>
+    .required("**SRM Email ID:** Missing")
+    .test("test-srm-email", "**SRM Email ID:** Invalid", (value) =>
       value?.endsWith("@srmist.edu.in")
     ),
-  reg_number: Yup.string().trim().required("**Registration Number**: Missing"),
-  branch: Yup.string().trim().required("**Branch**: Missing"),
-  project_name: Yup.string().trim().required("**Project URL**: Missing"),
-  project_url: Yup.string().trim().url("**Project URL**: Invalid"),
+  reg_number: Yup.string().trim().required("**Registration Number:** Missing"),
+  branch: Yup.string().trim().required("**Branch:** Missing"),
+  project_name: Yup.string().trim().required("**Project URL:** Missing"),
+  project_url: Yup.string().trim().url("**Project URL:** Invalid"),
   tags: Yup.string()
     .trim()
     .required("**Tags:** Missing")
     .test(
       "test-tags",
-      "**Tags**: Invalid Quantity",
+      "**Tags:** Invalid Quantity",
       (value) =>
         value?.split(",").filter((i) => i.trim().length > 0).length >= 2 &&
         value?.split(",").filter((i) => i.trim().length > 0).length <= 4
     ),
   description: Yup.string()
     .trim()
-    .required("**Feature or Bugfix:** Missing")
-    .min(30, "**Feature or Bugfix:** Too small"),
+    .required("**Description:** Missing")
+    .min(30, "**Description:** Too small"),
 });
 
 export const existingMaintainerInputs: {
@@ -245,18 +247,18 @@ export const existingMaintainerValidation = Yup.object().shape({
   name: Yup.string().trim().required("**Name**: Missing"),
   email: Yup.string()
     .trim()
-    .required("**Email**: Missing")
-    .email("**Email**: Invalid"),
-  github_id: Yup.string().trim().required("**GitHub ID**: Missing"),
+    .required("**Email:** Missing")
+    .email("**Email:** Invalid"),
+  github_id: Yup.string().trim().required("**GitHub ID:** Missing"),
   srm_email: Yup.string()
     .trim()
-    .required("**SRM Email ID**: Missing")
-    .test("test-srm-email", "**SRM Email ID**: Invalid", (value) =>
+    .required("**SRM Email ID:** Missing")
+    .test("test-srm-email", "**SRM Email ID:** Invalid", (value) =>
       value?.endsWith("@srmist.edu.in")
     ),
-  reg_number: Yup.string().trim().required("**Registration Number**: Missing"),
-  branch: Yup.string().trim().required("**Branch**: Missing"),
-  project_id: Yup.string().trim().required("**Project ID**: Missing"),
+  reg_number: Yup.string().trim().required("**Registration Number:** Missing"),
+  branch: Yup.string().trim().required("**Branch:** Missing"),
+  project_id: Yup.string().trim().required("**Project ID:** Missing"),
 });
 
 export const contributorInputs: {
@@ -287,7 +289,7 @@ export const contributorInputs: {
       },
       {
         id: "github_id",
-        label: "Github Id",
+        label: "Github ID",
         type: "text",
         placeholder: "srm-ist-ktr",
         required: true,
@@ -371,4 +373,58 @@ export const contributorValidation = Yup.object().shape({
     .required("**Project ID**: Missing")
     .test("test-srm-email", "**Project ID**: Invalid", async (value) => true),
   poa: Yup.string().trim(),
+});
+
+export const contactUsInputs: InputProps[][] = [
+  [
+    {
+      id: "name",
+      label: "Name",
+      type: "text",
+      placeholder: "Dr P. Supraja",
+      required: true,
+    },
+    {
+      id: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "community@githubsrm.tech",
+      required: true,
+    },
+    {
+      id: "phone_number",
+      label: "Phone Number",
+      type: "text",
+      placeholder: "9999999999",
+    },
+  ],
+  [
+    {
+      id: "message",
+      label: "Message",
+      type: "textarea",
+      placeholder: "I have a message",
+      required: true,
+      textareaOptions: { rows: 4, cols: 30 },
+      wrapperClassName: {
+        default: "w-full mx-2",
+      },
+    },
+  ],
+];
+
+export const contactUsValidation = Yup.object().shape({
+  name: Yup.string().trim().required("**Name:** Missing"),
+  email: Yup.string()
+    .trim()
+    .required("**Email:** Missing")
+    .email("**Email:** Invalid"),
+  phone_number: Yup.string()
+    .trim()
+    .required("**Phone Number:** Missing")
+    .matches(/[0-9]{10}/, "**Phone Number:** Invalid"),
+  message: Yup.string()
+    .trim()
+    .required("**Message:** Missing")
+    .min(30, "**Message:** Too small"),
 });

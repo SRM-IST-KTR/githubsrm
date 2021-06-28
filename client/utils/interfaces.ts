@@ -4,6 +4,7 @@ import {
   newMaintainerValidation,
   existingMaintainerValidation,
   contributorValidation,
+  contactUsValidation,
 } from "./constants";
 
 interface Id {
@@ -29,7 +30,7 @@ export interface ProjectProps {
 
 export interface InputProps {
   type: "text" | "textarea" | "select" | "email";
-  required?:boolean;
+  required?: boolean;
   id: string;
   label?: string;
   placeholder?: string;
@@ -46,10 +47,13 @@ export interface InputProps {
 }
 
 export interface NewMaintainerForm
-  extends Yup.InferType<typeof newMaintainerValidation> { }
+  extends Yup.InferType<typeof newMaintainerValidation> {}
 
 export interface ExistingMaintainerForm
   extends Yup.InferType<typeof existingMaintainerValidation> {}
 
 export interface ContributorFormData
   extends Yup.InferType<typeof contributorValidation> {}
+
+export interface ContactUsFormData
+  extends Yup.InferType<typeof contactUsValidation> {}

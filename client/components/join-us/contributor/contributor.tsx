@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Formik, Form } from "formik";
 import Markdown from "react-markdown";
 
-import { Section, Input } from "../";
+import { Section } from "../";
+import { Input } from "../../shared";
 import * as FormConstants from "../../../utils/constants";
 import { LoadingIcon } from "../../../utils/icons";
 import { ContributorFormData } from "../../../utils/interfaces";

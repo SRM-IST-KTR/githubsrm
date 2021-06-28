@@ -6,6 +6,7 @@ import {
   ContributorFormData,
   NewMaintainerForm,
   ExistingMaintainerForm,
+  ContactUsFormData,
 } from "../utils/interfaces";
 import { getRecaptchaToken } from "./recaptcha";
 
@@ -39,7 +40,7 @@ export const postContributor = async (
 ): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("/contributor", data, {
+    const res = await instance.post("/contributor?role=contributor", data, {
       headers: {
         "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
@@ -57,8 +58,26 @@ export const postMaintainer = async (
   role: "alpha" | "beta"
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken(`post?${role}`);
-    const res = await instance.post("/maintainer", data, {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const res = await instance.post(`/maintainer?role=${role}`, data, {
+      headers: {
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
+      },
+    });
+    console.log(res);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+export const postContactUs = async (
+  data: ContactUsFormData
+): Promise<boolean> => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const res = await instance.post("/contact-us", data, {
       headers: {
         "X-RECAPTCHA-TOKEN": recaptchaToken,
       },

@@ -20,6 +20,9 @@ const Navbar = () => {
     {
       name: "Join Us",
       href: "/join-us",
+    }, {
+      name: "Contact Us",
+      href: "/contact-us",
     },
   ];
 
@@ -33,6 +36,7 @@ const Navbar = () => {
               asPath === link.href ? "font-semibold" : ""
             } w-full transform hover:-translate-y-1`}
           >
+            
             <Link href={link.href}>
               <a className="my-2 text-xl">{link.name}</a>
             </Link>
