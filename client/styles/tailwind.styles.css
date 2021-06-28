@@ -17,6 +17,11 @@
     @apply outline-none focus:outline-none;
   }
 
+  a,
+  button {
+    @apply bg-opacity-80 hover:bg-opacity-100 !important;
+  }
+
   * {
     @apply box-border font-sans-serif transition-all;
   }
