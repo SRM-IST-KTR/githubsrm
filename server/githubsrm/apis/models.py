@@ -3,6 +3,7 @@ import re
 from typing import Any, Dict
 import random
 import string
+from bson.json_util import default
 from dotenv import load_dotenv
 import pymongo
 from django.conf import settings
@@ -148,7 +149,6 @@ class Entry:
         _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
-
         try:
             project_id = doc['interested_project']
             result = self.db.project.find_one({"_id": project_id})
@@ -255,9 +255,7 @@ class Entry:
         """
         return self.db.team.find({})
 
-    #TODO: FINISH
-
-    def enter_contactus(self, doc: Dict[str, Any]) -> bool:
+    def enter_contact_us(self, doc: Dict[str, Any]) -> bool:
         """Enter Contact us details
 
         Args:
@@ -266,16 +264,23 @@ class Entry:
         Returns:
             bool
         """
-        try:
-            self.db.contactUs.find({
-                "$or": {
-                    "email": "someoe"
-                }
-            })
-        except Exception as e:
-            pass
 
-    def get_contactus(self) -> object:
+        details = list(self.db.contactUs.find({
+            "$or": [
+                {"email": doc.get("email")},
+                {"message": doc.get("message")}
+            ]
+        }))
+
+        if len(details) > 0:
+            return
+        try:
+            self.db.contactUs.insert_one(doc)
+            return True
+        except Exception as e:
+            return
+
+    def get_contact_us(self) -> object:
         """Gets all contact us data for admin
 
         Returns:

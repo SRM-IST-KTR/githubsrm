@@ -192,7 +192,7 @@ class ContactUs(APIView):
                     "error": validate.get('error')
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            result = entry.enter_contactus(doc=request.data)
+            result = entry.enter_contact_us(doc=request.data)
             if result:
                 return response.Response(status=status.HTTP_200_OK)
             return response.Response(data={
