@@ -36,6 +36,18 @@ def check_token(token) -> bool:
 
 class BotoService:
 
+    def sns(self, message: str) -> None:
+        client = boto3.client('sns', region_name='ap-south-1')
+
+        try:
+            client.publish(
+                TopicArn=os.getenv("SNS_ARN"),
+                Message=message,
+                Subject='[QUERY]: githubsrm.tech'
+            )
+        except Exception as e:
+            print(e)
+
     def wrapper_email(self, role: str, data: Dict[str, Any]) -> bool:
         """Send Emails to contributors and maintainers
 
@@ -84,7 +96,7 @@ class BotoService:
                     },
                     'Body': {
                         'Text': {
-                            'Data': f'Here is your Project ID {data.get("project_id")}',
+                            'Data': f'Here is your Project ID {data.get("project_id")} and {data.get("project_name")}',
                             'Charset': 'utf-8'
                         }
                     }

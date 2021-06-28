@@ -93,15 +93,22 @@ class Maintainer(APIView):
 
             validate = CommonSchema(
                 request.data, query_param=request.GET.get('role')).valid()
+
             if 'error' not in validate:
 
                 if 'project_id' in validate:
                     # BETA MAINTAINER
                     if entry_checks.validate_beta_maintainer(doc=validate):
-                        if entry.enter_beta_maintainer(doc=request.data):
+                        if id := entry.enter_beta_maintainer(doc=request.data):
+
                             if service.wrapper_email(role='beta', data=validate):
                                 return response.Response(status=status.HTTP_201_CREATED)
+
+                            entry.delete_beta_maintainer(maintainer_id=id,
+                                                         project_id=validate.get('project_id'))
+
                             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
                     return response.Response(data={
                         "error": "Invalid project Id or Beta Maintainer Exists / Project Approved"
                     }, status=status.HTTP_400_BAD_REQUEST)
@@ -112,16 +119,21 @@ class Maintainer(APIView):
 
                     return response.Response({
                         "error": "Project Exists"
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                    }, status=status.HTTP_409_CONFLICT)
 
-                if project_id := entry.enter_maintainer(validate):
-                    validate['project_id'] = project_id
+                if value := entry.enter_maintainer(validate):
+                    validate['project_id'] = value[0]
+
                     if service.wrapper_email(role='alpha', data=validate):
                         return response.Response(status=status.HTTP_201_CREATED)
 
-                return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    entry.delete_alpha_maintainer(
+                        project_id=validate.get('project_id'),
+                        maintainer_id=value[1])
+                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
+
         return response.Response({
             "error": "Invalid reCaptcha"
         }, status=status.HTTP_401_UNAUTHORIZED)
@@ -185,6 +197,13 @@ class ContactUs(APIView):
 
             result = entry.enter_contact_us(doc=request.data)
             if result:
+
+                service.sns(
+                    message=f'New Query Received \n Name:{validate.get("name")} \n \
+                        Email: {validate.get("email")} \n \
+                        Message: {validate.get("message")} \n \
+                        Phone Number: {validate.get("phone_number")}')
+
                 return response.Response(status=status.HTTP_201_CREATED)
             return response.Response(data={
                 "entry exists"
