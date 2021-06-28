@@ -16,7 +16,7 @@ const Section = ({
   onError,
 }: SectionProps) => {
   return (
-    <div onClick={setActive} className="flex w-full mb-10 last:mb-0">
+    <div onClick={setActive} className="flex w-full mx-1 lg:mb-10 lg:last:mb-0">
       <div
         className={`${
           onError
@@ -24,13 +24,17 @@ const Section = ({
             : isActive
             ? "border-base-green"
             : "border-transparent"
-        } border-r-4 w-full cursor-pointer py-4 flex items-center justify-between transform hover:-translate-x-4`}
+        } border-b-4 lg:border-b-4 lg:border-r-4 w-full cursor-pointer py-4 flex flex-col-reverse lg:flex-row items-center justify-between transform lg:hover:translate-y-0 lg:hover:-translate-x-4`}
       >
         <div className="">
-          <h3 className={`${isActive ? "font-medium" : ""} text-xl mb-2`}>
+          <h3
+            className={`${
+              isActive ? "font-medium" : ""
+            } text-sm lg:text-xl font-medium mb-2 min-w-max`}
+          >
             {name}
           </h3>
-          <p className="text-sm w-full">{description}</p>
+          <p className="text-xs lg:text-sm w-full">{description}</p>
         </div>
 
         <div className="mx-4">
@@ -41,7 +45,7 @@ const Section = ({
                 : isActive
                 ? "bg-base-green bg-opacity-80"
                 : "bg-base-smoke"
-            } w-12 flex justify-center items-center p-2 rounded-full`}
+            } w-6 lg:w-12 flex justify-center items-center p-1 lg:p-2 rounded-full`}
           >
             {icon}
           </span>

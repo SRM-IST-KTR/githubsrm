@@ -39,12 +39,12 @@ const ContactUs = () => {
         validationSchema={contactUsValidation}
       >
         {({ errors, touched }) => (
-          <Form className="w-11/12 max-w-6xl my-8 mx-0 md:mx-auto">
+          <Form className="w-11/12 max-w-6xl my-8 mx-0 lg:mx-auto">
             <div>
               {contactUsInputs.map((section) => (
                 <div
                   key={section.length}
-                  className="my-6 flex w-full flex-col md:flex-row"
+                  className="my-6 flex w-full flex-col lg:flex-row"
                 >
                   {section.map((field) => (
                     <Input
@@ -64,7 +64,7 @@ const ContactUs = () => {
                   return (
                     <Markdown
                       key={error.trim()}
-                      className="text-red-500 my-2 md:my-1"
+                      className="text-red-500 my-2 lg:my-1"
                     >
                       {errors[error] as string}
                     </Markdown>
@@ -72,7 +72,7 @@ const ContactUs = () => {
                 }
               })}
 
-              <div className="flex mt-4 justify-center md:justify-end">
+              <div className="flex mt-4 justify-center lg:justify-end">
                 <button
                   disabled={Object.keys(errors).length > 0}
                   type="submit"

@@ -87,7 +87,7 @@ const JoinUs = () => {
         </div>
 
         <div className="w-full md:px-8 mt-8 md:mt-0">
-          <div className="p-2 md:p-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
+          <div className="p-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
             {roles.map(
               (role) =>
                 role.isContributor === isContributor && (
