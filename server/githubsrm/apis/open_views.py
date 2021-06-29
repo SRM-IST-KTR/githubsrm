@@ -123,7 +123,7 @@ class Maintainer(APIView):
 
                 if value := entry.enter_maintainer(validate):
                     validate['project_id'] = value[0]
-
+                    validate['project_name'] = value[2]
                     if service.wrapper_email(role='alpha', data=validate):
                         return response.Response(status=status.HTTP_201_CREATED)
 

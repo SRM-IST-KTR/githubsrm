@@ -1,8 +1,11 @@
 import os
+from .models import Entry
 from typing import Any, Dict
 import httpx
 from dotenv import load_dotenv
 import boto3
+import pathlib
+from jinja2 import Template
 
 load_dotenv()
 email_client = boto3.client('sesv2', region_name='ap-south-1')
@@ -70,7 +73,6 @@ class BotoService:
                 ReplyToAddresses=[
                     'community@githubsrm.tech',
                 ],
-
                 Content=self.get_email_content(role=role, data=data)
             )
             return True
@@ -98,12 +100,21 @@ class BotoService:
                         'Text': {
                             'Data': f'Here is your Project ID {data.get("project_id")} and {data.get("project_name")}',
                             'Charset': 'utf-8'
+                        },
+
+                        'Html': {
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], project_name=data["project_name"], project_id=data["project_id"]),
+                            'Charset': 'utf-8'
+
                         }
                     }
-                }
+                },
             }
 
         elif role == 'beta':
+            entry=Entry()
+            project=list(entry.db.project.find({"_id":data["project_id"]}))
+            project_name=project[0]["project_name"]
             return {
                 'Simple': {
                     'Subject': {
@@ -114,9 +125,15 @@ class BotoService:
                         'Text': {
                             'Data': f'You have been added as a maintainer to the project with the id {data.get("project_id")}',
                             'Charset': 'utf-8'
+                        },
+
+                        'Html': {
+                            'Data': emailbody(file='beta_maintainer_accept.html', name=data['name'], project_name=project_name),
+                            'Charset': 'utf-8'
+
                         }
                     }
-                }
+                },
             }
 
         else:
@@ -136,35 +153,42 @@ class BotoService:
             }
 
 
-def send_mail(project_id: str, email: str) -> bool:
-    """Send emails
+def emailbody(name, file, project_name, project_id=None):
+    with open(f'{pathlib.Path.cwd()}/apis/{file}') as file_:
+        template = Template(file_.read())
+        if project_id:
+            return template.render(name=name, project_id=project_id, project_name=project_name)
+        return template.render(name=name, project_name=project_name)
 
-    Args:
-        project_id (str)
-        email (str)
+# def send_mail(project_id: str, email: str) -> bool:
+#     """Send emails
 
-    Returns:
-        bool
-    """
-    try:
-        email_client.send_email(
-            FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
-            Destination={
-                'ToAddresses': [
-                    email,
-                ],
-            },
-            ReplyToAddresses=[
-                'community@githubsrm.tech',
-            ],
+#     Args:
+#         project_id (str)
+#         email (str)
+
+#     Returns:
+#         bool
+#     """
+#     try:
+#         email_client.send_email(
+#             FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
+#             Destination={
+#                 'ToAddresses': [
+#                     email,
+#                 ],
+#             },
+#             ReplyToAddresses=[
+#                 'community@githubsrm.tech',
+#             ],
 
 
-        )
-        return True
+#         )
+#         return True
 
-    except Exception as e:
-        print(e)
-        return
+#     except Exception as e:
+#         print(e)
+#         return
 
 
 '''

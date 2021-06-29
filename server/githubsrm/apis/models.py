@@ -108,7 +108,7 @@ class Entry:
                 "maintainer_id": [_id]
             }, visibility=visibility, project_id=project_id)
 
-            return project_id, _id
+            return project_id, _id, project_name
 
         except Exception as e:
             print(e)
