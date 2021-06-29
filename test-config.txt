@@ -1,4 +1,4 @@
 chmod +x ./run.sh
 chmod +x ./run_tests.sh
-./run.sh
-./run_tests.sh
+./run.sh 5000
+./run_tests.sh 5000
