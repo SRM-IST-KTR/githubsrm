@@ -10,7 +10,7 @@ const NotFound = () => {
         className="w-full md:w-1/3"
         loop
         autoplay
-        src="https://assets3.lottiefiles.com/packages/lf20_dF0drO.json"
+        src="/lottie/server-error.json"
       />
     </Layout>
   );
