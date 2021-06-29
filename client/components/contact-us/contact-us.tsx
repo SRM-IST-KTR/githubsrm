@@ -29,8 +29,6 @@ const ContactUs = () => {
     resetForm: (nextState?: Partial<FormikState<ContactUsFormData>>) => void
   ) => {
     setLoading(true);
-
-    console.log(values);
     const res = await postContactUs(values);
     if (res) {
       successToast("Query has been Submitted!");
@@ -51,6 +49,7 @@ const ContactUs = () => {
           Have Doubts? Reach out to us.
         </h2>
       </div>
+
       <Formik
         initialValues={initialValues}
         onSubmit={(values, { resetForm }) => submitValues(values, resetForm)}
