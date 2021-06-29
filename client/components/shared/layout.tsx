@@ -32,10 +32,17 @@ const Layout: React.FC = ({ children }) => {
       case "/join-us": {
         return <JoinUs />;
       }
+      case "/join-us/maintainer/existing-project":
+      case "/join-us/maintainer/new-project":
+      case "/join-us/maintainer":
+      case "/join-us/contributor":
+      case "/join-us": {
+        return <JoinUs />;
+      }
       case "/projects": {
         return <Projects />;
       }
-      case "/contact": {
+      case "/contact-us": {
         return <Contact />;
       }
       case "/500": {
