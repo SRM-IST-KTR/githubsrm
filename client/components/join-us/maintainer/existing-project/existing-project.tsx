@@ -73,11 +73,11 @@ const ExistingProject = () => {
     <div>
       <div>
         <div className="font-medium">
-          <h1 className="text-4xl">Maintainer</h1>
-          <h2 className="text-xl mt-2">beta</h2>
+          <h1 className="text-2xl lg:text-4xl">Maintainer</h1>
+          <h2 className="lg:text-xl lg:mt-2">beta</h2>
         </div>
 
-        <p className="text-right text-lg">
+        <p className="lg:text-right lg:text-lg mt-2 lg:mt-0">
           Join us as a{" "}
           <Link href="/join-us/contributor">
             <a className="text-base-green font-bold hover:underline">
@@ -96,8 +96,8 @@ const ExistingProject = () => {
       >
         {({ errors, touched }) => (
           <Form className="w-11/12 my-8 mx-auto">
-            <div className="flex justify-evenly">
-              <div className="w-4/12 flex flex-col items-center justify-between min-h-lg border-r-2">
+            <div className="flex justify-evenly flex-col lg:flex-row">
+              <div className="w-full lg:w-4/12 flex flex-col items-start lg:items-center justify-between lg:min-h-lg  lg:border-r-2 lg:border-t-0 mb-12">
                 {existingMaintainerInputs.map((item, index) => (
                   <Section
                     key={item.section}
@@ -121,7 +121,7 @@ const ExistingProject = () => {
                       key={section.inputs[0].id}
                       className={`${
                         stage !== index ? "hidden" : ""
-                      } flex w-11/12 mx-auto flex-col`}
+                      } flex w-11/12 mx-0 lg:mx-auto flex-col`}
                     >
                       {section.inputs.map((field) => (
                         <Input
@@ -152,17 +152,17 @@ const ExistingProject = () => {
                   })}
                 </div>
 
-                <div className="w-11/12 mx-auto grid grid-cols-3 gap-x-10 items-center justify-center text-center">
+                <div className="w-11/12 mx-auto grid grid-rows-3 lg:grid-rows-none lg:grid-cols-3 grid-flow-row lg:grid-flow-col gap-5 gap-x-10 justify-items-auto">
                   <Link href="/join-us/maintainer/new-project">
                     <a
                       type="button"
-                      className="bg-base-teal py-3 rounded-lg text-white font-medium"
+                      className="bg-base-teal py-3 rounded-lg text-white font-medium w-full text-center"
                     >
                       New Project?
                     </a>
                   </Link>
                   {stage == 0 ? (
-                    <div />
+                    <div className=" w-full py-3" />
                   ) : (
                     <button
                       type="button"

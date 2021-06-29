@@ -97,7 +97,7 @@ const Contributor = () => {
           <Form className="w-11/12 my-8 mx-auto">
             <>
               <div className="flex justify-evenly flex-col lg:flex-row">
-                <div className="w-full lg:w-4/12 flex flex-col items-start lg:items-center justify-between lg:min-h-lg border-t-2 lg:border-r-2 lg:border-t-0 mb-12">
+                <div className="w-full lg:w-4/12 flex flex-col items-start lg:items-center justify-between lg:min-h-lg  lg:border-r-2 lg:border-t-0 mb-12">
                   {contributorInputs.map((item, index) => (
                     <Section
                       key={item.section}
@@ -121,7 +121,7 @@ const Contributor = () => {
                         key={section.inputs[0].id}
                         className={`${
                           stage !== index ? "hidden" : ""
-                        } flex w-11/12 mx-0 md:mx-auto flex-col`}
+                        } flex w-11/12 mx-0 lg:mx-auto flex-col`}
                       >
                         {section.inputs.map((field) => (
                           <Input
@@ -137,7 +137,7 @@ const Contributor = () => {
                     ))}
                   </div>
 
-                  <div className="w-11/12 mx-auto h-full pb-6 flex flex-col justify-end">
+                  <div className="w-11/12  mx-auto h-full pb-6 flex flex-col justify-end">
                     {Object.keys(errors).map((error) => {
                       if (touched[error]) {
                         return (
@@ -153,10 +153,10 @@ const Contributor = () => {
                   </div>
 
                   <div>
-                    <div className="w-11/12 mx-auto grid grid-flow-row gap-y-3 lg:gap-x-10 lg:items-center lg:justify-center">
-                      <div />
+                    <div className="w-11/12 mx-auto grid grid-rows-3 lg:grid-rows-none lg:grid-cols-3 grid-flow-row lg:grid-flow-col gap-5 gap-x-10 justify-items-auto">
+                      <div className=" w-full py-3" />
                       {stage == 0 ? (
-                        <div />
+                        <div className=" w-full py-3" />
                       ) : (
                         <button
                           type="button"
