@@ -3,6 +3,10 @@
 INFO_TEXT="\e[1;32m[INFO]\e[0m"
 ERROR_TEXT="\e[1;31m[ERROR]\e[0m"
 
+# make all shell files executable
+echo -e "${INFO_TEXT} Making shell scripts executable [...]"
+chmod +x *.sh
+
 # installing deps and running django server
 echo -e "${INFO_TEXT} Entering into 'server' [...]"
 cd server
