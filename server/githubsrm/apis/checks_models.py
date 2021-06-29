@@ -44,8 +44,8 @@ class EntryCheck:
             return result['approved']
         return
 
-    def check_existing_contributor(self, interested_project: str,
-                                   reg_number: str) -> bool:
+    def check_contributor(self, interested_project: str,
+                          reg_number: str) -> bool:
         """Existing contributor to same project
 
         Args:
@@ -55,6 +55,11 @@ class EntryCheck:
         Returns:
             bool
         """
+        project_id = interested_project
+        
+        result = self.db.project.find_one({"_id": project_id})
+        if not result['approved']:
+            return True
 
         result = list(self.db.contributor.find({"$and": [
             {"interested_project": interested_project},
@@ -76,7 +81,7 @@ class EntryCheck:
 
         return
 
-    def check_existing_beta(self, github_id: str, project_id: str) -> bool:
+    def check_existing_beta(self, github_id: str, project_id: str, srm_email: str) -> bool:
         """Checks for existing beta maintainer
 
         Args:
@@ -87,7 +92,7 @@ class EntryCheck:
         """
 
         result = list(self.db.maintainer.find(
-            {"github_id": github_id, "project_id": project_id}))
+            {"github_id": github_id, "project_id": project_id, "srm_email": srm_email}))
 
         if len(result) >= 1:
             return True
@@ -106,7 +111,8 @@ class EntryCheck:
         """
 
         if self.check_existing_beta(github_id=doc.get('github_id'),
-                                    project_id=doc.get('project_id')):
+                                    project_id=doc.get('project_id'),
+                                    srm_email=doc.get('srm_email')):
             return
 
         if self.check_approved_project(

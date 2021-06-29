@@ -35,10 +35,10 @@ class Contributor(APIView):
                 request.data, query_param=request.GET.get('role')).valid()
 
             if 'error' not in validate:
-                if entry_checks.check_existing_contributor(validate['interested_project'],
-                                                           validate['reg_number']):
+                if entry_checks.check_contributor(validate['interested_project'],
+                                                  validate['reg_number']):
                     return response.Response({
-                        "invalid data": "Contributor For project exists"
+                        "invalid data": "Contributor for project exists / Project not approved"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
                 if entry.enter_contributor(validate):
@@ -109,8 +109,8 @@ class Maintainer(APIView):
                             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                     return response.Response(data={
-                        "error": "Invalid project Id or Beta Maintainer Exists / Project Approved"
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                        "error": "Approved / Already Exists / Invalid"
+                    }, status=status.HTTP_409_CONFLICT)
 
                 if entry_checks.check_existing(description=validate['description'],
                                                project_name=validate['project_name']):

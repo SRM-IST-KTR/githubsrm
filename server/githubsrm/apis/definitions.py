@@ -71,9 +71,6 @@ def check_poa(poa: str) -> bool:
     Returns:
         bool
     """
-    if len(poa) == 0:
-        return True
-
     return len(poa.strip()) > 30
 
 
@@ -129,6 +126,14 @@ class CommonSchema:
 
     @staticmethod
     def check_path(query_param: str) -> str:
+        """Checks query param
+
+        Args:
+            query_param (str)
+
+        Returns:
+            str
+        """
         if 'contributor' in query_param:
             return 'contributor'
         elif 'alpha' in query_param:
@@ -164,12 +169,12 @@ class CommonSchema:
         """
         return get_json_schema(id=id, valid_schema=self.valid_schema)
 
-    @staticmethod
-    def merge(schema_1: Dict[str, Any], schema_2: Dict[str, Any]):
-        schema_1.update(schema_2)
-        return schema_1
-
     def valid(self) -> Dict[str, Any]:
+        """Checks schema
+
+        Returns:
+            Dict[str, Any]: [description]
+        """
         try:
             return self.valid_schema().validate(self.data)
         except SchemaError as e:
@@ -186,6 +191,11 @@ class TeamSchema:
             '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
     def valid_schema(self) -> Schema:
+        """Generates valid team schema
+
+        Returns:
+            Schema
+        """
         valdiator = Schema(schema={
             "name": And(str, lambda name: len(name) > 0),
             "github_id": And(str, lambda github_id: len(github_id) > 0),
