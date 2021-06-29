@@ -7,8 +7,8 @@ export const customInputClasses: InputClassNameProps = {
   wrapperClassName: { default: "flex flex-col mb-8 w-full md:mx-2" },
   inputClassName: {
     default:
-      "w-full focus:border-base-teal w-full py-2 text-gray-700 border-b-2 bg-white border-gray-300",
-    onError: " border-red-500 border-opacity-100",
+      "w-full focus:border-base-teal py-2 text-gray-700 border-b-2 bg-white border-gray-300",
+    onError: "border-red-500 border-opacity-100",
   },
   labelClassName: {
     default: "font-medium",

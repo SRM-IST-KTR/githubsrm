@@ -33,8 +33,16 @@
 
   /* * INFO: only used to prevent classes from purging; ignore the 'alert' */
   .purge-prevention {
+    /* INFO: projects card */
     @apply bg-base-black bg-base-green bg-base-smoke bg-base-blue bg-base-teal;
     @apply border-base-black border-base-green border-base-smoke border-base-blue border-base-teal;
+
+    /* INFO: custom input */
+    @apply flex flex-col mb-8 w-full md:mx-2;
+    @apply w-full focus:border-base-teal py-2 text-gray-700 border-b-2 bg-white border-gray-300;
+    @apply border-red-500 border-opacity-100;
+    @apply font-medium;
+    @apply text-sm font-medium text-right mt-1 mb-2;
   }
 
   .no-scrollbar::-webkit-scrollbar {

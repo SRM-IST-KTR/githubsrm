@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
-import { toast } from "react-toastify";
 
 import {
   MemberProps,
@@ -34,6 +33,7 @@ export const getProjects = async (): Promise<ProjectProps[] | false> => {
       await instance.get("/maintainer")
     ).data;
   } catch (error) {
+    errorHandler(error);
     console.log(error);
     return false;
   }
