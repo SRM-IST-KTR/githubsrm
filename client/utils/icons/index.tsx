@@ -14,3 +14,6 @@ export { default as ErrorPage } from "./404";
 export { default as InstagramIcon } from "./instagram";
 export { default as CopyIcon } from "./copy";
 export { default as LoadingIcon } from "./loading";
+export { default as TickMark } from "./tick-mark";
+export { default as Hand } from "./hand";
+export { default as Feat } from "./feat";

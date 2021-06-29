@@ -1,4 +1,4 @@
-import { Travis } from "../../utils/icons";
+import { Travis, Hand, Feat, TickMark } from "../../utils/icons";
 
 const domainData: Array<{
   icon: JSX.Element;
@@ -6,17 +6,17 @@ const domainData: Array<{
   text: string;
 }> = [
   {
-    icon: <Travis />,
+    icon: <Hand />,
     title: "Contribution",
     text: "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
   },
   {
-    icon: <Travis />,
+    icon: <TickMark />,
     title: "Eligibility",
     text: "Eligibility to apply for the GitHub Externship Program where one can solve real-world tech problems by collaborating on open source projects.",
   },
   {
-    icon: <Travis />,
+    icon: <Feat />,
     title: "Features",
     text: "Free access to GitHub Enterprise Server and GitHub Enterprise Cloud for every department and Exclusive access to new features, and GitHub Education-specific swag",
   },
@@ -43,8 +43,8 @@ const Benefits = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         {domainData.map((data) => (
           <div key={data.title}>
-            <div className="flex flex-col justify-center p-6 rounded-xl text-justify">
-              <div className="flex justify-center mb-5">{data.icon}</div>
+            <div className="flex flex-col justify-center items-center p-6 rounded-xl text-justify">
+              <div className="mb-5 w-5 h-5">{data.icon}</div>
               <h3 className="font-medium text-center lg:text-lg mb-2">
                 {data.title}
               </h3>
