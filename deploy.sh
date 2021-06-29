@@ -10,7 +10,7 @@ echo -e "${INFO_TEXT} Installing Python Requirements [...]"
 pip install -r requirements.txt
 cd ..
 echo -e "${INFO_TEXT} Running Django Server in Background [...]"
-bash ./run.sh &
+bash ./run.sh 5000 &
 
 # render next.js pages and static file generation
 echo -e "${INFO_TEXT} Entering into 'client' [...]"
@@ -24,7 +24,7 @@ cd ..
 
 # cleaning up background django server
 echo -e "${INFO_TEXT} Killing Background Django Proccess [...]" 
-fuser -k 8000/tcp
+fuser -k 5000/tcp
 
 # copying static assets
 if [ -d "./server/githubsrm/dist" ]
