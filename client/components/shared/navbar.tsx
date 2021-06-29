@@ -35,10 +35,10 @@ const Navbar = () => {
             key={link.href}
             className={`${
               asPath === link.href ? "font-semibold" : ""
-            } min-w-max mx-4 transform hover:-translate-y-1`}
+            } min-w-max mx-4 transform hover:-translate-y-1 cursor-pointer`}
           >
             <Link href={link.href}>
-              <a className="lg:my-2 lg:text-xl">{link.name}</a>
+              <span className="lg:my-2 lg:text-xl">{link.name}</span>
             </Link>
           </li>
         ))}

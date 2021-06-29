@@ -1,5 +1,6 @@
 import { motion, useViewportScroll, useTransform } from "framer-motion";
 import { CoderOcto } from "../../utils/icons";
+import Tilt from "react-tilt";
 
 interface HeroProps {
   reference?: HTMLDivElement;
@@ -16,14 +17,13 @@ const Hero = ({ reference }: HeroProps) => {
           <div className="text-xl z-40 ">
             <motion.h1
               style={{ y: y }}
-              className="flex z-40  justify-center text-base-teal text-4xl lg:text-6xl font-extrabold mb-6"
+              className="flex z-40  justify-center text-base-blue text-4xl lg:text-6xl font-extrabold mb-6"
             >
               GitHub Community SRM
             </motion.h1>
             <p className="text-gray-600 font-regular text-sm lg:text-lg">
-              GitHub Community SRM is the official/foremost student-led
-              community spearheading the Open Source Revolution at SRMIST,
-              Chennai.
+              GitHub Community SRM is the official student-led community
+              spearheading the Open Source Revolution at SRMIST, Chennai.
             </p>
             <br />
           </div>
@@ -44,23 +44,31 @@ const Hero = ({ reference }: HeroProps) => {
           </div>
 
           <div className="grid grid-rows-3 w-full lg:p-7">
-            <div className="my-2 lg:my-5 bg-base-green rounded-2xl flex justify-center items-center flex-col">
-              <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
-                We plan on administering the SRMIST KTR GitHub Enterprise
-                organization
-              </p>
-            </div>
-            <div className="my-2 lg:my-5 lg:ml-20 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
-              <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
-                Help the faculties in managing student projects
-              </p>
-            </div>
-            <div className="my-2 lg:my-5 bg-base-green  rounded-2xl flex justify-center items-center flex-col">
-              <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
-                Help the students get onboarded and get started with their
-                projects.
-              </p>
-            </div>
+            <Tilt className="Tilt cursor-default" options={{ max: 25 }}>
+              <div className="my-1 lg:my-5 bg-base-green rounded-2xl flex justify-center items-center flex-col">
+                <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
+                  We plan on administering the SRMIST KTR GitHub Enterprise
+                  organization
+                </p>
+              </div>
+            </Tilt>
+            <Tilt className="Tilt cursor-default" options={{ max: 25 }}>
+              <div className="my-1 lg:my-5 lg:ml-20 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
+                <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
+                  Help the faculties in managing and maintaining student
+                  projects
+                </p>
+              </div>
+            </Tilt>
+            <Tilt className="Tilt cursor-default" options={{ max: 25 }}>
+              <div className="my-1 lg:my-5 bg-base-green  rounded-2xl flex justify-center items-center flex-col">
+                <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
+                  Help the students get onboarded and get started with their
+                  major,minor and personal projects under the SRMIST KTR GitHub
+                  Enterprise.
+                </p>
+              </div>
+            </Tilt>
           </div>
         </div>
       </div>
