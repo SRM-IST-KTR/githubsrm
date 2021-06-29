@@ -16,8 +16,15 @@ entry_checks = EntryCheck()
 service = BotoService()
 
 
-def home(request):
-    return render(request, 'index.html')
+def conditional_render(path):
+    if len(path):
+        return f"{path}.html"
+    else:
+        return "index.html"
+
+
+def home(request, path=None):
+    return render(request, f'{conditional_render(path)}')
 
 
 class Contributor(APIView):
