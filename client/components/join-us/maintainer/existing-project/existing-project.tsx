@@ -42,7 +42,7 @@ const ExistingProject = () => {
     if (await getUser(values.github_id)) {
       const res = await postMaintainer(values, "beta");
       if (res) {
-        successToast("Registered as a Contributor!");
+        successToast("Registered as a Maintainer!");
         setStage(0);
         resetForm({ values: { ...initialValues } });
         setLoading(false);

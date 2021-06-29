@@ -44,7 +44,7 @@ export const postContributor = async (
 ): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("/contributor?role=contributor", data, {
+    await instance.post("/contributor?role=contributor", data, {
       headers: {
         "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
@@ -63,12 +63,11 @@ export const postMaintainer = async (
 ): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post(`/maintainer?role=${role}`, data, {
+    await instance.post(`/maintainer?role=${role}`, data, {
       headers: {
         "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
     });
-    console.log(res);
     return true;
   } catch (error) {
     errorHandler(error);
@@ -82,12 +81,11 @@ export const postContactUs = async (
 ): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("/contact-us", data, {
+    await instance.post("/contact-us", data, {
       headers: {
         "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
     });
-    console.log(res);
     return true;
   } catch (error) {
     errorHandler(error);

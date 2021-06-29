@@ -30,13 +30,6 @@ const Profile = ({ member }: MemberProp) => {
     },
   };
 
-  const handles = [
-    { github_id: member.github_id },
-    { linkedin: member.linkedin },
-    { twitter: member.twitter },
-    { portfolio: member.portfolio },
-  ];
-
   return (
     <div className="flex flex-col items-center m-4">
       {typeof window !== "undefined" ? (
@@ -52,10 +45,19 @@ const Profile = ({ member }: MemberProp) => {
             className="rounded-full w-full h-full relative object-cover z-10 "
             src={member.img_url}
           />
-          <Socials handles={handles} />
+          <Socials
+            handles={[
+              { github_id: member.github_id },
+              { linkedin: member.linkedin },
+              { twitter: member.twitter },
+              { portfolio: member.portfolio },
+            ]}
+          />
         </motion.div>
       ) : (
-        <h3>Loading...</h3>
+        <h3 className="flex items-center justify-center text-center text-lg lg:text-2xl font-medium text-base-black min-h-30">
+          Loading...
+        </h3>
       )}
       <h5 className="text-lg mt-6 font-medium">{member.name}</h5>
       <p className="text-sm">{`"${member.tagline}"`}</p>

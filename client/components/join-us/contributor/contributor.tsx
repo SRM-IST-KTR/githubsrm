@@ -79,12 +79,13 @@ const Contributor = () => {
         </div>
 
         <p className="lg:text-right lg:text-lg mt-2 lg:mt-0">
-          Join us as a{" "}
+          Have an idea? Join us as a{" "}
           <Link href="/join-us/maintainer">
             <a className="text-base-green font-bold hover:underline">
               Maintainer
             </a>
           </Link>
+          .
         </p>
       </div>
 

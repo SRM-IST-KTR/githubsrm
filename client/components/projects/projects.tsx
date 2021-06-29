@@ -12,17 +12,17 @@ const Projects = ({ projects }: ProjectsProps) => {
         Projects
       </h1>
 
-      {projects.length > 0 ? (
-        projects.map((project) => (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {projects.length > 0 ? (
+          projects.map((project) => (
             <Project key={project.project_name.trim()} project={project} />
-          </div>
-        ))
-      ) : (
-        <h3 className="flex items-center justify-center text-center text-lg lg:text-2xl font-medium text-base-black min-h-30">
-          No Projects available right now!
-        </h3>
-      )}
+          ))
+        ) : (
+          <h3 className="flex items-center justify-center text-center text-lg lg:text-2xl font-medium text-base-black min-h-30">
+            No Projects available right now!
+          </h3>
+        )}
+      </div>
     </div>
   );
 };

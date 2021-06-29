@@ -25,19 +25,15 @@ const Socials = ({ handles }: SocialsProps) => {
   };
   const jump = {
     initial: (i) => {
-      if (window.innerWidth >= 768) {
-        console.log("In PC view", window.innerWidth);
-        return {};
-      }
+      if (window.innerWidth >= 768) return {};
+
       const Yval = hypo * Math.sin(angles[len][i]);
       const Xval = hypo * Math.cos(angles[len][i]);
       return { x: Xval, y: Yval, scale: 1.1 };
     },
     hover: (i) => {
-      if (window.innerWidth < 768) {
-        console.log("In Mobile view", window.innerWidth);
-        return {};
-      }
+      if (window.innerWidth < 768) return {};
+
       const Yval = hypo * Math.sin(angles[len][i]);
       const Xval = hypo * Math.cos(angles[len][i]);
       return { x: Xval, y: Yval, scale: 1.1 };

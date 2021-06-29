@@ -41,14 +41,14 @@ export const newMaintainerInputs: {
         id: "name",
         label: "Name",
         type: "text",
-        placeholder: "GithubSRM",
+        placeholder: "GitHub Community SRM",
         required: true,
       },
       {
         id: "email",
         label: "Email",
         type: "email",
-        placeholder: "johndoe@mail.com",
+        placeholder: "community@githubsrm.tech",
         required: true,
       },
       {
@@ -63,7 +63,7 @@ export const newMaintainerInputs: {
   {
     section: "SRM Details",
     icon: <BookIcon />,
-    description: "We did not want this, but the college does.",
+    description: "Help us identify you.",
     inputs: [
       {
         id: "srm_email",
@@ -179,14 +179,14 @@ export const existingMaintainerInputs: {
         id: "name",
         label: "Name",
         type: "text",
-        placeholder: "GithubSRM",
+        placeholder: "GitHub Community SRM",
         required: true,
       },
       {
         id: "email",
         label: "Email",
         type: "email",
-        placeholder: "johndoe@mail.com",
+        placeholder: "community@githubsrm.tech",
         required: true,
       },
       {
@@ -201,7 +201,7 @@ export const existingMaintainerInputs: {
   {
     section: "SRM Details",
     icon: <BookIcon />,
-    description: "We did not want this, but the college does.",
+    description: "Help us identify you.",
     inputs: [
       {
         id: "srm_email",
@@ -272,20 +272,20 @@ export const contributorInputs: {
   {
     section: "Personal",
     icon: <PersonIcon />,
-    description: "Let us get to know you better.      ",
+    description: "Let us get to know you better.",
     inputs: [
       {
         id: "name",
         label: "Name",
         type: "text",
-        placeholder: "GithubSRM",
+        placeholder: "GitHub Community SRM",
         required: true,
       },
       {
         id: "email",
         label: "Email",
         type: "email",
-        placeholder: "johndoe@mail.com",
+        placeholder: "community@githubsrm.tech",
         required: true,
       },
       {
@@ -300,7 +300,7 @@ export const contributorInputs: {
   {
     section: "SRM Details",
     icon: <BookIcon />,
-    description: "We did not want this, but the college does.",
+    description: "Help us identify you.",
     inputs: [
       {
         id: "srm_email",
@@ -328,7 +328,7 @@ export const contributorInputs: {
   {
     section: "Projects",
     icon: <BranchIcon />,
-    description: "Because this is what developers do.",
+    description: "Be a part of the OSS revolution.",
     inputs: [
       {
         id: "interested_project",
@@ -345,8 +345,9 @@ export const contributorInputs: {
         label: "Feature or Bugfix",
         type: "textarea",
         placeholder: "Your project proposal",
-        description: "If given, should have atleast 30 characters.",
+        description: "Should have atleast 30 characters.",
         textareaOptions: { rows: 4, cols: 30 },
+        required: true,
       },
     ],
   },
@@ -371,7 +372,10 @@ export const contributorValidation = Yup.object().shape({
     .trim()
     .required("**Project ID**: Missing")
     .matches(/^[A-Z0-9]{8}$/, "**Project ID**: Invalid"),
-  poa: Yup.string().trim().min(30, "**Project ID**: Too Small"),
+  poa: Yup.string()
+    .trim()
+    .required("**Feature or Bugfix**: Missing")
+    .min(30, "**Feature or Bugfix**: Too Small"),
 });
 
 export const contactUsInputs: InputProps[][] = [

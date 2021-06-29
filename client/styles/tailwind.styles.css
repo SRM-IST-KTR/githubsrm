@@ -24,6 +24,11 @@
 
   * {
     @apply box-border font-sans-serif transition-all;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
   }
 
   /* * INFO: only used to prevent classes from purging; ignore the 'alert' */

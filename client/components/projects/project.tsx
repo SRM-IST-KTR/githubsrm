@@ -21,9 +21,9 @@ const Project = ({ project }: ProjectProp) => {
     <div
       className={`border-${
         colors[Math.floor(Math.random() * colors.length)]
-      } p-2 lg:p-6 border-t-8 max-w-md bg-gray-100 flex flex-col justify-between mx-auto`}
+      } p-2 lg:p-6 border-t-8 max-w-md bg-gray-100 flex flex-col justify-between max-h-96`}
     >
-      <div>
+      <div className="overflow-auto no-scrollbar">
         <h2 className="flex w-full justify-between items-start capitalize text-gray-800 text-xl md:text-3xl font-semibold">
           {project.project_name}
           <div className="flex items-center ml-2 mt-2">

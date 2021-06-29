@@ -1,19 +1,16 @@
 import { motion, useViewportScroll, useTransform } from "framer-motion";
-import { CoderOcto } from "../../utils/icons";
 import Tilt from "react-tilt";
 
-interface HeroProps {
-  reference?: HTMLDivElement;
-}
+import { CoderOcto } from "../../utils/icons";
 
-const Hero = ({ reference }: HeroProps) => {
+const Hero = () => {
   const { scrollYProgress } = useViewportScroll();
   const y = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
 
   return (
     <div>
-      <div className="pb-10 lg:mt-20 lg:mb-32">
-        <div className="grid grid-cols-1 xl:grid-cols-3 items-center mx-2">
+      <div className="pb-10 lg:mt-20 lg:mb-20">
+        <div className="grid grid-cols-1 xl:grid-cols-3 items-center">
           <div className="text-xl z-40 ">
             <motion.h1
               style={{ y: y }}
@@ -28,7 +25,7 @@ const Hero = ({ reference }: HeroProps) => {
             <br />
           </div>
           <div className="flex justify-items-center z-10 items-center flex-col">
-            <div className="absolute rounded-full bg-base-blue p-28 md:p-32 lg:p-48 "></div>
+            <div className="absolute rounded-full bg-base-blue bg-opacity-70 p-28 md:p-32 lg:p-48 "></div>
             <motion.div
               animate={{ y: 100 }}
               transition={{

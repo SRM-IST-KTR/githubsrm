@@ -18,6 +18,8 @@ const JoinUs = () => {
       href: "/join-us/contributor",
       statement: "Contribute to a Project",
       description: [
+        "Suggest unique ideas to improve or add-on to the project.",
+        "Code your ideas into reality.",
         "Regularly commit updates/changes to the project.",
         "Follow the code of conduct of contributing to the projects.",
         "Frequently update the documentation along with the code for the project.",
@@ -45,9 +47,9 @@ const JoinUs = () => {
       <div className="font-medium">
         <h1 className="text-2xl md:text-4xl">
           Explore the world of{" "}
-          <span className="font-semibold text-base-blue">Open-source</span>
+          <span className="font-semibold text-base-blue">Open-Source</span>
         </h1>
-        <h2 className="md:text-xl md:mt-2">Join us NOW</h2>
+        <h2 className="md:text-xl md:mt-2">Take your first step!</h2>
       </div>
 
       <div className="flex flex-col md:flex-row justify-evenly mt-8">
@@ -99,8 +101,10 @@ const JoinUs = () => {
                       Role of a <strong>{role.name}</strong>
                     </h2>
                     <ul className="list-disc">
-                      {role.description.map((desc) => (
-                        <li className="my-1">{desc}</li>
+                      {role.description.map((item) => (
+                        <li key={item} className="my-1">
+                          {item}
+                        </li>
                       ))}
                     </ul>
 
