@@ -9,10 +9,22 @@ import json
 import psutil
 import time
 import os
+from django.shortcuts import render
 
 entry = Entry()
 entry_checks = EntryCheck()
 service = BotoService()
+
+
+def conditional_render(path):
+    if len(path):
+        return f"{path}.html"
+    else:
+        return "index.html"
+
+
+def home(request, path=None):
+    return render(request, f'{conditional_render(path)}')
 
 
 class Contributor(APIView):
