@@ -44,7 +44,7 @@ const Hero = ({ reference }: HeroProps) => {
           </div>
 
           <div className="grid grid-rows-3 w-full lg:p-7">
-            <Tilt className="Tilt cursor-default" options={{ max: 25 }}>
+            <Tilt className="Tilt cursor-default" options={{ max: 50 }}>
               <div className="my-1 lg:my-5 bg-base-green rounded-2xl flex justify-center items-center flex-col">
                 <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
                   We plan on administering the SRMIST KTR GitHub Enterprise
@@ -52,7 +52,7 @@ const Hero = ({ reference }: HeroProps) => {
                 </p>
               </div>
             </Tilt>
-            <Tilt className="Tilt cursor-default" options={{ max: 25 }}>
+            <Tilt className="Tilt cursor-default" options={{ max: 50 }}>
               <div className="my-1 lg:my-5 lg:ml-20 bg-base-teal  rounded-2xl flex justify-center items-center flex-col">
                 <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
                   Help the faculties in managing and maintaining student
@@ -60,12 +60,11 @@ const Hero = ({ reference }: HeroProps) => {
                 </p>
               </div>
             </Tilt>
-            <Tilt className="Tilt cursor-default" options={{ max: 25 }}>
+            <Tilt className="Tilt cursor-default" options={{ max: 50 }}>
               <div className="my-1 lg:my-5 bg-base-green  rounded-2xl flex justify-center items-center flex-col">
                 <p className="text-center mx-2 p-1 lg:p-2 font-semibold text-gray-100">
-                  Help the students get onboarded and get started with their
-                  major,minor and personal projects under the SRMIST KTR GitHub
-                  Enterprise.
+                  Help the students get onboarded with their major,minor and
+                  personal projects under the SRMIST KTR GitHub Enterprise.
                 </p>
               </div>
             </Tilt>

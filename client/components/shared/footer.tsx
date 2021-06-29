@@ -1,4 +1,9 @@
-import { GitHubIcon, TwitterIcon, InstagramIcon } from "../../utils/icons";
+import {
+  GitHubIcon,
+  TwitterIcon,
+  InstagramIcon,
+  LinkedinIcon,
+} from "../../utils/icons";
 
 const Footer = () => {
   const socials: {
@@ -7,15 +12,19 @@ const Footer = () => {
   }[] = [
     {
       icon: <GitHubIcon />,
-      href: "https://github.com",
+      href: "https://github.com/srm-ist-ktr",
     },
     {
-      icon: <GitHubIcon />,
-      href: "https://github.com",
+      icon: <TwitterIcon />,
+      href: "https://twitter.com/githubsrm",
     },
     {
-      icon: <GitHubIcon />,
-      href: "https://github.com",
+      icon: <LinkedinIcon />,
+      href: "https://www.linkedin.com/company/githubsrm/mycompany/",
+    },
+    {
+      icon: <InstagramIcon />,
+      href: "https://www.instagram.com/githubsrm/",
     },
   ];
 
