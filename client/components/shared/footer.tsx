@@ -36,6 +36,7 @@ const Footer = () => {
       </div>
       <p className="w-full md:w-1/3 text-center my-2 md:my-auto text-gray-700 font-regular mx-2 min-w-max">
         Developed with <span className="line-through">friends</span> Groovy
+        &hearts;
       </p>
       <div className="w-full md:w-1/3 flex flex-row justify-around md:justify-evenly items-center">
         {socials.map((social) => (
