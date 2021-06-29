@@ -31,10 +31,10 @@ const Footer = () => {
 
   return (
     <div className="bg-base-smoke flex flex-col md:flex-row justify-evenly items-center rounded-b-2xl p-2 md:p-6 text-white">
-      <div className="w-1/3 h-0 md:h-auto text-base-blue font-medium">
+      <div className="w-full md:w-1/3 h-0 md:h-auto my-4 mx-2 min-w-max md:my-auto text-center text-base-blue font-medium">
         <a href="mailto:community@githubsrm.tech">community@githubsrm.tech</a>
       </div>
-      <p className="w-full md:w-1/3 text-center my-2 md:my-auto text-gray-700 font-regular mx-2 min-w-max">
+      <p className="w-full md:w-1/3 text-center my-4 md:my-auto text-gray-700 font-regular mx-2 min-w-max">
         Developed with <span className="line-through">friends</span> Groovy
         &hearts;
       </p>
