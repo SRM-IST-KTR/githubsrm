@@ -1,4 +1,4 @@
-import { GetServerSidePropsResult } from "next";
+import { GetStaticPropsResult } from "next";
 
 import { Layout } from "../components/shared";
 import { ProjectProps } from "../utils/interfaces";
@@ -19,8 +19,8 @@ const ProjectsPage = ({ projects }: TeamPageProps) => {
 
 export default ProjectsPage;
 
-export const getServerSideProps = async (): Promise<
-  GetServerSidePropsResult<TeamPageProps>
+export const getStaticProps = async (): Promise<
+  GetStaticPropsResult<TeamPageProps>
 > => {
   try {
     const res = await getProjects();
