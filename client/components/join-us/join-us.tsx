@@ -53,7 +53,7 @@ const JoinUs = () => {
       </div>
 
       <div className="flex flex-col md:flex-row justify-evenly mt-8">
-        <div className="w-full md:w-4/12 flex flex-col sm:flex-row md:flex-col items-center justify-start">
+        <div className="w-full md:w-4/12 flex flex-col sm:flex-row md:flex-col">
           {roles.map((role) => (
             <div key={role.name} className="flex mx-2 w-full">
               <div
@@ -92,12 +92,12 @@ const JoinUs = () => {
         </div>
 
         <div className="w-full md:px-8 mt-8 md:mt-0">
-          <div className="p-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
+          <div className="px-8 py-4 lg:px-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
             {roles.map(
               (role) =>
                 role.isContributor === isContributor && (
                   <div key={role.name}>
-                    <h2 className="text-2xl md:text-4xl mb-7">
+                    <h2 className="text-2xl mb-7">
                       Role of a <strong>{role.name}</strong>
                     </h2>
                     <ul className="list-disc">
@@ -112,7 +112,7 @@ const JoinUs = () => {
                       <span className="hidden lg:block" />
                       <span />
                       <Link href={role.href}>
-                        <a className="text-white bg-base-green py-3 font-semibold rounded-lg text-center">
+                        <a className="text-white bg-base-green px-4 py-2 font-semibold rounded-lg text-center mx-auto">
                           Apply Now!
                         </a>
                       </Link>

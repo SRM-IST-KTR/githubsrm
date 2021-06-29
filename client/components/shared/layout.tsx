@@ -76,8 +76,8 @@ const Layout: React.FC = ({ children }) => {
             style={{ y: YCard }}
             className="absolute w-full top-0 z-10"
           >
-            <div className="w-11/12 mx-auto bg-white mt-36 lg:mt-80 p-2 pt-8 md:p-10 overflow-auto rounded-t-md lg:rounded-t-2xl">
-              {children}
+            <div className="w-11/12 mx-auto bg-white mt-36 lg:mt-80 px-4 py-10 md:p-10 overflow-auto rounded-t-md lg:rounded-t-2xl">
+              <div className="max-w-9xl mx-auto">{children}</div>
             </div>
             <div className="w-11/12 mx-auto mb-10">
               <Footer />

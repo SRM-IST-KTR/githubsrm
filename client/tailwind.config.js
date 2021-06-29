@@ -90,6 +90,9 @@ module.exports = {
       height: {
         "fit-content": "fit-content",
       },
+      maxWidth: {
+        "9xl": "96rem",
+      },
     },
   },
   variants: {

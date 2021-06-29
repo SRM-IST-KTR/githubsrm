@@ -4,7 +4,6 @@ import {
   InstagramIcon,
   LinkedinIcon,
 } from "../../utils/icons";
-import { motion } from "framer-motion";
 
 const Footer = () => {
   const socials: {
@@ -30,33 +29,36 @@ const Footer = () => {
   ];
 
   return (
-    <div className="bg-base-smoke flex flex-col lg:flex-row justify-evenly items-center rounded-b-2xl p-2 lg:p-6 text-white">
-      <div className="w-full lg:w-1/3 h-0 lg:h-auto my-4 mx-2 min-w-max lg:my-auto text-center text-base-blue font-medium">
+    <footer className="bg-base-smoke flex flex-col lg:flex-row justify-evenly items-center rounded-b-2xl px-2 py-4 lg:p-6 text-white">
+      <div className="hidden lg:flex lg:w-1/3 h-auto my-4 mx-2 text-center text-base-blue font-medium">
         <a href="mailto:community@githubsrm.tech">community@githubsrm.tech</a>
       </div>
-      <p className="w-full lg:w-1/3 text-center my-4 lg:my-auto text-gray-700 font-regular mx-2 min-w-max">
-        Developed with <span className="line-through">friends</span> Groovy
-        &hearts;
+
+      <p className="w-full lg:w-1/3 text-center my-4 lg:my-auto text-gray-700 font-regular mx-2 text-sm">
+        Alone we can do so little, together we can do so much.
+        <br />
+        <strong>GitHub Community SRM</strong>
       </p>
-      <div className="w-full lg:w-1/3 flex flex-row justify-around lg:justify-evenly items-center">
+
+      <div className="w-full lg:hidden h-auto mb-4 mx-2 text-center text-base-blue font-medium">
+        <a href="mailto:community@githubsrm.tech">community@githubsrm.tech</a>
+      </div>
+
+      <div className="w-full lg:w-1/3 flex justify-evenly items-center">
         {socials.map((social) => (
-          <motion.div
-            key={social.href}
-            whileHover={{ scale: 1.2, rotate: 360 }}
-            whileTap={{ scale: 1.3, rotate: -360, borderRadius: "100%" }}
-          >
+          <div key={social.href}>
             <a
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-base-teal flex justify-center items-center p-2 rounded-xl"
+              className="bg-base-teal flex justify-center items-center p-2 rounded-xl mx-auto"
             >
               <span className="w-5 h-5">{social.icon}</span>
             </a>
-          </motion.div>
+          </div>
         ))}
       </div>
-    </div>
+    </footer>
   );
 };
 

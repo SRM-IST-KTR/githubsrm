@@ -9,7 +9,7 @@ const Maintainer = () => {
           <h2 className="text-xl mt-2">Maintain and manage projects</h2>
         </div>
 
-        <p className="text-right text-lg mt-3">
+        <p className="lg:text-right text-lg mt-3">
           Join us as a{" "}
           <Link href="/join-us/contributor">
             <a className="text-base-green font-bold hover:underline">
@@ -26,14 +26,14 @@ const Maintainer = () => {
           </p>
           <img
             src="/octo-teacher.png"
-            alt="octo teacaher"
+            alt="octo teacher"
             draggable="false"
-            className="w-1/3"
+            className="w-1/3 max-w-xs"
           />
         </div>
         <div className="grid items-center grid-cols-1 gap-1 lg:grid-cols-3 w-full lg:w-8/12 mx-auto mt-10 mb-10">
           <Link href="/join-us/maintainer/new-project">
-            <a className="bg-base-teal text-white rounded-lg text-xl py-5 font-medium">
+            <a className="bg-base-teal text-white rounded-lg lg:text-lg py-2 font-medium">
               New Project
             </a>
           </Link>
@@ -41,7 +41,7 @@ const Maintainer = () => {
           <span />
 
           <Link href="/join-us/maintainer/existing-project">
-            <a className="bg-base-teal text-white rounded-lg text-xl py-5 font-medium">
+            <a className="bg-base-teal text-white rounded-lg lg:text-lg py-2 font-medium">
               Existing Project
             </a>
           </Link>

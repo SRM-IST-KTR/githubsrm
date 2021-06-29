@@ -56,12 +56,12 @@ const ContactUs = () => {
         validationSchema={contactUsValidation}
       >
         {({ errors, touched }) => (
-          <Form className="w-11/12 max-w-6xl my-8 mx-0 lg:mx-auto">
+          <Form className="w-full max-w-6xl mt-6">
             <div>
               {contactUsInputs.map((section) => (
                 <div
                   key={section.length}
-                  className="my-6 flex w-full flex-col lg:flex-row"
+                  className="flex w-full flex-col lg:flex-row"
                 >
                   {section.map((field) => (
                     <Input

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 
 import { Project } from "./";
 import { ProjectProps } from "../../utils/interfaces";
@@ -9,7 +8,6 @@ import { getProjects } from "../../services/api";
 const Projects = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [projects, setProjects] = useState<ProjectProps[]>([]);
-  const { replace } = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -17,11 +15,9 @@ const Projects = () => {
         const res = await getProjects();
         if (res) {
           setProjects(res);
-          setLoading(false);
         }
-      } catch (error) {
-        setLoading(false);
-      }
+      } catch (error) {}
+      setLoading(false);
     })();
   }, []);
 
@@ -36,7 +32,7 @@ const Projects = () => {
           <LoadingIcon />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
           {projects.length > 0 ? (
             projects.map((project) => (
               <Project key={project.project_name.trim()} project={project} />

@@ -9,7 +9,7 @@
   body {
     @apply m-0 p-0;
   }
-
+  a,
   input,
   textarea,
   select,
@@ -19,11 +19,14 @@
 
   a,
   button {
-    @apply bg-opacity-80 hover:bg-opacity-100 !important;
+    @apply lg:bg-opacity-80 hover:bg-opacity-100 !important;
   }
 
   * {
     @apply box-border font-sans-serif transition-all;
+  }
+
+  .word-wrap {
     word-wrap: break-word;
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
@@ -31,18 +34,24 @@
     hyphens: auto;
   }
 
-  /* * INFO: only used to prevent classes from purging; ignore the 'alert' */
-  .purge-prevention {
-    /* INFO: projects card */
-    @apply bg-base-black bg-base-green bg-base-smoke bg-base-blue bg-base-teal;
-    @apply border-base-black border-base-green border-base-smoke border-base-blue border-base-teal;
-
-    /* INFO: custom input */
+  /* //* INFO: prevent these classes from being purged */
+  .custom-input-wrapper {
     @apply flex flex-col mb-8 w-full md:mx-2;
+  }
+  .custom-input {
     @apply w-full focus:border-base-teal py-2 text-gray-700 border-b-2 bg-white border-gray-300;
+  }
+  .custom-input-error {
     @apply border-red-500 border-opacity-100;
+  }
+  .custom-label {
     @apply font-medium;
-    @apply text-sm font-medium text-right mt-1 mb-2;
+  }
+  .custom-description {
+    @apply text-xs lg:text-sm font-medium md:text-right mt-1 mb-2;
+  }
+  .bg-colors {
+    @apply bg-base-black bg-base-green bg-base-smoke bg-base-blue bg-base-teal;
   }
 
   .no-scrollbar::-webkit-scrollbar {

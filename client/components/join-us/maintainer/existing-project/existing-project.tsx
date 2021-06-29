@@ -75,7 +75,6 @@ const ExistingProject = () => {
         <div className="font-medium">
           <h1 className="text-2xl lg:text-4xl">Maintainer</h1>
           <h2 className="lg:text-xl lg:mt-2">
-            {" "}
             Please fill the details correctly.
           </h2>
         </div>
@@ -98,9 +97,9 @@ const ExistingProject = () => {
         validationSchema={existingMaintainerValidation}
       >
         {({ errors, touched }) => (
-          <Form className="w-11/12 my-8 mx-auto">
-            <div className="flex justify-evenly flex-col lg:flex-row">
-              <div className="w-full lg:w-4/12 flex flex-col items-start lg:items-center justify-between lg:min-h-lg  lg:border-r-2 lg:border-t-0 mb-12">
+          <Form className="w-full my-8 mx-auto">
+            <div className="flex justify-evenly flex-col lg:flex-row max-w-6xl mx-auto">
+              <div className="w-full lg:w-4/12 flex flex-col sm:flex-row lg:flex-col items-stretch lg:items-center justify-between lg:min-h-lg lg:border-r-2 lg:border-t-0 mb-12">
                 {existingMaintainerInputs.map((item, index) => (
                   <Section
                     key={item.section}
@@ -140,7 +139,7 @@ const ExistingProject = () => {
                   ))}
                 </div>
 
-                <div className="w-11/12 mx-auto h-full pb-6 flex flex-col justify-end">
+                <div className="w-11/12 text-sm md:text-base mx-auto h-full pb-6 flex flex-col justify-end">
                   {Object.keys(errors).map((error) => {
                     if (touched[error]) {
                       return (
@@ -155,7 +154,7 @@ const ExistingProject = () => {
                   })}
                 </div>
 
-                <div className="w-11/12 mx-auto grid grid-rows-3 lg:grid-rows-none lg:grid-cols-3 grid-flow-row lg:grid-flow-col gap-5 gap-x-10 justify-items-auto">
+                <div className="w-11/12 mx-auto grid grid-rows-3 sm:grid-rows-none sm:grid-cols-3 lg:grid-rows-none lg:grid-cols-3 grid-flow-row lg:grid-flow-col gap-4 justify-items-auto">
                   <Link href="/join-us/maintainer/new-project">
                     <a
                       type="button"

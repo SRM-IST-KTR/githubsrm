@@ -97,111 +97,109 @@ const Contributor = () => {
         validationSchema={contributorValidation}
       >
         {({ errors, touched }) => (
-          <Form className="w-11/12 my-8 mx-auto">
-            <>
-              <div className="flex justify-evenly flex-col lg:flex-row">
-                <div className="w-full lg:w-4/12 flex flex-col items-start lg:items-center justify-between lg:min-h-lg  lg:border-r-2 lg:border-t-0 mb-12">
-                  {contributorInputs.map((item, index) => (
-                    <Section
-                      key={item.section}
-                      name={item.section}
-                      description={item.description}
-                      icon={item.icon}
-                      isActive={stage === index}
-                      setActive={() => setStage(index)}
-                      onError={errorInputId(
-                        item.inputs.map((i) => i.id),
-                        Object.keys(errors).filter((i) => touched[i])
-                      )}
-                    />
+          <Form className="w-full my-8 mx-auto">
+            <div className="flex justify-evenly flex-col lg:flex-row max-w-6xl mx-auto">
+              <div className="w-full lg:w-4/12 flex flex-col sm:flex-row lg:flex-col items-stretch lg:items-center justify-between lg:min-h-lg lg:border-r-2 lg:border-t-0 mb-12">
+                {contributorInputs.map((item, index) => (
+                  <Section
+                    key={item.section}
+                    name={item.section}
+                    description={item.description}
+                    icon={item.icon}
+                    isActive={stage === index}
+                    setActive={() => setStage(index)}
+                    onError={errorInputId(
+                      item.inputs.map((i) => i.id),
+                      Object.keys(errors).filter((i) => touched[i])
+                    )}
+                  />
+                ))}
+              </div>
+
+              <div className="w-full max-w-3xl flex flex-col justify-between">
+                <div>
+                  {contributorInputs.map((section, index) => (
+                    <div
+                      key={section.inputs[0].id}
+                      className={`${
+                        stage !== index ? "hidden" : ""
+                      } flex w-11/12 mx-0 lg:mx-auto flex-col`}
+                    >
+                      {section.inputs.map((field) => (
+                        <Input
+                          onError={Object.keys(errors)
+                            .filter((i) => touched[i])
+                            .includes(field.id)}
+                          key={field.id}
+                          {...field}
+                          {...customInputClasses}
+                        />
+                      ))}
+                    </div>
                   ))}
                 </div>
 
-                <div className="w-full max-w-3xl flex flex-col justify-between">
-                  <div>
-                    {contributorInputs.map((section, index) => (
-                      <div
-                        key={section.inputs[0].id}
-                        className={`${
-                          stage !== index ? "hidden" : ""
-                        } flex w-11/12 mx-0 lg:mx-auto flex-col`}
+                <div className="w-11/12 text-sm md:text-base mx-auto h-full pb-6 flex flex-col justify-end">
+                  {Object.keys(errors).map((error) => {
+                    if (touched[error]) {
+                      return (
+                        <Markdown
+                          key={error.trim()}
+                          className="text-red-500 my-1"
+                        >
+                          {errors[error] as string}
+                        </Markdown>
+                      );
+                    }
+                  })}
+                </div>
+
+                <div>
+                  <div className="w-11/12 mx-auto grid grid-rows-2 sm:grid-rows-none sm:grid-cols-2 lg:grid-rows-none lg:grid-cols-3 grid-flow-row lg:grid-flow-col gap-4 justify-items-auto">
+                    <div className="hidden lg:block w-full py-3" />
+                    {stage == 0 ? (
+                      <div className="w-full py-3" />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => changePage(false)}
+                        className="bg-base-smoke w-full py-3 rounded-lg"
                       >
-                        {section.inputs.map((field) => (
-                          <Input
-                            onError={Object.keys(errors)
-                              .filter((i) => touched[i])
-                              .includes(field.id)}
-                            key={field.id}
-                            {...field}
-                            {...customInputClasses}
-                          />
-                        ))}
-                      </div>
-                    ))}
-                  </div>
+                        Back
+                      </button>
+                    )}
 
-                  <div className="w-11/12  mx-auto h-full pb-6 flex flex-col justify-end">
-                    {Object.keys(errors).map((error) => {
-                      if (touched[error]) {
-                        return (
-                          <Markdown
-                            key={error.trim()}
-                            className="text-red-500 my-1"
-                          >
-                            {errors[error] as string}
-                          </Markdown>
-                        );
-                      }
-                    })}
-                  </div>
-
-                  <div>
-                    <div className="w-11/12 mx-auto grid grid-rows-3 lg:grid-rows-none lg:grid-cols-3 grid-flow-row lg:grid-flow-col gap-5 gap-x-10 justify-items-auto">
-                      <div className=" w-full py-3" />
-                      {stage == 0 ? (
-                        <div className=" w-full py-3" />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => changePage(false)}
-                          className="bg-base-smoke w-full py-3 rounded-lg"
-                        >
-                          Back
-                        </button>
-                      )}
-
-                      {stage !== contributorInputs.length - 1 ? (
-                        <button
-                          type="button"
-                          onClick={() => changePage(true)}
-                          className="text-white  bg-base-black py-3 font-semibold rounded-lg"
-                        >
-                          Next
-                        </button>
-                      ) : (
-                        <button
-                          disabled={Object.keys(errors).length > 0 || loading}
-                          type="submit"
-                          className={`${
-                            Object.keys(errors).length > 0 || loading
-                              ? "cursor-not-allowed bg-opacity-70"
-                              : "cursor-pointer"
-                          } text-white bg-base-green py-3 font-semibold rounded-lg`}
-                        >
-                          {!loading ? (
-                            "Submit"
-                          ) : (
-                            <span className="flex w-6 mx-auto">
-                              <LoadingIcon />
-                            </span>
-                          )}
-                        </button>
-                      )}
-                    </div>
+                    {stage !== contributorInputs.length - 1 ? (
+                      <button
+                        type="button"
+                        onClick={() => changePage(true)}
+                        className="text-white  bg-base-black py-3 font-semibold rounded-lg"
+                      >
+                        Next
+                      </button>
+                    ) : (
+                      <button
+                        disabled={Object.keys(errors).length > 0 || loading}
+                        type="submit"
+                        className={`${
+                          Object.keys(errors).length > 0 || loading
+                            ? "cursor-not-allowed bg-opacity-70"
+                            : "cursor-pointer"
+                        } text-white bg-base-green py-3 font-semibold rounded-lg`}
+                      >
+                        {!loading ? (
+                          "Submit"
+                        ) : (
+                          <span className="flex w-6 mx-auto">
+                            <LoadingIcon />
+                          </span>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           </Form>
         )}
       </Formik>

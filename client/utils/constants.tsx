@@ -4,17 +4,16 @@ import { PersonIcon, BookIcon, BranchIcon } from "./icons";
 import { InputClassNameProps, InputProps } from "./interfaces";
 
 export const customInputClasses: InputClassNameProps = {
-  wrapperClassName: { default: "flex flex-col mb-8 w-full md:mx-2" },
+  wrapperClassName: { default: "custom-input-wrapper" },
   inputClassName: {
-    default:
-      "w-full focus:border-base-teal py-2 text-gray-700 border-b-2 bg-white border-gray-300",
-    onError: "border-red-500 border-opacity-100",
+    default: "custom-input",
+    onError: "custom-input-error",
   },
   labelClassName: {
-    default: "font-medium",
+    default: "custom-label",
   },
   descriptionClassName: {
-    default: "text-sm font-medium text-right mt-1 mb-2",
+    default: "custom-description",
   },
 };
 
@@ -53,7 +52,7 @@ export const newMaintainerInputs: {
       },
       {
         id: "github_id",
-        label: "Github Id",
+        label: "Github ID",
         type: "text",
         placeholder: "srm-ist-ktr",
         required: true,
@@ -69,7 +68,7 @@ export const newMaintainerInputs: {
         id: "srm_email",
         label: "SRM Email",
         type: "email",
-        placeholder: "gs123@srmist.edu.in",
+        placeholder: "gs1234@srmist.edu.in",
         required: true,
       },
       {
@@ -97,7 +96,7 @@ export const newMaintainerInputs: {
         id: "project_name",
         label: "Project Name",
         type: "text",
-        placeholder: "GitHubSRM",
+        placeholder: "GitHubSRM Landing",
         required: true,
       },
       {
@@ -105,8 +104,7 @@ export const newMaintainerInputs: {
         label: "Public Repository URL",
         type: "text",
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
-        description:
-          "If an existing project, please give its Public Project GitHub URL! ",
+        description: "Only for an personal existing project!",
       },
       {
         id: "tags",
@@ -114,14 +112,13 @@ export const newMaintainerInputs: {
         type: "text",
         placeholder: "ReactJS, TailwindCSS, Django",
         description: "2-4 Comma separated values please!",
-
         required: true,
       },
       {
         id: "description",
         label: "Project Description",
         type: "textarea",
-        placeholder: "Your project description",
+        placeholder: "This is the landing website for...",
         textareaOptions: { rows: 4, cols: 30 },
         required: true,
       },
@@ -191,7 +188,7 @@ export const existingMaintainerInputs: {
       },
       {
         id: "github_id",
-        label: "Github Id",
+        label: "Github ID",
         type: "text",
         placeholder: "srm-ist-ktr",
         required: true,
@@ -207,7 +204,7 @@ export const existingMaintainerInputs: {
         id: "srm_email",
         label: "SRM Email",
         type: "email",
-        placeholder: "gs123@srmist.edu.in",
+        placeholder: "gs1234@srmist.edu.in",
         required: true,
       },
       {
@@ -306,7 +303,7 @@ export const contributorInputs: {
         id: "srm_email",
         label: "SRM Email",
         type: "email",
-        placeholder: "gs123@srmist.edu.in",
+        placeholder: "gs1234@srmist.edu.in",
         required: true,
       },
       {
@@ -336,16 +333,15 @@ export const contributorInputs: {
         type: "text",
         placeholder: "Select your preferred project!",
         description:
-          "Please provide the Project ID given to you by your Maintainer / found on the Projects Page",
-
+          "Given to you by your Maintainer/found on the Projects Page",
         required: true,
       },
       {
         id: "poa",
         label: "Feature or Bugfix",
         type: "textarea",
-        placeholder: "Your project proposal",
-        description: "Should have atleast 30 characters.",
+        placeholder: "The inputs fields have ClassName...",
+        description: "Should have atleast 30 characters!",
         textareaOptions: { rows: 4, cols: 30 },
         required: true,
       },
@@ -384,7 +380,7 @@ export const contactUsInputs: InputProps[][] = [
       id: "name",
       label: "Name",
       type: "text",
-      placeholder: "Dr P. Supraja",
+      placeholder: "John Doe",
       required: true,
     },
     {
@@ -399,6 +395,7 @@ export const contactUsInputs: InputProps[][] = [
       label: "Phone Number",
       type: "text",
       placeholder: "9999999999",
+      description: "Should be 10 digits!",
     },
   ],
   [
