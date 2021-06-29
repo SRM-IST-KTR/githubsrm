@@ -103,9 +103,9 @@ class Maintainer(APIView):
 
                             if service.wrapper_email(role='beta', data=validate):
                                 return response.Response(status=status.HTTP_201_CREATED)
-
-                            entry.delete_beta_maintainer(maintainer_id=id,
-                                                         project_id=validate.get('project_id'))
+                            else:
+                                entry.delete_beta_maintainer(maintainer_id=id,
+                                                             project_id=validate.get('project_id'))
 
                             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -126,11 +126,13 @@ class Maintainer(APIView):
                     validate['project_name'] = value[2]
                     if service.wrapper_email(role='alpha', data=validate):
                         return response.Response(status=status.HTTP_201_CREATED)
-
-                    entry.delete_alpha_maintainer(
-                        project_id=validate.get('project_id'),
-                        maintainer_id=value[1])
-                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    else:
+                        entry.delete_alpha_maintainer(
+                            project_id=validate.get('project_id'),
+                            maintainer_id=value[1])
+                    return response.Response({
+                        "deleted record"
+                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
 

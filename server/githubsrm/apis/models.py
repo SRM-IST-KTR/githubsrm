@@ -174,22 +174,29 @@ class Entry:
             project_id (str): [description]
         """
         self.db.maintainer.delete_one({"_id": maintainer_id})
-        self.db.project.delete_one({
-            "$and": [
-                {"_id": project_id},
+        self.db.project.update({
+            "_id": project_id
+        }, {
+            "$pull":
                 {"maintainer_id": maintainer_id}
 
-            ]})
+        })
 
     def delete_alpha_maintainer(self, project_id: str, maintainer_id: str) -> None:
         """Delete alpha maintainer and added project
 
         Args:
-            project_id (str): [description]
-            maintainer_id (str): [description]
+            project_id (str)
+            maintainer_id (str)
         """
-        pass
-    
+        self.db.project.delete_one({
+            "_id": project_id
+        })
+
+        self.db.maintainer.delete_one({
+            "_id": maintainer_id
+        })
+
     def delete_contributor(self, identifier: str) -> bool:
         """Delete Contributos
 
@@ -200,8 +207,6 @@ class Entry:
             bool
         """
         try:
-            # project_contributor = self.db.project.find({"contributor_id": identifier})
-            # if len(list(project_contributor)) > 0:
             self.db.project.delete_one({"contributor_id": identifier})
 
             self.db.contributor.delete_one({"_id": identifier})

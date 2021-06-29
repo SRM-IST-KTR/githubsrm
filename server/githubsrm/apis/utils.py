@@ -76,6 +76,7 @@ class BotoService:
                 Content=self.get_email_content(role=role, data=data)
             )
             return True
+
         except Exception as e:
             print(e)
             return
@@ -112,9 +113,9 @@ class BotoService:
             }
 
         elif role == 'beta':
-            entry=Entry()
-            project=list(entry.db.project.find({"_id":data["project_id"]}))
-            project_name=project[0]["project_name"]
+            entry = Entry()
+            project = list(entry.db.project.find({"_id": data["project_id"]}))
+            project_name = project[0]["project_name"]
             return {
                 'Simple': {
                     'Subject': {
@@ -159,58 +160,3 @@ def emailbody(name, file, project_name, project_id=None):
         if project_id:
             return template.render(name=name, project_id=project_id, project_name=project_name)
         return template.render(name=name, project_name=project_name)
-
-# def send_mail(project_id: str, email: str) -> bool:
-#     """Send emails
-
-#     Args:
-#         project_id (str)
-#         email (str)
-
-#     Returns:
-#         bool
-#     """
-#     try:
-#         email_client.send_email(
-#             FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
-#             Destination={
-#                 'ToAddresses': [
-#                     email,
-#                 ],
-#             },
-#             ReplyToAddresses=[
-#                 'community@githubsrm.tech',
-#             ],
-
-
-#         )
-#         return True
-
-#     except Exception as e:
-#         print(e)
-#         return
-
-
-'''
-Content={
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Submission Confirmation | GitHub Community SRM',
-                                'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'Your Project ID is {project_id}',
-                                    'Charset': 'utf-8'
-                        },
-
-                        # 'Html': {
-                        #     'Data': emailbody(file='confirm_email.html', name=request.data['fields']['name'], otp=None),
-                        #     'Charset': 'utf-8'
-
-                        # }
-                    }
-                },
-            }
-
-'''

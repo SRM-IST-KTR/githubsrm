@@ -113,7 +113,6 @@ class EntryCheck:
         if self.check_approved_project(
             identifier=doc.get('project_id')
         ) is None:
-            print("Invalid")
             return None
 
         if self.check_approved_project(
