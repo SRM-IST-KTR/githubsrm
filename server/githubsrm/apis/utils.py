@@ -43,7 +43,7 @@ class BotoService:
             client.publish(
                 TopicArn=os.getenv("SNS_ARN"),
                 Message=message,
-                Subject='[QUERY]: githubsrm.tech'
+                Subject='[QUERY]: https://githubsrm.tech'
             )
         except Exception as e:
             print(e)

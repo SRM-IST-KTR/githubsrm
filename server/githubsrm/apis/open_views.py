@@ -199,7 +199,7 @@ class ContactUs(APIView):
             if result:
 
                 service.sns(
-                    message=f'New Query Received \n Name:{validate.get("name")} \n \
+                    message=f'New Query Received! \n Name:{validate.get("name")} \n \
                         Email: {validate.get("email")} \n \
                         Message: {validate.get("message")} \n \
                         Phone Number: {validate.get("phone_number")}')
