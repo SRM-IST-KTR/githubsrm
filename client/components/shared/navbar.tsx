@@ -38,7 +38,7 @@ const Navbar = () => {
             } min-w-max transform hover:-translate-y-1 cursor-pointer mb-2`}
           >
             <Link href={link.href}>
-              <span className="lg:my-2 lg:text-xl px-6">{link.name}</span>
+              <a className="lg:my-2 lg:text-xl px-6">{link.name}</a>
             </Link>
           </li>
         ))}
