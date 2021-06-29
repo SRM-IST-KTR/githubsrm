@@ -50,6 +50,7 @@ class BotoService:
             )
         except Exception as e:
             print(e)
+            return 
 
     def wrapper_email(self, role: str, data: Dict[str, Any]) -> bool:
         """Send Emails to contributors and maintainers
