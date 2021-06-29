@@ -24,7 +24,7 @@ const Section = ({
             : isActive
             ? "border-base-green"
             : "border-transparent"
-        } border-b-4 lg:border-b-4 lg:border-r-4 w-full cursor-pointer py-4 flex flex-col-reverse lg:flex-row items-center justify-between transform lg:hover:translate-y-0 lg:hover:-translate-x-4`}
+        } border-b-4 lg:border-b-0 lg:border-r-4 w-full cursor-pointer py-4 flex flex-col-reverse lg:flex-row items-start lg:items-center justify-between transform lg:hover:translate-y-0 lg:hover:-translate-x-4`}
       >
         <div className="">
           <h3
@@ -37,7 +37,7 @@ const Section = ({
           <p className="text-xs lg:text-sm w-full">{description}</p>
         </div>
 
-        <div className="mx-4">
+        <div className="mx-auto lg:mx-4">
           <span
             className={`${
               onError
