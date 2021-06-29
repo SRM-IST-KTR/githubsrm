@@ -28,8 +28,8 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="h-fit-content w-full z-0 mb-4 bg-base-black rounded-2xl shadow-lg overflow-y-hidden  no-scrollbar ">
-      <ul className="flex justify-between z-40 text-white mx-4 lg:mx-10 my-4 lg:my-8 w-full lg:w-6/12 text-center">
+    <nav className="h-fit-content w-full z-0 mb-4 bg-base-black rounded-2xl shadow-inner  overflow-y-hidden">
+      <ul className="grid grid-flow-col auto-cols-auto text-white mx-8 lg:mx-10 my-2 lg:my-8 w-full lg:w-6/12 text-center">
         {links.map((link) => (
           <li
             key={link.href}
@@ -42,6 +42,7 @@ const Navbar = () => {
             </Link>
           </li>
         ))}
+        <li className="w-1/5"></li>
       </ul>
     </nav>
   );

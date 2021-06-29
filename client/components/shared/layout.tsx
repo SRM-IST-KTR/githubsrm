@@ -1,9 +1,17 @@
-import { useRef } from "react";
+import { useRef, createContext, useContext } from "react";
 import { useRouter } from "next/router";
 import { motion, useElementScroll, useTransform } from "framer-motion";
 
 import { Navbar, Footer } from "./";
-import { OSS, Team, JoinUs, Projects, Contact } from "../../utils/titles";
+import {
+  OSS,
+  Team,
+  JoinUs,
+  Projects,
+  Contact,
+  ErrorPage,
+  ServerError,
+} from "../../utils/titles";
 
 const Layout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
@@ -30,8 +38,11 @@ const Layout: React.FC = ({ children }) => {
       case "/contact": {
         return <Contact />;
       }
+      case "/500": {
+        return <ServerError />;
+      }
       default: {
-        return <Projects />;
+        return <ErrorPage />;
       }
     }
   };
