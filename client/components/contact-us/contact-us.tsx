@@ -44,8 +44,12 @@ const ContactUs = () => {
   return (
     <div>
       <div className="font-medium">
-        <h1 className="text-2xl lg:text-4xl">Contact Us</h1>
-        <h2 className="text-base lg:text-xl mt-2">descrip</h2>
+        <h1 className="text-2xl lg:text-4xl font-extrabold text-base-blue">
+          Contact Us
+        </h1>
+        <h2 className="text-base lg:text-xl mt-2 text-gray-800">
+          Have Doubts? Reach out to us.
+        </h2>
       </div>
       <Formik
         initialValues={initialValues}

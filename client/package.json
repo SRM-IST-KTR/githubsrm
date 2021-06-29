@@ -17,6 +17,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-markdown": "^6.0.2",
+    "react-tilt": "^0.1.4",
     "react-toastify": "^7.0.4",
     "recaptcha-v3": "^1.9.1",
     "tailwindcss": "^2.0.2",

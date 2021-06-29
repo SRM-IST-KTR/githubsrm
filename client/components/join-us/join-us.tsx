@@ -16,7 +16,7 @@ const JoinUs = () => {
     {
       name: "Contributor",
       href: "/join-us/contributor",
-      statement: "mini desc",
+      statement: "Contribute to a Project",
       description: [
         "Regularly commit updates/changes to the project.",
         "Follow the code of conduct of contributing to the projects.",
@@ -28,7 +28,7 @@ const JoinUs = () => {
     {
       name: "Maintainer",
       href: "/join-us/maintainer",
-      statement: "mini desc",
+      statement: "Maintain and Manage a Project",
       description: [
         "Maintain the workflow and the role assignment of all the contributors for the project.",
         "Maintain and manage all the Pull Requests for the projects.",
@@ -43,8 +43,11 @@ const JoinUs = () => {
   return (
     <div>
       <div className="font-medium">
-        <h1 className="text-2xl md:text-4xl">There are 2</h1>
-        <h2 className="md:text-xl md:mt-2">small text here</h2>
+        <h1 className="text-2xl md:text-4xl">
+          Explore the world of{" "}
+          <span className="font-semibold text-base-blue">Open-source</span>
+        </h1>
+        <h2 className="md:text-xl md:mt-2">Join us NOW</h2>
       </div>
 
       <div className="flex flex-col md:flex-row justify-evenly mt-8">
@@ -92,12 +95,12 @@ const JoinUs = () => {
               (role) =>
                 role.isContributor === isContributor && (
                   <div key={role.name}>
-                    <h2 className="text-2xl md:text-4xl mb-4">
-                      Your Job as a <strong>{role.name}</strong>
+                    <h2 className="text-2xl md:text-4xl mb-7">
+                      Role of a <strong>{role.name}</strong>
                     </h2>
                     <ul className="list-disc">
                       {role.description.map((desc) => (
-                        <li>{desc}</li>
+                        <li className="my-1">{desc}</li>
                       ))}
                     </ul>
 

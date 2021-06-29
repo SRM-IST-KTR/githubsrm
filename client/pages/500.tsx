@@ -64,7 +64,7 @@ const NotFound = () => {
         <div className="w-full relative mx-auto h-full bg-base-black overflow-scroll no-scrollbar text-base-smoke">
           <div className=" h-full flex flex-row lg:flex-col text-2xl justify-center items-center">
             <motion.span>
-              We can't find this Page :( <br /> Redirecting you now!
+              Oops! It's not you, It's Us. SORRY :( <br /> Redirecting you now!
             </motion.span>
             <AnimatePresence>{vis && getMeteors()}</AnimatePresence>
             <motion.div

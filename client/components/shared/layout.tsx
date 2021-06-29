@@ -38,7 +38,7 @@ const Layout: React.FC = ({ children }) => {
 
   return (
     <>
-      <div className="fixed w-full h-screen bg-gradient-to-b from-base-teal to-base-black -z-10" />
+      <div className="fixed w-full h-screen bg-gradient-to-b from-base-blue to-base-black -z-10" />
       <div className="flex flex-col w-11/12 h-screen pt-4 lg:pt-12 mx-auto">
         <Navbar />
 
