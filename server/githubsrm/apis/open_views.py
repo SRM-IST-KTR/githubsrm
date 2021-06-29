@@ -9,10 +9,15 @@ import json
 import psutil
 import time
 import os
+from django.shortcuts import render
 
 entry = Entry()
 entry_checks = EntryCheck()
 service = BotoService()
+
+
+def home(request):
+    return render(request, 'index.html')
 
 
 class Contributor(APIView):
