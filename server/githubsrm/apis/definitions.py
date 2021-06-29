@@ -184,51 +184,6 @@ class CommonSchema:
             }
 
 
-class TeamSchema:
-    def __init__(self, data: Dict[Any, Any]) -> None:
-        self.data = data
-        self.url_re = re.compile(
-            '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
-
-    def valid_schema(self) -> Schema:
-        """Generates valid team schema
-
-        Returns:
-            Schema
-        """
-        valdiator = Schema(schema={
-            "name": And(str, lambda name: len(name) > 0),
-            "github_id": And(str, lambda github_id: len(github_id) > 0),
-            "linkedin": And(str, lambda url: self.url_re.fullmatch(url)),
-            Optional("twitter", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
-            Optional("portfolio", default=None): And(str, lambda url: self.url_re.fullmatch(url)),
-            "img_url": And(str, lambda url: self.url_re.fullmatch(url)),
-            "tagline": And(str, lambda tagline: len(tagline) > 0)
-        })
-
-        return valdiator
-
-    def get_json(self, id: int) -> dict:
-        """Generate schema
-
-        Args:
-            id (int)
-
-        Returns:
-            dict
-        """
-        return get_json_schema(id=id, valid_schema=self.valid_schema)
-
-    def valid(self) -> Dict[str, Any]:
-        try:
-            return self.valid_schema().validate(self.data)
-        except SchemaError as e:
-            return {
-                "invalid data": self.data,
-                "error": str(e)
-            }
-
-
 class ContactUsSchema:
     def __init__(self, data: Dict[str, Any]) -> None:
         self.data = data
