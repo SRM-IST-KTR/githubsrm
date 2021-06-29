@@ -1,4 +1,3 @@
-
 from schema import Optional, Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
@@ -105,7 +104,7 @@ class CommonSchema:
         self.query_params = query_param
         self.common = {
             "name": And(str, lambda name: len(name.strip()) > 0),
-            "email": And(str, lambda email:  self.email_re.fullmatch(email)),
+            "email": And(str, lambda email: self.email_re.fullmatch(email)),
             "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
             "reg_number": And(str, lambda reg: len(reg.strip()) > 0),
             "branch": And(str, lambda branch: len(branch.strip()) > 0),

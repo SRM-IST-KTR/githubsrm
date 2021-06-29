@@ -10,7 +10,6 @@ import psutil
 import time
 import os
 
-
 entry = Entry()
 entry_checks = EntryCheck()
 service = BotoService()
@@ -199,7 +198,6 @@ class ContactUs(APIView):
 
             result = entry.enter_contact_us(doc=request.data)
             if result:
-
                 service.sns(
                     message=f'New Query Received! \n Name:{validate.get("name")} \n \
                         Email: {validate.get("email")} \n \

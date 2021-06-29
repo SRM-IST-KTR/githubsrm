@@ -50,7 +50,7 @@ class BotoService:
             )
         except Exception as e:
             print(e)
-            return 
+            return
 
     def wrapper_email(self, role: str, data: Dict[str, Any]) -> bool:
         """Send Emails to contributors and maintainers
@@ -105,7 +105,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], project_name=data["project_name"], project_id=data["project_id"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
+                                              project_name=data["project_name"], project_id=data["project_id"]),
                             'Charset': 'utf-8'
 
                         }
@@ -130,7 +131,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='beta_maintainer_accept.html', name=data['name'], project_name=project_name),
+                            'Data': emailbody(file='beta_maintainer_accept.html', name=data['name'],
+                                              project_name=project_name),
                             'Charset': 'utf-8'
 
                         }

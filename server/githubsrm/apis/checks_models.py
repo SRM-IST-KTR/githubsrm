@@ -1,4 +1,3 @@
-from re import T
 import pymongo
 from django.conf import settings
 from typing import Dict, Any
@@ -68,7 +67,7 @@ class EntryCheck:
                 {"project_id": interested_project}
             ]
         }))
-        
+
         if len(results) > 0:
             return True
 
@@ -111,12 +110,12 @@ class EntryCheck:
             return
 
         if self.check_approved_project(
-            identifier=doc.get('project_id')
+                identifier=doc.get('project_id')
         ) is None:
             return None
 
         if self.check_approved_project(
-            identifier=doc.get('project_id')
+                identifier=doc.get('project_id')
         ) is False:
             return True
 

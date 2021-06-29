@@ -1,5 +1,3 @@
-
-
 from typing import Any, Dict
 import random
 import string
@@ -27,7 +25,7 @@ class Entry:
             str
         """
 
-        gen_id = random.choices(string.ascii_uppercase+string.digits, k=8)
+        gen_id = random.choices(string.ascii_uppercase + string.digits, k=8)
 
         if len(list(self.db.collection.find({"_id": gen_id}))) > 0:
             return self.get_uid(length=8)
