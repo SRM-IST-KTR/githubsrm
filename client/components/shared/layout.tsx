@@ -1,17 +1,9 @@
-import { useRef, createContext, useContext } from "react";
+import { useRef } from "react";
 import { useRouter } from "next/router";
 import { motion, useElementScroll, useTransform } from "framer-motion";
 
 import { Navbar, Footer } from "./";
-import {
-  OSS,
-  Team,
-  JoinUs,
-  Projects,
-  Contact,
-  ErrorPage,
-  ServerError,
-} from "../../utils/titles";
+import * as Titles from "../../utils/titles";
 
 const Layout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
@@ -21,35 +13,35 @@ const Layout: React.FC = ({ children }) => {
   const YText = useTransform(scrollYProgress, [0, 0.8], ["0%", "10%"]);
   const YCard = useTransform(scrollYProgress, [0, 0.8], ["0%", "-5%"]);
 
-  const title = () => {
+  const Title = () => {
     switch (pathname) {
       case "/": {
-        return <OSS />;
+        return <Titles.OSS />;
       }
       case "/team": {
-        return <Team />;
+        return <Titles.Team />;
       }
       case "/join-us": {
-        return <JoinUs />;
+        return <Titles.JoinUs />;
       }
       case "/join-us/maintainer/existing-project":
       case "/join-us/maintainer/new-project":
       case "/join-us/maintainer":
       case "/join-us/contributor":
       case "/join-us": {
-        return <JoinUs />;
+        return <Titles.JoinUs />;
       }
       case "/projects": {
-        return <Projects />;
+        return <Titles.Projects />;
       }
       case "/contact-us": {
-        return <Contact />;
+        return <Titles.Contact />;
       }
       case "/500": {
-        return <ServerError />;
+        return <Titles.ServerError />;
       }
       default: {
-        return <ErrorPage />;
+        return <Titles.ErrorPage />;
       }
     }
   };
@@ -69,7 +61,7 @@ const Layout: React.FC = ({ children }) => {
             className="flex sticky top-0 justify-center w-full px-6 lg:px-12"
             style={{ opacity, y: YText }}
           >
-            {title()}
+            {Title()}
           </motion.figure>
 
           <motion.div

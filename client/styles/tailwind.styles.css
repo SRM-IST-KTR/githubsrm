@@ -62,6 +62,25 @@
     scrollbar-width: none;
   }
 
+  .custom-scrollbar {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #fafafa;
+      border-radius: 30px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #c7ceff;
+    }
+    ::-webkit-scrollbar-track {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: inset 7px 10px 12px 0px #f0f0f0;
+    }
+  }
+
   .position-cover {
     @apply bottom-0 top-0 right-0 left-0;
   }

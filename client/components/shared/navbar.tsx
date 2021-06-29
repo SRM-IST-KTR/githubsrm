@@ -28,17 +28,17 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="h-fit-content w-full z-0 mb-4 bg-base-black rounded-2xl shadow-inner  overflow-y-hidden">
-      <ul className="grid grid-flow-col auto-cols-auto text-white mx-8 lg:mx-10 my-2 lg:my-8 w-full lg:w-6/12 text-center">
+    <nav className="mb-4 bg-base-black rounded-lg custom-scrollbar overflow-auto overflow-y-hidden py-2 px-4">
+      <ul className="grid grid-flow-col auto-cols-auto text-white my-2 lg:my-8 w-full lg:w-6/12 text-center">
         {links.map((link) => (
           <li
             key={link.href}
             className={`${
               asPath === link.href ? "font-semibold" : ""
-            } min-w-max mx-4 transform hover:-translate-y-1 cursor-pointer`}
+            } min-w-max transform hover:-translate-y-1 cursor-pointer mb-2`}
           >
             <Link href={link.href}>
-              <span className="lg:my-2 lg:text-xl">{link.name}</span>
+              <span className="lg:my-2 lg:text-xl px-6">{link.name}</span>
             </Link>
           </li>
         ))}
