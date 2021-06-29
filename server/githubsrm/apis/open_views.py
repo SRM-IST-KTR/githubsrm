@@ -17,13 +17,29 @@ service = BotoService()
 
 
 def conditional_render(path):
-    if len(path):
-        return f"{path}.html"
+    fe_routes = [
+        "projects",
+        "team",
+        "join-us",
+        "join-us/contributor",
+        "join-us/maintainer",
+        "join-us/maintainer/new-project",
+        "join-us/maintainer/existing-project",
+        "contact-us",
+        "404",
+        "500",
+    ]
+    for route in fe_routes:
+        if path.endswith(route):
+            return f"{path}.html"
+    if len(path) > 0:
+        return path
     else:
         return "index.html"
 
 
 def home(request, path=None):
+    print(path)
     return render(request, f'{conditional_render(path)}')
 
 
