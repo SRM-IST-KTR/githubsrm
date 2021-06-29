@@ -21,7 +21,7 @@ echo -e "${INFO_TEXT} Entering into 'client' [...]"
 cd client
 npm install 
 echo -e "${INFO_TEXT} Building Next.js [...]" 
-npm run build
+npm run build --max_old_space_size=1024
 echo -e "${INFO_TEXT} Exporting Next.js [...]" 
 npm run export
 cd ..
