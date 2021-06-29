@@ -93,7 +93,7 @@ const NewProject = () => {
       <div>
         <div className="font-medium">
           <h1 className="text-4xl">Maintainer</h1>
-          <h2 className="text-xl mt-2">alpha</h2>
+          <h2 className="text-xl mt-2"> Please fill the details correctly.</h2>
         </div>
 
         <p className="text-right text-lg">

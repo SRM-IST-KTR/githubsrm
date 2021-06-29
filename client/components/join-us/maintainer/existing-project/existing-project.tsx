@@ -74,7 +74,10 @@ const ExistingProject = () => {
       <div>
         <div className="font-medium">
           <h1 className="text-2xl lg:text-4xl">Maintainer</h1>
-          <h2 className="lg:text-xl lg:mt-2">beta</h2>
+          <h2 className="lg:text-xl lg:mt-2">
+            {" "}
+            Please fill the details correctly.
+          </h2>
         </div>
 
         <p className="lg:text-right lg:text-lg mt-2 lg:mt-0">

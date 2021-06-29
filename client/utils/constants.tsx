@@ -35,8 +35,7 @@ export const newMaintainerInputs: {
   {
     section: "Personal",
     icon: <PersonIcon />,
-    description:
-      "Ipsum id ullamco ipsum qui voluptate esse ad excepteur dolore commodo.",
+    description: "Let us get to know you better.",
     inputs: [
       {
         id: "name",
@@ -64,7 +63,7 @@ export const newMaintainerInputs: {
   {
     section: "SRM Details",
     icon: <BookIcon />,
-    description: "Nostrud id officia dolor Lorem mollit aute consectetur est.",
+    description: "We did not want this, but the college does.",
     inputs: [
       {
         id: "srm_email",
@@ -92,8 +91,7 @@ export const newMaintainerInputs: {
   {
     section: "Projects",
     icon: <BranchIcon />,
-    description:
-      "Incididunt aute quis culpa aute in dolor aliqua laboris commodo exercitation laboris.",
+    description: "Because this is what developers do.",
     inputs: [
       {
         id: "project_name",
@@ -175,8 +173,7 @@ export const existingMaintainerInputs: {
   {
     section: "Personal",
     icon: <PersonIcon />,
-    description:
-      "Ipsum id ullamco ipsum qui voluptate esse ad excepteur dolore commodo.",
+    description: "Let us get to know you better.",
     inputs: [
       {
         id: "name",
@@ -204,7 +201,7 @@ export const existingMaintainerInputs: {
   {
     section: "SRM Details",
     icon: <BookIcon />,
-    description: "Nostrud id officia dolor Lorem mollit aute consectetur est.",
+    description: "We did not want this, but the college does.",
     inputs: [
       {
         id: "srm_email",
@@ -232,8 +229,7 @@ export const existingMaintainerInputs: {
   {
     section: "Projects",
     icon: <BranchIcon />,
-    description:
-      "Incididunt aute quis culpa aute in dolor aliqua laboris commodo exercitation laboris.",
+    description: "Because this is what developers do.",
     inputs: [
       {
         id: "project_id",
@@ -276,8 +272,7 @@ export const contributorInputs: {
   {
     section: "Personal",
     icon: <PersonIcon />,
-    description:
-      "Ipsum id ullamco ipsum qui voluptate esse ad excepteur dolore commodo.",
+    description: "Let us get to know you better.      ",
     inputs: [
       {
         id: "name",
@@ -305,7 +300,7 @@ export const contributorInputs: {
   {
     section: "SRM Details",
     icon: <BookIcon />,
-    description: "Nostrud id officia dolor Lorem mollit aute consectetur est.",
+    description: "We did not want this, but the college does.",
     inputs: [
       {
         id: "srm_email",
@@ -333,8 +328,7 @@ export const contributorInputs: {
   {
     section: "Projects",
     icon: <BranchIcon />,
-    description:
-      "Incididunt aute quis culpa aute in dolor aliqua laboris commodo exercitation laboris.",
+    description: "Because this is what developers do.",
     inputs: [
       {
         id: "interested_project",
