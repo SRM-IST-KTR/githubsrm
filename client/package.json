@@ -1,6 +1,7 @@
 {
-  "name": "n",
-  "version": "0.1.0",
+  "name": "githubsrm",
+  "description": "GitHub Community SRM Official Landing Page",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -17,10 +17,10 @@ jobs:
           - parallel
       language: python
       env:
-        - SECRET_KEY=$DEV_SECRET_KEY
-        - TEST_MONGO_DB=$DEV_DB
-        - MONGO_DB=$DEV_DB
-        - MONGO_URI=$DEV_MONGO_URI
+        - SECRET_KEY=$MAIN_SECRET_KEY
+        - TEST_MONGO_DB=$MAIN_DB
+        - MONGO_DB=$MAIN_DB
+        - MONGO_URI=$MAIN_MONGO_URI
       python:
         - "3.9"
       install:
@@ -36,7 +36,7 @@ jobs:
         skip_cleanup: false
         script: ssh -o "StrictHostKeyChecking no" $ssh_server $ssh_command
         on:
-          branch: dev
+          branch: main
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_2fc69c4133c3_key -iv $encrypted_2fc69c4133c3_iv
