@@ -11,6 +11,44 @@ load_dotenv()
 email_client = boto3.client('sesv2', region_name='ap-south-1')
 
 
+def conditional_render(path: str) -> str:
+    """Conditional rendering
+
+    Args:
+        path (str): path sent in
+
+    Returns:
+        str: rendred file
+    """
+    fe_routes = [
+        "projects",
+        "team",
+        "join-us",
+        "join-us/contributor",
+        "join-us/maintainer",
+        "join-us/maintainer/new-project",
+        "join-us/maintainer/existing-project",
+        "contact-us",
+        "404",
+        "500",
+    ]
+
+    if path is None:
+        return "index.html"
+
+    if path.endswith('/'):
+        path = path[:-1]
+
+    for route in fe_routes:
+        if path.endswith(route):
+            return f"{path}.html"
+
+    if len(path) > 0:
+        return path
+    else:
+        return "index.html"
+
+
 def check_token(token) -> bool:
     """Check ReCaptcha token
 

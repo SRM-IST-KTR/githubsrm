@@ -1,3 +1,4 @@
+from django.template.exceptions import TemplateDoesNotExist
 from .utils import check_token, BotoService
 from rest_framework.views import APIView
 from .definitions import *
@@ -10,41 +11,19 @@ import psutil
 import time
 import os
 from django.shortcuts import render
+from .utils import conditional_render
+
 
 entry = Entry()
 entry_checks = EntryCheck()
 service = BotoService()
 
 
-def conditional_render(path):
-    fe_routes = [
-        "projects",
-        "team",
-        "join-us",
-        "join-us/contributor",
-        "join-us/maintainer",
-        "join-us/maintainer/new-project",
-        "join-us/maintainer/existing-project",
-        "contact-us",
-        "404",
-        "500",
-    ]
-
-    if path is None:
-        return "index.html"
-
-    for route in fe_routes:
-        if path.endswith(route):
-            return f"{path}.html"
-
-    if len(path) > 0:
-        return path
-    else:
-        return "index.html"
-
-
 def home(request, path=None):
-    return render(request, f'{conditional_render(path)}')
+    try:
+        return render(request, f'{conditional_render(path)}')
+    except TemplateDoesNotExist as e:
+        return render(request, '404.html')
 
 
 class Contributor(APIView):
