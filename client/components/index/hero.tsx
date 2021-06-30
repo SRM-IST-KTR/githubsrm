@@ -7,8 +7,8 @@ const Hero = () => {
   const y = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
 
   const messages: string[] = [
-    "We plan on administrating the SRMIST KTR GitHub Enterprise Organisation",
-    "Help the faculties in managing and maintaining student projects",
+    "We plan on administrating the SRMIST KTR GitHub Enterprise Organisation.",
+    "Help the faculties in managing and maintaining student projects.",
     "Help the students get onboard with their projects under the SRMIST KTR GitHub Enterprise.",
   ];
 

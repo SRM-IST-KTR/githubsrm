@@ -99,12 +99,13 @@ const NewProject = () => {
         </div>
 
         <p className="lg:text-right lg:text-lg mt-2 lg:mt-0">
-          Join us as a{" "}
+          Interested in a project? Join us as a{" "}
           <Link href="/join-us/contributor">
             <a className="text-base-green font-bold hover:underline">
               Contributor
             </a>
           </Link>
+          .
         </p>
       </div>
 

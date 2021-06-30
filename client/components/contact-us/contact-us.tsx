@@ -56,7 +56,7 @@ const ContactUs = () => {
         validationSchema={contactUsValidation}
       >
         {({ errors, touched }) => (
-          <Form className="w-full max-w-6xl mt-6">
+          <Form className="w-full max-w-6xl mt-6 mx-auto">
             <div>
               {contactUsInputs.map((section) => (
                 <div

@@ -19,7 +19,7 @@ const Benefits = () => {
     {
       icon: <CelebrationIcon />,
       title: "Features",
-      text: "Free access to GitHub Enterprise Server and GitHub Enterprise Cloud for every department and Exclusive access to new features, and GitHub Education-specific swag",
+      text: "Free access to GitHub Enterprise Server and GitHub Enterprise Cloud for every department and Exclusive access to new features, and GitHub Education-specific swag.",
     },
   ];
 

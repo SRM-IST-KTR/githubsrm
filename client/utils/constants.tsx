@@ -90,13 +90,13 @@ export const newMaintainerInputs: {
   {
     section: "Projects",
     icon: <BranchIcon />,
-    description: "Because this is what developers do.",
+    description: "Pitch your next big idea.",
     inputs: [
       {
         id: "project_name",
         label: "Project Name",
         type: "text",
-        placeholder: "GitHubSRM Landing",
+        placeholder: "GitHub Community SRM Landing page",
         required: true,
       },
       {
@@ -104,7 +104,7 @@ export const newMaintainerInputs: {
         label: "Public Repository URL",
         type: "text",
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
-        description: "Only for an personal existing project!",
+        description: "Only for a personal existing project!",
       },
       {
         id: "tags",
@@ -226,13 +226,14 @@ export const existingMaintainerInputs: {
   {
     section: "Projects",
     icon: <BranchIcon />,
-    description: "Because this is what developers do.",
+    description: "Pitch your next big idea.",
     inputs: [
       {
         id: "project_id",
         label: "Project ID",
         type: "text",
-        placeholder: "GitHubSRM",
+        placeholder: "ABCD1234",
+        description: "8 digit uppercase alpha-numeric code!",
         required: true,
       },
     ],
@@ -333,7 +334,7 @@ export const contributorInputs: {
         type: "text",
         placeholder: "Select your preferred project!",
         description:
-          "Given to you by your Maintainer/found on the Projects Page",
+          "Given to you by the Maintainer or found on the Projects Page!",
         required: true,
       },
       {
@@ -403,7 +404,7 @@ export const contactUsInputs: InputProps[][] = [
       id: "message",
       label: "Message",
       type: "textarea",
-      placeholder: "I have a message",
+      placeholder: "I had a query regarding...",
       required: true,
       textareaOptions: { rows: 4, cols: 30 },
       wrapperClassName: {

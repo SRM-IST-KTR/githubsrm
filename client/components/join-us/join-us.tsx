@@ -32,8 +32,9 @@ const JoinUs = () => {
       href: "/join-us/maintainer",
       statement: "Maintain and Manage a Project",
       description: [
+        "Suggest the next big idea and work towards that goal, with the help of the Community.",
         "Maintain the workflow and the role assignment of all the contributors for the project.",
-        "Maintain and manage all the Pull Requests for the projects.",
+        "Manage all the Pull Requests and Issues for the projects.",
         "Keep an eye on following the rules for clean code for the projects.",
         "Work with the team to maintain proper documentation for the project.",
       ],

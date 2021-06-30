@@ -10,12 +10,13 @@ const Maintainer = () => {
         </div>
 
         <p className="lg:text-right text-lg mt-3">
-          Join us as a{" "}
+          Interested in a project? Join us as a{" "}
           <Link href="/join-us/contributor">
             <a className="text-base-green font-bold hover:underline">
               Contributor
             </a>
           </Link>
+          .
         </p>
       </div>
 
