@@ -12,9 +12,7 @@ const Project = ({ project }: ProjectProp) => {
     try {
       await navigator.clipboard.writeText(id);
       successToast("ID Copied");
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   return (

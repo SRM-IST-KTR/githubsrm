@@ -37,7 +37,6 @@ export const getStaticProps = async (): Promise<
       };
     }
   } catch (error) {
-    console.log(error);
     return {
       redirect: {
         permanent: false,

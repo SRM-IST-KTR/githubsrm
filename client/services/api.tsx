@@ -9,7 +9,7 @@ import {
   ContactUsFormData,
 } from "../utils/interfaces";
 import { getRecaptchaToken } from "./recaptcha";
-import { errorHandler } from "../utils/functions/toast";
+import { errToast, successToast } from "../utils/functions/toast";
 
 const instance: AxiosInstance = axios.create({
   baseURL: `${
@@ -25,7 +25,6 @@ export const getTeam = async (): Promise<MemberProps[] | false> => {
       await instance.get("/team")
     ).data;
   } catch (error) {
-    console.log(error);
     errorHandler(error);
     return false;
   }
@@ -38,7 +37,6 @@ export const getProjects = async (): Promise<ProjectProps[] | false> => {
     ).data;
   } catch (error) {
     errorHandler(error);
-    console.log(error);
     return false;
   }
 };
@@ -56,7 +54,6 @@ export const postContributor = async (
     return true;
   } catch (error) {
     errorHandler(error);
-    console.log(error.response as AxiosError);
     return false;
   }
 };
@@ -75,7 +72,6 @@ export const postMaintainer = async (
     return true;
   } catch (error) {
     errorHandler(error);
-    console.log(error.response as AxiosError);
     return false;
   }
 };
@@ -93,7 +89,34 @@ export const postContactUs = async (
     return true;
   } catch (error) {
     errorHandler(error);
-    console.log(error.response as AxiosError);
     return false;
   }
+};
+
+export const errorHandler = (err?: AxiosError | any) => {
+  let errMessage: string = "Oops! Something went wrong.";
+  if (err) {
+    switch (err.response?.status) {
+      case 400:
+        errMessage = "Kindly check your inputs.";
+        break;
+      case 401:
+        errMessage = "Recaptcha Invalid. Try again later.";
+        break;
+      case 403:
+        errMessage = "Forbidden.";
+        break;
+      case 409:
+        errMessage = "Artifact already exists.";
+        break;
+      case 500:
+        errMessage = "Internal server error.";
+        break;
+      default:
+        errMessage = "Oops! Something went wrong.";
+        break;
+    }
+  }
+
+  errToast(errMessage);
 };
