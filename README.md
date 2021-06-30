@@ -30,7 +30,7 @@ Homepage of the foremost student-led community spearheading the Open Source Revo
 ## 📺 Preview
 
 <div align="center">
-  <img alt="Screenshot" src="docs/preview.png" />
+  <img alt="Screenshot" src="https://user-images.githubusercontent.com/85406812/124029526-ddc6ec80-da12-11eb-8b0d-9fb12093b432.jpeg"/>
 </div>
 
 ## 📌 Prerequisites
@@ -44,10 +44,11 @@ Homepage of the foremost student-led community spearheading the Open Source Revo
 
 1. Updated browser
 2. Node.js installed (If not download it [here](https://nodejs.org/en/download/)).
-3. Any text editor of your choice.
+3. Python 3.9 installed
+4. Any text editor of your choice.
 
 ## Installation 🔧
-
+### Client
 Install dependencies and build the server
 
 ```
@@ -59,7 +60,18 @@ Start the development server
 ```
 $ yarn dev
 ```
+### Server
+Install python dependencies
 
+```
+$ pip install -r requirements.txt
+```
+
+Start the development server
+
+```
+$ bash run.sh
+```
 ## 📜 License
 
 `githubsrm` is available under the MIT license. See the LICENSE file for more info.
@@ -67,6 +79,10 @@ $ yarn dev
 ## 🤝 Contributing
 
 Please read [`Contributing.md`](https://github.com/SRM-IST-KTR/template/blob/main/Contributing.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## :gear: Maintainers
+| <p align="center">![Abhishek Saxena](https://github.com/saxenabhishek.png?size=128)<br>[Abhishek Saxena](https://github.com/saxenabhishek)</p> | <p align="center">![Aniruddha Chatterjee](https://github.com/ruddha2001.png?size=128)<br>[Aniruddha Chatterjee](https://github.com/ruddha2001)</p> | <p align="center">![Ansh Sharma](https://github.com/DaemonOnCode.png?size=128)<br>[Ansh Sharma](https://github.com/DaemonOnCode)</p> | <p align="center">![Aradhya Tripathi](https://github.com/Aradhya-Tripathi.png?size=128)<br>[Aradhya Tripathi](https://github.com/Aradhya-Tripathi)</p> | <p align="center">![Gita Alekhya Paul](https://github.com/gitaalekhyapaul.png?size=128)<br>[Gita Alekhya Paul](https://github.com/gitaalekhyapaul)</p> | <p align="center">![Nitish Chaturvedi](https://github.com/waterupto.png?size=128)<br>[Nitish Chaturvedi](https://github.com/waterupto)</p> | <p align="center">![Riju Mukherjee](https://github.com/riju561.png?size=128)<br>[Riju Mukherjee](https://github.com/riju561)</p> | <p align="center">![Sakshi Choudhary](https://github.com/sakshi-choudhary.png?size=128)<br>[Sakshi Choudhary](https://github.com/sakshi-choudhary)</p> | <p align="center">![Shivam Shekhar](https://github.com/shvam0000.png?size=128)<br>[Shivam Shekhar](https://github.com/shvam0000)</p> | <p align="center">![Yashvardhan Jagnani](https://github.com/jagnani73.png?size=128)<br>[Yashvardhan Jagnani](https://github.com/jagnani73)</p> |
+|------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 
 ## 💥 Contributors
 
