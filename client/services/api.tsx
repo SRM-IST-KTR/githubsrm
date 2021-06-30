@@ -9,7 +9,7 @@ import {
   ContactUsFormData,
 } from "../utils/interfaces";
 import { getRecaptchaToken } from "./recaptcha";
-import { errToast, successToast } from "../utils/functions/toast";
+import { errToast } from "../utils/functions/toast";
 
 const instance: AxiosInstance = axios.create({
   baseURL: `${
