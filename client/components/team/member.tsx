@@ -59,8 +59,9 @@ const Profile = ({ member }: MemberProp) => {
           Loading...
         </h3>
       )}
-      <h5 className="text-lg mt-6 font-medium">{member.name}</h5>
-      <p className="text-sm">{`"${member.tagline}"`}</p>
+      <h4 className="text-lg mt-6 font-bold">{member.name}</h4>
+      <h5 className="text-lg font-medium">{member.designation}</h5>
+      <p className="text-sm">{`~ ${member.tagline}`}</p>
     </div>
   );
 };

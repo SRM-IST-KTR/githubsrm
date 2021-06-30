@@ -12,6 +12,7 @@ interface Id {
 }
 export interface MemberProps extends Id {
   name: string;
+  designation:string
   github_id: string;
   linkedin: string;
   twitter: string;
