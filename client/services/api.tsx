@@ -19,10 +19,14 @@ const instance: AxiosInstance = axios.create({
   }/api`,
 });
 
+const staticInstance: AxiosInstance = axios.create({
+  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_STATIC}/api`,
+});
+
 export const getTeam = async (): Promise<MemberProps[] | false> => {
   try {
     return await (
-      await instance.get("/team")
+      await staticInstance.get("/team")
     ).data;
   } catch (error) {
     errorHandler(error);
