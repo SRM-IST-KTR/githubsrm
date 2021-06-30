@@ -29,9 +29,14 @@ def conditional_render(path):
         "404",
         "500",
     ]
+
+    if path is None:
+        return "index.html"
+
     for route in fe_routes:
         if path.endswith(route):
             return f"{path}.html"
+
     if len(path) > 0:
         return path
     else:
@@ -39,7 +44,6 @@ def conditional_render(path):
 
 
 def home(request, path=None):
-    print(path)
     return render(request, f'{conditional_render(path)}')
 
 
