@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 INFO_TEXT="\e[1;32m[INFO]\e[0m"
 ERROR_TEXT="\e[1;31m[ERROR]\e[0m"
