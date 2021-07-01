@@ -11,7 +11,7 @@ jobs:
       addons:
         apt_packages:
           - parallel
-          - python3
+          - python3.9
       language: node_js
       node_js: lts/*
       cache:
