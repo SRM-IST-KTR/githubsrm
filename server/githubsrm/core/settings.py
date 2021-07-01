@@ -96,7 +96,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'common': '5/min',
+        'common': '10/min',
     },
 
     'DEFAULT_RENDERER_CLASSES': (
