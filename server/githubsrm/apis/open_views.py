@@ -14,6 +14,9 @@ from django.shortcuts import render
 from .utils import conditional_render
 from threading import Thread
 
+from .throttle import PostThrottle
+
+
 entry = Entry()
 entry_checks = EntryCheck()
 service = BotoService()
@@ -30,7 +33,7 @@ class Contributor(APIView):
     '''
     Contributors API Allows additon of contributors to the database
     '''
-    throttle_scope = 'common'
+    throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> response.Response:
         """Adding Contributors to Projects
@@ -88,7 +91,7 @@ class Maintainer(APIView):
     '''
     Maintainer API to Allow addition of maintainers to the database
     '''
-    throttle_scope = 'common'
+    throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> response.Response:
         """Accept Maintainers
@@ -187,7 +190,7 @@ class Team(APIView):
     Args:
         APIView
     """
-    throttle_scope = 'common'
+    throttle_classes = [PostThrottle]
 
     def get(self, request, **kwargs) -> response.Response:
         """
@@ -208,6 +211,8 @@ class ContactUs(APIView):
     Args:
         APIView
     """
+
+    throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> response.Response:
         """Handles post data
@@ -252,7 +257,7 @@ class HealthCheck(APIView):
         APIView
     """
 
-    throttle_scope = 'common'
+    throttle_classes = [PostThrottle]
 
     def get(self, request, **kwargs) -> response.Response:
         """Get Process UpTime

@@ -17,7 +17,9 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = False
+
+DEBUG = True if os.getenv("DEBUG") else False
+
 
 if DEBUG == False:
     sentry_sdk.init(
@@ -92,11 +94,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 REST_FRAMEWORK = {
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.ScopedRateThrottle',
-    ],
+
     'DEFAULT_THROTTLE_RATES': {
-        'common': '10/min',
+        'post_throttle': '10/min',
     },
 
     'DEFAULT_RENDERER_CLASSES': (
