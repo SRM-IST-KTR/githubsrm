@@ -14,15 +14,19 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv()
 
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),
-    integrations=[DjangoIntegration()]
-)
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = False
+
+if DEBUG == False:
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        integrations=[DjangoIntegration()]
+    )
+    print('\033[92mServer in Production Mode. Sentry Enabled.\033[0m')
+else:
+    print(f'\033[93mServer in DEBUG Mode. Disabling Sentry.\033[0m')
 
 ALLOWED_HOSTS = ['*']
 USE_DATABASE = 'MONGO'
