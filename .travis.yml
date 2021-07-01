@@ -5,31 +5,20 @@ env:
     - TEST_MONGO_DB=$MAIN_DB
     - MONGO_DB=$MAIN_DB
     - MONGO_URI=$MAIN_MONGO_URI
+    - NODE_VER="14.17.1"
 jobs:
   include:
     - stage: Test
       addons:
         apt_packages:
           - parallel
-          - libssl-dev
-          - openssl
-          - make
-          - gcc
-      language: node_js
-      node_js: lts/*
+      language: python
+      python: "3.9"
       cache:
         directories:
           - node_modules
       before_install:
-        - cd /opt
-        - wget https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz
-        - tar xzvf Python-3.9.2.tgz
-        - cd Python-3.9.2
-        - ./configure
-        - make
-        - make install
-        - sudo ln -fs /opt/Python-3.9.2/Python /usr/bin/python3
-        - sudo apt install python3-pip
+        - nvm install $NODE_VER
       install:
         - cd server/
         - pip install -r requirements.txt
