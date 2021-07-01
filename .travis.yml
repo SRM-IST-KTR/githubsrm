@@ -1,32 +1,45 @@
 os: linux
+env:
+  global:
+    - SECRET_KEY=$MAIN_SECRET_KEY
+    - TEST_MONGO_DB=$MAIN_DB
+    - MONGO_DB=$MAIN_DB
+    - MONGO_URI=$MAIN_MONGO_URI
+    - NODE_VER="14.17.1"
 jobs:
   include:
-    - stage: Test
-      language: node_js
-      node_js: lts/*
-      cache:
-        directories:
-          - node_modules
-      script:
-        - cd client
-        - npm install
     - stage: Test
       addons:
         apt_packages:
           - parallel
       language: python
-      env:
-        - SECRET_KEY=$MAIN_SECRET_KEY
-        - TEST_MONGO_DB=$MAIN_DB
-        - MONGO_DB=$MAIN_DB
-        - MONGO_URI=$MAIN_MONGO_URI
+      python: "3.9"
+      cache:
+        directories:
+          - node_modules
+      before_install:
+        - nvm install $NODE_VER
+      install:
+        - cd server/
+        - pip install -r requirements.txt
+        - cd ..
+        - cd client/
+        - npm install
+        - cd ..
+      script:
+        - bash ./test_runner.sh frontend
+    - stage: Test
+      addons:
+        apt_packages:
+          - parallel
+      language: python
       python: "3.9"
       install:
         - cd server/
         - pip install -r requirements.txt
         - cd ..
       script:
-        - bash ./test_runner.sh
+        - bash ./test_runner.sh backend
     - stage: Deploy
       script: skip
       deploy:
@@ -34,7 +47,8 @@ jobs:
         cleanup: true
         script: ssh -o "StrictHostKeyChecking no" $ssh_server $ssh_command
         on:
-          branch: main|dev
+          all_branches: true
+          condition: $TRAVIS_BRANCH =~ ^(main|dev)$
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_2fc69c4133c3_key -iv $encrypted_2fc69c4133c3_iv
