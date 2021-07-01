@@ -30,8 +30,13 @@ Homepage of the foremost student-led community spearheading the Open Source Revo
 ## 📺 Preview
 
 <div align="center">
-  <img alt="Screenshot" src="https://user-images.githubusercontent.com/85406812/124029526-ddc6ec80-da12-11eb-8b0d-9fb12093b432.jpeg"/>
+  <img alt="Screenshot" src="docs/Home.png" />
+  <img alt="Screenshot" src="docs/Projects.png" />
+  <img alt="Screenshot" src="docs/Team.png" />
+  <img alt="Screenshot" src="docs/Join us.png" />
+  <img alt="Screenshot" src="docs/Contact us.png" />
 </div>
+
 
 ## 📌 Prerequisites
 
@@ -44,33 +49,32 @@ Homepage of the foremost student-led community spearheading the Open Source Revo
 
 1. Updated browser
 2. Node.js installed (If not download it [here](https://nodejs.org/en/download/)).
-3. Python 3.9 installed
+3. Python installed (If not download it [here](https://www.python.org/downloads/)).
 4. Any text editor of your choice.
 
 ## Installation 🔧
-### Client
-Install dependencies and build the server
-
-```
-$ yarn install && yarn build
-```
-
-Start the development server
-
-```
-$ yarn dev
-```
 ### Server
 Install python dependencies
-
 ```
-$ pip install -r requirements.txt
+$ pip install -r server/requirements.txt
+```
+Start the Django server
+```
+$ bash ./run.sh 5000
 ```
 
+### Client
+Client directory
+```
+$ cd client
+```
+Install dependencies 
+```
+$ yarn install 
+```
 Start the development server
-
 ```
-$ bash run.sh
+$ yarn dev
 ```
 ## 📜 License
 
