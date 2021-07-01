@@ -47,6 +47,7 @@ jobs:
         cleanup: true
         script: ssh -o "StrictHostKeyChecking no" $ssh_server $ssh_command
         on:
+          all_branches: true
           condition: $TRAVIS_BRANCH =~ ^(main|dev)$
 
 before_install:
