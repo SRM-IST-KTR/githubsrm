@@ -1,6 +1,6 @@
 import os
 from .models import Entry
-from typing import Any, Dict
+from typing import Any, Dict, TypedDict
 import httpx
 from dotenv import load_dotenv
 import boto3
@@ -75,16 +75,21 @@ def check_token(token) -> bool:
     return response.json()["success"] and response.json()["score"] >= 0.5
 
 
+class SNSpayload(TypedDict):
+    message: str
+    subject: str
+
+
 class BotoService:
 
-    def sns(self, message: str) -> None:
+    def sns(self, payload: SNSpayload) -> None:
         client = boto3.client('sns', region_name='ap-south-1')
 
         try:
             client.publish(
                 TopicArn=os.getenv("SNS_ARN"),
-                Message=message,
-                Subject='[QUERY]: https://githubsrm.tech'
+                Message=payload['message'],
+                Subject=payload['subject']
             )
         except Exception as e:
             print(e)

@@ -210,10 +210,13 @@ class ContactUs(APIView):
             result = entry.enter_contact_us(doc=request.data)
             if result:
                 service.sns(
-                    message=f'New Query Received! \n Name:{validate.get("name")} \n \
+                    payload={
+                        'message': f'New Query Received! \n Name:{validate.get("name")} \n \
                         Email: {validate.get("email")} \n \
                         Message: {validate.get("message")} \n \
-                        Phone Number: {validate.get("phone_number")}')
+                        Phone Number: {validate.get("phone_number")}',
+                        'subject': '[QUERY]: https://githubsrm.tech'
+                    })
 
                 return response.Response(status=status.HTTP_201_CREATED)
             return response.Response(data={
