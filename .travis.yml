@@ -1,12 +1,16 @@
 os: linux
 env:
-  - SECRET_KEY=$MAIN_SECRET_KEY
-  - TEST_MONGO_DB=$MAIN_DB
-  - MONGO_DB=$MAIN_DB
-  - MONGO_URI=$MAIN_MONGO_URI
+  global:
+    - SECRET_KEY=$MAIN_SECRET_KEY
+    - TEST_MONGO_DB=$MAIN_DB
+    - MONGO_DB=$MAIN_DB
+    - MONGO_URI=$MAIN_MONGO_URI
 jobs:
   include:
     - stage: Test
+      addons:
+        apt_packages:
+          - parallel
       language: node_js
       node_js: lts/*
       cache:
