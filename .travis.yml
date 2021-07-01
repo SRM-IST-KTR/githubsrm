@@ -11,12 +11,25 @@ jobs:
       addons:
         apt_packages:
           - parallel
-          - python3.9
+          - libssl-dev
+          - openssl
+          - make
+          - gcc
       language: node_js
       node_js: lts/*
       cache:
         directories:
           - node_modules
+      before_install:
+        - cd /opt
+        - wget https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz
+        - tar xzvf Python-3.9.2.tgz
+        - cd Python-3.9.2
+        - ./configure
+        - make
+        - make install
+        - sudo ln -fs /opt/Python-3.9.2/Python /usr/bin/python3
+        - sudo apt install python3-pip
       install:
         - cd server/
         - pip install -r requirements.txt
