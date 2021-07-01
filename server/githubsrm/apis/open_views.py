@@ -12,7 +12,7 @@ import time
 import os
 from django.shortcuts import render
 from .utils import conditional_render
-
+from threading import Thread
 
 entry = Entry()
 entry_checks = EntryCheck()
@@ -86,7 +86,7 @@ class Contributor(APIView):
 
 class Maintainer(APIView):
     '''
-    Maintainer API to Allow addition of maintainers to the database 
+    Maintainer API to Allow addition of maintainers to the database
     '''
     throttle_scope = 'common'
 
@@ -94,7 +94,7 @@ class Maintainer(APIView):
         """Accept Maintainers
 
         Args:
-            request 
+            request
 
         Returns:
             Response
@@ -112,6 +112,13 @@ class Maintainer(APIView):
                         if id := entry.enter_beta_maintainer(doc=request.data):
 
                             if service.wrapper_email(role='beta', data=validate):
+                                Thread(target=service.sns, kwargs={'payload': {
+                                    'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
+                                        Details: \n \
+                                        Name: {validate.get("name")} \n \
+                                        Email Personal: {validate.get("email")}',
+                                    'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
+                                }}).start()
                                 return response.Response(status=status.HTTP_201_CREATED)
                             else:
                                 entry.delete_beta_maintainer(maintainer_id=id,
@@ -134,7 +141,18 @@ class Maintainer(APIView):
                 if value := entry.enter_maintainer(validate):
                     validate['project_id'] = value[0]
                     validate['project_name'] = value[2]
+                    validate['description'] = value[3]
                     if service.wrapper_email(role='alpha', data=validate):
+                        Thread(target=service.sns, kwargs={'payload': {
+                            'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
+                                        Details: \n \
+                                        Name: {validate.get("name")} \n \
+                                        Email Personal: {validate.get("email")} \n \
+                                        Project Details: \n \
+                                        Name: {validate.get("project_name")} \n \
+                                        Description: {validate.get("description")}',
+                            'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
+                        }}).start()
                         return response.Response(status=status.HTTP_201_CREATED)
                     else:
                         entry.delete_alpha_maintainer(
@@ -188,7 +206,7 @@ class ContactUs(APIView):
     ContactUs route
 
     Args:
-        APIView 
+        APIView
     """
 
     def post(self, request, **kwargs) -> response.Response:
@@ -209,14 +227,13 @@ class ContactUs(APIView):
 
             result = entry.enter_contact_us(doc=request.data)
             if result:
-                service.sns(
-                    payload={
-                        'message': f'New Query Received! \n Name:{validate.get("name")} \n \
+                Thread(target=service.sns, kwargs={'payload': {
+                    'message': f'New Query Received! \n Name:{validate.get("name")} \n \
                         Email: {validate.get("email")} \n \
                         Message: {validate.get("message")} \n \
                         Phone Number: {validate.get("phone_number")}',
-                        'subject': '[QUERY]: https://githubsrm.tech'
-                    })
+                    'subject': '[QUERY]: https://githubsrm.tech'
+                }}).start()
 
                 return response.Response(status=status.HTTP_201_CREATED)
             return response.Response(data={
@@ -232,7 +249,7 @@ class HealthCheck(APIView):
     """Health Checker route
 
     Args:
-        APIView 
+        APIView
     """
 
     throttle_scope = 'common'
@@ -241,7 +258,7 @@ class HealthCheck(APIView):
         """Get Process UpTime
 
         Args:
-            request 
+            request
         """
 
         uptime = time.time() - psutil.Process(os.getpid()).create_time()
