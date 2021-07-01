@@ -5,7 +5,7 @@ ERROR_TEXT="\e[1;31m[ERROR]\e[0m"
 
 if [ $# -ne 1 ]
 then
-echo -e "$ERROR_TEXT Correct Usage: ./run_tests.sh <PORT>"
+echo -e "$ERROR_TEXT Correct Usage: ./test.backend.sh <PORT>"
 exit 1
 fi
 
