@@ -201,7 +201,7 @@ class BotoService:
 
 
 def emailbody(name, file, project_name, project_id=None):
-    with open(f'{pathlib.Path.cwd()}/apis/{file}') as file_:
+    with open(f'{pathlib.Path.cwd()}/apis/templates/{file}') as file_:
         template = Template(file_.read())
         if project_id:
             return template.render(name=name, project_id=project_id, project_name=project_name)
