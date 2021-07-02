@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "GitHubSRM: Django Server",
-      script: "./run.sh 8000",
+      script: "chmod +x ./run.sh && ./run.sh 8000",
     },
   ],
 };
