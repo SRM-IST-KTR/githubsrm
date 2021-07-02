@@ -48,7 +48,7 @@ jobs:
         script: ssh -o "StrictHostKeyChecking no" $ssh_server $ssh_command
         on:
           all_branches: true
-          condition: $TRAVIS_BRANCH =~ ^(main|dev)$
+          condition: $TRAVIS_BRANCH =~ ^(main)$
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_2fc69c4133c3_key -iv $encrypted_2fc69c4133c3_iv
