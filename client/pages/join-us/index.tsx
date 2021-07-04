@@ -1,10 +1,11 @@
+import Head from "next/head";
+
 import { Layout } from "../../components/shared";
 import { JoinUs } from "../../components/join-us";
-import Head from "next/head";
 
 const JoinUsPage = () => {
   return (
-    <div>
+    <>
       <Head>
         <title>GitHub Community SRM | Join Us</title>
         <meta
@@ -15,7 +16,7 @@ const JoinUsPage = () => {
       <Layout>
         <JoinUs />
       </Layout>
-    </div>
+    </>
   );
 };
 

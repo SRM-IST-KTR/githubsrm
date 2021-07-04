@@ -1,12 +1,13 @@
+import Head from "next/head";
+
 import { Layout } from "../components/shared";
 import { ContactUs } from "../components/contact-us";
-import Head from "next/head";
 
 const ContactPage = () => {
   return (
-    <div>
+    <>
       <Head>
-        <title>GitHub Community SRM | Contact</title>
+        <title>GitHub Community SRM | Contact Us</title>
         <meta
           name="description"
           content="GitHub Community SRM is the foremost student-led community spearheading open-source revolution in SRMIST."
@@ -15,7 +16,7 @@ const ContactPage = () => {
       <Layout>
         <ContactUs />
       </Layout>
-    </div>
+    </>
   );
 };
 
