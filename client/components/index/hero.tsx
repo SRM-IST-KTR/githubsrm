@@ -52,7 +52,7 @@ const Hero = () => {
                 index % 2 ? "lg:ml-20" : ""
               } lg:my-5 flex flex-col justify-center items-stretch lg:items-center`}
             >
-              <p className="lg:text-center p-2 lg:py-4 font-medium text-gray-100 bg-base-green rounded-2xl">
+              <p className="lg:text-center p-2 lg:py-4 font-medium text-white bg-base-green rounded-2xl">
                 {message}
               </p>
             </div>

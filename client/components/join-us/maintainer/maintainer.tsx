@@ -27,7 +27,7 @@ const Maintainer = () => {
           </p>
           <img
             src="/octo-teacher.png"
-            alt="octo teacher"
+            alt="octocat github teacher"
             draggable="false"
             className="w-1/3 max-w-xs"
           />
