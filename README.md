@@ -18,7 +18,7 @@
  <img src="https://img.shields.io/github/issues/srm-ist-ktr/githubsrm"/>
  <img src="https://img.shields.io/github/forks/srm-ist-ktr/githubsrm"/>
  <img src="https://img.shields.io/github/stars/srm-ist-ktr/githubsrm?style=social"/>
-    <img src="https://img.shields.io/badge/version-1.1.0-yellowgreen" alt="version 1.0.0"/>
+    <img src="https://img.shields.io/badge/version-2.0.0-yellow" alt="version 2.0.0"/>
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="license MIT"/>
     <img src="https://img.shields.io/badge/author-GitHub%20Community%20SRM-green" alt="author githubsrm"/>
 </p>
