@@ -9,20 +9,25 @@ const Footer = () => {
   const socials: {
     icon: JSX.Element;
     href: string;
+    name: string;
   }[] = [
     {
+      name: "Github",
       icon: <GitHubIcon />,
       href: "https://github.com/srm-ist-ktr",
     },
     {
+      name: "Twitter",
       icon: <TwitterIcon />,
       href: "https://twitter.com/githubsrm",
     },
     {
+      name: "Linkedin",
       icon: <LinkedinIcon />,
       href: "https://www.linkedin.com/company/githubsrm/mycompany/",
     },
     {
+      name: "Instagram",
       icon: <InstagramIcon />,
       href: "https://www.instagram.com/githubsrm/",
     },
@@ -48,6 +53,7 @@ const Footer = () => {
         {socials.map((social) => (
           <div key={social.href}>
             <a
+              aria-label={social.name}
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"

@@ -9,17 +9,20 @@ const Benefits = () => {
     {
       icon: <PuzzleIcon />,
       title: "Contribution",
-      text: "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
+      text:
+        "Students can contribute to Open Source Projects under the banner of SRMIST allowing students to get industry-level exposure through SRMIST’s organization.",
     },
     {
       icon: <TickMark />,
       title: "Eligibility",
-      text: "Eligibility to apply for the GitHub Externship Program where one can solve real-world tech problems by collaborating on open source projects.",
+      text:
+        "Eligibility to apply for the GitHub Externship Program where one can solve real-world tech problems by collaborating on open source projects.",
     },
     {
       icon: <CelebrationIcon />,
       title: "Features",
-      text: "Free access to GitHub Enterprise Server and GitHub Enterprise Cloud for every department and Exclusive access to new features, and GitHub Education-specific swag.",
+      text:
+        "Free access to GitHub Enterprise Server and GitHub Enterprise Cloud for every department and Exclusive access to new features, and GitHub Education-specific swag.",
     },
   ];
 
@@ -34,7 +37,7 @@ const Benefits = () => {
         <img
           draggable="false"
           src="/map.png"
-          alt="map"
+          alt="github campus map"
           className="rounded-lg shadow-xl"
         />
       </figure>

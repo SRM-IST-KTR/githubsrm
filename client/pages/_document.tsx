@@ -36,11 +36,11 @@ class MyDocument extends Document {
           <meta name="title" content="GitHub Community SRM" />
           <meta
             name="description"
-            content="Open Source Software (OSS) is the rock-solid foundation of the modern-day Internet. Right from the Android OS on your smartphone to the protocols that enable your IoT devices to communicate with each other, open-source software plays an important role in the software market share. With $66.05 Billion Open Source Services out in the market, it is imperative for developers to know this development ecosystem and be a part of the open-source revolution."
+            content="GitHub Community SRM is the foremost student-led community spearheading open-source revolution in SRMIST."
           />
           <meta
             name="keywords"
-            content="github, oss, open-source, srm, srmist, github campus partner, chennai"
+            content="github, githubsrm, github community srm, oss, open-source, srm, srmist, github campus partner, chennai"
           />
           <meta name="language" content="English" />
           <meta name="author" content="GitHub Community SRM" />
@@ -55,7 +55,7 @@ class MyDocument extends Document {
           <meta property="og:title" content="GitHub Community SRM" />
           <meta
             property="og:description"
-            content="Open Source Software (OSS) is the rock-solid foundation of the modern-day Internet. Right from the Android OS on your smartphone to the protocols that enable your IoT devices to communicate with each other, open-source software plays an important role in the software market share. With $66.05 Billion Open Source Services out in the market, it is imperative for developers to know this development ecosystem and be a part of the open-source revolution."
+            content="GitHub Community SRM is the foremost student-led community spearheading open-source revolution in SRMIST."
           />
           <meta property="og:image" content="/og.jpg" />
 
