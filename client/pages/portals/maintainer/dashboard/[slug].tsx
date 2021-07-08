@@ -1,5 +1,5 @@
-import React from "react";
-import Card from "./card";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 const PROJECTS = [
   {
@@ -34,19 +34,34 @@ const PROJECTS = [
   },
 ];
 
-const index = () => {
-  return (
+const ProjectDetail = () => {
+  const [project, setProject] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const { slug } = router.query;
+    const found = PROJECTS.find((p) => p.id === slug);
+    setProject(found);
+  }, [project]);
+
+  if (project === null) {
+    return <p>loading...... </p>;
+  }
+
+  return project ? (
     <div className="min-h-screen p-14 bg-base-blue">
       <h2 className="text-4xl font-extrabold text-white mb-10">
-        Hi, maintainer{" "}
+        Project: {project.name}
       </h2>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-        {PROJECTS.map((item) => (
-          <Card name={item.name} id={item.id} desc={item.desc} key={item.id} />
-        ))}
-      </div>
+      <h2 className="text-4xl font-extrabold text-white mb-10">
+        Project Desc: {project.desc}
+      </h2>
+    </div>
+  ) : (
+    <div>
+      <p>not found </p>
     </div>
   );
 };
 
-export default index;
+export default ProjectDetail;
