@@ -1,4 +1,5 @@
 
+from rest_framework import response, status
 from rest_framework.views import APIView
 from rest_framework import response, status
 
@@ -6,8 +7,25 @@ from rest_framework import response, status
 from .utils import project_SingleProject, project_Pagination
 
 
+from .definitions import RegisterAdminSchema
+from .perms import AdminPerms
+
+
 class RegisterAdmin(APIView):
-    pass
+    permission_classes = [AdminPerms]
+
+    def post(self, request, **kwargs):
+        """Register Admins
+
+        Args:
+            request
+        """
+        valid = RegisterAdminSchema(request.data).valid()
+
+        if 'error' in valid:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return response.Response(data=valid, status=status.HTTP_200_OK)
 
 
 class ProjectsAdmin(APIView):

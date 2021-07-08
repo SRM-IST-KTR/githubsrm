@@ -1,6 +1,5 @@
+from .views import ProjectsAdmin, RegisterAdmin
 from django.urls import path
-from .views import RegisterAdmin, ProjectsAdmin
-
 
 urlpatterns = [
     path('register', RegisterAdmin.as_view()),
