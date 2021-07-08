@@ -1,18 +1,19 @@
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
 import {
   newMaintainerValidation,
   existingMaintainerValidation,
   contributorValidation,
   contactUsValidation,
-} from "./constants";
+  maintainerLoginValidation,
+} from './constants';
 
 interface Id {
   id: string;
 }
 export interface MemberProps extends Id {
   name: string;
-  designation:string
+  designation: string;
   github_id: string;
   linkedin: string;
   twitter: string;
@@ -30,14 +31,14 @@ export interface ProjectProps {
 }
 
 export interface InputClassNameProps {
- wrapperClassName?: { default?: string; onError?: string };
+  wrapperClassName?: { default?: string; onError?: string };
   inputClassName?: { default?: string; onError?: string };
   labelClassName?: { default?: string; onError?: string };
   descriptionClassName?: { default?: string; onError?: string };
 }
 
 export interface InputProps extends InputClassNameProps {
-  type: "text" | "textarea" | "select" | "email";
+  type: 'text' | 'textarea' | 'select' | 'email' | 'password';
   required?: boolean;
   id: string;
   label?: string;
@@ -49,7 +50,6 @@ export interface InputProps extends InputClassNameProps {
   description?: string;
   textareaOptions?: { rows?: number; cols?: number };
   onError?: boolean;
- 
 }
 
 export interface NewMaintainerForm
@@ -63,3 +63,6 @@ export interface ContributorFormData
 
 export interface ContactUsFormData
   extends Yup.InferType<typeof contactUsValidation> {}
+
+export interface MaintainerLoginData
+  extends Yup.InferType<typeof maintainerLoginValidation> {}

@@ -1,7 +1,11 @@
-import React from 'react';
+import MaintainerLogin from '../../../components/portals/maintainer/login';
 
 const index = () => {
-  return <div></div>;
+  return (
+    <div>
+      <MaintainerLogin />
+    </div>
+  );
 };
 
 export default index;
