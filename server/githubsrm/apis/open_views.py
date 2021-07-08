@@ -141,7 +141,8 @@ class Maintainer(APIView):
                     }, status=status.HTTP_409_CONFLICT)
 
                 if entry_checks.check_existing(description=validate['description'],
-                                               project_name=validate['project_name']):
+                                               project_name=validate['project_name'],
+                                               project_url=validate['project_url']):
                     # Enter alpha maintainer
 
                     return response.Response({

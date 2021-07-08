@@ -8,23 +8,25 @@ class EntryCheck:
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
 
-    def check_existing(self, description: str, project_name: str) -> bool:
+    def check_existing(self, description: str, project_name: str, project_url: str) -> bool:
         """Checks existing project proposals
 
         Args:
             description (str)
             project_name (str)
+            project_url (str)
 
         Returns:
             bool: 
         """
 
-        result = list(self.db.project.find({"$or": [
+        result = self.db.project.find_one({"$or": [
             {"project_name": project_name},
-            {"description": description}
-        ]}))
+            {"description": description},
+            {"project_url": project_url}
+        ]})
 
-        if len(result) > 0:
+        if result:
             return True
 
         return
@@ -61,17 +63,17 @@ class EntryCheck:
         if not result['approved']:
             return True
 
-        result = list(self.db.contributor.find({"$and": [
+        result = self.db.contributor.find_one({"$and": [
             {"interested_project": interested_project},
             {"reg_number": reg_number}
-        ]}))
+        ]})
 
-        results = list(self.db.maintainer.find({
+        results = self.db.maintainer.find_one({
             "$and": [
                 {"reg_number": reg_number},
                 {"project_id": interested_project}
             ]
-        }))
+        })
 
         if len(results) > 0:
             return True
@@ -91,8 +93,8 @@ class EntryCheck:
             bool
         """
 
-        result = list(self.db.maintainer.find(
-            {"github_id": github_id, "project_id": project_id, "srm_email": srm_email}))
+        result = self.db.maintainer.find_one(
+            {"github_id": github_id, "project_id": project_id, "srm_email": srm_email})
 
         if len(result) >= 1:
             return True

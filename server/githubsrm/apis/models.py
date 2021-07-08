@@ -27,7 +27,7 @@ class Entry:
 
         gen_id = random.choices(string.ascii_uppercase + string.digits, k=8)
 
-        if len(list(self.db.collection.find({"_id": gen_id}))) > 0:
+        if self.db.collection.find_one({"_id": gen_id}):
             return self.get_uid(length=8)
 
         return ''.join(gen_id)
@@ -145,7 +145,7 @@ class Entry:
         _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"approved": False}}
 
-        if len(list(self.db.project.find({"_id": doc.get('interested_project')}))) == 0:
+        if self.db.project.find_one({"_id": doc.get('interested_project')}):
             return
 
         try:
@@ -229,7 +229,7 @@ class Entry:
             identifier: Contributor ID
             project_id: Project ID
         """
-        if len(list(self.db.contributor.find({"_id": identifier}))) > 0:
+        if self.db.contributor.find_one({"_id": identifier}):
             if self._update_project(identifier=identifier, project_id=project_id):
                 self.db.contributor.update({"_id": identifier}, {
                     "$set": {"approved": True}})
@@ -281,11 +281,11 @@ class Entry:
             bool
         """
 
-        details = list(self.db.contactUs.find({
+        details = self.db.contactUs.find_one({
             "message": doc.get("message")
-        }))
+        })
 
-        if len(details) > 0:
+        if details:
             return
         try:
             self.db.contactUs.insert_one(doc)
