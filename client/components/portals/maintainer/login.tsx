@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Formik, Form, FormikState } from "formik";
+import { Formik, Form } from "formik";
 
 import { MaintainerLoginData } from "../../../utils/interfaces";
 import {
@@ -19,7 +18,7 @@ const MaintainerLogin = () => {
   };
 
   return (
-    <>
+    <div>
       <div className="flex justify-center mt-10">
         <h1>Maintainer Login</h1>
       </div>
@@ -29,13 +28,23 @@ const MaintainerLogin = () => {
         onSubmit={submitValues}
         validationSchema={maintainerLoginValidation}
       >
-        <Form className="w-full max-w-6xl mt-6 mx-auto">
+        <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
           {maintainerLoginInputs.map((input) => (
-            <Input key={input.id} {...input} />
+            <div className="border border-black rounded my-4 p-4">
+              <Input key={input.id} {...input} />
+            </div>
           ))}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="rounded-xl font-bold items-center my-3 bg-base-teal p-3"
+            >
+              Submit
+            </button>
+          </div>
         </Form>
       </Formik>
-    </>
+    </div>
   );
 };
 
