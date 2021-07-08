@@ -1,6 +1,6 @@
-import MaintainerLogin from '../../../components/portals/maintainer/login';
+import MaintainerLogin from "../../../components/portals/maintainer/login";
 
-const index = () => {
+const Maintainer = () => {
   return (
     <div>
       <MaintainerLogin />
@@ -8,4 +8,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Maintainer;
