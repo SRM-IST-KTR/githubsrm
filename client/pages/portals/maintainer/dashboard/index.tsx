@@ -1,7 +1,8 @@
-import React from 'react';
+import React from "react";
+import Dashboard from "../../../../components/portals/maintainer/dashboard";
 
 const index = () => {
-  return <div></div>;
+  return <Dashboard />;
 };
 
 export default index;
