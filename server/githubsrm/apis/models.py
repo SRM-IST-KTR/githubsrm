@@ -32,17 +32,16 @@ class Entry:
 
         return ''.join(gen_id)
 
-    def _enter_project(self, doc: Dict[str, str], maintainer_id: str,
+    def _enter_project(self, doc: Dict[str, str],
                        visibility: Dict[str, str], project_id: str) -> None:
         """Project Entry (only accessed by maintainer)
 
         Args:
             doc (Dict[str, str]): post to be entred
-            maintainer_id (str): maintainer id 
             project_id (str): project id
         """
 
-        doc = {**doc, **maintainer_id, **{"_id": project_id}, **visibility}
+        doc = {**doc, **{"_id": project_id}, **visibility}
         self.db.project.insert_one(doc)
 
     def _update_project(self, identifier: str,
@@ -102,8 +101,6 @@ class Entry:
                 "tags": tags,
                 "approved": False,
                 "project_name": project_name
-            }, maintainer_id={
-                "maintainer_id": [_id]
             }, visibility=visibility, project_id=project_id)
 
             return project_id, _id, project_name, description
