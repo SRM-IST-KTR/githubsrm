@@ -18,10 +18,10 @@ const MaintainerLogin = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-center mt-10">
-        <h1>Maintainer Login</h1>
-      </div>
+    <div className="min-h-screen p-14 bg-base-blue">
+      <h1 className="flex justify-center text-4xl font-extrabold text-white">
+        Maintainer Login
+      </h1>
 
       <Formik
         initialValues={initialValues}

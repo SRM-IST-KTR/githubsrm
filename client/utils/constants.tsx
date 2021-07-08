@@ -439,9 +439,9 @@ export const maintainerLoginInputs: InputProps[] = [
   },
   {
     id: "password",
-    label: "password",
+    label: "Password",
     type: "password",
-    placeholder: "Enter password",
+    placeholder: "*********",
     required: true,
   },
 ];
