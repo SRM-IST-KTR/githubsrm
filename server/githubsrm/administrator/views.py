@@ -1,33 +1,38 @@
 
+from apis.throttle import PostThrottle
+from django.http.response import JsonResponse
 from rest_framework import response, status
 from rest_framework.views import APIView
-from rest_framework import response, status
-from administrator import jwt_keys, entry
-from .utils import project_SingleProject, project_Pagination
 
+from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema
-from .perms import RegisterAdminPerms
+from .perms import AuthAdminPerms
+from .utils import project_Pagination, project_SingleProject
 
 
 class RegisterAdmin(APIView):
-    permission_classes = [RegisterAdminPerms]
+    permission_classes = [AuthAdminPerms]
+    throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs):
+    def post(self, request, **kwargs) -> JsonResponse:
         """Register Admins
 
         Args:
             request
+
+        Returns:
+            JsonResponse
         """
         valid = AdminSchema(request.data).valid()
 
         if 'error' in valid:
-            return response.Response(status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(status=400)
 
         if entry.insert_admin(request.data):
-            return response.Response(data={
+            return JsonResponse(data={
                 "registered": True
-            }, status=status.HTTP_200_OK)
+            }, status=200)
         return response.Response(data={
             "invalid data / user exists"
         }, status=status.HTTP_400_BAD_REQUEST)
@@ -37,8 +42,9 @@ class AdminLogin(APIView):
     """
     Log in admins.
     """
+    throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> response.Response:
+    def post(self, request, **kwargs) -> JsonResponse:
         """Handle post data on this route and issue jwtkeys.
 
         Args:
@@ -49,7 +55,7 @@ class AdminLogin(APIView):
         """
         validate = AdminSchema(request.data).valid()
         if 'error' in validate:
-            return response.Response(status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(status=400)
         password = validate.get('password')
         if entry.verify_admin(email=validate.get('email'), password=password):
             keys = jwt_keys.issue_key(payload={
@@ -58,19 +64,21 @@ class AdminLogin(APIView):
             })
 
             if keys:
-                return response.Response(data={
+                return JsonResponse(data={
                     "keys": keys
-                }, status=status.HTTP_200_OK)
-            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return response.Response(data={
+                }, status=200)
+            return JsonResponse(status=500)
+        return JsonResponse(data={
             "error": "invalid password"
-        }, status=status.HTTP_401_UNAUTHORIZED)
+        }, status=401)
 
 
 class ProjectsAdmin(APIView):
 
+    throttle_classes = [PostThrottle]
+
     def post(self, request, **kwargs):
-        pass
+        return response.Response(status=status.HTTP_200_OK)
 
     def get(self, request, **kwargs):
 
@@ -87,4 +95,4 @@ class ProjectsAdmin(APIView):
             return project_SingleProject(request, **kwargs)
 
         else:
-            return response.Response("Query Params are different from expected",status=status.HTTP_400_BAD_REQUEST)
+            return response.Response("Query Params are different from expected", status=status.HTTP_400_BAD_REQUEST)

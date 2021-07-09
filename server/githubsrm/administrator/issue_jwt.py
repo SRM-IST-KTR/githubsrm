@@ -39,13 +39,13 @@ class IssueKey:
         Returns:
             bool
         """
+
         try:
             jwt.decode(jwt=key, key=self.signature,
                        options={"require": ["exp"], "verify_signature": True}, algorithms=['HS256'])
 
             return True
-        except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError as e:
-            print(e)
+        except Exception as e:
             return False
 
 
