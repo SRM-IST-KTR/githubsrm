@@ -43,7 +43,7 @@ class EntryCheck:
         result = self.db.project.find_one({"_id": identifier})
 
         if result:
-            return result['approved']
+            return result['is_admin_approved']
         return
 
     def check_contributor(self, interested_project: str,
@@ -60,7 +60,7 @@ class EntryCheck:
         project_id = interested_project
         
         result = self.db.project.find_one({"_id": project_id})
-        if not result['approved']:
+        if not result['is_admin_approved']:
             return True
 
         result = self.db.contributor.find_one({"$and": [

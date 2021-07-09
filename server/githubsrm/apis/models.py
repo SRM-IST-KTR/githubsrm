@@ -99,7 +99,7 @@ class Entry:
                 "project_url": project_url,
                 "description": description,
                 "tags": tags,
-                "approved": False,
+                "is_admin_approved": False,
                 "project_name": project_name
             }, visibility=visibility, project_id=project_id)
 
@@ -140,7 +140,7 @@ class Entry:
         """
 
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}, **{"approved": False}}
+        doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False}, **{"is_maintainer_approved":False}}
 
         if self.db.project.find_one({"_id": doc.get('interested_project')}):
             return
@@ -214,7 +214,7 @@ class Entry:
 
         if project:
             self.db.project.update_one({"_id": identifier}, {
-                "$set": {"approved": True}})
+                "$set": {"is_admin_approved": True}})
             return True
         return
 
@@ -229,7 +229,7 @@ class Entry:
         if self.db.contributor.find_one({"_id": identifier}):
             if self._update_project(identifier=identifier, project_id=project_id):
                 self.db.contributor.update({"_id": identifier}, {
-                    "$set": {"approved": True}})
+                    "$set": {"is_admin_approved": True}})
                 return True
         return
 
@@ -242,7 +242,7 @@ class Entry:
         """
         if admin:
             self.db.project.find({})
-        return self.db.project.find({"private": False, "approved": True})
+        return self.db.project.find({"private": False, "is_admin_approved": True})
 
     def get_contributors(self) -> object:
         """Get all existing contributors
