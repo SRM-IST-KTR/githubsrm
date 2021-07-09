@@ -10,7 +10,7 @@ load_dotenv()
 
 class IssueKey:
     def __init__(self):
-        self.signature = os.getenv("JWT_TOKEN")
+        self.signature = os.getenv("SIGNATURE")
 
     def issue_key(self, payload: Dict[str, Any]) -> Dict[str, str]:
         """Issue jwt keys with desired payload 
