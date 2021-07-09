@@ -33,7 +33,32 @@ export const maintainerLoginInputs: InputProps[] = [
   },
 ];
 
+export const adminRegisterInputs: InputProps[] = [
+  {
+    id: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "community@githubsrm.tech",
+    required: true,
+  },
+  {
+    id: "password",
+    label: "Password",
+    type: "password",
+    placeholder: "*********",
+    required: true,
+  },
+];
+
 export const maintainerLoginValidation = Yup.object().shape({
+  email: Yup.string()
+    .trim()
+    .required("**Email:** Missing")
+    .email("**Email:** Invalid"),
+  password: Yup.string().required("**Password:** Missing"),
+});
+
+export const adminRegisterValidation = Yup.object().shape({
   email: Yup.string()
     .trim()
     .required("**Email:** Missing")

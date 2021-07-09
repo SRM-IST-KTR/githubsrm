@@ -1,35 +1,35 @@
 import { Formik, Form } from "formik";
 
-import { MaintainerLoginData } from "../../../utils/interfaces";
+import { AdminRegisterData } from "../../../utils/interfaces";
 import {
-  maintainerLoginValidation,
-  maintainerLoginInputs,
+  adminRegisterValidation,
+  adminRegisterInputs,
 } from "../../../utils/constants";
 import { Input } from "../../shared";
 
-const MaintainerLogin = () => {
-  const initialValues: MaintainerLoginData = {
+const AdminRegister = () => {
+  const initialValues: AdminRegisterData = {
     email: "",
     password: "",
   };
 
-  const submitValues = (values: MaintainerLoginData) => {
+  const submitValues = (values: AdminRegisterData) => {
     console.log(values);
   };
 
   return (
     <div className="min-h-screen p-14 bg-base-blue">
       <h1 className="flex justify-center text-4xl font-extrabold text-white">
-        Maintainer Login
+        Admin Registration
       </h1>
 
       <Formik
         initialValues={initialValues}
         onSubmit={submitValues}
-        validationSchema={maintainerLoginValidation}
+        validationSchema={adminRegisterValidation}
       >
         <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-          {maintainerLoginInputs.map((input) => (
+          {adminRegisterInputs.map((input) => (
             <div className="border-2 border-gray-700 rounded my-4 p-4">
               <Input key={input.id} {...input} />
             </div>
@@ -48,4 +48,4 @@ const MaintainerLogin = () => {
   );
 };
 
-export default MaintainerLogin;
+export default AdminRegister;

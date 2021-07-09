@@ -1,6 +1,9 @@
 import * as Yup from "yup";
 
-import { maintainerLoginValidation } from "./constants";
+import {
+  maintainerLoginValidation,
+  adminRegisterValidation,
+} from "./constants";
 
 export interface InputClassNameProps {
   wrapperClassName?: { default?: string; onError?: string };
@@ -26,3 +29,6 @@ export interface InputProps extends InputClassNameProps {
 
 export interface MaintainerLoginData
   extends Yup.InferType<typeof maintainerLoginValidation> {}
+
+export interface AdminRegisterData
+  extends Yup.InferType<typeof adminRegisterValidation> {}
