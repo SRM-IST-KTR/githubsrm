@@ -4,7 +4,7 @@ from administrator import entry
 from .utils import get_token
 
 
-class RegisterAdminPerms(BasePermission):
+class AuthAdminPerms(BasePermission):
     def has_permission(self, request, view):
 
         try:

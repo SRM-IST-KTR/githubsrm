@@ -1,5 +1,5 @@
 from administrator import jwt_keys
-from rest_framework import response, status
+from django.http.response import JsonResponse
 from .utils import get_token
 
 
@@ -9,10 +9,10 @@ class Authorize:
         Initialize requirements
         """
         # Keep adding proectedted routes to this list
-        self.protected = ['project']
+        self.protected = ['/admin/projects']
         self.view = view
 
-    def __call__(self, request) -> response.Response:
+    def __call__(self, request) -> JsonResponse:
         """Middleware to check valid protection
 
         Args:
@@ -23,17 +23,18 @@ class Authorize:
         """
 
         if request.path in self.protected:
-            if value := get_token(request_header=request.header):
+            if value := get_token(request_header=request.headers):
                 token_type, token = value
                 assert token_type == 'Bearer'
                 if jwt_keys.verify_key(key=token):
                     return self.view(request)
-                return response.Response(data={
-                    "invalid key"
-                }, status=status.HTTP_401_UNAUTHORIZED)
-            return response.Response(data={
-                "invalid token"
-            }, status=status.HTTP_401_UNAUTHORIZED)
+                
+                return JsonResponse(data={
+                    "error": "invalid key"
+                }, status=401)
+            return JsonResponse(data={
+                "error": "token error"
+            }, status=401)
 
         else:
             return self.view(request)
