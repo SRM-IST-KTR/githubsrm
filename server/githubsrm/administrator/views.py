@@ -1,13 +1,14 @@
 
+from apis.throttle import PostThrottle
+from django.http.response import JsonResponse
 from rest_framework import response, status
 from rest_framework.views import APIView
-from administrator import jwt_keys, entry
-from .utils import project_SingleProject, project_Pagination
-from django.http.response import JsonResponse
+
+from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema
 from .perms import AuthAdminPerms
-from apis.throttle import PostThrottle
+from .utils import project_Pagination, project_SingleProject
 
 
 class RegisterAdmin(APIView):

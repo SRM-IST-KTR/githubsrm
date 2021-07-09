@@ -8,7 +8,9 @@ class Authorize:
         """
         Initialize requirements
         """
-        # Keep adding proectedted routes to this list
+        #! Note: Remember to return JsonResponse from all the paths
+        #! That go in this list.
+        #! Keep adding Protected routes to this list
         self.protected = ['/admin/projects']
         self.view = view
 
@@ -28,7 +30,7 @@ class Authorize:
                 assert token_type == 'Bearer'
                 if jwt_keys.verify_key(key=token):
                     return self.view(request)
-                
+
                 return JsonResponse(data={
                     "error": "invalid key"
                 }, status=401)
