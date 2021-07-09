@@ -13,7 +13,8 @@ class IssueKey:
         self.signature = os.getenv("JWT_TOKEN")
 
     def issue_key(self, payload: Dict[str, Any]) -> Dict[str, str]:
-        """Issue jwt keys with desired payload
+        """Issue jwt keys with desired payload 
+           Jwt Expiry time is set to 24 hours.
 
         Args:
             payload (Dict[str, Any]): data give
@@ -22,26 +23,28 @@ class IssueKey:
             Dict[str, str]: Jwt token
         """
         payload = {**payload, **{"exp": datetime.utcnow()+timedelta(hours=24)}}
+        try:
+            return jwt.encode(
+                payload=payload, key=self.signature
+            )
+        except Exception as e:
+            return False
 
-        return jwt.encode(
-            payload=payload, key=self.signature
-        )
-
-    def verify_key(self, key: bytes) -> bool:
+    def verify_key(self, key: str) -> bool:
         """Verify JwT with the original signature
 
         Args:
-            key (bytes): jwt key
+            key (str): jwt key
 
         Returns:
             bool
         """
         try:
             jwt.decode(jwt=key, key=self.signature,
-                       options={"require": ["exp"]}, algorithms=['HS256'])
+                       options={"require": ["exp"], "verify_signature": True}, algorithms=['HS256'])
 
             return True
-        except Exception as e:
+        except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError as e:
             print(e)
             return False
 
