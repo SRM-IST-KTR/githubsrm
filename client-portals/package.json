@@ -19,6 +19,7 @@
     "postcss": "^8.2.10",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-icons": "^4.2.0",
     "react-toastify": "^7.0.4",
     "recaptcha-v3": "^1.9.1",
     "tailwindcss": "^2.0.2",

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { TiTick } from "react-icons/ti";
+import { ImCross } from "react-icons/im";
+import { successToast } from "../../../../utils/functions/toast";
 
 const ProjectTable = () => {
   const [selectedContributors, setSelectedContributors] = useState([]);
+  const [approve, setApprove] = useState(false);
   const tableHeading = [
     "Name",
-    "Id",
     "Email",
     "GitHub ID",
     "SRM Email",
@@ -47,6 +50,8 @@ const ProjectTable = () => {
 
   const submitHandler = () => {
     console.log(selectedContributors);
+    setApprove(true);
+    successToast("Contributors Approved sucessfully!");
   };
 
   return (
@@ -72,18 +77,14 @@ const ProjectTable = () => {
                         <div className="">{data.name}</div>
                       </div>
                     </td>
-                    <td className="p-3">{data.id}</td>
+
                     <td className="p-3">{data.email}</td>
                     <td className="p-3">{data.github_id}</td>
                     <td className="p-3">{data.srm_email}</td>
                     <td className="p-3">{data.reg_number}</td>
                     <td className="p-3">{data.branch}</td>
                     <td className="p-3 ">
-                      <a
-                        href="#"
-                        className="text-white hover:text-gray-100 mr-2"
-                      >
-                        {/* // TODO: Add checkbox */}
+                      {!approve ? (
                         <input
                           type="checkbox"
                           className="apprearance-none text-center checked:bg-blue-600 checked:border-transparent"
@@ -95,7 +96,11 @@ const ProjectTable = () => {
                             ])
                           }
                         ></input>
-                      </a>
+                      ) : selectedContributors.find((c) => c === data.id) ? (
+                        <TiTick className="text-green-500 text-2xl" />
+                      ) : (
+                        <ImCross className="text-red-500" />
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -106,9 +111,9 @@ const ProjectTable = () => {
       </div>
       <button
         onClick={submitHandler}
-        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 text-white rounded-xl"
+        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-4 font-bold text-white rounded-xl"
       >
-        Submit
+        Approve
       </button>
     </>
   );
