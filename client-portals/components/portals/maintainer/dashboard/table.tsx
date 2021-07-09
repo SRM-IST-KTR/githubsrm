@@ -1,6 +1,10 @@
+import React, { useState } from "react";
+
 const ProjectTable = () => {
+  const [selectedContributors, setSelectedContributors] = useState([]);
   const tableHeading = [
     "Name",
+    "Id",
     "Email",
     "GitHub ID",
     "SRM Email",
@@ -10,36 +14,41 @@ const ProjectTable = () => {
   ];
   const tableData = [
     {
+      id: "1",
       name: "Contributor 1",
       email: "test@test.com",
       github_id: "sample",
       srm_email: "test@srmist.edu.in",
       reg_number: "RA19110300100xx",
       branch: "CSE",
-      projectID: "1",
       maintainer_approved: "true",
     },
     {
+      id: "2",
       name: "Contributor 2",
       email: "test@test.com",
       github_id: "sample",
       srm_email: "test@srmist.edu.in",
       reg_number: "RA19110300100xx",
       branch: "CSE",
-      projectID: "2",
       maintainer_approved: "true",
     },
     {
+      id: "3",
       name: "Contributor 3",
       email: "test@test.com",
       github_id: "sample",
       srm_email: "test@srmist.edu.in",
       reg_number: "RA1911030010026",
       branch: "CSE",
-      projectID: "3",
       maintainer_approved: "true",
     },
   ];
+
+  const submitHandler = () => {
+    console.log(selectedContributors);
+  };
+
   return (
     <>
       <div className="flex justify-center">
@@ -57,12 +66,13 @@ const ProjectTable = () => {
               </thead>
               <tbody>
                 {tableData.map((data) => (
-                  <tr className="bg-gray-800">
+                  <tr key={data.id} className="bg-gray-800">
                     <td className="p-3">
                       <div className="flex align-items-center">
                         <div className="">{data.name}</div>
                       </div>
                     </td>
+                    <td className="p-3">{data.id}</td>
                     <td className="p-3">{data.email}</td>
                     <td className="p-3">{data.github_id}</td>
                     <td className="p-3">{data.srm_email}</td>
@@ -74,9 +84,17 @@ const ProjectTable = () => {
                         className="text-white hover:text-gray-100 mr-2"
                       >
                         {/* // TODO: Add checkbox */}
-                        <button className="bg-green-400 p-2 text-white rounded-xl">
-                          {data.maintainer_approved}
-                        </button>
+                        <input
+                          type="checkbox"
+                          className="apprearance-none text-center checked:bg-blue-600 checked:border-transparent"
+                          value={data.id}
+                          onChange={(e) =>
+                            setSelectedContributors([
+                              ...selectedContributors,
+                              e.target.value,
+                            ])
+                          }
+                        ></input>
                       </a>
                     </td>
                   </tr>
@@ -86,6 +104,12 @@ const ProjectTable = () => {
           </div>
         </div>
       </div>
+      <button
+        onClick={submitHandler}
+        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 text-white rounded-xl"
+      >
+        Submit
+      </button>
     </>
   );
 };
