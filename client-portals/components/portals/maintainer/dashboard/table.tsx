@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
+import { FaGithub } from "react-icons/fa";
 import { successToast } from "../../../../utils/functions/toast";
 
 const ProjectTable = () => {
@@ -78,9 +79,17 @@ const ProjectTable = () => {
                       </div>
                     </td>
 
-                    <td className="p-3">{data.email}</td>
-                    <td className="p-3">{data.github_id}</td>
-                    <td className="p-3">{data.srm_email}</td>
+                    <td className="p-3">
+                      <a href="mailto:{data.email}">{data.email}</a>
+                    </td>
+                    <td className="p-3">
+                      <a href={data.github_id}>
+                        <FaGithub className="text-2xl" />
+                      </a>
+                    </td>
+                    <td className="p-3">
+                      <a href="mailto:{data.srm_email}">{data.srm_email}</a>
+                    </td>
                     <td className="p-3">{data.reg_number}</td>
                     <td className="p-3">{data.branch}</td>
                     <td className="p-3 ">
