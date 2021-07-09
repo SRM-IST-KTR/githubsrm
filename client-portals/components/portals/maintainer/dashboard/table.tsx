@@ -87,6 +87,7 @@ const ProjectTable = () => {
                     <td className="p-3">
                       <a href={data.github_id}>
                         <FaGithub className="text-2xl" />
+                        {data.github_id}
                       </a>
                     </td>
                     <td className="p-3">
