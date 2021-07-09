@@ -15,11 +15,10 @@ def project_Pagination(request, **kwargs):
             response.Response
     """
     ITEMS_PER_PAGE=10
-    values=list(request.GET.values())
-    page=int(values[0])
-    db=AdminEntry()
-    totalItems= db.project.count_documents({})
-    record = list(db.project.aggregate([
+    page = int(request.GET["page"])
+    entry=AdminEntry()
+    totalItems= entry.db.project.count_documents({})
+    record = list(entry.db.project.aggregate([
         {"$skip": (page - 1) * ITEMS_PER_PAGE},
         {"$limit": ITEMS_PER_PAGE},
     ]))
