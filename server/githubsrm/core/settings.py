@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'apis',
     'administrator',
+    'maintainer'
 ]
 
 MIDDLEWARE = [
