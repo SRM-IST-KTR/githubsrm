@@ -1,11 +1,6 @@
-from rest_framework.views import APIView
 from rest_framework import response, status
-from dotenv import load_dotenv
-import pymongo
 from math import ceil
-import os
-
-load_dotenv()
+from .models import AdminEntry
 
 def project_Pagination(request, **kwargs):
     """
@@ -22,9 +17,7 @@ def project_Pagination(request, **kwargs):
     ITEMS_PER_PAGE=10
     values=list(request.GET.values())
     page=int(values[0])
-    client = pymongo.MongoClient(os.getenv('MONGO_URI'))
-
-    db = client[os.getenv('MONGO_DB')]
+    db=AdminEntry()
     totalItems= db.project.count_documents({})
     record = list(db.project.aggregate([
         {"$skip": (page - 1) * ITEMS_PER_PAGE},
