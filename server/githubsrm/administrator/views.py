@@ -74,17 +74,17 @@ class ProjectsAdmin(APIView):
 
     def get(self, request, **kwargs):
 
-        Pagination = ['skip', 'limit', 'offset']
+        Pagination = ['page']
 
         SingleProject = ['projectId', 'maintainer', 'contributor']
 
         RequestQueryKeys = list(request.GET.keys())
 
-        if len(set(Pagination) & set(RequestQueryKeys)) == 3:
+        if len(set(Pagination) & set(RequestQueryKeys)) == 1:
             return project_Pagination(request, **kwargs)
 
         elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
             return project_SingleProject(request, **kwargs)
 
         else:
-            return response.Response(status=status.HTTP_400_BAD_REQUEST)
+            return response.Response("Query Params are different from expected",status=status.HTTP_400_BAD_REQUEST)
