@@ -4,8 +4,7 @@ from typing import Dict
 
 from schema import And, Schema, SchemaError
 
-
-class RegisterAdminSchema:
+class AdminSchema:
     def __init__(self, data: Dict[str, str]) -> None:
 
         self.data = data
