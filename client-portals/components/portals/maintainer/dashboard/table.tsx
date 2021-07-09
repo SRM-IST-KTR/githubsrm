@@ -5,8 +5,8 @@ import { FaGithub } from "react-icons/fa";
 import { successToast } from "../../../../utils/functions/toast";
 
 const ProjectTable = () => {
-  const [selectedContributors, setSelectedContributors] = useState([]);
-  const [approve, setApprove] = useState(false);
+  const [selectedContributor, setSelectedContributor] = useState("");
+
   const tableHeading = [
     "Name",
     "Email",
@@ -16,6 +16,7 @@ const ProjectTable = () => {
     "Branch",
     "Maintainer Approval",
   ];
+
   const tableData = [
     {
       id: "1",
@@ -25,7 +26,7 @@ const ProjectTable = () => {
       srm_email: "test@srmist.edu.in",
       reg_number: "RA19110300100xx",
       branch: "CSE",
-      maintainer_approved: "true",
+      maintainer_approved: "false",
     },
     {
       id: "2",
@@ -35,7 +36,7 @@ const ProjectTable = () => {
       srm_email: "test@srmist.edu.in",
       reg_number: "RA19110300100xx",
       branch: "CSE",
-      maintainer_approved: "true",
+      maintainer_approved: "false",
     },
     {
       id: "3",
@@ -49,10 +50,11 @@ const ProjectTable = () => {
     },
   ];
 
-  const submitHandler = () => {
-    console.log(selectedContributors);
-    setApprove(true);
-    successToast("Contributors Approved sucessfully!");
+  const submitHandler = (id) => {
+    setSelectedContributor(id);
+    // post selectedContributor here
+    console.log(selectedContributor);
+    successToast("Contributor Approved sucessfully!");
   };
 
   return (
@@ -93,22 +95,15 @@ const ProjectTable = () => {
                     <td className="p-3">{data.reg_number}</td>
                     <td className="p-3">{data.branch}</td>
                     <td className="p-3 ">
-                      {!approve ? (
-                        <input
-                          type="checkbox"
-                          className="apprearance-none text-center checked:bg-blue-600 checked:border-transparent"
-                          value={data.id}
-                          onChange={(e) =>
-                            setSelectedContributors([
-                              ...selectedContributors,
-                              e.target.value,
-                            ])
-                          }
-                        ></input>
-                      ) : selectedContributors.find((c) => c === data.id) ? (
+                      {data.maintainer_approved === "true" ? (
                         <TiTick className="text-green-500 text-2xl" />
                       ) : (
-                        <ImCross className="text-red-500" />
+                        <button
+                          onClick={() => submitHandler(data.id)}
+                          className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+                        >
+                          Approve
+                        </button>
                       )}
                     </td>
                   </tr>
@@ -118,12 +113,6 @@ const ProjectTable = () => {
           </div>
         </div>
       </div>
-      <button
-        onClick={submitHandler}
-        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-4 font-bold text-white rounded-xl"
-      >
-        Approve
-      </button>
     </>
   );
 };
