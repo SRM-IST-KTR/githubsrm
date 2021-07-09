@@ -8,7 +8,7 @@ const Card = ({ name, desc, id }) => {
         <p className="text-2xl font-bold text-gray-700">{name}</p>
         <p className="mt-2 text-gray-600 ">{desc}</p>
       </div>
-      <Link href={`/portals/maintainer/dashboard/${id}`}>
+      <Link href={`/maintainer/dashboard/${id}`}>
         <button className="flex rounded-xl font-bold items-center my-3  bg-base-teal p-3">
           Open
         </button>

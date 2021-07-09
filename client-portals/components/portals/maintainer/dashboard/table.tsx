@@ -1,4 +1,13 @@
 const ProjectTable = () => {
+  const tableHeading = [
+    "Name",
+    "Email",
+    "GitHub ID",
+    "SRM Email",
+    "Registration Number",
+    "Branch",
+    "Maintainer Approval",
+  ];
   const tableData = [
     {
       name: "Contributor 1",
@@ -39,15 +48,11 @@ const ProjectTable = () => {
             <table className="table text-white border-separate space-y-6 text-sm">
               <thead className="bg-gray-800 text-white">
                 <tr>
-                  <th className="p-3 text-left">Name</th>
-                  <th className="p-3 text-left">Email</th>
-                  <th className="p-3 text-left">Github id</th>
-                  <th className="p-3 text-left">SRM Email</th>
-                  <th className="p-3 text-left">Registration Number</th>
-                  <th className="p-3 text-left">Branch</th>
-                  {/* // TODO: remove project id */}
-                  <th className="p-3 text-left">Project ID</th>
-                  <th className="p-3 text-left">Maintainer Approval</th>
+                  {tableHeading.map((heading) => (
+                    <th key={heading} className="px-3 text-left">
+                      {heading}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -63,13 +68,12 @@ const ProjectTable = () => {
                     <td className="p-3">{data.srm_email}</td>
                     <td className="p-3">{data.reg_number}</td>
                     <td className="p-3">{data.branch}</td>
-                    <td className="p-3">{data.projectID}</td>
                     <td className="p-3 ">
                       <a
                         href="#"
                         className="text-white hover:text-gray-100 mr-2"
                       >
-                        {/* // TODO: Add toggle for on/off */}
+                        {/* // TODO: Add checkbox */}
                         <button className="bg-green-400 p-2 text-white rounded-xl">
                           {data.maintainer_approved}
                         </button>
