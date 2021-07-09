@@ -1,7 +1,7 @@
 
 from apis.throttle import PostThrottle
 from django.http.response import JsonResponse
-from rest_framework import response, status
+from rest_framework import status
 from rest_framework.views import APIView
 
 from administrator import entry, jwt_keys
@@ -33,8 +33,8 @@ class RegisterAdmin(APIView):
             return JsonResponse(data={
                 "registered": True
             }, status=200)
-        return response.Response(data={
-            "invalid data / user exists"
+        return JsonResponse(data={
+            "error":"invalid data / user exists"
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -78,7 +78,7 @@ class ProjectsAdmin(APIView):
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs):
-        return response.Response(status=status.HTTP_200_OK)
+        return JsonResponse(status=status.HTTP_200_OK)
 
     def get(self, request, **kwargs):
 
@@ -95,4 +95,4 @@ class ProjectsAdmin(APIView):
             return project_SingleProject(request, **kwargs)
 
         else:
-            return response.Response("Query Params are different from expected", status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"error":"Query Params are different from expected"}, status=status.HTTP_400_BAD_REQUEST)
