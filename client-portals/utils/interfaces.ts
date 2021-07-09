@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import {
   maintainerLoginValidation,
   adminRegisterValidation,
+  adminLoginValidation,
 } from "./constants";
 
 export interface InputClassNameProps {
@@ -32,3 +33,6 @@ export interface MaintainerLoginData
 
 export interface AdminRegisterData
   extends Yup.InferType<typeof adminRegisterValidation> {}
+
+export interface AdminLoginData
+  extends Yup.InferType<typeof adminLoginValidation> {}
