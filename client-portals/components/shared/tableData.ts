@@ -1,8 +1,9 @@
-export const tableData = [
+export const tableDataContributors = [
   {
     id: "1",
     name: "Contributor 1",
     email: "test@test.com",
+    projectname: "project 1",
     github_id: "sample",
     srm_email: "test@srmist.edu.in",
     reg_number: "RA19110300100xx",
@@ -13,6 +14,7 @@ export const tableData = [
     id: "2",
     name: "Contributor 2",
     email: "test@test.com",
+    projectname: "project 2",
     github_id: "sample",
     srm_email: "test@srmist.edu.in",
     reg_number: "RA19110300100xx",
@@ -22,6 +24,43 @@ export const tableData = [
   {
     id: "3",
     name: "Contributor 3",
+    projectname: "project 3",
+    email: "test@test.com",
+    github_id: "sample",
+    srm_email: "test@srmist.edu.in",
+    reg_number: "RA1911030010026",
+    branch: "CSE",
+    maintainer_approved: "true",
+  },
+];
+
+export const tableDataProjects = [
+  {
+    id: "1",
+    name: "Mainatainer 1",
+    projectname: "project 1",
+    email: "test@test.com",
+    github_id: "sample",
+    srm_email: "test@srmist.edu.in",
+    reg_number: "RA19110300100xx",
+    branch: "CSE",
+    maintainer_approved: "false",
+  },
+  {
+    id: "2",
+    name: "Mainatainer 2",
+    projectname: "project 2",
+    email: "test@test.com",
+    github_id: "sample",
+    srm_email: "test@srmist.edu.in",
+    reg_number: "RA19110300100xx",
+    branch: "CSE",
+    maintainer_approved: "false",
+  },
+  {
+    id: "3",
+    name: "Mainatainer 3",
+    projectname: "project 3",
     email: "test@test.com",
     github_id: "sample",
     srm_email: "test@srmist.edu.in",

@@ -3,14 +3,14 @@ import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
 import { FaGithub } from "react-icons/fa";
 import { successToast } from "../../utils/functions/toast";
-import { tableData } from "./tableData";
 
-const ProjectTable = () => {
+const ProjectTable = ({ tableData }) => {
   const [selectedContributor, setSelectedContributor] = useState("");
 
   const tableHeading = [
     "Name",
     "Email",
+    "projectname",
     "GitHub ID",
     "SRM Email",
     "Registration Number",
@@ -52,6 +52,7 @@ const ProjectTable = () => {
                     <td className="p-3">
                       <a href="mailto:{data.email}">{data.email}</a>
                     </td>
+                    <td className="p-3">{data.projectname}</td>
                     <td className="p-3">
                       <a href={data.github_id}>
                         <FaGithub className="text-2xl" />

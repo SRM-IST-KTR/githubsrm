@@ -1,4 +1,7 @@
-import Card from "../../../shared/card";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import ProjectTable from "../../../../components/shared/table";
+import { tableDataContributors } from "../../../../components/shared/tableData";
 
 const PROJECTS = [
   {
@@ -33,19 +36,34 @@ const PROJECTS = [
   },
 ];
 
-const AcceptedProjectsCard = () => {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-      {PROJECTS.map((item) => (
-        <Card
-          url={`/admin/dashboard/accepted-projects/${item.id}`}
-          name={item.name}
-          desc={item.desc}
-          key={item.id}
-        />
-      ))}
+const ProjectDetail = () => {
+  const [project, setProject] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const { slug } = router.query;
+    const found = PROJECTS.find((p) => p.id === slug);
+    setProject(found);
+  }, [project]);
+
+  if (project === null) {
+    return <p>loading...... </p>;
+  }
+
+  return project ? (
+    <div className="min-h-screen p-14 bg-base-blue">
+      <h2 className="text-4xl font-extrabold text-white mb-5">
+        {project.name}
+      </h2>
+      <h2 className="text-2xl font-medium text-white mb-10">{project.desc}</h2>
+
+      <ProjectTable tableData={tableDataContributors} />
+    </div>
+  ) : (
+    <div>
+      <p>not found </p>
     </div>
   );
 };
 
-export default AcceptedProjectsCard;
+export default ProjectDetail;
