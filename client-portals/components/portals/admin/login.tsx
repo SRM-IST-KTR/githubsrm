@@ -6,6 +6,8 @@ import {
   adminLoginInputs,
 } from "../../../utils/constants";
 import { Input } from "../../shared";
+import instance from "../../../services/api";
+import { successToast, errToast } from "../../../utils/functions/toast";
 
 const AdminLogin = () => {
   const initialValues: AdminLoginData = {
@@ -15,6 +17,15 @@ const AdminLogin = () => {
 
   const submitValues = (values: AdminLoginData) => {
     console.log(values);
+    instance
+      .post("admin/login", values)
+      .then((res) => {
+        console.log(res.data.keys);
+        successToast("Success");
+      })
+      .catch((err) => {
+        errToast("Authentication error!");
+      });
   };
 
   return (
@@ -28,7 +39,7 @@ const AdminLogin = () => {
         onSubmit={submitValues}
         validationSchema={adminLoginValidation}
       >
-        <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+        <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
           {adminLoginInputs.map((input) => (
             <div className="border-2 border-gray-700 rounded my-4 p-4">
               <Input key={input.id} {...input} />
