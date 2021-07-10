@@ -122,16 +122,21 @@ class Entry:
         """
         try:
             _id = self.get_uid()
-            self.db.project.update_one({"_id": doc.get("project_id")}, {
-                "$push": {"maintainer_id": _id}}, upsert=True)
-
             self.db.maintainer.insert_one(
-                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id'), **{"is_admin_approved": False}}})
+                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')}, **{"is_admin_approved": False}})
             return _id
 
         except Exception as e:
             print(e)
             return
+    
+    def add_beta_maintainer(self, doc: Dict[str, Any],_id:str)->bool:
+        if doc["is_admin_approved"]:
+            self.db.project.update_one({"_id": doc.get("project_id")}, {
+                "$push": {"maintainer_id": _id}})
+            return True
+        else:
+            return False
 
     def enter_contributor(self, doc: Dict[str, Any]) -> None:
         """Addition of contributors for avaliable Projects
