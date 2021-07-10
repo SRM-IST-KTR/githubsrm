@@ -5,9 +5,9 @@ import Minus from '../../utils/FAQ data/minus';
 import { faqData } from '../../utils/FAQ data/faqdata';
 
 const FaqComponent = () => {
-  const [question, setquestion] = useState(0);
+  const [question, setQuestion] = useState(0);
   return (
-    <div className=''>
+    <div>
       <div className='container mx-auto pt-16 '>
         <div className='text-center  md:pb-10 xl:pb-20'>
           <h1 className='px-2 xl:px-0 xl:text-5xl md:text-3xl text-2xl font-extrabold text-base-blue'>
@@ -28,8 +28,8 @@ const FaqComponent = () => {
                     className='cursor-pointer'
                     onClick={() =>
                       question === data.id
-                        ? setquestion(null)
-                        : setquestion(data.id)
+                        ? setQuestion(null)
+                        : setQuestion(data.id)
                     }>
                     {question === data.id ? <Plus /> : <Minus />}
                   </div>
