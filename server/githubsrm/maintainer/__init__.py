@@ -1,3 +1,3 @@
-from .models import ConnectDB
+from .models import Entry
 
-db = ConnectDB()
+entry = Entry()

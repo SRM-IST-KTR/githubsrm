@@ -1,7 +1,5 @@
-import re
-from pymongo import message
-from . import db
-
+from . import entry
+db = entry.db
 
 def Projects_pagnation(request, **kwargs):
    return "Page does not exist"
