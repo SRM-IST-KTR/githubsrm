@@ -1,5 +1,4 @@
 import * as Yup from "yup";
-
 import { InputClassNameProps, InputProps } from "./interfaces";
 
 export const customInputClasses: InputClassNameProps = {

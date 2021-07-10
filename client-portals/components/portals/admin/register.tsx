@@ -1,20 +1,32 @@
 import { Formik, Form } from "formik";
-
+import React, { useState } from "react";
 import { AdminRegisterData } from "../../../utils/interfaces";
 import {
   adminRegisterValidation,
   adminRegisterInputs,
 } from "../../../utils/constants";
 import { Input } from "../../shared";
+import instance from "../../../services/api";
 
 const AdminRegister = () => {
-  const initialValues: AdminRegisterData = {
+  const [token, setToken] = useState("");
+
+  const initialValues: { email: string; password: string } = {
     email: "",
     password: "",
   };
 
   const submitValues = (values: AdminRegisterData) => {
-    console.log(values);
+    instance
+      .post("/admin/register", values, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
