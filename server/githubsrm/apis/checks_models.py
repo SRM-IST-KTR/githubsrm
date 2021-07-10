@@ -17,24 +17,17 @@ class EntryCheck:
             project_url (str)
 
         Returns:
-            bool: 
+            bool:
         """
-        if project_url:
-            result = self.db.project.find_one({"$or": [
-                {"project_name": project_name},
-                {"description": description},
-                {"project_url": project_url}
-            ]})
 
-        result = self.db.project.find_one({"$or": [
-            {"project_name": project_name},
-            {"description": description}
-        ]})
+        Checks = [{"project_name": project_name}, {"description": description}]
+        if project_url != "":
+            Checks.append({"project_url": project_url})
+
+        result = self.db.project.find_one({"$or": Checks})
 
         if result:
             return True
-
-        return
 
     def check_approved_project(self, identifier: str) -> bool:
         """Checks if given identifier is valid and approved status
@@ -98,13 +91,11 @@ class EntryCheck:
             bool
         """
 
-        result = self.db.maintainer.find_one(
+        result = self.db.maintainer.count_documents(
             {"github_id": github_id, "project_id": project_id, "srm_email": srm_email})
 
-        if len(result) >= 1:
+        if result >= 1:
             return True
-
-        return
 
     def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
         """Checks for valid beta entry
