@@ -1,5 +1,6 @@
 
 from django.http import response
+from pymongo.common import validate_document_class
 from apis import service
 from apis.throttle import PostThrottle
 from django.http.response import JsonResponse
@@ -29,7 +30,9 @@ class RegisterAdmin(APIView):
         valid = AdminSchema(request.data).valid()
 
         if 'error' in valid:
-            return JsonResponse(status=400)
+            return JsonResponse(data={
+                "error": valid
+            }, status=400)
 
         if entry.insert_admin(request.data):
             return JsonResponse(data={
@@ -53,7 +56,7 @@ class AdminLogin(APIView):
             request
 
         Returns:
-            JsonResponse 
+            JsonResponse
         """
         validate = AdminSchema(request.data).valid()
         if 'error' in validate:
@@ -80,7 +83,7 @@ class ProjectsAdmin(APIView):
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
-        """Handle Approval of maintainer, contributor and Project. 
+        """Handle Approval of maintainer, contributor and Project.
 
         Args:
             request ([type])
@@ -105,41 +108,74 @@ class ProjectsAdmin(APIView):
             if value := entry.find_maintainer_for_approval(validate.get(
                     'maintainer_id'), validate.get('project_id')):
 
-                try:
-                    if len(value['maintainer_id']) == 1:
-                        #! Alpha maintainer flow
-                        if entry.check_existing_maintainer(
-                            identifier=validate.get('maintainer_id')
-                        ):
-                            # ? service.wrapper_email() send conformation emails.
-                            return JsonResponse(data={
-                                "success": "Approved existing maintainer"
-                            }, status=200)
-                        else:
-                            password = entry.get_random_password(
-                                identifier=validate.get("maintainer_id"))
-                             # ? service.wrapper_email() send conformation emails with password.
-                            return JsonResponse(data={
-                                "success": "Approved new maintainer"
-                            }, status=200)
+                existing = entry.check_existing_maintainer(
+                    identifier=validate.get('maintainer_id')
+                )
 
-                    if len(value['maintainer_id']) > 1:
-                        #! Follow beta maintainer
-                        print("FOLLOW BETA")
+                if len(value['maintainer_id']) == 1:
+                    #! Alpha maintainer flow
+                    if existing:
+                        # ? service.wrapper_email() send conformation emails.
+                        return JsonResponse(data={
+                            "success": "Approved existing maintainer"
+                        }, status=200)
+                    else:
+                        password = entry.get_random_password(
+                            identifier=validate.get("maintainer_id"))
 
-                except Exception as e:
-                    print(e)
-                    return JsonResponse(data={
-                        "error": str(e)
-                    }, status=400)
+                        # ? service.wrapper_email() send conformation emails with password.
+                        return JsonResponse(data={
+                            "success": "Approved new maintainer"
+                        }, status=200)
+
+                if len(value['maintainer_id']) > 1:
+                    #! Beta maintainer flow
+                    if existing:
+                        # ? service.wrapper_email send acceptance email to beta maintainer
+                        # ? Alpha maintainer gets an email of beta maintainer's approval
+                        return JsonResponse(data={
+                            "Approved existing maintainer"
+                        }, status=200)
+
+                    else:
+                        password = entry.get_random_password(
+                            identifier=validate.get("maintainer_id"))
+                        # ? service.wrappe_email send acceptance email to beta maintainer with password
+                        # ? Alpha maintainer gets an email of beta maintainer's approval
+
+                        return JsonResponse(data={
+                            "Approved new maintainer"
+                        }, status=200)
 
             return JsonResponse(data={
                 "error": "Invalid data / Maintainer already approved"
             }, status=400)
 
-        return JsonResponse(data={}, status=status.HTTP_200_OK)
+        elif params == 'project':
+            if entry.approve_project(identifier=validate.get("project_id"),
+                                     project_url=validate.get("project_url"),
+                                     private=validate.get("private")):
 
-    #! Requires formatting.
+                # ? service.wrapper send maintainer approval conformation
+                return JsonResponse(data={
+                    "Approved Project": validate.get("project_id")
+                }, status=200)
+            return JsonResponse(data={
+                "error": "Inconsistant data"
+            }, status=400)
+
+        else:
+            if entry.approve_contributor(project_id=validate.get("project_id"),
+                                         contributor_id=validate.get("contributor_id")):
+
+                return JsonResponse(data={
+                    "admin_approved": True
+                }, status=200)
+
+            return JsonResponse(data={
+                "error": "contributor/project does not exist / contributor already approved"
+            }, status=400)
+
     def get(self, request, **kwargs):
 
         Pagination = ['page']

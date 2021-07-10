@@ -151,7 +151,7 @@ class AdminEntry:
         password = str(secrets.token_hex(length))
         hashed_password = sha256(password.encode()).hexdigest()
 
-        maintainer = self.db.maintainer.find_one_and_update({
+        self.db.maintainer.find_one_and_update({
             "_id": identifier
         }, update={
             "$set":
@@ -159,3 +159,56 @@ class AdminEntry:
 
         })
         return password
+
+    def approve_project(self, identifier: str, project_url: str, private: bool) -> bool:
+        """Approve project and update the doc as required
+
+        Args:
+            identifier (str): project id
+            project_url (str): project url
+            private (bool): visibility status
+
+        Returns:
+            bool
+        """
+
+        project = self.db.project.find_one_and_update(
+            {"_id": identifier},
+            update={
+                "$set": {
+                    "_id": identifier,
+                    "project_url": project_url,
+                    "private": private
+                }
+            }
+        )
+
+        if project:
+            return True
+
+        return False
+
+    def approve_contributor(self, project_id: str, contributor_id: str) -> bool:
+        """Approve contributor to project.
+
+        Args:
+            project_id (str): project id
+            contributor_id (str): contributor id
+
+        Returns:
+            bool: [description]
+        """
+        contributor = self.db.contributor.find_one_and_update(
+            {"_id": contributor_id, "interested_project": project_id},
+            update={
+                "$set": {"is_admin_approved": True}
+            }, return_document=ReturnDocument.BEFORE
+        )
+        if contributor:
+            # Already approved
+            if contributor.get("is_admin_approved"):
+                return False
+
+            return True
+
+        return False

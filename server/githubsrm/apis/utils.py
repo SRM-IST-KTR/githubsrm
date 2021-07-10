@@ -149,7 +149,7 @@ class BotoService:
 
                         'Html': {
                             'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"], project_id=data["project_id"]),
+                                              project_name=data["project_name"]),
                             'Charset': 'utf-8'
 
                         }

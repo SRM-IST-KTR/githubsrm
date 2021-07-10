@@ -10,3 +10,4 @@ class Entry:
     def __init__(self):
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
+        
