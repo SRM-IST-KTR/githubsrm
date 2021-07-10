@@ -87,7 +87,8 @@ class Entry:
 
         project_id = self.get_uid()
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}, **{"project_id": project_id}}
+        doc = {**doc, **{"_id": _id}, **{"project_id": project_id},
+               **{"is_admin_approved": False}}
         try:
             self.db.maintainer.insert_one(doc)
             if project_url:
@@ -125,7 +126,7 @@ class Entry:
                 "$push": {"maintainer_id": _id}}, upsert=True)
 
             self.db.maintainer.insert_one(
-                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')}})
+                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id'), **{"is_admin_approved": False}}})
             return _id
 
         except Exception as e:
@@ -140,7 +141,8 @@ class Entry:
         """
 
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False}, **{"is_maintainer_approved":False}}
+        doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False},
+               **{"is_maintainer_approved": False}}
 
         if self.db.project.find_one({"_id": doc.get('interested_project')}):
             return

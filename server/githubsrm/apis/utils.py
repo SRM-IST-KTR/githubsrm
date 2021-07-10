@@ -143,7 +143,7 @@ class BotoService:
                     },
                     'Body': {
                         'Text': {
-                            'Data': f'Here is your Project ID {data.get("project_id")} and {data.get("project_name")}',
+                            'Data': f'PLEASE WAIT FOR ADMIN APPROVAL FOR THE PROJECT: {data.get("project_name")}',
                             'Charset': 'utf-8'
                         },
 
@@ -169,7 +169,7 @@ class BotoService:
                     },
                     'Body': {
                         'Text': {
-                            'Data': f'You have been added as a maintainer to the project with the id {data.get("project_id")}',
+                            'Data': f'You are under review for the project ID {data.get("project_id")}',
                             'Charset': 'utf-8'
                         },
 

@@ -27,7 +27,12 @@ class Authorize:
         if request.path in self.protected:
             if value := get_token(request_header=request.headers):
                 token_type, token = value
-                assert token_type == 'Bearer'
+                try:
+                    assert token_type == 'Bearer'
+                except AssertionError as e:
+                    return JsonResponse(data={
+                        "error": "invalid token type"
+                    }, status=401)
                 if jwt_keys.verify_key(key=token):
                     return self.view(request)
 

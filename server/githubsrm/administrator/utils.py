@@ -1,9 +1,11 @@
-from typing import Dict
-from rest_framework import status
 from math import ceil
-from .models import AdminEntry
+from typing import Dict
+
+from apis import open_entry
 from django.http import response
-from apis import openEntry
+from rest_framework import status
+
+from .models import AdminEntry
 
 
 def project_Pagination(request, **kwargs):
@@ -21,7 +23,7 @@ def project_Pagination(request, **kwargs):
     ITEMS_PER_PAGE = 10
     try:
         page = int(request.GET["page"])
-        entry=openEntry
+        entry = open_entry
         totalItems = entry.db.project.count_documents({})
         record = list(entry.db.project.aggregate([
             {"$skip": (page - 1) * ITEMS_PER_PAGE},

@@ -19,11 +19,16 @@ class EntryCheck:
         Returns:
             bool: 
         """
+        if project_url:
+            result = self.db.project.find_one({"$or": [
+                {"project_name": project_name},
+                {"description": description},
+                {"project_url": project_url}
+            ]})
 
         result = self.db.project.find_one({"$or": [
             {"project_name": project_name},
-            {"description": description},
-            {"project_url": project_url}
+            {"description": description}
         ]})
 
         if result:
@@ -57,9 +62,9 @@ class EntryCheck:
         Returns:
             bool
         """
-        project_id = interested_project
-        
-        result = self.db.project.find_one({"_id": project_id})
+
+        result = self.db.project.find_one({"_id": interested_project})
+
         if not result['is_admin_approved']:
             return True
 
@@ -75,10 +80,10 @@ class EntryCheck:
             ]
         })
 
-        if len(results) > 0:
+        if results:
             return True
 
-        if len(result) > 0:
+        if result:
             return True
 
         return

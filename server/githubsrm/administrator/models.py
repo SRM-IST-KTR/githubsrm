@@ -1,8 +1,11 @@
-from typing import Any, Dict
+import secrets
 from hashlib import sha256
+from typing import Any, Dict
+
 import pymongo
 from django.conf import settings
 from dotenv import load_dotenv
+from pymongo import ReturnDocument
 
 load_dotenv()
 
@@ -68,3 +71,91 @@ class AdminEntry:
         }):
             return value
         return False
+
+    def find_maintainer_for_approval(self, maintainer_id: str, project_id: str) -> bool:
+        """find and approve maintainer
+
+        Args:
+            maintainer_id (str): maintainer identifier
+            project_id (str): project identifier
+
+        Returns:
+            bool
+        """
+
+        maintainer = self.db.maintainer.find_one_and_update(
+            {"_id": maintainer_id, "project_id": project_id},
+            update={
+                "$set": {"is_admin_approved": True}
+            }, return_document=ReturnDocument.BEFORE)
+
+        if maintainer:
+            if maintainer.get('is_admin_approved'):
+                # ? Maintainer already approved
+                return False
+            value = self._update_project(project_id=project_id,
+                                         maintainer_id=maintainer_id)
+            return value
+        return False
+
+    def _update_project(self, project_id: str, maintainer_id: str) -> bool:
+        """Update the project collection when a maintainer is added.
+
+        Args:
+            project_id (str): project identifier
+            maintainer_id (str): maintainer identifier
+
+        Returns:
+            bool
+        """
+
+        project = self.db.project.find_one_and_update({"_id": project_id}, update={
+            "$addToSet": {
+                "maintainer_id": maintainer_id
+            }
+        }, return_document=ReturnDocument.AFTER)
+
+        return project
+
+    def check_existing_maintainer(self, identifier: str) -> bool:
+        """Check for existing maintainer to determine if new keys are generated of 
+           or old keys are used.
+
+        Args:
+            identifier (str): unique identifier for maintainer
+
+        Returns:
+            bool: [description]
+        """
+
+        maintainer = self.db.maintainer.find_one({
+            "_id": identifier
+        })
+
+        try:
+            password = maintainer.get('password')
+            return password
+        except KeyError as e:
+            return False
+
+    def get_random_password(self, identifier: str, length: int = 5) -> str:
+        """Generating random passwords for maintainers and
+           store in the maintainer collection.
+
+        Args:
+            length (int, optional): byte length. Defaults to 5.
+
+        Returns:
+            str
+        """
+        password = str(secrets.token_hex(length))
+        hashed_password = sha256(password.encode()).hexdigest()
+
+        maintainer = self.db.maintainer.find_one_and_update({
+            "_id": identifier
+        }, update={
+            "$set":
+                {"password": hashed_password}
+
+        })
+        return password
