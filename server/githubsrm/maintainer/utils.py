@@ -1,15 +1,33 @@
+from math import ceil
 from . import entry
 db = entry.db
 
+
 def Projects_pagnation(request, **kwargs):
-   return "Page does not exist"
 
+    # TODO check email from jwt and send only projects that belong to maintainer
 
-
-
-
-
-
+    ITEMS_PER_PAGE = 10
+    try:
+        page = int(request.GET["page"])
+        totalItems = db.project.count_documents({})
+        record = list(db.project.aggregate([
+            {"$skip": (page - 1) * ITEMS_PER_PAGE},
+            {"$limit": ITEMS_PER_PAGE},
+        ]))
+        if len(record) != 0:
+            return {
+                "currentPage": page,
+                "hasNextPage": ITEMS_PER_PAGE * page < totalItems,
+                "hasPreviousPage": page > 1,
+                "nextPage": page + 1,
+                "previousPage": page - 1,
+                "lastPage": ceil(totalItems / ITEMS_PER_PAGE),
+                "records": record
+            }
+        raise Exception()
+    except:
+        return {"error": "Page does not exist"}
 
 
 def project_SingleProject(request, **kwargs):
