@@ -1,4 +1,4 @@
-import { Formik, Form } from "formik";
+import { Formik, Form, Field } from "formik";
 import React, { useState } from "react";
 import { AdminRegisterData } from "../../../utils/interfaces";
 import {
@@ -7,6 +7,7 @@ import {
 } from "../../../utils/constants";
 import { Input } from "../../shared";
 import instance from "../../../services/api";
+import { successToast, errToast } from "../../../utils/functions/toast";
 
 const AdminRegister = () => {
   const [token, setToken] = useState("");
@@ -22,10 +23,10 @@ const AdminRegister = () => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        console.log(res);
+        successToast("Admin registered successfully!");
       })
       .catch((err) => {
-        console.log(err);
+        errToast("Oops! Some error occured");
       });
   };
 
@@ -40,12 +41,19 @@ const AdminRegister = () => {
         onSubmit={submitValues}
         validationSchema={adminRegisterValidation}
       >
-        <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+        <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
           {adminRegisterInputs.map((input) => (
             <div className="border-2 border-gray-700 rounded my-4 p-4">
               <Input key={input.id} {...input} />
             </div>
           ))}
+          <Field
+            onChange={(e) => setToken(e.target.value)}
+            className="border-2 border-gray-800 rounded-md p-3 mt-3"
+            type="password"
+            name="token"
+            placeholder="Secret Key"
+          />
           <div className="flex justify-center">
             <button
               type="submit"
