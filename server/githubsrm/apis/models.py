@@ -90,7 +90,18 @@ class Entry:
         doc = {**doc, **{"_id": _id}, **{"project_id": project_id},
                **{"is_admin_approved": False}}
         try:
-            self.db.maintainer.insert_one(doc)
+            existing_maintainer = self.db.maintainer.find_one(
+                {"srm_email": doc.get("srm_email"),
+                 "reg_number": doc.get("reg_number")}
+            )
+
+            if existing_maintainer and 'hashed_password' in existing_maintainer:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"hashed_password": existing_maintainer.get("hashed_password")}})
+
+            else:
+                self.db.maintainer.insert_one(doc)
+
             if project_url:
                 visibility = {"private": False}
             else:
@@ -122,12 +133,21 @@ class Entry:
         """
         try:
             _id = self.get_uid()
-            self.db.project.update_one({"_id": doc.get("project_id")}, {
-                "$push": {"maintainer_id": _id}}, upsert=True)
 
-            self.db.maintainer.insert_one(
-                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id'), **{"is_admin_approved": False}}})
-            return _id
+            existing_maintainer = self.db.maintainer.find_one(
+                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")})
+
+            if existing_maintainer and 'hashed_password' in existing_maintainer:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
+                        **{"is_admin_approved": False}, **{"hashed_password": existing_maintainer.get("hashed_password")}})
+                return _id
+
+            else:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
+                        **{"is_admin_approved": False}})
+                return _id
 
         except Exception as e:
             print(e)
