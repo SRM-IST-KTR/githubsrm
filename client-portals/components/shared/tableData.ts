@@ -1,0 +1,32 @@
+export const tableData = [
+  {
+    id: "1",
+    name: "Contributor 1",
+    email: "test@test.com",
+    github_id: "sample",
+    srm_email: "test@srmist.edu.in",
+    reg_number: "RA19110300100xx",
+    branch: "CSE",
+    maintainer_approved: "false",
+  },
+  {
+    id: "2",
+    name: "Contributor 2",
+    email: "test@test.com",
+    github_id: "sample",
+    srm_email: "test@srmist.edu.in",
+    reg_number: "RA19110300100xx",
+    branch: "CSE",
+    maintainer_approved: "false",
+  },
+  {
+    id: "3",
+    name: "Contributor 3",
+    email: "test@test.com",
+    github_id: "sample",
+    srm_email: "test@srmist.edu.in",
+    reg_number: "RA1911030010026",
+    branch: "CSE",
+    maintainer_approved: "true",
+  },
+];
