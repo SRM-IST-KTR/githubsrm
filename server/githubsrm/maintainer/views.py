@@ -17,7 +17,7 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        validate = MaintainerSchema(request.data).valid()
+        validate = MaintainerSchema(request.data, path=request.path).valid()
         if 'error' in validate:
             return JsonResponse(data=validate, status=400)
 
