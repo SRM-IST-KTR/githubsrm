@@ -41,7 +41,12 @@ const index = () => {
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
         {PROJECTS.map((item) => (
-          <Card name={item.name} id={item.id} desc={item.desc} key={item.id} />
+          <Card
+            name={item.name}
+            url={`/maintainer/dashboard/${item.id}`}
+            desc={item.desc}
+            key={item.id}
+          />
         ))}
       </div>
     </div>
