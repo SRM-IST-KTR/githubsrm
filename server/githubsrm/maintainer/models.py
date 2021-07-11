@@ -1,4 +1,5 @@
 
+from typing import Iterable
 import pymongo
 from django.conf import settings
 
@@ -41,3 +42,6 @@ class Entry:
             )
 
         return False
+
+    def Send_all_Maintainer_email(self, email) -> Iterable:
+        return self.db.maintainer.find({"email": email})

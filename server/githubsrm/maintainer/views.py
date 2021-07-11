@@ -1,9 +1,19 @@
+from hashlib import sha256
+
+from administrator.issue_jwt import IssueKey
 from django.http.response import JsonResponse
-from .utils import project_SingleProject, Projects_pagnation
-from .definitions import MaintainerSchema
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
+
 from maintainer import entry
+
+from . import entry
+from .definitions import MaintainerSchema
+from .utils import Projects_pagnation, project_SingleProject
+
+key = IssueKey()
+db = entry.db
 
 
 class Projects(APIView):
@@ -56,3 +66,36 @@ class Projects(APIView):
             return JsonResponse(data={
                 "error": "invalid query parameters"
             }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Login(APIView):
+
+    def post(self, request, **kwargs) -> JsonResponse:
+        """
+        Login route get email and password make jwt and send.
+        """
+
+        password_hashed = sha256(request.data["password"].encode()).hexdigest()
+
+        validate = MaintainerSchema(request.data, path=request.path).valid()
+
+        if 'error' in validate:
+            return JsonResponse(data={"error": validate.get("error")}, status=400)
+
+        doc_list_iter = entry.Send_all_Maintainer_email(request.data["email"])
+        doc_list = [i for i in doc_list_iter]
+
+        if len(doc_list):
+            if doc_list[0]["password"] != password_hashed:
+                return JsonResponse({"message": "wrong password"},
+                                    status=status.HTTP_401_UNAUTHORIZED)
+
+            payload = {}
+            payload["email"] = doc_list[0]["email"]
+            payload["name"] = doc_list[0]["name"]
+            payload["project_id"] = [i["project_id"] for i in doc_list]
+
+            if jwt := key.issue_key(payload):
+                return JsonResponse({"jwt": jwt}, status=status.HTTP_200_OK)
+
+        return JsonResponse({"message": "Does not exist"}, status=status.HTTP_401_UNAUTHORIZED)

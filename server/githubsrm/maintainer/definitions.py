@@ -35,7 +35,7 @@ class MaintainerSchema:
 
         return validator
 
-    def valid(self) -> Dict[str, str]:
+    def valid(self) -> dict[str, Dict[str, str]]:
         """Checks validity of approval data
 
         Returns:
@@ -47,7 +47,4 @@ class MaintainerSchema:
                 return self.approve_valid_schema().validate(self.data)
             return self.login_valid_schema().validate(self.data)
         except SchemaError as e:
-            return {
-                "invalid data": self.data,
-                "error": str(e)
-            }
+            return {"invalid data": self.data, "error": str(e)}
