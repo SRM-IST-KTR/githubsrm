@@ -169,7 +169,7 @@ class Entry:
             project = self.db.project.find_one({"_id": project_id})
             if not doc or not project:
                 raise Exception("Project or maintainer not found")
-            if doc["is_admin_approved"] and project["is_admin_approved"]:
+            if doc["is_admin_approved"]:
                 self.db.project.update_one({"_id": project_id}, {
                     "$push": {"maintainer_id": maintainer_id}})
                 return True
