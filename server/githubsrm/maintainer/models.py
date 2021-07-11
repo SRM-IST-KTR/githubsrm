@@ -40,6 +40,7 @@ class Entry:
                     }
                 }
             )
+            return True
 
         return False
 

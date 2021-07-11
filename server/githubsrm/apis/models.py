@@ -164,7 +164,7 @@ class Entry:
         doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False},
                **{"is_maintainer_approved": False}, **{"is_added_to_repo": False}}
 
-        if self.db.project.find_one({"_id": doc.get('interested_project')}):
+        if not self.db.project.find_one({"_id": doc.get('interested_project')}):
             return
 
         try:
