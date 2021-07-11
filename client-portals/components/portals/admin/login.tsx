@@ -1,4 +1,5 @@
 import { Formik, Form } from "formik";
+import Router from "next/router";
 
 import { AdminLoginData } from "../../../utils/interfaces";
 import {
@@ -8,6 +9,7 @@ import {
 import { Input } from "../../shared";
 import instance from "../../../services/api";
 import { successToast, errToast } from "../../../utils/functions/toast";
+import router from "next/router";
 
 const AdminLogin = () => {
   const initialValues: AdminLoginData = {
@@ -27,6 +29,7 @@ const AdminLogin = () => {
         }
         sessionStorage.setItem("isLoggedIn", "1");
         successToast("Success");
+        Router.push("admin/dashboard");
       })
       .catch((err) => {
         errToast("Authentication error!");

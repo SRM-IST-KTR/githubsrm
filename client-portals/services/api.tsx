@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
+  baseURL: `https://118524a5a0d0.ngrok.io/`,
 });
 
 export default instance;
