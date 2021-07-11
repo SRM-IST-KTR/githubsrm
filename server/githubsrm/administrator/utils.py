@@ -78,8 +78,9 @@ def project_SingleProject(request, **kwargs):
                 {"project_id": request.GET["projectId"]}))
             contributorData = list(entry.db.contributor.find(
                 {"project_id": request.GET["projectId"]}))
-            record = {"maintainer": maintainerData,
-                      "contributor": contributorData}
+                
+            record["maintainer"] = {"maintainer": maintainerData}
+            record["contributor"] = {"contributor": contributorData}
 
         return response.JsonResponse(record, status=status.HTTP_200_OK)
     except:
