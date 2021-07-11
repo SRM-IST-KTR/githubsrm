@@ -21,6 +21,11 @@ const AdminLogin = () => {
       .post("admin/login", values)
       .then((res) => {
         console.log(res.data.keys);
+        sessionStorage.setItem("token", res.data.keys);
+        {
+          /* //TODO: Remove this  */
+        }
+        sessionStorage.setItem("isLoggedIn", "1");
         successToast("Success");
       })
       .catch((err) => {
