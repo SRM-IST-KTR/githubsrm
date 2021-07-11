@@ -10,10 +10,9 @@ from django.template.exceptions import TemplateDoesNotExist
 from rest_framework import response, status
 from rest_framework.views import APIView
 
-from apis import open_entry, open_entry_checks, service
+from apis import open_entry, open_entry_checks, service, PostThrottle
 
 from .definitions import *
-from .throttle import PostThrottle
 from .utils import check_token, conditional_render
 
 
