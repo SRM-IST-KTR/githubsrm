@@ -15,11 +15,7 @@ const AdminRegister = () => {
   const [authToken, setAuthToken] = useState("");
 
   useEffect(() => {
-    const storedUserLoggedInInformation = sessionStorage.getItem("isLoggedIn");
-
-    if (storedUserLoggedInInformation === "1") {
-      setIsLoggedIn(true);
-    }
+    if (sessionStorage.getItem("token")) setIsLoggedIn(true);
   }, []);
 
   const initialValues: { email: string; password: string } = {

@@ -7,12 +7,9 @@ const AcceptedProjectDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const storedUserLoggedInInformation = sessionStorage.getItem("isLoggedIn");
-
-    if (storedUserLoggedInInformation === "1") {
-      setIsLoggedIn(true);
-    }
+    if (sessionStorage.getItem("token")) setIsLoggedIn(true);
   }, []);
+
   return (
     <AuthContext.Provider
       value={{

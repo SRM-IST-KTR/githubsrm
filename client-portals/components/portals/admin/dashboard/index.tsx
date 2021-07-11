@@ -8,11 +8,7 @@ const ProjectApplications = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const storedUserLoggedInInformation = sessionStorage.getItem("isLoggedIn");
-
-    if (storedUserLoggedInInformation === "1") {
-      setIsLoggedIn(true);
-    }
+    if (sessionStorage.getItem("token")) setIsLoggedIn(true);
   }, []);
 
   return (
@@ -21,7 +17,7 @@ const ProjectApplications = () => {
         isLoggedIn: isLoggedIn,
       }}
     >
-      {!isLoggedIn && <p>Not Loggedin</p>}
+      {!isLoggedIn && <p>not logged in</p>}
       {isLoggedIn && (
         <div className="bg-base-blue h-screen flex flex-col justify-center items-center">
           <Adminnavbar />

@@ -16,11 +16,7 @@ const AdminLogin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const storedUserLoggedInInformation = sessionStorage.getItem("isLoggedIn");
-
-    if (storedUserLoggedInInformation === "1") {
-      setIsLoggedIn(true);
-    }
+    if (sessionStorage.getItem("token")) setIsLoggedIn(true);
   }, []);
 
   const initialValues: AdminLoginData = {
@@ -29,15 +25,10 @@ const AdminLogin = () => {
   };
 
   const submitValues = (values: AdminLoginData) => {
-    console.log(values);
     instance
       .post("admin/login", values)
       .then((res) => {
         sessionStorage.setItem("token", res.data.keys);
-        {
-          //TODO: Remove this
-        }
-        sessionStorage.setItem("isLoggedIn", "1");
         successToast("Success");
         Router.push("admin/dashboard");
       })
@@ -52,7 +43,7 @@ const AdminLogin = () => {
         isLoggedIn: isLoggedIn,
       }}
     >
-      {isLoggedIn && <p>login page - already logged in</p>}
+      {isLoggedIn && router.replace("/admin/dashboard")}
       {!isLoggedIn && (
         <div className="min-h-screen p-14 bg-base-blue">
           <h1 className="flex justify-center text-4xl font-extrabold text-white">
