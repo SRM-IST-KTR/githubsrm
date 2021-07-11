@@ -182,7 +182,139 @@ class BotoService:
                     }
                 },
             }
+        # TODO : Change contents of email and make email templates
+        elif role == 'existing_alpha_maintainer':
+            return {
+                'Simple': {
+                    'Subject': {
+                        'Data': 'Maintainer Confirmation | GitHub Community SRM',
+                        'Charset': 'utf-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': f'Maintainer Confirmation',
+                            'Charset': 'utf-8'
+                        },
 
+                        'Html': {
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
+                                              project_name=data["project_name"]),
+                            'Charset': 'utf-8'
+
+                        }
+                    }
+                },
+            }
+        elif role == 'alpha_maintainer_w_password':
+            return {
+                'Simple': {
+                    'Subject': {
+                        'Data': 'Maintainer Approved | GitHub Community SRM',
+                        'Charset': 'utf-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': f'Credentials given',
+                            'Charset': 'utf-8'
+                        },
+
+                        'Html': {
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
+                                              project_name=data["project_name"]),
+                            'Charset': 'utf-8'
+
+                        }
+                    }
+                },
+            }
+        elif role == 'beta_maintainer_approval':
+            return {
+                'Simple': {
+                    'Subject': {
+                        'Data': 'Maintainer Approved | GitHub Community SRM',
+                        'Charset': 'utf-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': f'Your request to become a maintainer was approved',
+                            'Charset': 'utf-8'
+                        },
+
+                        'Html': {
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
+                                              project_name=data["project_name"]),
+                            'Charset': 'utf-8'
+
+                        }
+                    }
+                },
+            }
+        elif role == 'beta_maintainer_approval_to_alpha':
+            return {
+                'Simple': {
+                    'Subject': {
+                        'Data': 'Maintainer Approved | GitHub Community SRM',
+                        'Charset': 'utf-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': f'Maintainer was approved',
+                            'Charset': 'utf-8'
+                        },
+
+                        'Html': {
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
+                                              project_name=data["project_name"]),
+                            'Charset': 'utf-8'
+
+                        }
+                    }
+                },
+            }
+        elif role == 'beta_maintainer_approval_w_password':
+            return {
+                'Simple': {
+                    'Subject': {
+                        'Data': 'Maintainer approved | GitHub Community SRM',
+                        'Charset': 'utf-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': f'',
+                            'Charset': 'utf-8'
+                        },
+
+                        'Html': {
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
+                                              project_name=data["project_name"]),
+                            'Charset': 'utf-8'
+
+                        }
+                    }
+                },
+            }
+        elif role == 'approve_project':
+            return {
+                'Simple': {
+                    'Subject': {
+                        'Data': 'Submission Confirmation | GitHub Community SRM',
+                        'Charset': 'utf-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': f'PLEASE WAIT FOR ADMIN APPROVAL FOR THE PROJECT: {data.get("project_name")}',
+                            'Charset': 'utf-8'
+                        },
+
+                        'Html': {
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
+                                              project_name=data["project_name"]),
+                            'Charset': 'utf-8'
+
+                        }
+                    }
+                },
+            }
         else:
             return {
                 'Simple': {

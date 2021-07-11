@@ -10,6 +10,7 @@ from administrator import entry, jwt_keys
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
 from .utils import project_Pagination, project_SingleProject
+from apis.utils import BotoService
 
 
 class RegisterAdmin(APIView):
@@ -65,12 +66,12 @@ class AdminLogin(APIView):
                 "admin": True,
                 "user": validate.get('email')
             })
-
+            print(keys)
             if keys:
                 return JsonResponse(data={
                     "keys": keys
                 }, status=200)
-            return JsonResponse(status=500)
+            return JsonResponse({"error":"ISR?"},status=500)
         return JsonResponse(data={
             "error": "invalid password"
         }, status=401)
@@ -114,6 +115,7 @@ class ProjectsAdmin(APIView):
                     #! Alpha maintainer flow
                     if existing:
                         # ? service.wrapper_email() send conformation emails.
+                        service.wrapper_email(role="existing_alpha_maintainer",data=None)
                         return JsonResponse(data={
                             "success": "Approved existing maintainer"
                         }, status=200)
@@ -123,6 +125,8 @@ class ProjectsAdmin(APIView):
                         print(password)
 
                         # ? service.wrapper_email() send conformation emails with password.
+                        service.wrapper_email(
+                            role="alpha_maintainer_w_password", data=None)
                         return JsonResponse(data={
                             "success": "Approved new maintainer"
                         }, status=200)
@@ -132,6 +136,10 @@ class ProjectsAdmin(APIView):
                     if existing:
                         # ? service.wrapper_email send acceptance email to beta maintainer
                         # ? Alpha maintainer gets an email of beta maintainer's approval
+                        service.wrapper_email(
+                            role="beta_maintainer_approval", data=None)
+                        service.wrapper_email(
+                            role="beta_maintainer_approval_to_alpha", data=None)
                         return JsonResponse(data={
                             "Approved existing maintainer": True
                         }, status=200)
@@ -139,8 +147,12 @@ class ProjectsAdmin(APIView):
                     else:
                         password = entry.get_random_password(
                             identifier=validate.get("maintainer_id"))
-                        # ? service.wrappe_email send acceptance email to beta maintainer with password
+                        # ? service.wrapper_email send acceptance email to beta maintainer with password
                         # ? Alpha maintainer gets an email of beta maintainer's approval
+                        service.wrapper_email(
+                            role="beta_maintainer_approval_w_password", data=None)
+                        service.wrapper_email(
+                            role="beta_maintainer_approval_to_alpha", data=None)
                         print(password)
                         return JsonResponse(data={
                             "Approved new maintainer": True
@@ -156,6 +168,8 @@ class ProjectsAdmin(APIView):
                                      private=validate.get("private")):
 
                 # ? service.wrapper send maintainer approval conformation
+                service.wrapper_email(
+                    role="approve_project", data=None)
                 return JsonResponse(data={
                     "Approved Project": validate.get("project_id")
                 }, status=200)
