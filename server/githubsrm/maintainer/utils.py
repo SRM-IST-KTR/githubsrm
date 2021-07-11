@@ -47,12 +47,12 @@ def project_SingleProject(request, **kwargs):
         # * will have atleast one maintainer (ALPHA)
         if request.GET["maintainer"] == "true":
             data = list(db.maintainer.find(
-                {"project_id": project_id, "is_admin_approved": True}))
+                {"project_id": project_id, "is_admin_approved": True}, {"password": 0}))
             project_document["maintainer"] = data
 
         if request.GET["contributor"] == "true":
             data = list(db.contributor.find(
-                {"project_id": project_id, "is_admin_approved": True}))
+                {"project_id": project_id, "is_admin_approved": True}, {"password": 0}))
             project_document["contributor"] = data
     else:
         return "id doesnt exist"

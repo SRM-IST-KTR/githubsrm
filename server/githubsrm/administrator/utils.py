@@ -70,15 +70,15 @@ def project_SingleProject(request, **kwargs):
 
         elif request.GET["maintainer"] != "true" and request.GET["contributor"] == "true":
             data = list(entry.db.contributor.find(
-                {"project_id": request.GET["projectId"]}))
+                {"interested_project": request.GET["projectId"]}))
             record["contributor"] = {"contributor": data}
 
         else:
             maintainerData = list(entry.db.maintainer.find(
                 {"project_id": request.GET["projectId"]}))
             contributorData = list(entry.db.contributor.find(
-                {"project_id": request.GET["projectId"]}))
-                
+                {"interested_project": request.GET["projectId"]}))
+
             record["maintainer"] = {"maintainer": maintainerData}
             record["contributor"] = {"contributor": contributorData}
 
@@ -91,6 +91,7 @@ def project_SingleProject(request, **kwargs):
 def get_token(request_header: Dict[str, str]):
     try:
         token = request_header.get('Authorization').split()
+
         return token[0], token[1]
     except Exception as e:
         return False
