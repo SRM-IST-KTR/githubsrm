@@ -111,8 +111,7 @@ class Entry:
             return
 
     def enter_beta_maintainer(self, doc: Dict[str, Any]) -> str:
-        """Add beta maintainers to project and updates maintainers 
-           collection.
+        """Updates maintainers collection.
 
         Args:
             doc (Dict): beta maintainer details
@@ -130,12 +129,30 @@ class Entry:
             print(e)
             return
     
-    def add_beta_maintainer(self, doc: Dict[str, Any],_id:str)->bool:
-        if doc["is_admin_approved"]:
-            self.db.project.update_one({"_id": doc.get("project_id")}, {
-                "$push": {"maintainer_id": _id}})
-            return True
-        else:
+    def add_beta_maintainer(self, maintainer_id: str, project_id: str) -> bool:
+        """Add beta maintainers to project only if maintainer and project is admin approved
+
+        Args:
+            maintainer_id (str) : beta maintainer id
+            project_id (str) : Project ID
+
+        Returns:
+            bool
+        """
+        try:
+            doc = self.db.maintainer.find_one(
+                {"_id": maintainer_id, "project_id": project_id})
+            project = self.db.project.find_one({"_id": project_id})
+            if not doc or not project:
+                raise Exception("Project or maintainer not found")
+            if doc["is_admin_approved"] and project["is_admin_approved"]:
+                self.db.project.update_one({"_id": project_id}, {
+                    "$push": {"maintainer_id": maintainer_id}})
+                return True
+            else:
+                raise Exception("Not approved by admin")
+        except Exception as e:
+            print(e)
             return False
 
     def enter_contributor(self, doc: Dict[str, Any]) -> None:
