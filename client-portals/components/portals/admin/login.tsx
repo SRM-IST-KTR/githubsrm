@@ -29,7 +29,7 @@ const AdminLogin = () => {
       .post("admin/login", values)
       .then((res) => {
         sessionStorage.setItem("token", res.data.keys);
-        successToast("Success");
+        successToast("Horray! Logged In successfully.");
         Router.push("admin/dashboard");
       })
       .catch((err) => {
@@ -43,7 +43,6 @@ const AdminLogin = () => {
         isLoggedIn: isLoggedIn,
       }}
     >
-      {isLoggedIn && router.replace("/admin/dashboard")}
       {!isLoggedIn && (
         <div className="min-h-screen p-14 bg-base-blue">
           <h1 className="flex justify-center text-4xl font-extrabold text-white">

@@ -41,6 +41,12 @@ const ProjectDetail = () => {
   const router = useRouter();
 
   useEffect(() => {
+    if (!sessionStorage.getItem("token")) {
+      router.push("/admin");
+    }
+  }, []);
+
+  useEffect(() => {
     const { slug } = router.query;
     const found = PROJECTS.find((p) => p.id === slug);
     setProject(found);

@@ -1,10 +1,12 @@
 import Link from "next/link";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
 const Adminnavbar = () => {
+  const router = useRouter();
+
   const logoutHandler = () => {
     sessionStorage.clear();
-    Router.push("/admin");
+    router.push("/admin");
   };
   return (
     <div className="flex flex-row justify-center text-white my-6">

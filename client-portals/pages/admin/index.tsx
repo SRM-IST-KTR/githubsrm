@@ -1,10 +1,18 @@
-import React from "react";
-import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import AdminLogin from "../../components/portals/admin/login";
 import AdminRegister from "../../components/portals/admin/register";
+import { useRouter } from "next/router";
 
 const IndexPage = () => {
   const [register, setRegister] = React.useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      router.push("/admin/dashboard");
+    }
+  }, []);
+
   return (
     <div>
       <div className="bg-base-blue  p-10">

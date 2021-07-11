@@ -3,6 +3,7 @@ import ProjectTable from "../../../shared/table";
 import Adminnavbar from "./navbar";
 import { tableDataProjects } from "../../../shared/tableData";
 import AuthContext from "../../../../services/auth-context";
+import Router from "next/router";
 
 const ProjectApplications = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
