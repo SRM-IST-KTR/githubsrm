@@ -61,18 +61,17 @@ def project_SingleProject(request, **kwargs):
         if not project:
             raise Exception("Project doesn't exist")
 
-        if request.GET["maintainer"] != "true" and request.GET["contributor"] != "true":
-            record = {"project": project}
+        record = {"project": project}
 
-        elif request.GET["maintainer"] == "true" and request.GET["contributor"] != "true":
+        if request.GET["maintainer"] == "true" and request.GET["contributor"] != "true":
             data = list(entry.db.maintainer.find(
                 {"project_id": request.GET["projectId"]}))
-            record = {"maintainer": data}
+            record["maintainer"] = {"maintainer": data}
 
         elif request.GET["maintainer"] != "true" and request.GET["contributor"] == "true":
             data = list(entry.db.contributor.find(
                 {"project_id": request.GET["projectId"]}))
-            record = {"contributor": data}
+            record["contributor"] = {"contributor": data}
 
         else:
             maintainerData = list(entry.db.maintainer.find(
