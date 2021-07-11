@@ -1,7 +1,11 @@
 from math import ceil
+import jwt
 from . import entry
 db = entry.db
 
+
+def decode_payload(token):
+    return jwt.decode(token, options={"require": ["exp"], "verify_signature": False}, algorithms=["HS256"])
 
 def Projects_pagnation(request, **kwargs):
 
@@ -11,7 +15,10 @@ def Projects_pagnation(request, **kwargs):
     try:
         page = int(request.GET["page"])
         totalItems = db.project.count_documents({})
+        projects_ids = decode_payload(
+            request.headers["Authorization"].split()[1])["project_id"]
         record = list(db.project.aggregate([
+            {"$match": {"_id": {"$in": projects_ids}}},
             {"$skip": (page - 1) * ITEMS_PER_PAGE},
             {"$limit": ITEMS_PER_PAGE},
         ]))
@@ -26,7 +33,8 @@ def Projects_pagnation(request, **kwargs):
                 "records": record
             }
         raise Exception()
-    except:
+    except Exception as e:
+        print(e)
         return {"error": "Page does not exist"}
 
 
@@ -37,7 +45,13 @@ def project_SingleProject(request, **kwargs):
 
     # TODO check from JWT that this project id is in it as well
 
+    projects_ids = decode_payload(
+        request.headers["Authorization"].split()[1])["project_id"]
     project_id = request.GET["projectId"]
+
+    if project_id not in projects_ids:
+        return {"error": "wrong ID"}
+
     if project_document := db.project.find_one({"_id": project_id}):
 
         # TODO add a sanity check here -> array length in project contributor_id and maintainer_id
@@ -55,6 +69,6 @@ def project_SingleProject(request, **kwargs):
                 {"project_id": project_id, "is_admin_approved": True}, {"password": 0}))
             project_document["contributor"] = data
     else:
-        return "id doesnt exist"
+        return {"error": "id doesnt exist"}
 
     return project_document

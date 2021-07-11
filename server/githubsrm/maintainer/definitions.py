@@ -60,7 +60,7 @@ class MaintainerSchema:
         try:
             if self.path == '/maintainer/projects':
                 return self.approve_valid_schema().validate(self.data)
-            elif self.path == 'maintainer/login':
+            elif self.path == '/maintainer/login':
                 return self.login_valid_schema().validate(self.data)
             else:
                 return self.reset_valid_schema().validate(self.data)
