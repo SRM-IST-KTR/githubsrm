@@ -10,8 +10,7 @@ from administrator import entry, jwt_keys
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
 from .utils import project_Pagination, project_SingleProject
-from apis.utils import BotoService
-
+from apis import service
 
 class RegisterAdmin(APIView):
     permission_classes = [AuthAdminPerms]
@@ -66,7 +65,6 @@ class AdminLogin(APIView):
                 "admin": True,
                 "user": validate.get('email')
             })
-            print(keys)
             if keys:
                 return JsonResponse(data={
                     "keys": keys
