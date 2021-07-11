@@ -61,26 +61,26 @@ def project_SingleProject(request, **kwargs):
         if not project:
             raise Exception("Project doesn't exist")
 
-        if request.GET["maintainer"] != "true" and request.GET["contributor"] != "true":
-            record = {"project": project}
+        record = {"project": project}
 
-        elif request.GET["maintainer"] == "true" and request.GET["contributor"] != "true":
+        if request.GET["maintainer"] == "true" and request.GET["contributor"] != "true":
             data = list(entry.db.maintainer.find(
                 {"project_id": request.GET["projectId"]}))
-            record = {"maintainer": data}
+            record["maintainer"] = {"maintainer": data}
 
         elif request.GET["maintainer"] != "true" and request.GET["contributor"] == "true":
             data = list(entry.db.contributor.find(
-                {"project_id": request.GET["projectId"]}))
-            record = {"contributor": data}
+                {"interested_project": request.GET["projectId"]}))
+            record["contributor"] = {"contributor": data}
 
         else:
             maintainerData = list(entry.db.maintainer.find(
                 {"project_id": request.GET["projectId"]}))
             contributorData = list(entry.db.contributor.find(
-                {"project_id": request.GET["projectId"]}))
-            record = {"maintainer": maintainerData,
-                      "contributor": contributorData}
+                {"interested_project": request.GET["projectId"]}))
+
+            record["maintainer"] = {"maintainer": maintainerData}
+            record["contributor"] = {"contributor": contributorData}
 
         return response.JsonResponse(record, status=status.HTTP_200_OK)
     except:
@@ -91,6 +91,7 @@ def project_SingleProject(request, **kwargs):
 def get_token(request_header: Dict[str, str]):
     try:
         token = request_header.get('Authorization').split()
+
         return token[0], token[1]
     except Exception as e:
         return False

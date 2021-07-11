@@ -90,7 +90,18 @@ class Entry:
         doc = {**doc, **{"_id": _id}, **{"project_id": project_id},
                **{"is_admin_approved": False}}
         try:
-            self.db.maintainer.insert_one(doc)
+            existing_maintainer = self.db.maintainer.find_one(
+                {"srm_email": doc.get("srm_email"),
+                 "reg_number": doc.get("reg_number")}
+            )
+
+            if existing_maintainer and 'hashed_password' in existing_maintainer:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"hashed_password": existing_maintainer.get("hashed_password")}})
+
+            else:
+                self.db.maintainer.insert_one(doc)
+
             if project_url:
                 visibility = {"private": False}
             else:
@@ -121,9 +132,22 @@ class Entry:
         """
         try:
             _id = self.get_uid()
-            self.db.maintainer.insert_one(
-                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')}, **{"is_admin_approved": False}})
-            return _id
+
+
+            existing_maintainer = self.db.maintainer.find_one(
+                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")})
+
+            if existing_maintainer and 'hashed_password' in existing_maintainer:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
+                        **{"is_admin_approved": False}, **{"hashed_password": existing_maintainer.get("hashed_password")}})
+                return _id
+
+            else:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
+                        **{"is_admin_approved": False}})
+                return _id
 
         except Exception as e:
             print(e)
@@ -164,9 +188,9 @@ class Entry:
 
         _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False},
-               **{"is_maintainer_approved": False}}
+               **{"is_maintainer_approved": False}, **{"is_added_to_repo": False}}
 
-        if self.db.project.find_one({"_id": doc.get('interested_project')}):
+        if not self.db.project.find_one({"_id": doc.get('interested_project')}):
             return
 
         try:
@@ -175,6 +199,7 @@ class Entry:
 
         except Exception as e:
             print(e)
+            return
 
     def delete_beta_maintainer(self, maintainer_id: str, project_id: str) -> None:
         """Delete beta maintainer and beta maintainer from project
@@ -223,39 +248,6 @@ class Entry:
             return True
         except Exception as e:
             return
-
-    def approve_project(self, identifier: str) -> bool:
-        """Approve project
-
-        Args:
-            identifier (str): Project ID
-
-        Returns:
-            bool
-        """
-
-        project = self.db.project.find({"_id": identifier})
-
-        if project:
-            self.db.project.update_one({"_id": identifier}, {
-                "$set": {"is_admin_approved": True}})
-            return True
-        return
-
-    def approve_contributor(self, identifier: str, project_id: str) -> bool:
-        """Approve contributors to projects
-
-        Returns:
-            bool
-            identifier: Contributor ID
-            project_id: Project ID
-        """
-        if self.db.contributor.find_one({"_id": identifier}):
-            if self._update_project(identifier=identifier, project_id=project_id):
-                self.db.contributor.update({"_id": identifier}, {
-                    "$set": {"is_admin_approved": True}})
-                return True
-        return
 
     def get_projects(self, admin: bool = False) -> object:
         """Get all public projects / all project for admin
