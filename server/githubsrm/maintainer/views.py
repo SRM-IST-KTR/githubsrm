@@ -75,13 +75,11 @@ class Login(APIView):
         Login route get email and password make jwt and send.
         """
 
-        password_hashed = sha256(request.data["password"].encode()).hexdigest()
-
         validate = MaintainerSchema(request.data, path=request.path).valid()
-
         if 'error' in validate:
             return JsonResponse(data={"error": validate.get("error")}, status=400)
 
+        password_hashed = sha256(request.data["password"].encode()).hexdigest()
         doc_list_iter = entry.Send_all_Maintainer_email(request.data["email"])
         doc_list = [i for i in doc_list_iter]
 
@@ -96,6 +94,6 @@ class Login(APIView):
             payload["project_id"] = [i["project_id"] for i in doc_list]
 
             if jwt := key.issue_key(payload):
-                return JsonResponse({"jwt": jwt}, status=status.HTTP_200_OK)
+                return JsonResponse({"key": jwt}, status=status.HTTP_200_OK)
 
         return JsonResponse({"message": "Does not exist"}, status=status.HTTP_401_UNAUTHORIZED)

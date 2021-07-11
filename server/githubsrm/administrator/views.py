@@ -122,6 +122,7 @@ class ProjectsAdmin(APIView):
                     else:
                         password = entry.get_random_password(
                             identifier=validate.get("maintainer_id"))
+                        print(password)
 
                         # ? service.wrapper_email() send conformation emails with password.
                         return JsonResponse(data={
@@ -134,7 +135,7 @@ class ProjectsAdmin(APIView):
                         # ? service.wrapper_email send acceptance email to beta maintainer
                         # ? Alpha maintainer gets an email of beta maintainer's approval
                         return JsonResponse(data={
-                            "Approved existing maintainer"
+                            "Approved existing maintainer": True
                         }, status=200)
 
                     else:
@@ -142,9 +143,9 @@ class ProjectsAdmin(APIView):
                             identifier=validate.get("maintainer_id"))
                         # ? service.wrappe_email send acceptance email to beta maintainer with password
                         # ? Alpha maintainer gets an email of beta maintainer's approval
-
+                        print(password)
                         return JsonResponse(data={
-                            "Approved new maintainer"
+                            "Approved new maintainer": True
                         }, status=200)
 
             return JsonResponse(data={
@@ -181,7 +182,7 @@ class ProjectsAdmin(APIView):
         Pagination = ['page']
         SingleProject = ['projectId', 'maintainer', 'contributor']
         RequestQueryKeys = list(request.GET.keys())
-
+    
         if len(set(Pagination) & set(RequestQueryKeys)) == 1:
             return project_Pagination(request, **kwargs)
 
