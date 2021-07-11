@@ -1,8 +1,8 @@
 from hashlib import sha256
 
 from administrator.issue_jwt import IssueKey
+from apis import PostThrottle
 from django.http.response import JsonResponse
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 
@@ -17,6 +17,8 @@ db = entry.db
 
 
 class Projects(APIView):
+
+    throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
         """Accept contributors. 
@@ -70,6 +72,8 @@ class Projects(APIView):
 
 class Login(APIView):
 
+    throttle_classes = [PostThrottle]
+
     def post(self, request, **kwargs) -> JsonResponse:
         """
         Login route get email and password make jwt and send.
@@ -97,3 +101,34 @@ class Login(APIView):
                 return JsonResponse({"key": jwt}, status=status.HTTP_200_OK)
 
         return JsonResponse({"message": "Does not exist"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class ResetPassword(APIView):
+
+    throttle_classes = [PostThrottle]
+
+    def post(self, request, **kwargs) -> JsonResponse:
+        """Handle reset password
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+        validate = MaintainerSchema(request.data, request.path).valid()
+        if 'error' in validate:
+            return JsonResponse(data={
+                "error": str(validate.get("error"))
+            }, status=400)
+
+        if entry.update_password(current_password=validate.get("current_password"),
+                                 new_password=validate.get("new_password"),
+                                 maintainer_email=validate.get("srm_email")):
+            return JsonResponse(data={
+                "updated password": True
+            }, status=200)
+
+        return JsonResponse(data={
+            "error": "invalid credentials"
+        }, status=400)

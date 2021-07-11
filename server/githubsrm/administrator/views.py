@@ -1,8 +1,6 @@
 
-from django.http import response
-from pymongo.common import validate_document_class
 from apis import service
-from apis.throttle import PostThrottle
+from apis import PostThrottle
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -182,7 +180,7 @@ class ProjectsAdmin(APIView):
         Pagination = ['page']
         SingleProject = ['projectId', 'maintainer', 'contributor']
         RequestQueryKeys = list(request.GET.keys())
-    
+
         if len(set(Pagination) & set(RequestQueryKeys)) == 1:
             return project_Pagination(request, **kwargs)
 
