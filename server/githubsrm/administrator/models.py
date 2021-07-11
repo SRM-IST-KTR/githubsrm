@@ -149,13 +149,13 @@ class AdminEntry:
             str
         """
         password = str(secrets.token_hex(length))
-        hashed_password = sha256(password.encode()).hexdigest()
+        password = sha256(password.encode()).hexdigest()
 
         self.db.maintainer.find_one_and_update({
             "_id": identifier
         }, update={
             "$set":
-                {"password": hashed_password}
+                {"password": password}
 
         })
         return password

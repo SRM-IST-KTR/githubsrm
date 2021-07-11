@@ -95,9 +95,9 @@ class Entry:
                  "reg_number": doc.get("reg_number")}
             )
 
-            if existing_maintainer and 'hashed_password' in existing_maintainer:
+            if existing_maintainer and 'password' in existing_maintainer:
                 self.db.maintainer.insert_one(
-                    {**doc, **{"hashed_password": existing_maintainer.get("hashed_password")}})
+                    {**doc, **{"password": existing_maintainer.get("password")}})
 
             else:
                 self.db.maintainer.insert_one(doc)
@@ -137,10 +137,10 @@ class Entry:
             existing_maintainer = self.db.maintainer.find_one(
                 {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")})
 
-            if existing_maintainer and 'hashed_password' in existing_maintainer:
+            if existing_maintainer and 'password' in existing_maintainer:
                 self.db.maintainer.insert_one(
                     {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
-                        **{"is_admin_approved": False}, **{"hashed_password": existing_maintainer.get("hashed_password")}})
+                        **{"is_admin_approved": False}, **{"password": existing_maintainer.get("password")}})
                 return _id
 
             else:

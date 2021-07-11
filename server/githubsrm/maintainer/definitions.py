@@ -35,6 +35,21 @@ class MaintainerSchema:
 
         return validator
 
+    def reset_valid_schema(self) -> Schema:
+        """Returns valid schema for reset password
+
+        Returns:
+            Schema
+        """
+
+        validator = Schema(schema={
+            "srm_email": And(str, lambda email: len(email.strip()) > 0),
+            "current_password": And(str, lambda current_password: len(current_password.strip()) > 0),
+            "new_password": And(str, lambda new_password: len(new_password.strip()) > 0)
+        })
+
+        return validator
+
     def valid(self) -> Dict[str, Dict[str, str]]:
         """Checks validity of approval data
 
@@ -45,6 +60,10 @@ class MaintainerSchema:
         try:
             if self.path == '/maintainer/projects':
                 return self.approve_valid_schema().validate(self.data)
-            return self.login_valid_schema().validate(self.data)
+            elif self.path == 'maintainer/login':
+                return self.login_valid_schema().validate(self.data)
+            else:
+                return self.reset_valid_schema().validate(self.data)
+
         except SchemaError as e:
             return {"invalid data": self.data, "error": str(e)}

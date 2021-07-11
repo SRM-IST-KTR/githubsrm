@@ -1,4 +1,5 @@
 
+from hashlib import sha256
 from typing import Iterable
 import pymongo
 from django.conf import settings
@@ -45,4 +46,41 @@ class Entry:
         return False
 
     def Send_all_Maintainer_email(self, email) -> Iterable:
+        """To sent emails to all maintainers
+
+        Args:
+            email
+
+        Returns:
+            Iterable
+        """
         return self.db.maintainer.find({"email": email})
+
+    def update_password(self, current_password: str, new_password: str,
+                        maintainer_email: str) -> bool:
+        """Change password if current_password is correct
+
+        Args:
+            current_password (str): current maintainer password
+            new_password (str): new maintainer password
+            maintainer_email (str): srm email
+        Returns:
+            bool
+        """
+
+        current_password = sha256(current_password.encode()).hexdigest()
+        new_password = sha256(new_password.encode()).hexdigest()
+
+        maintainer = self.db.maintainer.find_one_and_update({
+            "$and": [
+                {"srm_email": maintainer_email},
+                {"password": current_password}
+            ]
+        }, update={
+            "$set": {"password": new_password}
+        })
+
+        if maintainer:
+            return True
+
+        return False
