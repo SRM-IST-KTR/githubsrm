@@ -35,7 +35,7 @@ class MaintainerSchema:
 
         return validator
 
-    def valid(self) -> dict[str, Dict[str, str]]:
+    def valid(self) -> Dict[str, Dict[str, str]]:
         """Checks validity of approval data
 
         Returns:
@@ -43,7 +43,7 @@ class MaintainerSchema:
         """
 
         try:
-            if self.path == '/maintainer/project':
+            if self.path == '/maintainer/projects':
                 return self.approve_valid_schema().validate(self.data)
             return self.login_valid_schema().validate(self.data)
         except SchemaError as e:

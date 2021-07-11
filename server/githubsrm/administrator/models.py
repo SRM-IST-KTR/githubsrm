@@ -176,7 +176,7 @@ class AdminEntry:
             {"_id": identifier},
             update={
                 "$set": {
-                    "_id": identifier,
+                    "is_admin_approved": True,
                     "project_url": project_url,
                     "private": private
                 }
@@ -184,6 +184,9 @@ class AdminEntry:
         )
 
         if project:
+            if project.get("is_admin_approved"):
+                return False
+
             return True
 
         return False
