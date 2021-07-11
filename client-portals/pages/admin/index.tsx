@@ -15,26 +15,25 @@ const IndexPage = () => {
 
   return (
     <div>
-      <div className="bg-base-blue  p-10">
+      <div className="bg-base-blue flex justify-center items-center flex-col lg:flex-row ">
         <button
           onClick={() => setRegister(true)}
-          className="bg-base-green font-bold text-xl p-2 mx-2 rounded"
+          className="py-7 cursor-pointer hover:opacity-50 px-16 mt-6 mr-5 rounded-xl shadow-xl bg-base-green text-gray-100 font-bold"
         >
           Register
         </button>
         <button
           onClick={() => setRegister(false)}
-          className="bg-base-green font-bold text-xl p-2 mx-2 rounded"
+          className="py-7 cursor-pointer hover:opacity-50 px-20 mt-6 rounded-xl shadow-xl bg-base-green text-gray-100 font-bold"
         >
           Login
         </button>
-
-        <div className={`${register ? "hidden" : "block"}`}>
-          <AdminLogin />
-        </div>
-        <div className={`${register ? "block" : "hidden"}`}>
-          <AdminRegister />
-        </div>
+      </div>
+      <div className={`${register ? "hidden" : "block"}`}>
+        <AdminLogin />
+      </div>
+      <div className={`${register ? "block" : "hidden"}`}>
+        <AdminRegister />
       </div>
     </div>
   );

@@ -1,13 +1,10 @@
+import React, { useContext } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { AuthContext } from "../../../../context/authContext";
 
 const Adminnavbar = () => {
-  const router = useRouter();
+  const authContext = useContext(AuthContext);
 
-  const logoutHandler = () => {
-    sessionStorage.clear();
-    router.push("/admin");
-  };
   return (
     <div className="flex flex-row justify-center text-white my-6">
       <div className="mx-2 text-xl p-3  border-b-4 border-base-teal">
@@ -17,7 +14,7 @@ const Adminnavbar = () => {
         <Link href="/admin/dashboard/accepted-projects">Accepted Projects</Link>
       </div>
       <button
-        onClick={logoutHandler}
+        onClick={authContext.logoutHandler}
         className="bg-base-green p-2 mx-2 rounded text-xl"
       >
         Logout

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ProjectTable from "../../../../components/shared/table";
 import { tableDataContributors } from "../../../../components/shared/tableData";
+import AuthContextProvider from "../../../../context/authContext";
 
 const PROJECTS = [
   {
@@ -57,14 +58,18 @@ const ProjectDetail = () => {
   }
 
   return project ? (
-    <div className="min-h-screen p-14 bg-base-blue">
-      <h2 className="text-4xl font-extrabold text-white mb-5">
-        {project.name}
-      </h2>
-      <h2 className="text-2xl font-medium text-white mb-10">{project.desc}</h2>
+    <AuthContextProvider>
+      <div className="min-h-screen p-14 bg-base-blue">
+        <h2 className="text-4xl font-extrabold text-white mb-5">
+          {project.name}
+        </h2>
+        <h2 className="text-2xl font-medium text-white mb-10">
+          {project.desc}
+        </h2>
 
-      <ProjectTable tableData={tableDataContributors} />
-    </div>
+        <ProjectTable tableData={tableDataContributors} />
+      </div>
+    </AuthContextProvider>
   ) : (
     <div>
       <p>not found </p>
