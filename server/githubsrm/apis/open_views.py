@@ -10,10 +10,12 @@ from django.template.exceptions import TemplateDoesNotExist
 from rest_framework import response, status
 from rest_framework.views import APIView
 
-from apis import open_entry, open_entry_checks, service, PostThrottle
+from apis import (
+    open_entry, open_entry_checks, service, PostThrottle, check_token
+)
 
 from .definitions import *
-from .utils import check_token, conditional_render
+from .utils import conditional_render
 
 
 def home(request, path=None):
@@ -38,7 +40,15 @@ class Contributor(APIView):
         Returns:
             response.Response
         """
-        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+
+        try:
+            reCaptcha = request.META.get("HTTP_X_RECAPTCHA_TOKEN")
+        except KeyError as e:
+            return response.Response({
+                "error": "reCaptcha token not provided"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        if check_token(reCaptcha):
 
             try:
                 validate = CommonSchema(
@@ -100,7 +110,14 @@ class Maintainer(APIView):
         Returns:
             Response
         """
-        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+        try:
+            reCaptcha = request.META.get("HTTP_X_RECAPTCHA_TOKEN")
+        except KeyError as e:
+            return response.Response({
+                "error": "reCaptcha token not provided"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        if check_token(reCaptcha):
 
             try:
                 validate = CommonSchema(

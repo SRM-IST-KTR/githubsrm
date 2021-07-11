@@ -332,7 +332,19 @@ class BotoService:
             }
 
 
-def emailbody(name, file, project_name, project_id=None):
+def emailbody(name, file, project_name, project_id=None) -> Template:
+    """Returns template with appropriate data
+
+    Args:
+        name ([type]): name
+        file ([type]): template name
+        project_name ([type]): project name
+        project_id ([type], optional): project_id. Defaults to None.
+
+    Returns:
+        Template
+    """
+
     with open(f'{pathlib.Path.cwd()}/apis/templates/{file}') as file_:
         template = Template(file_.read())
         if project_id:
