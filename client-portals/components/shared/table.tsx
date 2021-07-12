@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
 import { FaGithub } from "react-icons/fa";
@@ -7,23 +7,22 @@ import { successToast } from "../../utils/functions/toast";
 const ProjectTable = ({ tableData }) => {
   const [selectedContributor, setSelectedContributor] = useState("");
 
-  const tableHeading = [
-    "Name",
-    "Email",
-    "projectname",
-    "GitHub ID",
-    "SRM Email",
-    "Registration Number",
-    "Branch",
-    "Maintainer Approval",
-  ];
-
   const submitHandler = (id) => {
     setSelectedContributor(id);
     // post selectedContributor here
     console.log(selectedContributor);
     successToast("Contributor Approved sucessfully!");
   };
+
+  var headings = Object.keys(tableData[2]);
+  var row_values = [];
+
+  useEffect(() => {
+    for (var i = 0; i < tableData.length; i++) {
+      row_values.push(Object.values(tableData[i]));
+    }
+    console.log(row_values);
+  }, []);
 
   return (
     <>
@@ -33,38 +32,21 @@ const ProjectTable = ({ tableData }) => {
             <table className="table text-white border-separate space-y-6 text-sm">
               <thead className="bg-gray-800 text-white">
                 <tr>
-                  {tableHeading.map((heading) => (
-                    <th key={heading} className="px-3 text-left">
-                      {heading}
-                    </th>
+                  {headings.map((head) => (
+                    <th className="px-3 text-left">{head}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {tableData.map((data) => (
-                  <tr key={data.id} className="bg-gray-800">
+                  <tr key={data} className="bg-gray-800">
                     <td className="p-3">
                       <div className="flex align-items-center">
-                        <div className="">{data.name}</div>
+                        <div>{data}</div>
                       </div>
                     </td>
 
-                    <td className="p-3">
-                      <a href="mailto:{data.email}">{data.email}</a>
-                    </td>
-                    <td className="p-3">{data.projectname}</td>
-                    <td className="p-3">
-                      <a href={data.github_id}>
-                        <FaGithub className="text-2xl" />
-                        {data.github_id}
-                      </a>
-                    </td>
-                    <td className="p-3">
-                      <a href="mailto:{data.srm_email}">{data.srm_email}</a>
-                    </td>
-                    <td className="p-3">{data.reg_number}</td>
-                    <td className="p-3">{data.branch}</td>
-                    <td className="p-3 ">
+                    {/* <td className="p-3 ">
                       {data.maintainer_approved === "true" ? (
                         <TiTick className="text-green-500 text-2xl" />
                       ) : (
@@ -75,7 +57,7 @@ const ProjectTable = ({ tableData }) => {
                           Approve
                         </button>
                       )}
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

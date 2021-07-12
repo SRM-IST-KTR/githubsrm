@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import AdminLogin from "../../components/portals/admin/login";
 import AdminRegister from "../../components/portals/admin/register";
 import { useRouter } from "next/router";

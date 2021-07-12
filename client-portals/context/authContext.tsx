@@ -1,6 +1,6 @@
 import router from "next/router";
 import React, { useState } from "react";
-import { errToast } from "../utils/functions/toast";
+import { successToast } from "../utils/functions/toast";
 import { useRouter } from "next/router";
 
 export const AuthContext = React.createContext({
@@ -15,7 +15,7 @@ const AuthContextProvider: React.FC = (props) => {
   const logoutHandler = () => {
     setIsAuth(false);
     sessionStorage.removeItem("token");
-    errToast("Logged out!");
+    successToast("Logged out!");
     router.push("/admin");
   };
 

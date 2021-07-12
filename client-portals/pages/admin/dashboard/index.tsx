@@ -1,9 +1,9 @@
 import ProjectApplications from "../../../components/portals/admin/dashboard";
 import { useRouter } from "next/router";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import AuthContextProvider from "../../../context/authContext";
 
-const Index = () => {
+const AdminDashPage = () => {
   const router = useRouter();
 
   useEffect(() => {
@@ -19,4 +19,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default AdminDashPage;

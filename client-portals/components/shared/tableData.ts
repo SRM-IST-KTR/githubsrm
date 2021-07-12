@@ -36,7 +36,6 @@ export const tableDataContributors = [
 
 export const tableDataProjects = [
   {
-    id: "1",
     name: "Mainatainer 1",
     projectname: "project 1",
     email: "test@test.com",
@@ -47,7 +46,6 @@ export const tableDataProjects = [
     maintainer_approved: "false",
   },
   {
-    id: "2",
     name: "Mainatainer 2",
     projectname: "project 2",
     email: "test@test.com",
@@ -58,7 +56,6 @@ export const tableDataProjects = [
     maintainer_approved: "false",
   },
   {
-    id: "3",
     name: "Mainatainer 3",
     projectname: "project 3",
     email: "test@test.com",

@@ -20,13 +20,16 @@ const AdminRegister = () => {
   const submitValues = (values: AdminRegisterData) => {
     instance
       .post("/admin/register", values, {
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "X-RECAPTCHA-TOKEN": null,
+        },
       })
       .then((res) => {
         successToast("Admin registered successfully!");
       })
       .catch((err) => {
-        errToast("Oops! Some error occured");
+        errToast(err.message);
       });
   };
 

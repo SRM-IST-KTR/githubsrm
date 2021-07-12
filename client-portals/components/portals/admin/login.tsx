@@ -15,16 +15,21 @@ const AdminLogin = () => {
     email: "",
     password: "",
   };
+
   const submitValues = (values: AdminLoginData) => {
     instance
-      .post("admin/login", values)
+      .post("admin/login", values, {
+        headers: {
+          "X-RECAPTCHA-TOKEN": null,
+        },
+      })
       .then((res) => {
         sessionStorage.setItem("token", res.data.keys);
         successToast("Horray! Logged In successfully.");
         Router.push("admin/dashboard");
       })
       .catch((err) => {
-        errToast("Authentication error!");
+        errToast(err.message);
       });
   };
 

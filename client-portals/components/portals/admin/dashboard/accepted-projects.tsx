@@ -1,51 +1,14 @@
-import Card from "../../../shared/card";
+import AcceptedProjectsCards from "./accepted-projects-cards";
+import Adminnavbar from "./navbar";
+import React from "react";
 
-const PROJECTS = [
-  {
-    name: "Project 1",
-    id: "1",
-    desc:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora expedita dicta totam aspernatur doloremque. Excepturi iste iusto eos",
-  },
-  {
-    name: "Project 2",
-    id: "2",
-    desc:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora expedita dicta totam aspernatur doloremque. Excepturi iste iusto eos",
-  },
-  {
-    name: "Project 3",
-    id: "3",
-    desc:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora expedita dicta totam aspernatur doloremque. Excepturi iste iusto eos",
-  },
-  {
-    name: "Project 4",
-    id: "4",
-    desc:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora expedita dicta totam aspernatur doloremque. Excepturi iste iusto eos",
-  },
-  {
-    name: "Project 5",
-    id: "5",
-    desc:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora expedita dicta totam aspernatur doloremque. Excepturi iste iusto eos",
-  },
-];
-
-const AcceptedProjectsCard = () => {
+const AcceptedProjectDashboard = () => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-      {PROJECTS.map((item) => (
-        <Card
-          url={`/admin/dashboard/accepted-projects/${item.id}`}
-          name={item.name}
-          desc={item.desc}
-          key={item.id}
-        />
-      ))}
+    <div className="min-h-screen p-14 bg-base-blue">
+      <Adminnavbar />
+      <AcceptedProjectsCards />
     </div>
   );
 };
 
-export default AcceptedProjectsCard;
+export default AcceptedProjectDashboard;
