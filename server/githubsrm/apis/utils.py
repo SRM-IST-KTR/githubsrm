@@ -151,7 +151,7 @@ class BotoService:
 
                         'Html': {
                             'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"], "project_id": data.get("project_id")}),
+                                              project_data={"project_name": data["project_name"], "project_id": data.get("_id")}),
                             'Charset': 'utf-8'
 
                         }
@@ -171,7 +171,7 @@ class BotoService:
                     },
                     'Body': {
                         'Text': {
-                            'Data': f'You are under review for the project ID {data.get("project_id")}',
+                            'Data': f'You are under review for the project ID {data.get("_id")}',
                             'Charset': 'utf-8'
                         },
 
@@ -222,7 +222,7 @@ class BotoService:
 
                         'Html': {
                             'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"], "project_id": data.get("project_id")}),
+                                              project_data={"project_name": data["project_name"], "project_id": data.get("_id")}),
                             'Charset': 'utf-8'
 
                         }
@@ -350,7 +350,7 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
     with open(f'{pathlib.Path.cwd()}/apis/templates/{file}') as file_:
         template = Template(file_.read())
         if role == "alpha":
-            return template.render(name=name, project_id=project_data.project_id, project_name=project_data.project_name)
+            return template.render(name=name, project_id=project_data.get("_id"), project_name=project_data.get("project_name"))
         elif role == "beta":
             return template.render(name=name, project_name=project_data.get("project_name"))
         elif role == "existing_alpha_maintainer":
