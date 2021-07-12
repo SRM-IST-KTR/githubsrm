@@ -1,12 +1,14 @@
+
 import os
-from .models import Entry
 from typing import Any, Dict, TypedDict
 import httpx
 from dotenv import load_dotenv
 import boto3
 import pathlib
 from jinja2 import Template
+from .models import Entry
 
+open_entry = Entry()
 load_dotenv()
 email_client = boto3.client('sesv2', region_name='ap-south-1')
 
@@ -158,9 +160,9 @@ class BotoService:
             }
 
         elif role == 'beta':
-            entry = Entry()
-            project = list(entry.db.project.find({"_id": data["project_id"]}))
-            project_name = project[0]["project_name"]
+            project = open_entry.get_project_from_id(
+                identifier=data["project_id"])
+            project_name = project["project_name"]
             return {
                 'Simple': {
                     'Subject': {
@@ -332,14 +334,14 @@ class BotoService:
             }
 
 
-def emailbody(name, file, project_name, project_id=None) -> Template:
+def emailbody(name: str, file: str, project_name: str, project_id: str = None) -> Template:
     """Returns template with appropriate data
 
     Args:
-        name ([type]): name
-        file ([type]): template name
-        project_name ([type]): project name
-        project_id ([type], optional): project_id. Defaults to None.
+        name (str): name
+        file (str): template name
+        project_name (str): project name
+        project_id (str, optional): project_id. Defaults to None.
 
     Returns:
         Template

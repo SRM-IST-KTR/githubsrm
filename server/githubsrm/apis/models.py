@@ -1,9 +1,11 @@
-from typing import Any, Dict
 import random
 import string
-from dotenv import load_dotenv
+from datetime import datetime
+from typing import Any, Dict
+
 import pymongo
 from django.conf import settings
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -85,10 +87,11 @@ class Entry:
         tags = doc.pop("tags")
         project_name = doc.pop('project_name')
 
+        time_stamp = datetime.strftime(datetime.now(), format="%d-%m-%Y")
         project_id = self.get_uid()
         _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"project_id": project_id},
-               **{"is_admin_approved": False}}
+               **{"is_admin_approved": False}, **{"time_stamp": time_stamp}}
         try:
             existing_maintainer = self.db.maintainer.find_one(
                 {"srm_email": doc.get("srm_email"),
@@ -287,3 +290,19 @@ class Entry:
             type: MongoDB cursor
         """
         return self.db.contactus.find({})
+
+    def get_project_from_id(self, identifier: str) -> Dict[str, Any]:
+        """Get project documents from project ids
+
+        Args:
+            identifier (str): project id
+
+        Returns:
+            Dict[str, Any]: project document
+        """
+
+        project = self.db.project.find_one({"_id": identifier})
+        if project:
+            return project
+
+        return None
