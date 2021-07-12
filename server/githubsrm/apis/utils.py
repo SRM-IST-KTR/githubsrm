@@ -124,7 +124,7 @@ class BotoService:
             return True
 
         except Exception as e:
-            print(e)
+            print("EMAIL FAILED", e)
             return
 
     def get_email_content(self, role: str, data: str) -> Dict[str, Any]:
@@ -151,7 +151,7 @@ class BotoService:
 
                         'Html': {
                             'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"], "project_id": data["project_id"]}),
+                                              project_data={"project_name": data["project_name"], "project_id": data.get("project_id")}),
                             'Charset': 'utf-8'
 
                         }
@@ -200,7 +200,7 @@ class BotoService:
 
                         'Html': {
                             'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name":data.get("project_name")}),
+                                              project_data={"project_name": data.get("project_name")}),
                             'Charset': 'utf-8'
 
                         }
@@ -222,7 +222,7 @@ class BotoService:
 
                         'Html': {
                             'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"]}),
+                                              project_data={"project_name": data["project_name"], "project_id": data.get("project_id")}),
                             'Charset': 'utf-8'
 
                         }
@@ -288,7 +288,7 @@ class BotoService:
 
                         'Html': {
                             'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"]}),
+                                              project_data={"project_name": data.get("project_name")}),
                             'Charset': 'utf-8'
 
                         }
@@ -334,14 +334,14 @@ class BotoService:
             }
 
 
-def emailbody(name: str, file: str, project_name: str, project_id: str = None) -> Template:
+def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> Template:
     """Returns template with appropriate data
 
     Args:
         name (str): name
         file (str): template name
-        project_name (str): project name
-        project_id (str, optional): project_id. Defaults to None.
+        project_data (Dict[str, Any]): document
+        role (str): user role
 
     Returns:
         Template
@@ -365,6 +365,3 @@ def emailbody(name: str, file: str, project_name: str, project_id: str = None) -
             return template.render(name=name, project_name=project_data.get("project_name"))
         elif role == "approve_project":
             return template.render(name=name, project_name=project_data.get("project_name"))
-        # if project_data.get('project_id'):
-        #     return template.render(name=name, project_id=project_data.project_id, project_name=project_data.project_name)
-        # return template.render(name=name, project_name=project_data.get("project_name"))
