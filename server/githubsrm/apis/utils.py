@@ -150,8 +150,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                              project_data={"project_name": data["project_name"], "project_id": data["project_id"]}),
                             'Charset': 'utf-8'
 
                         }
@@ -176,8 +176,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='beta_maintainer_accept.html', name=data['name'],
-                                              project_name=project_name),
+                            'Data': emailbody(file='beta_maintainer_accept.html', name=data['name'], role=role,
+                                              project_data={"project_name": project_name}),
                             'Charset': 'utf-8'
 
                         }
@@ -199,8 +199,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                              project_data={"project_name":data.get("project_name")}),
                             'Charset': 'utf-8'
 
                         }
@@ -221,8 +221,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                              project_data={"project_name": data["project_name"]}),
                             'Charset': 'utf-8'
 
                         }
@@ -243,8 +243,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                              project_data={"project_name": data["project_name"]}),
                             'Charset': 'utf-8'
 
                         }
@@ -265,8 +265,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                              project_data={"project_name": data["project_name"]}),
                             'Charset': 'utf-8'
 
                         }
@@ -287,8 +287,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                              project_data={"project_name": data["project_name"]}),
                             'Charset': 'utf-8'
 
                         }
@@ -309,8 +309,8 @@ class BotoService:
                         },
 
                         'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'],
-                                              project_name=data["project_name"]),
+                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                              project_data={"project_name": data["project_name"]}),
                             'Charset': 'utf-8'
 
                         }
@@ -349,6 +349,22 @@ def emailbody(name: str, file: str, project_name: str, project_id: str = None) -
 
     with open(f'{pathlib.Path.cwd()}/apis/templates/{file}') as file_:
         template = Template(file_.read())
-        if project_id:
-            return template.render(name=name, project_id=project_id, project_name=project_name)
-        return template.render(name=name, project_name=project_name)
+        if role == "alpha":
+            return template.render(name=name, project_id=project_data.project_id, project_name=project_data.project_name)
+        elif role == "beta":
+            return template.render(name=name, project_name=project_data.get("project_name"))
+        elif role == "existing_alpha_maintainer":
+            return template.render(name=name, project_name=project_data.get("project_name"))
+        elif role == "alpha_maintainer_w_password":
+            return template.render(name=name, project_name=project_data.get("project_name"))
+        elif role == "beta_maintainer_approval":
+            return template.render(name=name, project_name=project_data.get("project_name"))
+        elif role == "beta_maintainer_approval_to_alpha":
+            return template.render(name=name, project_name=project_data.get("project_name"))
+        elif role == "beta_maintainer_approval_w_password":
+            return template.render(name=name, project_name=project_data.get("project_name"))
+        elif role == "approve_project":
+            return template.render(name=name, project_name=project_data.get("project_name"))
+        # if project_data.get('project_id'):
+        #     return template.render(name=name, project_id=project_data.project_id, project_name=project_data.project_name)
+        # return template.render(name=name, project_name=project_data.get("project_name"))
