@@ -93,9 +93,9 @@ class AdminEntry:
             if maintainer.get('is_admin_approved'):
                 # ? Maintainer already approved
                 return False
-            value = self._update_project(project_id=project_id,
-                                         maintainer_id=maintainer_id)
-            return value
+            project = self._update_project(project_id=project_id,
+                                           maintainer_id=maintainer_id)
+            return project, maintainer
         return False
 
     def _update_project(self, project_id: str, maintainer_id: str) -> bool:
@@ -180,14 +180,13 @@ class AdminEntry:
                     "project_url": project_url,
                     "private": private
                 }
-            }
-        )
+            }, return_document=ReturnDocument.BEFORE)
 
         if project:
             if project.get("is_admin_approved"):
                 return False
 
-            return True
+            return project
 
         return False
 
@@ -212,6 +211,74 @@ class AdminEntry:
             if contributor.get("is_admin_approved"):
                 return False
 
+            return contributor
+
+        return False
+
+    def reset_status_maintainer(self, identifier: str, project_id: str) -> bool:
+        """On failed email reset maintainer state
+
+        Args:
+            identifier (str): maintainer id
+            project_id (str) : project id
+        Returns:
+            bool
+        """
+        self.db.maintainer.find_one_and_update({
+            "_id": identifier
+        }, update={
+            "$set": {"is_admin_approved": False}
+        })
+
+        self.db.project.find_one_and_update({
+            "_id": project_id
+        }, update={
+            "$pull": {
+                "maintainer_id": identifier
+            }
+        })
+
+        return True
+
+    def reset_status_project(self, project: Dict[str, Any]) -> bool:
+        """Reset project status
+
+        Args:
+            project (Dict[str, Any]): project document
+
+        Returns:
+            bool
+        """
+
+        project = self.db.project.find_one_and_update({
+            "_id": project["_id"]
+        }, update={
+            "$set": {
+                "is_admin_approved": False,
+                "project_url": project["project_url"],
+                "private": project["private"]
+            }
+        }, return_document=ReturnDocument.BEFORE)
+
+        if project:
             return True
 
         return False
+
+    def reset_status_contributor(self, contributor: Dict[str, Any]) -> bool:
+        """Reset contributor status
+
+        Args:
+            contributor (Dict[str, Any]): contributor document
+
+        Returns:
+            bool
+        """
+
+        self.db.contributor.find_one_and_update({
+            "_id": contributor["_id"]
+        }, update={
+            "$set": {"is_admin_approved": False}
+        })
+
+        return True
