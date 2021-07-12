@@ -42,7 +42,7 @@ class Contributor(APIView):
         """
 
         try:
-            reCaptcha = request.META.get("HTTP_X_RECAPTCHA_TOKEN")
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
         except KeyError as e:
             return response.Response({
                 "error": "reCaptcha token not provided"
@@ -111,7 +111,7 @@ class Maintainer(APIView):
             Response
         """
         try:
-            reCaptcha = request.META.get("HTTP_X_RECAPTCHA_TOKEN")
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
         except KeyError as e:
             return response.Response({
                 "error": "reCaptcha token not provided"

@@ -31,7 +31,7 @@ class Projects(APIView):
         """
 
         try:
-            reCaptcha = request.META.get("HTTP_X_RECAPTCHA_TOKEN")
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
         except KeyError as e:
             return JsonResponse(data={
                 "error": "recaptcha not provided"
@@ -94,7 +94,7 @@ class Login(APIView):
         """
 
         try:
-            reCaptcha = request.META.get("HTTP_X_RECAPTCHA_TOKEN")
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
         except KeyError as e:
             return JsonResponse(data={
                 "error": "recaptcha not provided"
@@ -152,19 +152,33 @@ class ResetPassword(APIView):
         Returns:
             JsonResponse
         """
-        validate = MaintainerSchema(request.data, request.path).valid()
-        if 'error' in validate:
+
+        try:
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
+        except Exception as e:
             return JsonResponse(data={
-                "error": str(validate.get("error"))
+                "error": "recaptcha token not found"
+            }, status=401)
+
+        if check_token(reCaptcha):
+
+            validate = MaintainerSchema(request.data, request.path).valid()
+            if 'error' in validate:
+                return JsonResponse(data={
+                    "error": str(validate.get("error"))
+                }, status=400)
+
+            if entry.update_password(current_password=validate.get("current_password"),
+                                     new_password=validate.get("new_password"),
+                                     maintainer_email=validate.get("srm_email")):
+                return JsonResponse(data={
+                    "updated password": True
+                }, status=200)
+
+            return JsonResponse(data={
+                "error": "invalid credentials"
             }, status=400)
 
-        if entry.update_password(current_password=validate.get("current_password"),
-                                 new_password=validate.get("new_password"),
-                                 maintainer_email=validate.get("srm_email")):
-            return JsonResponse(data={
-                "updated password": True
-            }, status=200)
-
         return JsonResponse(data={
-            "error": "invalid credentials"
-        }, status=400)
+            "error": "Invalid reCaptcha token"
+        }, status=401)
