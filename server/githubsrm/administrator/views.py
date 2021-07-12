@@ -1,5 +1,4 @@
-from apis import service, check_token
-from apis import PostThrottle
+from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,7 +8,6 @@ from administrator import entry, jwt_keys
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
 from .utils import project_Pagination, project_SingleProject
-from apis import service
 
 
 class RegisterAdmin(APIView):
