@@ -10,7 +10,6 @@ from .models import Entry
 
 open_entry = Entry()
 load_dotenv()
-email_client = boto3.client('sesv2', region_name='ap-south-1')
 
 
 def conditional_render(path: str) -> str:
@@ -137,186 +136,73 @@ class BotoService:
             Dict[str, Any]: [description]
         """
         if role == 'alpha':
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Submission Confirmation | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'PLEASE WAIT FOR ADMIN APPROVAL FOR THE PROJECT: {data.get("project_name")}',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"], "project_id": data.get("_id")}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
-
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'PLEASE WAIT FOR ADMIN APPROVAL FOR THE PROJECT: {data.get("project_name")}',
+                emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                    project_data={"project_name": data["project_name"], "project_id": data.get("_id")})
+            )
+            
         elif role == 'beta':
             project = open_entry.get_project_from_id(
                 identifier=data["project_id"])
             project_name = project["project_name"]
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Submission Confirmation | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'You are under review for the project ID {data.get("_id")}',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='beta_maintainer_accept.html', name=data['name'], role=role,
-                                              project_data={"project_name": project_name}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'You are under review for the project ID {data.get("_id")}',
+                emailHTML=emailbody(file='beta_maintainer_accept.html', name=data['name'], role=role,
+                                    project_data={"project_name": project_name})
+            )
+            
         # TODO : Change contents of email and make email templates
         elif role == 'existing_alpha_maintainer':
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Maintainer Confirmation | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'Maintainer Confirmation',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data.get("project_name")}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'You are under review for the project ID {data.get("_id")}',
+                emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                    project_data={"project_name": data.get("project_name")})
+            )
+            
         elif role == 'alpha_maintainer_w_password':
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Maintainer Approved | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'Credentials given',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"], "project_id": data.get("_id")}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'You are under review for the project ID {data.get("_id")}',
+                emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                    project_data={"project_name": data.get("project_name")})
+            )
+            
         elif role == 'beta_maintainer_approval':
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Maintainer Approved | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'Your request to become a maintainer was approved',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"]}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'You are under review for the project ID {data.get("_id")}',
+                emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                    project_data={"project_name": data.get("project_name")})
+            )
+            
         elif role == 'beta_maintainer_approval_to_alpha':
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Maintainer Approved | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'Maintainer was approved',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"]}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'You are under review for the project ID {data.get("_id")}',
+                emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                    project_data={"project_name": data.get("project_name")})
+            )
+            
         elif role == 'beta_maintainer_approval_w_password':
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Maintainer approved | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data.get("project_name")}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'You are under review for the project ID {data.get("_id")}',
+                emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                    project_data={"project_name": data.get("project_name")})
+            )
+            
         elif role == 'approve_project':
-            return {
-                'Simple': {
-                    'Subject': {
-                        'Data': 'Submission Confirmation | GitHub Community SRM',
-                        'Charset': 'utf-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': f'PLEASE WAIT FOR ADMIN APPROVAL FOR THE PROJECT: {data.get("project_name")}',
-                            'Charset': 'utf-8'
-                        },
-
-                        'Html': {
-                            'Data': emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
-                                              project_data={"project_name": data["project_name"]}),
-                            'Charset': 'utf-8'
-
-                        }
-                    }
-                },
-            }
+            return email_template(
+                subject="Submission Confirmation | GitHub Community SRM",
+                bodyText=f'You are under review for the project ID {data.get("_id")}',
+                emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
+                                    project_data={"project_name": data.get("project_name")})
+            )
+            
         else:
             return {
                 'Simple': {
@@ -365,3 +251,26 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
             return template.render(name=name, project_name=project_data.get("project_name"))
         elif role == "approve_project":
             return template.render(name=name, project_name=project_data.get("project_name"))
+
+
+def email_template(subject: str, bodyText: str, emailHTML: Template) -> Dict[str, Dict[str, Any]]:
+    return {
+        'Simple': {
+            'Subject': {
+                'Data': subject,
+                'Charset': 'utf-8'
+            },
+            'Body': {
+                'Text': {
+                    'Data': bodyText,
+                    'Charset': 'utf-8'
+                },
+
+                'Html': {
+                    'Data': emailHTML,
+                    'Charset': 'utf-8'
+
+                }
+            }
+        },
+    }
