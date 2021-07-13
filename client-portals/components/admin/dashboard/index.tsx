@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Adminnavbar from "../../shared/navbar";
 import instance from "../../../services/api";
 import { TiTick } from "react-icons/ti";
+import { GrNext, GrPrevious } from "react-icons/gr";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import Link from "next/link";
 import { Layout } from "../../shared";
@@ -9,6 +9,7 @@ import { Layout } from "../../shared";
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState([]);
   const [accepted, setAccepted] = useState<boolean>(false);
+  const [pageNo, setPageNo] = useState(1);
   const token = sessionStorage.getItem("token");
 
   const headings = [
@@ -48,7 +49,7 @@ const ProjectApplications = () => {
 
   useEffect(() => {
     instance
-      .get("admin/projects?page=1", {
+      .get(`admin/projects?page=${pageNo}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "X-RECAPTCHA-TOKEN": null,
@@ -61,11 +62,12 @@ const ProjectApplications = () => {
       .catch((err) => {
         errToast(err.message);
       });
-  }, [accepted]);
+  }, [accepted, pageNo]);
 
   return (
     <Layout type="admin">
       <div className="overflow-scroll">
+        <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
         <table className="table text-white border-separate space-y-6 text-sm">
           <thead className="bg-gray-800 text-white">
             <tr>
@@ -138,6 +140,21 @@ const ProjectApplications = () => {
             ))}
           </tbody>
         </table>
+        <div className="flex justify-center my-5">
+          <button
+            className="hover:bg-base-green focus:bg-base-green p-3 rounded-full "
+            onClick={() => setPageNo(pageNo - 1)}
+          >
+            <GrPrevious className="text-2xl font-extrabold" />
+          </button>
+          <h2 className="text-gray-50 text-4xl  font-medium mx-3">{pageNo}</h2>
+          <button
+            className="hover:bg-base-green focus:bg-base-green p-3 rounded-full"
+            onClick={() => setPageNo(pageNo + 1)}
+          >
+            <GrNext className="text-2xl font-extrabold" />
+          </button>
+        </div>
       </div>
     </Layout>
   );
