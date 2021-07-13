@@ -1,13 +1,10 @@
 import { Formik, Form } from "formik";
 import Router from "next/router";
-import { AdminLoginData } from "../../../utils/interfaces";
-import {
-  adminLoginValidation,
-  adminLoginInputs,
-} from "../../../utils/constants";
-import { Input } from "../../shared";
-import instance from "../../../services/api";
-import { successToast, errToast } from "../../../utils/functions/toast";
+import { AdminLoginData } from "../../utils/interfaces";
+import { adminLoginValidation, adminLoginInputs } from "../../utils/constants";
+import { Input } from "../shared";
+import instance from "../../services/api";
+import { successToast, errToast } from "../../utils/functions/toast";
 import React from "react";
 
 const AdminLogin = () => {

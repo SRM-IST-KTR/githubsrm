@@ -1,4 +1,4 @@
-import ProjectApplications from "../../../components/portals/admin/dashboard";
+import ProjectApplications from "../../../components/admin/dashboard";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import AuthContextProvider from "../../../context/authContext";

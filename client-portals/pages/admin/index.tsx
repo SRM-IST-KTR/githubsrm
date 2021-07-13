@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import AdminLogin from "../../components/portals/admin/login";
-import AdminRegister from "../../components/portals/admin/register";
+import AdminLogin from "../../components/admin/login";
+import AdminRegister from "../../components/admin/register";
 import { useRouter } from "next/router";
 
 const IndexPage = () => {

@@ -1,4 +1,4 @@
-import { Card } from "./";
+import { Card } from ".";
 
 const PROJECTS = [
   {

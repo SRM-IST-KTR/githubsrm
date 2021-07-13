@@ -1,13 +1,13 @@
 import { Formik, Form, Field } from "formik";
 import React, { useState } from "react";
-import { AdminRegisterData } from "../../../utils/interfaces";
+import { AdminRegisterData } from "../../utils/interfaces";
 import {
   adminRegisterValidation,
   adminRegisterInputs,
-} from "../../../utils/constants";
-import { Input } from "../../shared";
-import instance from "../../../services/api";
-import { successToast, errToast } from "../../../utils/functions/toast";
+} from "../../utils/constants";
+import { Input } from "../shared";
+import instance from "../../services/api";
+import { successToast, errToast } from "../../utils/functions/toast";
 
 const AdminRegister = () => {
   const [authToken, setAuthToken] = useState("");

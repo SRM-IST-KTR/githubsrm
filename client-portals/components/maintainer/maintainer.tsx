@@ -1,11 +1,11 @@
 import { Formik, Form } from "formik";
 
-import { MaintainerLoginData } from "../../../utils/interfaces";
+import { MaintainerLoginData } from "../../utils/interfaces";
 import {
   maintainerLoginValidation,
   maintainerLoginInputs,
-} from "../../../utils/constants";
-import { Input } from "../../shared";
+} from "../../utils/constants";
+import { Input } from "../shared";
 
 const MaintainerLogin = () => {
   const initialValues: MaintainerLoginData = {

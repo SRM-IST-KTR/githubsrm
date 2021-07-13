@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import AcceptedProjectDashboard from "../../../../components/portals/admin/dashboard/accepted-projects";
+import AcceptedProjectDashboard from "../../../../components/admin/dashboard/accepted-projects/accepted-projects";
 import AuthContextProvider from "../../../../context/authContext";
 
 const AcceptedProjectsPage = () => {

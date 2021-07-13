@@ -1,13 +1,12 @@
 import AcceptedProjectsCards from "./accepted-projects-cards";
-import Adminnavbar from "./navbar";
 import React from "react";
+import { Layout } from "../../../shared";
 
 const AcceptedProjectDashboard = () => {
   return (
-    <div className="min-h-screen p-14 bg-base-blue">
-      <Adminnavbar />
+    <Layout type="admin">
       <AcceptedProjectsCards />
-    </div>
+    </Layout>
   );
 };
 

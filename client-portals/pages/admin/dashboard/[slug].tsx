@@ -4,6 +4,9 @@ import AuthContextProvider from "../../../context/authContext";
 import instance from "../../../services/api";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import { TiTick } from "react-icons/ti";
+import { FiGithub } from "react-icons/fi";
+import { Layout } from "../../../components/shared";
+import Link from "next/link";
 
 const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState([]);
@@ -67,28 +70,25 @@ const MaintainerPage = () => {
 
   return (
     <AuthContextProvider>
-      <div className="flex flex-col items-center min-h-screen p-14 bg-base-blue">
-        <h1 className="text-6xl font-extrabold underline text-white mb-5">
-          MAINTAINERS
+      <Layout type="admin">
+        <h1 className="text-4xl text-center font-extrabold text-white mb-7">
+          All maintainer applications of {projectName}
         </h1>
-        <h1 className="text-5xl font-bold  text-white mb-7">
-          Project: {projectName}
-        </h1>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
           {maintainerData.map((person) => (
-            <div
-              key={person._id}
-              className="p-5 rounded-xl border-4 border-gray-100 shadow-xl"
-            >
+            <div key={person._id} className="p-5 rounded-xl  shadow-2xl">
               <h2 className="text-2xl font-medium text-white mb-5">
                 {person.name}
               </h2>
               <h2 className="text-2xl font-medium text-white mb-5">
                 {person.email}
               </h2>
-              <h2 className="text-2xl font-medium text-white mb-5">
-                {person.github_id}
-              </h2>
+              <Link href={person.github_id}>
+                <div className="cursor-pointer hover:text-gray-800 p-2  flex text-2xl font-medium text-white mb-5">
+                  <FiGithub /> <span className="ml-1">{person.github_id}</span>
+                </div>
+              </Link>
               <h2 className="text-2xl font-medium text-white mb-5">
                 {person.reg_number}
               </h2>
@@ -111,7 +111,7 @@ const MaintainerPage = () => {
             </div>
           ))}
         </div>
-      </div>
+      </Layout>
     </AuthContextProvider>
   );
 };
