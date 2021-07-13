@@ -182,11 +182,13 @@ class AdminEntry:
                 }
             }, return_document=ReturnDocument.BEFORE)
 
+        maintainer = self.db.maintainer.find_one({"project_id": identifier})
+
         if project:
             if project.get("is_admin_approved"):
                 return False
 
-            return project
+            return project, maintainer
 
         return False
 
