@@ -10,8 +10,8 @@ const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState([]);
   const [accepted, setAccepted] = useState<boolean>(false);
   const [pageNo, setPageNo] = useState(1);
-  const [hasNextPage, sethasNextPage] = useState(false);
-  const [hasPrevPage, sethasPrevPage] = useState(false);
+  const [hasNextPage, sethasNextPage] = useState<boolean>(false);
+  const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const token = sessionStorage.getItem("token");
 
   const headings = [
@@ -40,7 +40,6 @@ const ProjectApplications = () => {
         }
       )
       .then((res) => {
-        console.log(res);
         setAccepted(true);
         successToast("Project Approved sucessfully!");
       })
@@ -59,7 +58,6 @@ const ProjectApplications = () => {
       })
       .then((res) => {
         setTableDataProjects(res.data.records);
-        console.log(res.data);
         sethasNextPage(res.data.hasNextPage);
         sethasPrevPage(res.data.hasPreviousPage);
       })

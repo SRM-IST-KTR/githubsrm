@@ -98,7 +98,7 @@ const ContributorsPage = () => {
               {person.is_admin_approved ? (
                 <div className="flex flex-col justify-center items-center text-4xl font-medium text-base-green mt-5">
                   <TiTick className="text-green-500 text-5xl" />
-                  <p>Maintainer is approved</p>
+                  <p>approved</p>
                 </div>
               ) : (
                 <button

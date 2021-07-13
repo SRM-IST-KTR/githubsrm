@@ -1,4 +1,4 @@
-import { Maintainer } from "../../components/portals/maintainer";
+import { Maintainer } from "../../components/maintainer";
 
 const MaintainerPage = () => {
   return <Maintainer />;
