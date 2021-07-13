@@ -10,6 +10,8 @@ const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState([]);
   const [accepted, setAccepted] = useState<boolean>(false);
   const [pageNo, setPageNo] = useState(1);
+  const [hasNextPage, sethasNextPage] = useState(false);
+  const [hasPrevPage, sethasPrevPage] = useState(false);
   const token = sessionStorage.getItem("token");
 
   const headings = [
@@ -58,6 +60,8 @@ const ProjectApplications = () => {
       .then((res) => {
         setTableDataProjects(res.data.records);
         console.log(res.data);
+        sethasNextPage(res.data.hasNextPage);
+        sethasPrevPage(res.data.hasPreviousPage);
       })
       .catch((err) => {
         errToast(err.message);
@@ -142,14 +146,24 @@ const ProjectApplications = () => {
         </table>
         <div className="flex justify-center my-5">
           <button
-            className="hover:bg-base-green focus:bg-base-green p-3 rounded-full "
+            disabled={!hasPrevPage}
+            className={`${
+              !hasPrevPage
+                ? "opacity-10 cursor-not-allowed"
+                : "hover:bg-base-green focus:bg-base-green"
+            } p-3 rounded-full`}
             onClick={() => setPageNo(pageNo - 1)}
           >
             <GrPrevious className="text-2xl font-extrabold" />
           </button>
           <h2 className="text-gray-50 text-4xl  font-medium mx-3">{pageNo}</h2>
           <button
-            className="hover:bg-base-green focus:bg-base-green p-3 rounded-full"
+            disabled={!hasNextPage}
+            className={`${
+              !hasNextPage
+                ? "opacity-10 cursor-not-allowed"
+                : "hover:bg-base-green focus:bg-base-green"
+            } p-3 rounded-full`}
             onClick={() => setPageNo(pageNo + 1)}
           >
             <GrNext className="text-2xl font-extrabold" />
