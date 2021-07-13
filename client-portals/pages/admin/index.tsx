@@ -1,17 +1,20 @@
-import React, { useEffect } from "react";
+import router from "next/router";
+import React, { useEffect, useContext } from "react";
 import AdminLogin from "../../components/admin/login";
 import AdminRegister from "../../components/admin/register";
-import { useRouter } from "next/router";
+import { AuthContext } from "../../context/authContext";
 
 const IndexPage = () => {
   const [register, setRegister] = React.useState(false);
-  const router = useRouter();
+
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
+      authContext.setIsAuth(true);
       router.push("/admin/dashboard");
     }
-  }, []);
+  }, [authContext]);
 
   return (
     <div>

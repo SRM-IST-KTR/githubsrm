@@ -10,7 +10,10 @@ const AcceptedProjectsCards = () => {
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
 
-  const token = sessionStorage.getItem("token");
+  var token = null;
+  useEffect(() => {
+    token = sessionStorage.getItem("token");
+  }, [pageNo]);
 
   useEffect(() => {
     instance

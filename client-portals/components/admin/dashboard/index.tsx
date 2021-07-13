@@ -12,7 +12,11 @@ const ProjectApplications = () => {
   const [pageNo, setPageNo] = useState(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
-  const token = sessionStorage.getItem("token");
+
+  var token = null;
+  useEffect(() => {
+    token = sessionStorage.getItem("token");
+  }, [pageNo]);
 
   const headings = [
     "Maintainers",
@@ -100,7 +104,6 @@ const ProjectApplications = () => {
                     <div>{data.project_url}</div>
                   </div>
                 </td>
-
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <div>

@@ -1,9 +1,9 @@
 import Head from "next/head";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AuthContextProvider from "../context/authContext";
 // import * as Sentry from "@sentry/react";
 // import { Integrations } from "@sentry/tracing";
-
 import "../styles/tailwind.styles.css";
 
 // Sentry.init({
@@ -23,7 +23,9 @@ function MyApp({ Component, pageProps }) {
       {/* //* INFO: prevent these classes from being purged */}
       <span className="bg-colors custom-input-wrapper custom-input custom-input-error custom-label custom-description hidden" />
       <ToastContainer />
-      <Component {...pageProps} />
+      <AuthContextProvider>
+        <Component {...pageProps} />
+      </AuthContextProvider>
     </>
   );
 }

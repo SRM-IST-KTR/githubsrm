@@ -1,7 +1,6 @@
-import router from "next/router";
 import React, { useState } from "react";
-import { successToast } from "../utils/functions/toast";
 import { useRouter } from "next/router";
+import { successToast } from "../utils/functions/toast";
 
 export const AuthContext = React.createContext({
   isAuth: false,
@@ -12,6 +11,7 @@ export const AuthContext = React.createContext({
 const AuthContextProvider: React.FC = (props) => {
   const [isAuth, setIsAuth] = useState(false);
   const router = useRouter();
+
   const logoutHandler = () => {
     setIsAuth(false);
     sessionStorage.removeItem("token");
