@@ -7,7 +7,9 @@ from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
-from .utils import project_Pagination, project_SingleProject
+from .utils import (
+    project_pagination, project_single_project, accepted_project_pagination
+)
 
 
 class RegisterAdmin(APIView):
@@ -271,10 +273,29 @@ class ProjectsAdmin(APIView):
         RequestQueryKeys = list(request.GET.keys())
 
         if len(set(Pagination) & set(RequestQueryKeys)) == 1:
-            return project_Pagination(request, **kwargs)
+            return project_pagination(request, **kwargs)
 
         elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
-            return project_SingleProject(request, **kwargs)
+            return project_single_project(request, **kwargs)
 
         else:
             return JsonResponse({"error": "Query Params are different from expected"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminAccepted(APIView):
+    def get(self, request, **kwargs) -> JsonResponse:
+        """pagination for all accepted projects
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+        if "page" not in request.GET:
+            return JsonResponse({
+                "error": "Invalid query paramerts"
+            }, status=400)
+
+        return accepted_project_pagination(request=request)
+        
