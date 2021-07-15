@@ -48,6 +48,22 @@ class IssueKey:
         except Exception as e:
             return False
 
+    def verify_role(self, key: str, path: str) -> bool:
+        """Verify user permissions
+
+        Args:
+            key (str): jwt key passed
+            path (str): verify if jwt is allowed on this path
+
+        Returns:
+            bool: is allowed
+        """
+        decoded = jwt.decode(jwt=key, key=self.signature,
+                             options={"verify_signature": True}, algorithms=["HS256"])
+        if 'admin' in path:
+            return decoded.get("admin") == True
+        return True
+
 
 if __name__ == '__main__':
     # from administrator import entry, issue_key

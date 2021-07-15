@@ -8,10 +8,9 @@ class Authorize:
         """
         Initialize requirements
         """
-        #! Note: Remember to return JsonResponse from all the paths
-        #! That go in this list.
-        #! Keep adding Protected routes to this list
-        self.protected = ['/admin/projects']
+
+        self.protected = ['/admin/projects',
+                          '/admin/projects/accepted', '/maintainer/projects']
         self.view = view
 
     def __call__(self, request) -> JsonResponse:
@@ -33,7 +32,7 @@ class Authorize:
                     return JsonResponse(data={
                         "error": "invalid token type"
                     }, status=401)
-                if jwt_keys.verify_key(key=token):
+                if jwt_keys.verify_key(key=token) and jwt_keys.verify_role(key=token, path=request.path):
                     return self.view(request)
 
                 return JsonResponse(data={
