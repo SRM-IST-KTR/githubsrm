@@ -103,99 +103,105 @@ const ContributorsPage = () => {
           {projectName}
         </h1>
 
-        <table className="table text-white border-separate space-y-6 text-sm">
-          <thead className="bg-base-teal text-white">
-            <tr>
-              {headings.map((head) => (
-                <th key={head} className="px-3 text-left">
-                  {head}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {contributorsData.map((person) => (
-              <tr key={person._id} className="bg-gray-800">
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div> {person.name}</div>
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div> {person.email}</div>
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div> {person.srm_email}</div>
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <Link href={person.github_id}>
-                      <div> {person.github_id}</div>
-                    </Link>
-                  </div>
-                </td>
-
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div> {person.reg_number}</div>
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div> {person.branch}</div>
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div> {person.poa}</div>
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div>
-                      {" "}
-                      {person.is_maintainer_approved ? (
-                        <TiTick className="text-green-500 text-2xl" />
-                      ) : (
-                        <ImCross className="text-red-500 text-lg" />
-                      )}
-                    </div>
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex align-items-center">
-                    <div>
-                      {" "}
-                      {person.is_added_to_repo ? (
-                        <TiTick className="text-green-500 text-2xl" />
-                      ) : (
-                        <ImCross className="text-red-500 text-lg" />
-                      )}
-                    </div>
-                  </div>
-                </td>
-                <td className="p-3 ">
-                  {person.is_admin_approved ? (
-                    <TiTick className="text-green-500 text-center text-3xl" />
-                  ) : (
-                    <button
-                      onClick={() =>
-                        acceptMaintainerHandler(projectId, person._id)
-                      }
-                      className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
-                    >
-                      Approve Contributor
-                    </button>
-                  )}
-                </td>
+        {contributorsData[0] ? (
+          <table className="table text-white border-separate space-y-6 text-sm">
+            <thead className="bg-base-teal text-white">
+              <tr>
+                {headings.map((head) => (
+                  <th key={head} className="px-3 text-left">
+                    {head}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {contributorsData.map((person) => (
+                <tr key={person._id} className="bg-gray-800">
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div> {person.name}</div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div> {person.email}</div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div> {person.srm_email}</div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <Link href={person.github_id}>
+                        <div> {person.github_id}</div>
+                      </Link>
+                    </div>
+                  </td>
+
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div> {person.reg_number}</div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div> {person.branch}</div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div> {person.poa}</div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div>
+                        {" "}
+                        {person.is_maintainer_approved ? (
+                          <TiTick className="text-green-500 text-2xl" />
+                        ) : (
+                          <ImCross className="text-red-500 text-lg" />
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex align-items-center">
+                      <div>
+                        {" "}
+                        {person.is_added_to_repo ? (
+                          <TiTick className="text-green-500 text-2xl" />
+                        ) : (
+                          <ImCross className="text-red-500 text-lg" />
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-3 ">
+                    {person.is_admin_approved ? (
+                      <TiTick className="text-green-500 text-center text-3xl" />
+                    ) : (
+                      <button
+                        onClick={() =>
+                          acceptMaintainerHandler(projectId, person._id)
+                        }
+                        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+                      >
+                        Approve Contributor
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <h1 className="text-5xl text-gray-200 mt-10">
+            No Contributors Yet!!
+          </h1>
+        )}
       </div>
     </Layout>
   );
