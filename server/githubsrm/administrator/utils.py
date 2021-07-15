@@ -110,7 +110,8 @@ def accepted_project_pagination(request, **kwargs) -> response.JsonResponse:
 
     try:
         page = int(request.GET.get("page"))
-        total_docs = open_entry.db.project.count_documents({})
+        total_docs = open_entry.db.project.count_documents(
+            {"is_admin_approved": True})
         records = list(open_entry.db.project.aggregate([
             {"$match": {"is_admin_approved": True}},
             {"$skip": (page - 1) * ITEMS_PER_PAGE},
