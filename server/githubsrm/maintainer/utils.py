@@ -14,9 +14,9 @@ def Projects_pagnation(request, **kwargs):
     ITEMS_PER_PAGE = 10
     try:
         page = int(request.GET["page"])
-        totalItems = db.project.count_documents({})
         projects_ids = decode_payload(
             request.headers["Authorization"].split()[1])["project_id"]
+        totalItems = db.project.count_documents({"_id": {"$in": projects_ids}})
         record = list(db.project.aggregate([
             {"$match": {"_id": {"$in": projects_ids}}},
             {"$skip": (page - 1) * ITEMS_PER_PAGE},
