@@ -8,6 +8,7 @@ import {
 import { Input } from "../shared";
 import instance from "../../services/api";
 import { successToast, errToast } from "../../utils/functions/toast";
+import { getRecaptchaToken } from "../../services/recaptcha";
 
 const AdminRegister = () => {
   const [authToken, setAuthToken] = useState("");
@@ -17,12 +18,13 @@ const AdminRegister = () => {
     password: "",
   };
 
-  const submitValues = (values: AdminRegisterData) => {
-    instance
+  const submitValues = async (values: AdminRegisterData) => {
+    const recaptchaToken = await getRecaptchaToken("post");
+    await instance
       .post("/admin/register", values, {
         headers: {
           Authorization: `Bearer ${authToken}`,
-          "X-RECAPTCHA-TOKEN": null,
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
         },
       })
       .then((res) => {
@@ -46,8 +48,11 @@ const AdminRegister = () => {
       >
         <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
           {adminRegisterInputs.map((input) => (
-            <div className="border-2 border-gray-700 rounded my-4 p-4">
-              <Input key={input.id} {...input} />
+            <div
+              key={input.id}
+              className="border-2 border-gray-700 rounded my-4 p-4"
+            >
+              <Input {...input} />
             </div>
           ))}
           <Field

@@ -20,7 +20,7 @@ const AuthContextProvider: React.FC = (props) => {
     if (token) {
       var decodedToken = jwt.decode(token);
       var dateNow = new Date();
-      if (decodedToken.exp < dateNow.getTime() / 1000) {
+      if (decodedToken.exp && decodedToken.exp < dateNow.getTime() / 1000) {
         setIsAuth(false);
         setUser({});
       } else {

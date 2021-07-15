@@ -7,6 +7,7 @@ import { TiTick } from "react-icons/ti";
 import { FiGithub } from "react-icons/fi";
 import { Layout } from "../../../components/shared";
 import Link from "next/link";
+import { getRecaptchaToken } from "../../../services/recaptcha";
 
 const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState([]);
@@ -29,15 +30,16 @@ const MaintainerPage = () => {
     token = sessionStorage.getItem("token");
   }, []);
 
-  const acceptMaintainerHandler = (project_id, maintainer_id) => {
-    instance
+  const acceptMaintainerHandler = async (project_id, maintainer_id) => {
+    const recaptchaToken = await getRecaptchaToken("post");
+    await instance
       .post(
         "admin/projects?role=maintainer",
         { project_id: project_id, maintainer_id: maintainer_id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": null,
+            "X-RECAPTCHA-TOKEN": recaptchaToken,
           },
         }
       )
@@ -59,7 +61,6 @@ const MaintainerPage = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": null,
           },
         }
       )
@@ -72,12 +73,6 @@ const MaintainerPage = () => {
         errToast(err.message);
       });
   }, [accepted]);
-
-  // useEffect(() => {
-  //   if (!sessionStorage.getItem("token")) {
-  //     router.push("/admin");
-  //   }
-  // }, []);
 
   return (
     <Layout type="admin">

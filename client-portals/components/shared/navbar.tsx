@@ -10,7 +10,10 @@ const Navbar = ({ links }) => {
     <div className="flex flex-row justify-around text-white my-6">
       <h2 className="mt-5 mr-5 font-medium">Hi, {User.user}</h2>
       {links.map((item) => (
-        <div className="mx-2 text-xl p-3  border-b-4 border-base-teal">
+        <div
+          key={item.name}
+          className="mx-2 text-xl p-3  border-b-4 border-base-teal"
+        >
           <Link href={item.link}>{item.name}</Link>
         </div>
       ))}

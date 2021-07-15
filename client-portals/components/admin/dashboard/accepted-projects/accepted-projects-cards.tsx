@@ -20,7 +20,6 @@ const AcceptedProjectsCards = () => {
       .get(`admin/projects?page=${pageNo}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": null,
         },
       })
       .then((res) => {

@@ -19,7 +19,7 @@ const OtherMaintainers = () => {
       <h1 className="text-white font-extrabold text-3xl">Other Maintainers</h1>
       <ul>
         {otherMaintainers.map((maintainer) => (
-          <li className="text-2xl text-white list-disc">
+          <li key={maintainer.name} className="text-2xl text-white list-disc">
             <a href={maintainer.github}>{maintainer.name}</a>
           </li>
         ))}

@@ -7,6 +7,7 @@ import { TiTick } from "react-icons/ti";
 import { Layout } from "../../../../components/shared";
 import { FiGithub } from "react-icons/fi";
 import Link from "next/link";
+import { getRecaptchaToken } from "../../../../services/recaptcha";
 
 const ContributorsPage = () => {
   const [contributorsData, setContributorsData] = useState([]);
@@ -27,15 +28,16 @@ const ContributorsPage = () => {
     token = sessionStorage.getItem("token");
   }, []);
 
-  const acceptMaintainerHandler = (project_id, contributor_id) => {
-    instance
+  const acceptMaintainerHandler = async (project_id, contributor_id) => {
+    const recaptchaToken = await getRecaptchaToken("post");
+    await instance
       .post(
         "admin/projects?role=contributor",
         { project_id: project_id, contributor_id: contributor_id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": null,
+            "X-RECAPTCHA-TOKEN": recaptchaToken,
           },
         }
       )
@@ -57,7 +59,6 @@ const ContributorsPage = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": null,
           },
         }
       )

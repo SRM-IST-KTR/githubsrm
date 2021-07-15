@@ -7,6 +7,7 @@ import { Input } from "../shared";
 import instance from "../../services/api";
 import { successToast, errToast } from "../../utils/functions/toast";
 import { AuthContext } from "../../context/AuthContext";
+import { getRecaptchaToken } from "../../services/recaptcha";
 
 const AdminLogin = () => {
   const authContext = useContext(AuthContext);
@@ -16,11 +17,12 @@ const AdminLogin = () => {
     password: "",
   };
 
-  const submitValues = (values: AdminLoginData) => {
-    instance
+  const submitValues = async (values: AdminLoginData) => {
+    const recaptchaToken = await getRecaptchaToken("post");
+    await instance
       .post("admin/login", values, {
         headers: {
-          "X-RECAPTCHA-TOKEN": null,
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
         },
       })
       .then((res) => {
@@ -47,8 +49,11 @@ const AdminLogin = () => {
       >
         <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
           {adminLoginInputs.map((input) => (
-            <div className="border-2 border-gray-700 rounded my-4 p-4">
-              <Input key={input.id} {...input} />
+            <div
+              key={input.id}
+              className="border-2 border-gray-700 rounded my-4 p-4"
+            >
+              <Input {...input} />
             </div>
           ))}
           <div className="flex justify-center">

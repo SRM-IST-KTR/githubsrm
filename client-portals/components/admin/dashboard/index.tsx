@@ -5,6 +5,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import Link from "next/link";
 import { Layout } from "../../shared";
+import { getRecaptchaToken } from "../../../services/recaptcha";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState([]);
@@ -27,8 +28,9 @@ const ProjectApplications = () => {
     "Project Description",
   ];
 
-  const acceptProjectHandler = (project_id, isprivate, project_url) => {
-    instance
+  const acceptProjectHandler = async (project_id, isprivate, project_url) => {
+    const recaptchaToken = await getRecaptchaToken("post");
+    await instance
       .post(
         `admin/projects?projectId=${project_id}&role=project`,
         {
@@ -39,7 +41,7 @@ const ProjectApplications = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": null,
+            "X-RECAPTCHA-TOKEN": recaptchaToken,
           },
         }
       )
@@ -57,7 +59,6 @@ const ProjectApplications = () => {
       .get(`admin/projects?page=${pageNo}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": null,
         },
       })
       .then((res) => {
@@ -78,7 +79,9 @@ const ProjectApplications = () => {
           <thead className="bg-gray-800 text-white">
             <tr>
               {headings.map((head) => (
-                <th className="px-3 text-left">{head}</th>
+                <th key={head} className="px-3 text-left">
+                  {head}
+                </th>
               ))}
             </tr>
           </thead>
@@ -108,7 +111,7 @@ const ProjectApplications = () => {
                   <div className="flex align-items-center">
                     <div>
                       {data.tags.map((tag) => (
-                        <p>{tag}</p>
+                        <p key={tag}>{tag}</p>
                       ))}
                     </div>
                   </div>
