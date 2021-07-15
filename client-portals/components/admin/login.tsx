@@ -25,9 +25,9 @@ const AdminLogin = () => {
           "X-RECAPTCHA-TOKEN": recaptchaToken,
         },
       })
-      .then((res) => {
+      .then(async (res) => {
         sessionStorage.setItem("token", res.data.keys);
-        authContext.setIsAuth(true);
+        authContext.decode();
         successToast("Logged In successfully!");
         Router.push("admin/dashboard");
       })

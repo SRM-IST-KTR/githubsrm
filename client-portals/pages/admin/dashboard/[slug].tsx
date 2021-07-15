@@ -21,8 +21,8 @@ const MaintainerPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext) {
-      router.push("/admin");
+    if (!authContext.isAuth && !authContext.isAdmin) {
+      router.push("/admin/dashboard");
     }
   }, [authContext]);
 

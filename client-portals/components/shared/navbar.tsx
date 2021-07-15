@@ -1,14 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = ({ links }) => {
   const authContext = useContext(AuthContext);
-  const User = authContext.user;
 
   return (
     <div className="flex flex-row justify-around text-white py-2">
-      <h2 className="mt-5 mr-5 font-medium">Hi, {User.user}</h2>
+      <h2 className="mt-5 mr-5 font-medium">Hi, {authContext.username}</h2>
       {links.map((item) => (
         <div
           key={item.name}
