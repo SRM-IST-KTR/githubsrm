@@ -6,11 +6,14 @@ import { successToast, errToast } from "../../../utils/functions/toast";
 import Link from "next/link";
 import { Layout } from "../../shared";
 import { getRecaptchaToken } from "../../../services/recaptcha";
+import { TableProjectsProps } from "../../../utils/interfaces";
 
 const ProjectApplications = () => {
-  const [tableDataProjects, setTableDataProjects] = useState([]);
+  const [tableDataProjects, setTableDataProjects] = useState<
+    TableProjectsProps[]
+  >([]);
   const [accepted, setAccepted] = useState<boolean>(false);
-  const [pageNo, setPageNo] = useState(1);
+  const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
 
@@ -87,7 +90,7 @@ const ProjectApplications = () => {
           </thead>
           <tbody>
             {tableDataProjects.map((data) => (
-              <tr key={data.id} className="bg-gray-800">
+              <tr key={data._id} className="bg-gray-800">
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <Link href={`/admin/dashboard/${data._id}`}>

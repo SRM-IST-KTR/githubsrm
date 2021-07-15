@@ -28,6 +28,43 @@ export interface InputProps extends InputClassNameProps {
   onError?: boolean;
 }
 
+export interface AcceptedProjectProps {
+  _id: string;
+  is_admin_approved: boolean;
+  description: string;
+  project_name: string;
+}
+
+export interface TableProjectsProps {
+  _id: string;
+  is_admin_approved: boolean;
+  private: boolean;
+  description: string;
+  project_name: string;
+  project_url: string;
+  tags: string[];
+}
+
+export interface ContributorsProps {
+  _id: string;
+  is_admin_approved: boolean;
+  branch: string;
+  email: string;
+  name: string;
+  github_id: string;
+  reg_number: string;
+}
+
+export interface MaintainersProps {
+  _id: string;
+  is_admin_approved: boolean;
+  branch: string;
+  email: string;
+  name: string;
+  github_id: string;
+  reg_number: string;
+}
+
 export interface MaintainerLoginData
   extends Yup.InferType<typeof maintainerLoginValidation> {}
 

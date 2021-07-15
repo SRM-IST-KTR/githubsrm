@@ -3,10 +3,13 @@ import React, { useState, useEffect } from "react";
 import instance from "../../../../services/api";
 import { errToast } from "../../../../utils/functions/toast";
 import { GrNext, GrPrevious } from "react-icons/gr";
+import { AcceptedProjectProps } from "../../../../utils/interfaces";
 
 const AcceptedProjectsCards = () => {
-  const [acceptedProjects, setAcceptedProjects] = useState([]);
-  const [pageNo, setPageNo] = useState(1);
+  const [acceptedProjects, setAcceptedProjects] = useState<
+    AcceptedProjectProps[]
+  >([]);
+  const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
 

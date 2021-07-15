@@ -8,11 +8,14 @@ import { Layout } from "../../../../components/shared";
 import { FiGithub } from "react-icons/fi";
 import Link from "next/link";
 import { getRecaptchaToken } from "../../../../services/recaptcha";
+import { ContributorsProps } from "../../../../utils/interfaces";
 
 const ContributorsPage = () => {
-  const [contributorsData, setContributorsData] = useState([]);
-  const [projectName, setProjectName] = useState("");
-  const [projectId, setProjectId] = useState("");
+  const [contributorsData, setContributorsData] = useState<ContributorsProps[]>(
+    []
+  );
+  const [projectName, setProjectName] = useState<string>("");
+  const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -42,7 +45,6 @@ const ContributorsPage = () => {
         }
       )
       .then((res) => {
-        console.log(res);
         setAccepted(true);
         successToast("Contributor Approved sucessfully!");
       })
@@ -66,7 +68,6 @@ const ContributorsPage = () => {
         setContributorsData(res.data.contributor.contributor);
         setProjectName(res.data.project.project_name);
         setProjectId(res.data.project._id);
-        console.log(res.data);
       })
       .catch((err) => {
         errToast(err.message);

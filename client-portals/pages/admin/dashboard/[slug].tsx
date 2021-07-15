@@ -8,15 +8,15 @@ import { FiGithub } from "react-icons/fi";
 import { Layout } from "../../../components/shared";
 import Link from "next/link";
 import { getRecaptchaToken } from "../../../services/recaptcha";
+import { MaintainersProps } from "../../../utils/interfaces";
 
 const MaintainerPage = () => {
-  const [maintainerData, setMaintainerData] = useState([]);
-  const [projectName, setProjectName] = useState("");
-  const [projectId, setProjectId] = useState("");
+  const [maintainerData, setMaintainerData] = useState<MaintainersProps[]>([]);
+  const [projectName, setProjectName] = useState<string>("");
+  const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
 
   const router = useRouter();
-
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
