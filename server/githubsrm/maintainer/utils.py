@@ -66,7 +66,7 @@ def project_SingleProject(request, **kwargs):
 
         if request.GET["contributor"] == "true":
             data = list(db.contributor.find(
-                {"project_id": project_id, "is_admin_approved": True}, {"password": 0}))
+                {"interested_project": project_id, "is_admin_approved": True}, {"password": 0}))
             project_document["contributor"] = data
     else:
         return {"error": "id doesnt exist"}
