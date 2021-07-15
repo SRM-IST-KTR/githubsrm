@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import { AuthContext } from "../../../context/authContext";
+import { AuthContext } from "../../../context/AuthContext";
 import instance from "../../../services/api";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import { TiTick } from "react-icons/ti";
@@ -19,8 +19,7 @@ const MaintainerPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!sessionStorage.getItem("token")) {
-      authContext.setIsAuth(false);
+    if (authContext.isAuth === false) {
       router.push("/admin");
     }
   }, [authContext]);

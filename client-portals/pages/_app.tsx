@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AuthContextProvider from "../context/authContext";
+import AuthContextProvider from "../context/AuthContext";
 // import * as Sentry from "@sentry/react";
 // import { Integrations } from "@sentry/tracing";
 import "../styles/tailwind.styles.css";

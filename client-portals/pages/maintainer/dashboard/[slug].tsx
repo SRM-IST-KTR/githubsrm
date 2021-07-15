@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import ProjectTable from "../../../components/shared/table";
-import OtherMaintainers from "../../../components/portals/maintainer/dashboard/othermaintainers";
-import { tableDataContributors } from "../../../components/shared/tableData";
+import OtherMaintainers from "../../../components/maintainer/dashboard/othermaintainers";
 
 const PROJECTS = [
   {
@@ -58,7 +56,7 @@ const ProjectDetail = () => {
       </h2>
       <h2 className="text-2xl font-medium text-white mb-10">{project.desc}</h2>
       <OtherMaintainers />
-      <ProjectTable tableData={tableDataContributors} />
+      <p>table here</p>
     </div>
   ) : (
     <div>

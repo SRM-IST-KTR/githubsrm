@@ -1,17 +1,15 @@
 import router from "next/router";
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import AdminLogin from "../../components/admin/login";
 import AdminRegister from "../../components/admin/register";
-import { AuthContext } from "../../context/authContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const IndexPage = () => {
-  const [register, setRegister] = React.useState(false);
-
+  const [register, setRegister] = useState(false);
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (sessionStorage.getItem("token")) {
-      authContext.setIsAuth(true);
+    if (authContext.isAuth === true) {
       router.push("/admin/dashboard");
     }
   }, [authContext]);

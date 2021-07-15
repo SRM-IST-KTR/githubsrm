@@ -1,3 +1,4 @@
+import React, { useContext } from "react";
 import { Formik, Form } from "formik";
 import Router from "next/router";
 import { AdminLoginData } from "../../utils/interfaces";
@@ -5,9 +6,11 @@ import { adminLoginValidation, adminLoginInputs } from "../../utils/constants";
 import { Input } from "../shared";
 import instance from "../../services/api";
 import { successToast, errToast } from "../../utils/functions/toast";
-import React from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const AdminLogin = () => {
+  const authContext = useContext(AuthContext);
+
   const initialValues: { email: string; password: string } = {
     email: "",
     password: "",
@@ -22,7 +25,8 @@ const AdminLogin = () => {
       })
       .then((res) => {
         sessionStorage.setItem("token", res.data.keys);
-        successToast("Horray! Logged In successfully.");
+        authContext.setIsAuth(true);
+        successToast("Logged In successfully!");
         Router.push("admin/dashboard");
       })
       .catch((err) => {
