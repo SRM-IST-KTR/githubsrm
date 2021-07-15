@@ -128,6 +128,8 @@ def accepted_project_pagination(request, **kwargs) -> response.JsonResponse:
                 "records": records
             }, status=status.HTTP_200_OK)
 
+        raise Exception()
+
     except Exception as e:
         print(e)
         return response.JsonResponse({
