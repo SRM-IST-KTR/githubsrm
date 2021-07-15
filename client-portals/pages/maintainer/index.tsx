@@ -1,7 +1,12 @@
-import { Maintainer } from "../../components/maintainer";
+import router from "next/router";
+import React, { useEffect, useContext } from "react";
+import MaintainerLogin from "../../components/maintainer/login";
+import { AuthContext } from "../../context/AuthContext";
 
-const MaintainerPage = () => {
-  return <Maintainer />;
+const MaintainerLoginPage = () => {
+  const authContext = useContext(AuthContext);
+
+  return <MaintainerLogin />;
 };
 
-export default MaintainerPage;
+export default MaintainerLoginPage;

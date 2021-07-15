@@ -17,8 +17,8 @@ const maintainer_links = [
     name: "My Projects",
   },
   {
-    link: "/admin/dashboard/profile/",
-    name: "My Profile",
+    link: "/maintainer/dashboard/reset-password",
+    name: "Reset Password",
   },
 ];
 

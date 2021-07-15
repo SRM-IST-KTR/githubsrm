@@ -1,20 +1,41 @@
 import { Formik, Form } from "formik";
-
 import { MaintainerLoginData } from "../../utils/interfaces";
 import {
   maintainerLoginValidation,
   maintainerLoginInputs,
 } from "../../utils/constants";
 import { Input } from "../shared";
+import { getRecaptchaToken } from "../../services/recaptcha";
+import instance from "../../services/api";
+import Router from "next/router";
+import { successToast, errToast } from "../../utils/functions/toast";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
 
 const MaintainerLogin = () => {
-  const initialValues: MaintainerLoginData = {
+  const authContext = useContext(AuthContext);
+  const initialValues: { email: string; password: string } = {
     email: "",
     password: "",
   };
 
-  const submitValues = (values: MaintainerLoginData) => {
-    console.log(values);
+  const submitValues = async (values: MaintainerLoginData) => {
+    const recaptchaToken = await getRecaptchaToken("post");
+    await instance
+      .post("maintainer/login", values, {
+        headers: {
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
+        },
+      })
+      .then((res) => {
+        sessionStorage.setItem("token", res.data.key);
+        authContext.decode();
+        successToast("Logged In successfully!");
+        Router.push("maintainer/dashboard");
+      })
+      .catch((err) => {
+        errToast(err.message);
+      });
   };
 
   return (

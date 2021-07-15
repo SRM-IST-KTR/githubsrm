@@ -34,22 +34,18 @@ const ContributorsPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext.isAuth && !authContext.isAdmin) {
+    if (!authContext.isAuth || !authContext.isAdmin) {
       router.push("/admin");
     }
   }, [authContext]);
 
-  var token = null;
-  useEffect(() => {
-    token = sessionStorage.getItem("token");
-  }, []);
-
   const acceptMaintainerHandler = async (project_id, contributor_id) => {
     const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
     await instance
       .post(
         "admin/projects?role=contributor",
-        { project_id: project_id, contributor_id: contributor_id },
+        { contributor_id: contributor_id, project_id: project_id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -68,6 +64,7 @@ const ContributorsPage = () => {
 
   useEffect(() => {
     const { slug } = router.query;
+    const token = sessionStorage.getItem("token");
     instance
       .get(
         `admin/projects?projectId=${slug}&contributor=true&maintainer=true`,
@@ -98,11 +95,11 @@ const ContributorsPage = () => {
     </div>
   ) : (
     <Layout type="admin">
-      <div className="flex flex-col items-center justify-center">
-        <h1 className="text-5xl font-extrabold underline text-white mb-7">
-          {projectName}
-        </h1>
+      <h1 className="text-5xl font-extrabold underline text-white mb-7">
+        {projectName}
+      </h1>
 
+      <div className="overflow-scroll w-full">
         {contributorsData[0] ? (
           <table className="table text-white border-separate space-y-6 text-sm">
             <thead className="bg-base-teal text-white">

@@ -1,19 +1,19 @@
-import ProjectApplications from "../../../components/admin/dashboard";
-import { useRouter } from "next/router";
 import React, { useEffect, useContext } from "react";
+import { ResetPassword } from "../../../components/maintainer/dashboard";
 import { AuthContext } from "../../../context/AuthContext";
+import { useRouter } from "next/router";
 
-const AdminDashPage = () => {
+const ProfilePage = () => {
   const router = useRouter();
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext.isAuth || !authContext.isAdmin) {
+    if (!authContext.isAuth || authContext.isAdmin) {
       router.push("/");
     }
   }, [authContext]);
 
-  return <ProjectApplications />;
+  return <ResetPassword />;
 };
 
-export default AdminDashPage;
+export default ProfilePage;

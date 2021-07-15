@@ -8,7 +8,7 @@ const AcceptedProjectsPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext.isAuth && !authContext.isAdmin) {
+    if (!authContext.isAuth || !authContext.isAdmin) {
       router.push("/admin");
     }
   }, [authContext]);

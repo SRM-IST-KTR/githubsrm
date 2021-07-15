@@ -1,29 +1,25 @@
-const OtherMaintainers = () => {
-  const otherMaintainers = [
-    {
-      name: "Sebastian",
-      github: "https://github.com/sebastian-bergmann",
-    },
-    {
-      name: "Sebastian Bergmann",
-      github: "https://github.com/sebastianbergmann",
-    },
-    {
-      name: "Sebastian",
-      github: "https://github.com/sebastian-bergmann",
-    },
-  ];
-
+const OtherMaintainers = ({ otherMaintainers }) => {
   return (
-    <div>
-      <h1 className="text-white font-extrabold text-3xl">Other Maintainers</h1>
-      <ul>
-        {otherMaintainers.map((maintainer) => (
-          <li key={maintainer.name} className="text-2xl text-white list-disc">
-            <a href={maintainer.github}>{maintainer.name}</a>
-          </li>
+    <div className="my-10">
+      <h1 className="text-white font-bold text-xl">
+        {otherMaintainers.length > 0
+          ? "Other Maintainers -"
+          : "No other maintainers"}
+      </h1>
+
+      {otherMaintainers.length > 0 &&
+        otherMaintainers.map((maintainer) => (
+          <p key={maintainer.github} className="text-2xl text-white list-disc">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={maintainer.github}
+              className="hover:text-gray-600"
+            >
+              {maintainer.name}
+            </a>
+          </p>
         ))}
-      </ul>
     </div>
   );
 };

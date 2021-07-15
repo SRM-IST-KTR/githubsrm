@@ -32,7 +32,7 @@ const AuthContextProvider: React.FC = (props) => {
       } else {
         setIsAuth(true);
         setUser(decodedToken);
-        if (decodedToken.user) {
+        if (decodedToken.admin) {
           setUserName(decodedToken.user);
         } else {
           setUserName(decodedToken.name);

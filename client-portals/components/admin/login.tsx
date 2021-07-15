@@ -25,7 +25,7 @@ const AdminLogin = () => {
           "X-RECAPTCHA-TOKEN": recaptchaToken,
         },
       })
-      .then(async (res) => {
+      .then((res) => {
         sessionStorage.setItem("token", res.data.keys);
         authContext.decode();
         successToast("Logged In successfully!");
