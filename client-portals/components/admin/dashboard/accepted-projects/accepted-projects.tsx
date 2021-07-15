@@ -5,7 +5,7 @@ import { Layout } from "../../../shared";
 const AcceptedProjectDashboard = () => {
   return (
     <Layout type="admin">
-      <h1 className="text-center my-5 text-4xl font-extrabold text-white">
+      <h1 className="text-center text-4xl mt-5 mb-10 font-extrabold text-white">
         All Accepted Projects
       </h1>
       <AcceptedProjectsCards />

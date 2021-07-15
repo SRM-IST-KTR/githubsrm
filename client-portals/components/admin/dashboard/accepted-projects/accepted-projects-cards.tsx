@@ -12,6 +12,7 @@ const AcceptedProjectsCards = () => {
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   var token = null;
   useEffect(() => {
@@ -29,13 +30,15 @@ const AcceptedProjectsCards = () => {
         setAcceptedProjects(res.data.records);
         sethasNextPage(res.data.hasNextPage);
         sethasPrevPage(res.data.hasPreviousPage);
+        setLoading(false);
       })
       .catch((err) => {
         errToast(err.message);
+        setLoading(false);
       });
   }, [pageNo]);
 
-  return (
+  return !loading ? (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
         {acceptedProjects.map(
@@ -76,6 +79,10 @@ const AcceptedProjectsCards = () => {
         </button>
       </div>
     </>
+  ) : (
+    <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
+      loading..
+    </h1>
   );
 };
 

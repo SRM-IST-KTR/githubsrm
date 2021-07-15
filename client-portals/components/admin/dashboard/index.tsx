@@ -16,6 +16,7 @@ const ProjectApplications = () => {
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   var token = null;
   useEffect(() => {
@@ -68,13 +69,15 @@ const ProjectApplications = () => {
         setTableDataProjects(res.data.records);
         sethasNextPage(res.data.hasNextPage);
         sethasPrevPage(res.data.hasPreviousPage);
+        setLoading(false);
       })
       .catch((err) => {
         errToast(err.message);
+        setLoading(false);
       });
   }, [accepted, pageNo]);
 
-  return (
+  return !loading ? (
     <Layout type="admin">
       <div className="overflow-scroll">
         <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
@@ -178,6 +181,10 @@ const ProjectApplications = () => {
         </div>
       </div>
     </Layout>
+  ) : (
+    <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
+      loading..
+    </h1>
   );
 };
 

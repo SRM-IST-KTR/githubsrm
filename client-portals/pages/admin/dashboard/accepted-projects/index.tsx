@@ -13,11 +13,7 @@ const AcceptedProjectsPage = () => {
     }
   }, [authContext]);
 
-  return (
-    <div className="flex items-center justify-center h-screen bg-base-blue">
-      <AcceptedProjectDashboard />
-    </div>
-  );
+  return <AcceptedProjectDashboard />;
 };
 
 export default AcceptedProjectsPage;

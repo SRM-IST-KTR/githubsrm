@@ -24,9 +24,9 @@ const maintainer_links = [
 
 export default function Layout({ type, children }) {
   return (
-    <div className="min-h-screen p-10 bg-base-blue w-full">
+    <div className="bg-base-blue">
       <Navbar links={type === "admin" ? admin_links : maintainer_links} />
-      {children}
+      <div className="min-h-screen p-10  w-full">{children}</div>
     </div>
   );
 }

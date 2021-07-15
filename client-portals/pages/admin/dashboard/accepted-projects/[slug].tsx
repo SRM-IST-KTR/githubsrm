@@ -17,6 +17,7 @@ const ContributorsPage = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const authContext = useContext(AuthContext);
 
@@ -68,13 +69,21 @@ const ContributorsPage = () => {
         setContributorsData(res.data.contributor.contributor);
         setProjectName(res.data.project.project_name);
         setProjectId(res.data.project._id);
+        setLoading(false);
       })
       .catch((err) => {
         errToast(err.message);
+        setLoading(false);
       });
   }, [accepted]);
 
-  return (
+  return loading ? (
+    <div className="min-h-screen flex justify-center p-5 bg-base-blue">
+      <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
+        loading..
+      </h1>
+    </div>
+  ) : (
     <Layout type="admin">
       <h1 className="text-5xl font-extrabold underline text-white mb-5">
         {projectName}

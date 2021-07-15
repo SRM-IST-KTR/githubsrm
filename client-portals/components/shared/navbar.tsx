@@ -7,7 +7,7 @@ const Navbar = ({ links }) => {
   const User = authContext.user;
 
   return (
-    <div className="flex flex-row justify-around text-white my-6">
+    <div className="flex flex-row justify-around text-white py-2">
       <h2 className="mt-5 mr-5 font-medium">Hi, {User.user}</h2>
       {links.map((item) => (
         <div
