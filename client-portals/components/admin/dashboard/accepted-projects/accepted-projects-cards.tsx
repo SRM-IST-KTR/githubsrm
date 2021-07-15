@@ -21,7 +21,7 @@ const AcceptedProjectsCards = () => {
 
   useEffect(() => {
     instance
-      .get(`admin/projects?page=${pageNo}`, {
+      .get(`admin/projects/accepted?page=${pageNo}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

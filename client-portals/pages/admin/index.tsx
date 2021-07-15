@@ -9,7 +9,7 @@ const IndexPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (authContext.isAuth === true) {
+    if (authContext.isAuth) {
       router.push("/admin/dashboard");
     }
   }, [authContext]);

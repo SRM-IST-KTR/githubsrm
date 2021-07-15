@@ -21,7 +21,7 @@ const MaintainerPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (authContext.isAuth === false) {
+    if (!authContext) {
       router.push("/admin");
     }
   }, [authContext]);
@@ -45,7 +45,6 @@ const MaintainerPage = () => {
         }
       )
       .then((res) => {
-        console.log(res);
         setAccepted(true);
         successToast("Maintainer Approved sucessfully!");
       })

@@ -4,11 +4,23 @@ import { AuthContext } from "../../../../context/AuthContext";
 import instance from "../../../../services/api";
 import { successToast, errToast } from "../../../../utils/functions/toast";
 import { TiTick } from "react-icons/ti";
+import { ImCross } from "react-icons/im";
 import { Layout } from "../../../../components/shared";
-import { FiGithub } from "react-icons/fi";
 import Link from "next/link";
 import { getRecaptchaToken } from "../../../../services/recaptcha";
 import { ContributorsProps } from "../../../../utils/interfaces";
+
+const headings = [
+  "Name",
+  "Email",
+  "SRM",
+  "Github",
+  "Reg No",
+  "Branch",
+  "Proposal",
+  "maintainer approved?",
+  "Added to repo?",
+];
 
 const ContributorsPage = () => {
   const [contributorsData, setContributorsData] = useState<ContributorsProps[]>(
@@ -22,7 +34,7 @@ const ContributorsPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (authContext.isAuth === false) {
+    if (!authContext.isAuth) {
       router.push("/admin");
     }
   }, [authContext]);
@@ -70,6 +82,7 @@ const ContributorsPage = () => {
         setProjectName(res.data.project.project_name);
         setProjectId(res.data.project._id);
         setLoading(false);
+        console.log(res.data.contributor.contributor);
       })
       .catch((err) => {
         errToast(err.message);
@@ -85,44 +98,104 @@ const ContributorsPage = () => {
     </div>
   ) : (
     <Layout type="admin">
-      <h1 className="text-5xl font-extrabold underline text-white mb-5">
-        {projectName}
-      </h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-        {contributorsData.map((person) => (
-          <div key={person._id} className="p-5 rounded-xl 0 shadow-2xl">
-            <h2 className="text-2xl font-medium text-white mb-5">
-              {person.name}
-            </h2>
-            <h2 className="text-2xl font-medium text-white mb-10">
-              {person.email}
-            </h2>
-            <Link href={person.github_id}>
-              <div className="cursor-pointer hover:text-gray-800 p-2  flex text-2xl font-medium text-white mb-5">
-                <FiGithub /> <span className="ml-2">{person.github_id}</span>
-              </div>
-            </Link>
-            <h2 className="text-2xl font-medium text-white mb-5">
-              {person.reg_number}
-            </h2>
-            <h2 className="text-2xl font-medium text-white mb-5">
-              {person.branch}
-            </h2>
-            {person.is_admin_approved ? (
-              <div className="flex flex-col justify-center items-center text-4xl font-medium text-base-green mt-5">
-                <TiTick className="text-green-500 text-5xl" />
-                <p>approved</p>
-              </div>
-            ) : (
-              <button
-                onClick={() => acceptMaintainerHandler(projectId, person._id)}
-                className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
-              >
-                Approve Contributor
-              </button>
-            )}
-          </div>
-        ))}
+      <div className="flex flex-col items-center justify-center">
+        <h1 className="text-5xl font-extrabold underline text-white mb-7">
+          {projectName}
+        </h1>
+
+        <table className="table text-white border-separate space-y-6 text-sm">
+          <thead className="bg-base-teal text-white">
+            <tr>
+              {headings.map((head) => (
+                <th key={head} className="px-3 text-left">
+                  {head}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {contributorsData.map((person) => (
+              <tr key={person._id} className="bg-gray-800">
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div> {person.name}</div>
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div> {person.email}</div>
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div> {person.srm_email}</div>
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <Link href={person.github_id}>
+                      <div> {person.github_id}</div>
+                    </Link>
+                  </div>
+                </td>
+
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div> {person.reg_number}</div>
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div> {person.branch}</div>
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div> {person.poa}</div>
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div>
+                      {" "}
+                      {person.is_maintainer_approved ? (
+                        <TiTick className="text-green-500 text-2xl" />
+                      ) : (
+                        <ImCross className="text-red-500 text-lg" />
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div>
+                      {" "}
+                      {person.is_added_to_repo ? (
+                        <TiTick className="text-green-500 text-2xl" />
+                      ) : (
+                        <ImCross className="text-red-500 text-lg" />
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="p-3 ">
+                  {person.is_admin_approved ? (
+                    <TiTick className="text-green-500 text-center text-3xl" />
+                  ) : (
+                    <button
+                      onClick={() =>
+                        acceptMaintainerHandler(projectId, person._id)
+                      }
+                      className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+                    >
+                      Approve Contributor
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </Layout>
   );

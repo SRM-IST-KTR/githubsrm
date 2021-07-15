@@ -53,6 +53,10 @@ export interface ContributorsProps {
   name: string;
   github_id: string;
   reg_number: string;
+  poa: string;
+  is_maintainer_approved: boolean;
+  is_added_to_repo: boolean;
+  srm_email: string;
 }
 
 export interface MaintainersProps {

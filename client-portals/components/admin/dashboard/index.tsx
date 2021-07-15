@@ -82,7 +82,7 @@ const ProjectApplications = () => {
       <div className="overflow-scroll">
         <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
         <table className="table text-white border-separate space-y-6 text-sm">
-          <thead className="bg-gray-800 text-white">
+          <thead className="bg-base-teal text-white">
             <tr>
               {headings.map((head) => (
                 <th key={head} className="px-3 text-left">
@@ -182,9 +182,11 @@ const ProjectApplications = () => {
       </div>
     </Layout>
   ) : (
-    <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
-      loading..
-    </h1>
+    <div className="min-h-screen flex justify-center p-5 bg-base-blue">
+      <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
+        loading..
+      </h1>
+    </div>
   );
 };
 
