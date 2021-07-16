@@ -11,7 +11,7 @@ from maintainer import entry
 
 from . import entry
 from .definitions import MaintainerSchema
-from .utils import Projects_pagnation, project_SingleProject
+from .utils import project_pagination, project_single_project
 
 key = IssueKey()
 db = entry.db
@@ -74,10 +74,10 @@ class Projects(APIView):
         RequestQueryKeys = list(request.GET.keys())
 
         if len(set(Pagination) & set(RequestQueryKeys)) == 1:
-            return JsonResponse(Projects_pagnation(request, **kwargs), status=status.HTTP_200_OK)
+            return JsonResponse(project_pagination(request, **kwargs), status=status.HTTP_200_OK)
 
         elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
-            return JsonResponse(project_SingleProject(request, **kwargs), status=status.HTTP_200_OK)
+            return JsonResponse(project_single_project(request, **kwargs), status=status.HTTP_200_OK)
 
         else:
             return JsonResponse(data={
@@ -156,9 +156,7 @@ class ResetPassword(APIView):
                     "error": str(validate.get("error"))
                 }, status=400)
 
-            if entry.update_password(current_password=validate.get("current_password"),
-                                     new_password=validate.get("new_password"),
-                                     maintainer_email=validate.get("srm_email")):
+            if entry.update_password(email=request.data.get("email")):
                 return JsonResponse(data={
                     "updated password": True
                 }, status=200)
