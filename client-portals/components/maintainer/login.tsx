@@ -31,7 +31,7 @@ const MaintainerLogin = () => {
         sessionStorage.setItem("token", res.data.key);
         authContext.decode();
         successToast("Logged In successfully!");
-        Router.push("maintainer/dashboard");
+        Router.replace("maintainer/dashboard");
       })
       .catch((err) => {
         errToast(err.message);

@@ -21,18 +21,15 @@ const MaintainerPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+    const { slug } = router.query;
     if (!authContext.isAuth || !authContext.isAdmin) {
-      router.push("/admin/dashboard");
+      router.replace("/admin");
     }
   }, [authContext]);
 
-  var token = null;
-  useEffect(() => {
-    token = sessionStorage.getItem("token");
-  }, []);
-
   const acceptMaintainerHandler = async (project_id, maintainer_id) => {
     const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
     await instance
       .post(
         "admin/projects?role=maintainer",
@@ -55,6 +52,7 @@ const MaintainerPage = () => {
 
   useEffect(() => {
     const { slug } = router.query;
+    const token = sessionStorage.getItem("token");
     instance
       .get(
         `admin/projects?projectId=${slug}&contributor=false&maintainer=true`,
@@ -71,7 +69,6 @@ const MaintainerPage = () => {
         setLoading(false);
       })
       .catch((err) => {
-        errToast(err.message);
         setLoading(false);
       });
   }, [accepted]);

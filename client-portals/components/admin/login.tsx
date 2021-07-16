@@ -29,7 +29,7 @@ const AdminLogin = () => {
         sessionStorage.setItem("token", res.data.keys);
         authContext.decode();
         successToast("Logged In successfully!");
-        Router.push("admin/dashboard");
+        Router.replace("admin/dashboard");
       })
       .catch((err) => {
         errToast(err.message);

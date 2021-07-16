@@ -18,11 +18,6 @@ const ProjectApplications = () => {
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  var token = null;
-  useEffect(() => {
-    token = sessionStorage.getItem("token");
-  }, [pageNo]);
-
   const headings = [
     "Maintainers",
     "Project Name",
@@ -34,6 +29,7 @@ const ProjectApplications = () => {
 
   const acceptProjectHandler = async (project_id, isprivate, project_url) => {
     const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
     await instance
       .post(
         `admin/projects?projectId=${project_id}&role=project`,
@@ -59,6 +55,7 @@ const ProjectApplications = () => {
   };
 
   useEffect(() => {
+    const token = sessionStorage.getItem("token");
     instance
       .get(`admin/projects?page=${pageNo}`, {
         headers: {
@@ -72,7 +69,6 @@ const ProjectApplications = () => {
         setLoading(false);
       })
       .catch((err) => {
-        errToast(err.message);
         setLoading(false);
       });
   }, [accepted, pageNo]);

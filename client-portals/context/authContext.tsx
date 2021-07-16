@@ -8,7 +8,7 @@ export const AuthContext = React.createContext({
   user: {},
   isAdmin: false,
   username: "",
-  setIsAuth: ({}) => {},
+  setIsAuth: (_auth) => {},
   logoutHandler: () => {},
   decode: () => {},
 });
@@ -56,7 +56,7 @@ const AuthContextProvider: React.FC = (props) => {
     setIsAuth(false);
     setIsAdmin(false);
     sessionStorage.removeItem("token");
-    router.push("/admin");
+    router.replace("/admin");
     successToast("Logged out!");
   };
 

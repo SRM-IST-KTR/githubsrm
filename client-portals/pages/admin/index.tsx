@@ -10,7 +10,7 @@ const IndexPage = () => {
 
   useEffect(() => {
     if (authContext.isAuth || authContext.isAdmin) {
-      router.push("/admin/dashboard");
+      router.replace("/admin/", "/admin/dashboard");
     }
   }, [authContext]);
 

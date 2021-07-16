@@ -9,15 +9,11 @@ const AcceptedProjectsPage = () => {
 
   useEffect(() => {
     if (!authContext.isAuth || !authContext.isAdmin) {
-      router.push("/admin");
+      router.replace("admin/dashboard/accepted-projects", "/admin");
     }
   }, [authContext]);
 
-  return authContext.isAuth ? (
-    <AcceptedProjectDashboard />
-  ) : (
-    <h1>Not Authenticated</h1>
-  );
+  return <AcceptedProjectDashboard />;
 };
 
 export default AcceptedProjectsPage;

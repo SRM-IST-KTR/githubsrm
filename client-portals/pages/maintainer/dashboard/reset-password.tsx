@@ -9,7 +9,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!authContext.isAuth || authContext.isAdmin) {
-      router.push("/");
+      router.replace("/");
     }
   }, [authContext]);
 

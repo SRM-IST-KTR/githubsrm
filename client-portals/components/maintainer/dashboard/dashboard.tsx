@@ -33,7 +33,6 @@ const index = () => {
         setLoading(false);
       })
       .catch((err) => {
-        errToast(err.message);
         setLoading(false);
       });
   }, [accepted, pageNo]);

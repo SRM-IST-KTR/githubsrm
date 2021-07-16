@@ -32,7 +32,7 @@ const ProjectDetail = () => {
 
   useEffect(() => {
     if (!authContext.isAuth || authContext.isAdmin) {
-      router.push("/");
+      router.replace("/");
     }
   }, [authContext]);
 
@@ -64,7 +64,7 @@ const ProjectDetail = () => {
     const token = sessionStorage.getItem("token");
     instance
       .get(
-        `maintainer/projects?projectId=${slug}&contributor=true&maintainer=true`,
+        `maintainer/projects?projectId=${slug}&contributor=true&maintainer=1`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,7 +79,6 @@ const ProjectDetail = () => {
         setLoading(false);
       })
       .catch((err) => {
-        errToast(err.message);
         setLoading(false);
       });
   }, [accepted]);
@@ -91,7 +90,7 @@ const ProjectDetail = () => {
           {projectName}
         </h2>
         <OtherMaintainers
-          otherMaintainers={maintainers.filter(
+          otherMaintainers={maintainers?.filter(
             (m) => m.name !== authContext.username
           )}
         />

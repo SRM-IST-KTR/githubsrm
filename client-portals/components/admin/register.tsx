@@ -60,6 +60,7 @@ const AdminRegister = () => {
             className="border-2 border-gray-800 rounded-md p-3 mt-3"
             type="password"
             name="token"
+            label="Secret Key"
             placeholder="Secret Key"
           />
           <div className="flex justify-center">

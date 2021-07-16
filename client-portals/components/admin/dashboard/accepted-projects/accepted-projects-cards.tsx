@@ -33,7 +33,6 @@ const AcceptedProjectsCards = () => {
         setLoading(false);
       })
       .catch((err) => {
-        errToast(err.message);
         setLoading(false);
       });
   }, [pageNo]);
