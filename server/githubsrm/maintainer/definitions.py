@@ -43,9 +43,7 @@ class MaintainerSchema:
         """
 
         validator = Schema(schema={
-            "srm_email": And(str, lambda email: len(email.strip()) > 0),
-            "current_password": And(str, lambda current_password: len(current_password.strip()) > 0),
-            "new_password": And(str, lambda new_password: len(new_password.strip()) > 0)
+            "email": And(str, lambda email: len(email.strip()) > 0)
         })
 
         return validator
