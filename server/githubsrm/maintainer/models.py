@@ -1,13 +1,12 @@
 
 from hashlib import sha256
-from typing import Iterable
+from typing import Dict, Iterable
 import pymongo
 from django.conf import settings
+from pymongo.database import Database
 
 
 class Entry:
-    db = None
-
     def __init__(self) -> None:
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
@@ -45,8 +44,19 @@ class Entry:
 
         return False
 
-    def Send_all_Maintainer_email(self, email) -> Iterable:
-        """To sent emails to all maintainers
+    def find_Maintainer_with_email(self, email) -> Dict:
+        """To find maintainer with email
+
+        Args:
+            email
+
+        Returns:
+            Iterable
+        """
+        return self.db.maintainer_credentials.find_one({"email": email})
+
+    def find_all_Maintainer_with_email(self, email) -> Iterable:
+        """To find maintainer with email
 
         Args:
             email
