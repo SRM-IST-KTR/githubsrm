@@ -35,7 +35,7 @@ const ContributorsPage = () => {
 
   useEffect(() => {
     if (!authContext.isAuth || !authContext.isAdmin) {
-      router.replace("/admin/dashboard/accepted-projects/", "/admin");
+      router.replace("/admin/dashboard/accepted-projects/", "/");
     }
   }, [authContext]);
 
@@ -79,7 +79,7 @@ const ContributorsPage = () => {
         setProjectName(res.data.project.project_name);
         setProjectId(res.data.project._id);
         setLoading(false);
-        console.log(res.data.contributor.contributor);
+   
       })
       .catch((err) => {
         setLoading(false);

@@ -9,7 +9,7 @@ const AdminDashPage = () => {
 
   useEffect(() => {
     if (!authContext.isAuth || !authContext.isAdmin) {
-      router.replace("/dashboard", "/admin");
+      router.replace( "/");
     }
   }, [authContext]);
 

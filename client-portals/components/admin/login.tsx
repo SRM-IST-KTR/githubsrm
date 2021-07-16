@@ -26,10 +26,12 @@ const AdminLogin = () => {
         },
       })
       .then((res) => {
+
         sessionStorage.setItem("token", res.data.keys);
         authContext.decode();
         successToast("Logged In successfully!");
-        Router.replace("admin/dashboard");
+        Router.push("admin/dashboard");
+        
       })
       .catch((err) => {
         errToast(err.message);

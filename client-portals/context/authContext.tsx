@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 export const AuthContext = React.createContext({
   isAuth: false,
-  user: {},
   isAdmin: false,
   username: "",
   setIsAuth: (_auth) => {},
@@ -16,7 +15,6 @@ export const AuthContext = React.createContext({
 const AuthContextProvider: React.FC = (props) => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [user, setUser] = useState({});
   const [username, setUserName] = useState<string>("");
   const router = useRouter();
 
@@ -27,23 +25,18 @@ const AuthContextProvider: React.FC = (props) => {
       var dateNow = new Date();
       if (decodedToken.exp && decodedToken.exp < dateNow.getTime() / 1000) {
         setIsAuth(false);
-        setUser({});
         setIsAdmin(false);
       } else {
         setIsAuth(true);
-        setUser(decodedToken);
         if (decodedToken.admin) {
           setUserName(decodedToken.user);
+          setIsAdmin(true);
         } else {
           setUserName(decodedToken.name);
-        }
-        if (decodedToken.admin) {
-          setIsAdmin(true);
         }
       }
     } else {
       setIsAuth(false);
-      setUser({});
       setIsAdmin(false);
     }
   };
@@ -56,7 +49,7 @@ const AuthContextProvider: React.FC = (props) => {
     setIsAuth(false);
     setIsAdmin(false);
     sessionStorage.removeItem("token");
-    router.replace("/admin");
+    router.replace("/");
     successToast("Logged out!");
   };
 
@@ -66,7 +59,6 @@ const AuthContextProvider: React.FC = (props) => {
         isAuth,
         setIsAuth,
         isAdmin,
-        user,
         username,
         logoutHandler,
         decode,

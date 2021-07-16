@@ -19,7 +19,7 @@ const MaintainerLogin = () => {
     password: "",
   };
 
-  const submitValues = async (values: MaintainerLoginData) => {
+const submitValues = async (values: MaintainerLoginData) => {
     const recaptchaToken = await getRecaptchaToken("post");
     await instance
       .post("maintainer/login", values, {
@@ -28,10 +28,12 @@ const MaintainerLogin = () => {
         },
       })
       .then((res) => {
-        sessionStorage.setItem("token", res.data.key);
-        authContext.decode();
-        successToast("Logged In successfully!");
-        Router.replace("maintainer/dashboard");
+        if (res.status == 200) {
+          sessionStorage.setItem("token", res.data.key);
+          authContext.decode();
+          successToast("Logged In successfully!");
+          Router.push("maintainer/dashboard");
+        }
       })
       .catch((err) => {
         errToast(err.message);

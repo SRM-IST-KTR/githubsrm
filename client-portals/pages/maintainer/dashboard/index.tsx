@@ -9,7 +9,7 @@ const Index = () => {
 
   useEffect(() => {
     if (!authContext.isAuth || authContext.isAdmin) {
-      router.replace("/");
+      router.replace("maintainer/dashboard","/");
     }
   }, [authContext]);
 

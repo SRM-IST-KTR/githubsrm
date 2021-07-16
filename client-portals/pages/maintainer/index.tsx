@@ -5,6 +5,15 @@ import { AuthContext } from "../../context/AuthContext";
 
 const MaintainerLoginPage = () => {
   const authContext = useContext(AuthContext);
+  useEffect(() => {
+    if (authContext.isAuth) {
+      if (authContext.isAdmin) {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/maintainer/dashboard");
+      }
+    }
+  }, [authContext]);
 
   return <MaintainerLogin />;
 };
