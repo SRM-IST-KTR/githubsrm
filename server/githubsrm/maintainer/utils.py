@@ -9,8 +9,6 @@ def decode_payload(token):
 
 def Projects_pagnation(request, **kwargs):
 
-    # TODO check email from jwt and send only projects that belong to maintainer
-
     ITEMS_PER_PAGE = 10
     try:
         page = int(request.GET["page"])
@@ -43,8 +41,6 @@ def project_SingleProject(request, **kwargs):
         Get a specific project with all maintainer details and contributor details if they are approved
     """
 
-    # TODO check from JWT that this project id is in it as well
-
     projects_ids = decode_payload(
         request.headers["Authorization"].split()[1])["project_id"]
     project_id = request.GET["projectId"]
@@ -54,11 +50,6 @@ def project_SingleProject(request, **kwargs):
 
     if project_document := db.project.find_one({"_id": project_id}):
 
-        # TODO add a sanity check here -> array length in project contributor_id and maintainer_id
-        # * is SAME as the number of documents in maintainer and contributor collections with the
-        # * same id and is_approved : true
-
-        # * will have atleast one maintainer (ALPHA)
         if request.GET["maintainer"] == "true":
             data = list(db.maintainer.find(
                 {"project_id": project_id, "is_admin_approved": True}, {"password": 0}))
@@ -66,7 +57,7 @@ def project_SingleProject(request, **kwargs):
 
         if request.GET["contributor"] == "true":
             data = list(db.contributor.find(
-                {"project_id": project_id, "is_admin_approved": True}, {"password": 0}))
+                {"interested_project": project_id, "is_admin_approved": True}, {"password": 0}))
             project_document["contributor"] = data
     else:
         return {"error": "id doesnt exist"}

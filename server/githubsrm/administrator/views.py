@@ -146,7 +146,7 @@ class ProjectsAdmin(APIView):
                     project, maintainer = details
 
                     existing = entry.check_existing_maintainer(
-                        identifier=validate.get('maintainer_id')
+                        identifier=validate.get('email')
                     )
 
                     if len(project['maintainer_id']) == 1:
@@ -166,7 +166,7 @@ class ProjectsAdmin(APIView):
 
                         else:
                             password = entry.get_random_password(
-                                identifier=validate.get("maintainer_id"))
+                                email=validate.get("email"))
                             print(password)
                             if service.wrapper_email(
                                     role="alpha_maintainer_w_password", data=maintainer):
@@ -197,7 +197,7 @@ class ProjectsAdmin(APIView):
 
                         else:
                             password = entry.get_random_password(
-                                identifier=validate.get("maintainer_id"))
+                                email=validate.get("email"))
 
                             print(password)
 
@@ -298,4 +298,3 @@ class AdminAccepted(APIView):
             }, status=400)
 
         return accepted_project_pagination(request=request)
-        

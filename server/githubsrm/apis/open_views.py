@@ -149,7 +149,7 @@ class Maintainer(APIView):
 
                     return response.Response(data={
                         "error": "Approved / Already Exists / Invalid"
-                    }, status=status.HTTP_409_CONFLICT)
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
                 if open_entry_checks.check_existing(description=validate['description'],
                                                     project_name=validate['project_name'],

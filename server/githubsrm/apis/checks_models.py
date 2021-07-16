@@ -94,8 +94,11 @@ class EntryCheck:
         result = self.db.maintainer.count_documents(
             {"github_id": github_id, "project_id": project_id, "srm_email": srm_email})
 
+
         if result >= 1:
             return True
+
+        return False
 
     def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
         """Checks for valid beta entry
