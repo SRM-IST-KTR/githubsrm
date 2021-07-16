@@ -1,4 +1,10 @@
-const OtherMaintainers = ({ otherMaintainers }) => {
+import { OtherMaintainersProps } from "../../../utils/interfaces";
+
+interface otherMaintainersProps {
+  otherMaintainers: OtherMaintainersProps[];
+}
+
+const OtherMaintainers = ({ otherMaintainers }: otherMaintainersProps) => {
   return (
     <div className="my-10">
       <h1 className="text-white font-bold text-xl">

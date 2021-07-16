@@ -5,21 +5,18 @@ import { AuthContext } from "../../../context/AuthContext";
 import instance from "../../../services/api";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { successToast, errToast } from "../../../utils/functions/toast";
+import { MaintainerProjectsProps } from "../../../utils/interfaces";
 
 const index = () => {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<MaintainerProjectsProps[]>([]);
   const [accepted, setAccepted] = useState<boolean>(false);
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  var token = null;
   useEffect(() => {
-    token = sessionStorage.getItem("token");
-  }, [pageNo]);
-
-  useEffect(() => {
+    const token = sessionStorage.getItem("token");
     instance
       .get(`maintainer/projects?page=${pageNo}`, {
         headers: {

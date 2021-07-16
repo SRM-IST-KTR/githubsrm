@@ -32,7 +32,6 @@ const ResetPassword = () => {
         },
       })
       .then((res) => {
-
         successToast("Password changed successfully!");
       })
       .catch((err) => {

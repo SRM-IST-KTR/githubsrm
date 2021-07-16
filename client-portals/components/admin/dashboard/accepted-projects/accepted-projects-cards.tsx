@@ -14,12 +14,8 @@ const AcceptedProjectsCards = () => {
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  var token = null;
   useEffect(() => {
-    token = sessionStorage.getItem("token");
-  }, [pageNo]);
-
-  useEffect(() => {
+    const token = sessionStorage.getItem("token");
     instance
       .get(`admin/projects/accepted?page=${pageNo}`, {
         headers: {

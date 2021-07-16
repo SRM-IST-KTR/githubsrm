@@ -70,6 +70,17 @@ export interface MaintainersProps {
   reg_number: string;
 }
 
+export interface MaintainerProjectsProps {
+  _id: string;
+  description: string;
+  project_name: string;
+}
+
+export interface OtherMaintainersProps {
+  github: string;
+  name: string;
+}
+
 export interface MaintainerLoginData
   extends Yup.InferType<typeof maintainerLoginValidation> {}
 
