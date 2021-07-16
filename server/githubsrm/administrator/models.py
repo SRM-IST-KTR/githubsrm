@@ -117,47 +117,44 @@ class AdminEntry:
 
         return project
 
-    def check_existing_maintainer(self, identifier: str) -> bool:
+    def check_existing_maintainer(self, email: str) -> bool:
         """Check for existing maintainer to determine if new keys are generated of 
            or old keys are used.
 
         Args:
-            identifier (str): unique identifier for maintainer
+            email (str): maintainer email id
 
         Returns:
             bool: [description]
         """
 
-        maintainer = self.db.maintainer.find_one({
-            "_id": identifier
+        credentials = self.db.maintainer_credentials.find_one({
+            "email": email
         })
 
-        try:
-            password = maintainer.get('password')
-            return password
-        except KeyError as e:
-            return False
+        if credentials:
+            return credentials.get("password")
+        return False
 
-    def get_random_password(self, identifier: str, length: int = 5) -> str:
+    def get_random_password(self, email: str, length: int = 5) -> str:
         """Generating random passwords for maintainers and
-           store in the maintainer collection.
+           store in the maintainer credentials collection.
 
         Args:
             length (int, optional): byte length. Defaults to 5.
+            email (str): maintainer email
 
         Returns:
             str
         """
         password = str(secrets.token_hex(length))
-        password = sha256(password.encode()).hexdigest()
+        hashed_password = sha256(password.encode()).hexdigest()
 
-        self.db.maintainer.find_one_and_update({
-            "_id": identifier
-        }, update={
-            "$set":
-                {"password": password}
+        doc = {"email": email,
+               "password": hashed_password}
 
-        })
+        self.db.maintainer_credentials.insert_one(document=doc)
+
         return password
 
     def approve_project(self, identifier: str, project_url: str, private: bool) -> bool:

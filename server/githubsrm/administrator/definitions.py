@@ -53,7 +53,8 @@ class ApprovalSchema:
         """
 
         validator = Schema(schema={**self.common, **{
-            "maintainer_id": And(str, lambda maintainer_id: len(maintainer_id.strip()) == 8)
+            "maintainer_id": And(str, lambda maintainer_id: len(maintainer_id.strip()) == 8),
+            "email": And(str, lambda email: len(email.strip()) > 0))
         }})
 
         return validator

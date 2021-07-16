@@ -71,16 +71,16 @@ class Entry:
         current_password = sha256(current_password.encode()).hexdigest()
         new_password = sha256(new_password.encode()).hexdigest()
 
-        maintainer = self.db.maintainer.find_one_and_update({
+        verify = self.db.maintainer_credentials.find_one_and_update({
             "$and": [
-                {"srm_email": maintainer_email},
+                {"email": maintainer_email},
                 {"password": current_password}
             ]
         }, update={
             "$set": {"password": new_password}
         })
 
-        if maintainer:
+        if verify:
             return True
 
         return False
