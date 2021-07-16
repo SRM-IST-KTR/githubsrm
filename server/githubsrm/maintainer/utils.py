@@ -63,29 +63,34 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
 
     doc = {}
 
-    if page_maintainer:
-        maintainers = entry.maintainer.aggregate(pipeline=[
-            {"$match": {"project_id": project_id}},
-            {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
-            {"$limit": ITEMS_PER_PAGE}
-        ])
+    try:
+        if page_maintainer:
+            maintainers = entry.maintainer.aggregate(pipeline=[
+                {"$match": {"project_id": project_id}},
+                {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
+                {"$limit": ITEMS_PER_PAGE}
+            ])
 
-        if maintainers:
-            doc = maintainers
-        else:
-            raise
+            if maintainers:
+                doc = maintainers
+            else:
+                raise
 
-    if page_contributor:
-        contributors = entry.contributor.aggregate(pipeline=[
-            {"$match": {"interested_project": project_id}},
-            {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
-            {"$limit": ITEMS_PER_PAGE}
-        ])
+        if page_contributor:
+            contributors = entry.contributor.aggregate(pipeline=[
+                {"$match": {"interested_project": project_id}},
+                {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
+                {"$limit": ITEMS_PER_PAGE}
+            ])
 
-        if contributors:
-            doc = {**doc, **contributors}
+            if contributors:
+                doc = {**doc, **contributors}
 
-        else:
-            raise
+            else:
+                raise
+    except Exception as e:
+        return {
+            "error": "contributor and maintainers not found"
+        }    
 
     return doc
