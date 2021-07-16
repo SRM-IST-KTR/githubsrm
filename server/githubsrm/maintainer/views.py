@@ -1,4 +1,5 @@
 from hashlib import sha256
+from xml.dom.minidom import Entity
 
 from administrator.issue_jwt import IssueKey
 from apis import PostThrottle, check_token
@@ -21,7 +22,7 @@ class Projects(APIView):
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
-        """Accept contributors. 
+        """Accept contributors.
 
         Args:
             request
@@ -96,47 +97,34 @@ class Login(APIView):
         try:
             reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
         except KeyError as e:
-            return JsonResponse(data={
-                "error": "recaptcha not provided"
-            }, status=401)
+            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
 
-        if check_token(reCaptcha):
-            validate = MaintainerSchema(
-                request.data, path=request.path).valid()
-            if 'error' in validate:
-                return JsonResponse(data={
-                    "error": validate.get("error")
-                }, status=400)
+        if not check_token(reCaptcha):
+             return JsonResponse(data={"error": "Invalid recaptcha token"}, status=401)
 
-            password_hashed = sha256(
-                request.data["password"].encode()).hexdigest()
-            doc_list_iter = entry.Send_all_Maintainer_email(
-                request.data["email"])
-            doc_list = [i for i in doc_list_iter]
+        validate = MaintainerSchema(request.data, path=request.path).valid()
+        if 'error' in validate:
+            return JsonResponse(data={"error": validate.get("error")}, status=400)
 
-            if len(doc_list):
-                if doc_list[0]["password"] != password_hashed:
-                    return JsonResponse(data={
-                        "message": "wrong password"
-                    }, status=status.HTTP_401_UNAUTHORIZED)
+        password_hashed = sha256(request.data["password"].encode()).hexdigest()
+        user_credentials = entry.find_Maintainer_with_email(request.data["email"])
 
-                payload = {}
-                payload["email"] = doc_list[0]["email"]
-                payload["name"] = doc_list[0]["name"]
-                payload["project_id"] = [i["project_id"] for i in doc_list]
+        if user_credentials["password"] != password_hashed:
+            return JsonResponse(data={"message": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED)
 
-                if jwt := key.issue_key(payload):
-                    return JsonResponse(data={
-                        "key": jwt
-                    }, status=status.HTTP_200_OK)
+        doc_list = list(entry.find_all_Maintainer_with_email(request.data["email"]))
 
-            return JsonResponse(data={
-                "message": "Does not exist"
-            },  status=status.HTTP_401_UNAUTHORIZED)
+        payload = {}
+        payload["email"] = doc_list[0]["email"]
+        payload["name"] = doc_list[0]["name"]
+        payload["project_id"] = [i["project_id"] for i in doc_list]
 
-        return JsonResponse(data={
-            "error": "Invalid recaptcha token"
-        }, status=401)
+        if jwt := key.issue_key(payload):
+            return JsonResponse(data={"key": jwt}, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
+
+
 
 
 class ResetPassword(APIView):
