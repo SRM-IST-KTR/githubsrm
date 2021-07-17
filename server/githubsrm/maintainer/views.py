@@ -1,16 +1,18 @@
 from hashlib import sha256
+from threading import Thread
 
 from administrator.issue_jwt import IssueKey
 from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
-from threading import Thread
+
 from maintainer import entry
 
 from . import entry
 from .definitions import MaintainerSchema
-from .utils import project_pagination, project_single_project, RequestSetPassword
+from .utils import (RequestSetPassword, project_pagination,
+                    project_single_project)
 
 key = IssueKey()
 db = entry.db
@@ -45,13 +47,13 @@ class Projects(APIView):
             if 'error' in validate:
                 return JsonResponse(data=validate, status=400)
 
-            if doc:=entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
-                service.wrapper_email(role="contributor_approval",data={
-                    "email":doc["email"],
-                    "name":doc["name"],
-                    "project_name":doc["project_name"],
-                    "project_url":doc["project_url"]
-                    })
+            if doc := entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
+                service.wrapper_email(role="contributor_approval", data={
+                    "email": doc["email"],
+                    "name": doc["name"],
+                    "project_name": doc["project_name"],
+                    "project_url": doc["project_url"]
+                })
 
                 return JsonResponse(data={
                     "approved contributor": True
@@ -175,11 +177,12 @@ class SetPassword(APIView):
             jwt = token
 
             password = request.data.get("password")
-            if key.verify_key(key=jwt):
-                Thread(target=entry.set_password, kwargs={
-                    "key": jwt,
-                    "password": password
-                }).start()
+
+            if not key.verify_key(key=jwt):
+                return JsonResponse(data={"error": "Invalid jwt"}, status=400)
+
+            if not entry.set_password(key=jwt, password=password):
+                return JsonResponse(data={"error": "Already changed"}, status=400)
 
             return JsonResponse(data={}, status=200)
 
@@ -209,16 +212,18 @@ class ResetPassword(APIView):
             return JsonResponse(data={"error": validate.get("error")}, status=400)
 
         email = request.data.get("email")
-        doc = entry.find_Maintainer_with_email(email)
-
+        doc = entry.find_Maintainer_credentials_with_email(email)
         # send 200 even if email is not found
         if not doc:
             return JsonResponse({}, status=status.HTTP_200_OK)
 
+        maintainer = entry.find_Maintainer_with_email(email)
+
         jwt_link = RequestSetPassword(email)
         print(jwt_link)
 
-        service.wrapper_email(role="forgot_password", data={"name": doc["name"], "email": email,"reset_token":jwt_link})
+        service.wrapper_email(role="forgot_password", data={
+                              "name": maintainer["name"], "email": email, "reset_token": jwt_link})
 
         # send 200 in all cases
         return JsonResponse({}, status=status.HTTP_200_OK)

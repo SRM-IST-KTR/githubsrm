@@ -45,7 +45,7 @@ class Entry:
 
         return False
 
-    def find_Maintainer_with_email(self, email: str) -> Dict[str, Any]:
+    def find_Maintainer_credentials_with_email(self, email: str) -> Dict[str, Any]:
         """To find maintainer with email
 
         Args:
@@ -55,6 +55,17 @@ class Entry:
             Dict
         """
         return self.db.maintainer_credentials.find_one({"email": email})
+
+    def find_Maintainer_with_email(self, email: str) -> Dict[str, Any]:
+        """To find maintainer with email
+
+        Args:
+            email
+
+        Returns:
+            Dict
+        """
+        return self.db.maintainer.find_one({"email": email})
 
     def find_all_Maintainer_with_email(self, email) -> Iterable:
         """To find maintainer with email
