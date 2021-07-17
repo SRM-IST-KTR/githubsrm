@@ -1,4 +1,6 @@
+import React from "react";
 import Navbar from "./navbar";
+import { AuthContext } from "../../context/AuthContext";
 
 const admin_links = [
   {
@@ -17,19 +19,22 @@ const maintainer_links = [
     name: "My Projects",
   },
   {
-    link: "/maintainer/dashboard/reset-password/reset",
+    link: "/maintainer/reset-password/reset",
     name: "Reset Password",
   },
   {
-    link: "/maintainer/dashboard/reset-password/set",
+    link: "/maintainer/reset-password/set",
     name: "Set Password",
   },
 ];
 
 export default function Layout({ type, children }) {
+  const authContext = React.useContext(AuthContext);
   return (
     <div className="bg-base-blue">
-      <Navbar links={type === "admin" ? admin_links : maintainer_links} />
+      {authContext.isAuth && (
+        <Navbar links={type === "admin" ? admin_links : maintainer_links} />
+      )}
       <div className="min-h-screen p-10  w-full">{children}</div>
     </div>
   );

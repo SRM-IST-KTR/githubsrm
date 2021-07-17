@@ -33,7 +33,7 @@ const ResetPassword = ({ action, ...props }) => {
         },
       })
       .then((res) => {
-        successToast("Password changed successfully!");
+        successToast("Password updated!");
         resetForm({ values: { ...initialValues } });
       })
       .catch((err) => {

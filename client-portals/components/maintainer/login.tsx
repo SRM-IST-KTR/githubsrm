@@ -13,6 +13,7 @@ import Router from "next/router";
 import { successToast, errToast } from "../../utils/functions/toast";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
+import Link from "next/link";
 
 const MaintainerLogin = () => {
   const authContext = useContext(AuthContext);
@@ -65,7 +66,7 @@ const MaintainerLogin = () => {
                 <Input key={input.id} {...input} />
               </div>
             ))}
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center justify-center">
               <button
                 disabled={Object.keys(errors).length > 0}
                 type="submit"
@@ -77,7 +78,13 @@ const MaintainerLogin = () => {
               >
                 Submit
               </button>
+              <div className="text-md mt-5 hover:underline">
+                <Link href="/maintainer/reset-password/reset">
+                  Forgot Password?
+                </Link>
+              </div>
             </div>
+
             {Object.keys(errors).map((error) => {
               if (touched[error]) {
                 return (
