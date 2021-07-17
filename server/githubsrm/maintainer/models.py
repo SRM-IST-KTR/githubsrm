@@ -67,7 +67,7 @@ class Entry:
         """
         return self.db.maintainer.find({"email": email})
 
-    def reset_password(self, key: str, password: str) -> bool:
+    def set_password(self, key: str, password: str) -> bool:
         """Set maintainer password
 
         Args:
