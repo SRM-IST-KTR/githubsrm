@@ -148,10 +148,9 @@ class AdminEntry:
             str
         """
         password = str(secrets.token_hex(length))
-        hashed_password = sha256(password.encode()).hexdigest()
 
         doc = {"email": email,
-               "password": hashed_password,
+               "password": password,
                "reset":True}
 
         self.db.maintainer_credentials.insert_one(document=doc)
@@ -219,7 +218,7 @@ class AdminEntry:
         """On failed email reset maintainer state
 
         Args:
-            identifier (str): maintainer id
+            identifier (str) : maintainer id
             project_id (str) : project id
         Returns:
             bool

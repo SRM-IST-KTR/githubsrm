@@ -7,6 +7,7 @@ from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
+from maintainer.utils import RequestSetPassword
 from .utils import (
     project_pagination, project_single_project, accepted_project_pagination
 )
@@ -165,7 +166,7 @@ class ProjectsAdmin(APIView):
                             }, status=500)
 
                         else:
-                            password = entry.get_random_password(
+                            password = RequestSetPassword(
                                 email=validate.get("email"))
                             print(password,107)
                             if service.wrapper_email(
@@ -196,7 +197,7 @@ class ProjectsAdmin(APIView):
                                 identifier=maintainer["_id"], project_id=project["_id"])
 
                         else:
-                            password = entry.get_random_password(
+                            password = RequestSetPassword(
                                 email=validate.get("email"))
 
                             print(password)
