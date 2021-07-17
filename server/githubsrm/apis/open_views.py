@@ -130,12 +130,14 @@ class Maintainer(APIView):
 
                 if 'project_id' in validate:
 
-                    if open_entry_checks.validate_beta_maintainer(doc=validate):
-                        if id := open_entry.enter_beta_maintainer(doc=request.data):
+                    if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
+                        if id := open_entry.enter_beta_maintainer(doc=request.data):
+                            #TODO ROLL BACK
                             if service.wrapper_email(role='maintainer_received', data={
                                 "name": validate["name"],
-                                "project_name": validate["project_name"]
+                                "project_name": details["project_name"],
+                                "email": validate["email"]
                             }):
                                 Thread(target=service.sns, kwargs={'payload': {
                                     'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
@@ -167,11 +169,12 @@ class Maintainer(APIView):
                     validate['project_id'] = value[0]
                     validate['project_name'] = value[2]
                     validate['description'] = value[3]
-
+                    # TODO ROLL BACK HERE IF FAILS
                     if service.wrapper_email(role='project_submission_confirmation', data={
                         "project_name": validate["project_name"],
                         "name": validate["name"],
-                        "project_description": validate["project_description"]
+                        "project_description": validate["description"],
+                        "email": validate["email"]
 
                     }):
                         Thread(target=service.sns, kwargs={'payload': {
