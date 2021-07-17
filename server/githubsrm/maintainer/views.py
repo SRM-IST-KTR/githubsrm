@@ -211,9 +211,7 @@ class ResetPassword(APIView):
         jwt_link = RequestSetPassword(email)
         print(jwt_link)
 
-        # TODO : ADD template here to send email
-        service.wrapper_email(role="set-password",
-                              data={"interested_project": jwt_link, "email": email})
+        service.wrapper_email(role="forgot_password", data={"name": doc["name"], "email": email,"reset_token":jwt_link})
 
         # send 200 in all cases
         return JsonResponse({}, status=status.HTTP_200_OK)
