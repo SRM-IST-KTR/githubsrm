@@ -1,21 +1,19 @@
 import React, { useEffect, useContext } from "react";
 import { ResetPassword } from "../../../components/maintainer/dashboard";
 import { AuthContext } from "../../../context/authContext";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 
 const ProfilePage = () => {
-  const router = useRouter();
+  const { query } = useRouter();
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
     if (authContext.isAdmin) {
-      router.replace("/");
+      Router.replace("/");
     }
   }, [authContext]);
 
-  const { slug } = router.query;
-
-  return <ResetPassword action={slug} />;
+  return <ResetPassword action={query.slug} queryToken={query.token} />;
 };
 
 export default ProfilePage;

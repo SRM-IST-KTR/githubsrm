@@ -82,18 +82,6 @@ export interface OtherMaintainersProps {
   name: string;
 }
 
-export interface ContributorProps {
-  _id: string;
-  name: string;
-  email: string;
-  srm_email: string;
-  github_id: string;
-  reg_number: string;
-  branch: string;
-  poa: string;
-  is_maintainer_approved: boolean;
-}
-
 export interface MaintainerLoginData
   extends Yup.InferType<typeof maintainerLoginValidation> {}
 

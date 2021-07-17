@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { AcceptedProjectProps } from "../../../../utils/interfaces";
 import { getAcceptedProjects } from "../../../../services/api";
-import CSSLoader from "../../../shared/loader";
+import Loader from "../../../shared/loader";
 
 const AcceptedProjectsCards = () => {
   const [acceptedProjects, setAcceptedProjects] = useState<
@@ -78,7 +78,7 @@ const AcceptedProjectsCards = () => {
       )}
     </>
   ) : (
-    <CSSLoader />
+    <Loader />
   );
 };
 

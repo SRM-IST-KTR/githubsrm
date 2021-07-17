@@ -5,12 +5,13 @@ import {
   AdminRegisterData,
   MaintainerLoginData,
   ResetPasswordData,
+  SetPasswordData,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
 
 const instance = axios.create({
-  baseURL: "https://dev.githubsrm.tech",
+  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
 });
 
 export const postAcceptProjectHandler = async (
@@ -47,7 +48,6 @@ export const postAdminLogin = async (
 ): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
-    console.log(recaptchaToken, "captch");
     const res = await instance.post("/admin/login", values, {
       headers: {
         "X-RECAPTCHA-TOKEN": recaptchaToken,
@@ -80,7 +80,7 @@ export const postAdminRegister = async (
   }
 };
 
-export const getAcceptedProjects = async (pageNo, token): Promise<any> => {
+export const getAcceptedProjects = async (pageNo, token): Promise<Object> => {
   try {
     return await (
       await instance.get(`admin/projects/accepted?page=${pageNo}`, {
@@ -117,11 +117,9 @@ export const postResetPassword = async (
   values: ResetPasswordData
 ): Promise<boolean> => {
   try {
-    const token = sessionStorage.getItem("token");
     const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("maintainer/reset-password", values, {
+    const res = await instance.post("maintainer/reset-password/reset", values, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
     });
@@ -132,23 +130,18 @@ export const postResetPassword = async (
   }
 };
 
-export const postAcceptContributor = async (
-  project_id,
-  contributor_id
+export const postSetPassword = async (
+  values: SetPasswordData,
+  queryToken
 ): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.post(
-      "maintainer/projects?role=contributor",
-      { project_id: project_id, contributor_id: contributor_id },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      }
-    );
+    const res = await instance.post("maintainer/reset-password/set", values, {
+      headers: {
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
+        Authorization: `Bearer ${queryToken}`,
+      },
+    });
     return true;
   } catch (error) {
     errorHandler(error);

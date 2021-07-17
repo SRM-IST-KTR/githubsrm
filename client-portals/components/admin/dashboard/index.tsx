@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Layout } from "../../shared";
 import { getRecaptchaToken } from "../../../services/recaptcha";
 import { TableProjectsProps } from "../../../utils/interfaces";
-import CSSLoader from "../../shared/loader";
+import Loader from "../../shared/loader";
 import { postAcceptProjectHandler } from "../../../services/api";
 
 const ProjectApplications = () => {
@@ -30,6 +30,30 @@ const ProjectApplications = () => {
   ];
 
   const acceptProjectHandler = async (project_id, isprivate, project_url) => {
+    // const recaptchaToken = await getRecaptchaToken("post");
+    // const token = sessionStorage.getItem("token");
+    // await instance
+    //   .post(
+    //     `admin/projects?projectId=${project_id}&role=project`,
+    //     {
+    //       project_id: project_id,
+    //       private: isprivate,
+    //       project_url: project_url,
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "X-RECAPTCHA-TOKEN": recaptchaToken,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     setAccepted(true);
+    //     successToast("Project Approved sucessfully!");
+    //   })
+    //   .catch((err) => {
+    //     errToast(err.message);
+    //   });
     setLoading(true);
     const res = await postAcceptProjectHandler(
       project_id,
@@ -39,6 +63,8 @@ const ProjectApplications = () => {
     if (res) {
       setAccepted(true);
       successToast("Project Approved successfully!");
+    } else {
+      errToast("Error, Please Try Again!");
     }
   };
 
@@ -166,7 +192,7 @@ const ProjectApplications = () => {
       </div>
     </Layout>
   ) : (
-    <CSSLoader />
+    <Loader />
   );
 };
 
