@@ -61,6 +61,7 @@ const ResetPassword = ({ action, queryToken }) => {
             submitValuesSet(values, resetForm);
           }}
           validationSchema={setPasswordValidation}
+          enableReinitialize
         >
           {({ errors, touched }) => (
             <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
@@ -105,6 +106,7 @@ const ResetPassword = ({ action, queryToken }) => {
             submitValuesReset(values, resetForm);
           }}
           validationSchema={resetPasswordValidation}
+          enableReinitialize
         >
           {({ errors, touched }) => (
             <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
