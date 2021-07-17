@@ -63,8 +63,9 @@ class Contributor(APIView):
                         "invalid data": "Contributor for project exists / Project not approved"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                if open_entry.enter_contributor(validate):
-                    if service.wrapper_email(role='contributor', data=validate):
+                if doc := open_entry.enter_contributor(validate):
+                    if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
+                                                                                "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
                         return response.Response({
                             "valid": validate
                         }, status=status.HTTP_201_CREATED)
