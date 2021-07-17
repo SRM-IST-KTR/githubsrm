@@ -1,3 +1,4 @@
+const { HOST_NAME } = process.env;
 module.exports = {
   async rewrites() {
     return [
@@ -7,11 +8,11 @@ module.exports = {
       },
       {
         source: "/portal",
-        destination: "http://localhost:8000/portal",
+        destination: `${HOST_NAME}/portal`,
       },
       {
         source: "/portal/:path*",
-        destination: "http://localhost:8000/portal/:path*",
+        destination: `${HOST_NAME}/portal/:path*`,
       },
     ];
   },
