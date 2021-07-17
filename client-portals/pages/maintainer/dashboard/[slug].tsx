@@ -13,7 +13,7 @@ import {
   OtherMaintainersProps,
 } from "../../../utils/interfaces";
 import Link from "next/link";
-import Loader from "../../../components/shared/loader";
+import CSSLoader from "../../../components/shared/loader";
 import { postAcceptContributor } from "../../../services/api";
 
 const headings = [
@@ -171,7 +171,7 @@ const ProjectDetail = () => {
     </Layout>
   ) : (
     <div className="min-h-screen flex justify-center p-5 bg-base-blue">
-      <Loader />
+      <CSSLoader />
     </div>
   );
 };

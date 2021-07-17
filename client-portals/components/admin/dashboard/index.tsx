@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Layout } from "../../shared";
 import { getRecaptchaToken } from "../../../services/recaptcha";
 import { TableProjectsProps } from "../../../utils/interfaces";
-import Loader from "../../shared/loader";
+import CSSLoader from "../../shared/loader";
 import { postAcceptProjectHandler } from "../../../services/api";
 
 const ProjectApplications = () => {
@@ -166,7 +166,7 @@ const ProjectApplications = () => {
       </div>
     </Layout>
   ) : (
-    <Loader />
+    <CSSLoader />
   );
 };
 

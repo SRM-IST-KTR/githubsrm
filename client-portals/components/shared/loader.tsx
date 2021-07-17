@@ -1,11 +1,14 @@
-const Loader = () => {
+import Loader from "react-loader-spinner";
+
+const CSSLoader = () => {
   return (
-    <div className="min-h-screen flex justify-center p-5 bg-base-blue">
-      <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
-        loading..
-      </h1>
-    </div>
+    <Loader
+      type="Puff"
+      color="#79BA6E"
+      height={100}
+      width={100}
+      timeout={3000} //3 secs
+    />
   );
 };
-
-export default Loader;
+export default CSSLoader;
