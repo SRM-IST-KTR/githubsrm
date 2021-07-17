@@ -66,10 +66,10 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         return {"error": "wrong ID"}
 
     doc = entry.project.aggregate(
-        get_pagnation_agrgation(project_id=project_id, count=True))
+        get_pagnation_aggregate(project_id=project_id, count=True))
 
     doc = list(doc)
-   
+
     maintainer_count = 0
     contributor_count = 0
 
@@ -78,12 +78,19 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         contributor_count = doc[0]["contributor"][0]["count"]
     except Exception as e:
         pass
-    docs = list(entry.project.aggregate(get_pagnation_agrgation(project_id=project_id, count=False,
-                                                                maintainer_page=maintainer_page, contributor_page=contributor_page,
-                                                                maintainer_docs=maintainer_count, contributor_docs=contributor_count)))
+    try:
+        docs = list(entry.project.aggregate(get_pagnation_aggregate(project_id=project_id, count=False,
+                                                                    maintainer_page=maintainer_page, contributor_page=contributor_page,
+
+                                                                    maintainer_docs=maintainer_count, contributor_docs=contributor_count)))
+    except Exception as e:
+        return{
+            "error": "Page does not exist"
+        }
     return docs
 
-def get_pagnation_agrgation(count: bool, project_id, maintainer_docs=None, contributor_docs=None,
+
+def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contributor_docs=None,
                             maintainer_page=None, contributor_page=None, ):
 
     doc = [{
@@ -119,34 +126,34 @@ def get_pagnation_agrgation(count: bool, project_id, maintainer_docs=None, contr
         return doc
     else:
         doc = [{
-        '$match': {'_id': project_id}
-    },
-        {
-        '$lookup': {
-            'from': 'maintainer',
-            'pipeline': [
+            '$match': {'_id': project_id}
+        },
+            {
+            '$lookup': {
+                'from': 'maintainer',
+                'pipeline': [
                     {
                         '$match': {'is_admin_approved': True, 'project_id': project_id}
                     },
-             {"$skip": (int(maintainer_page)-1) * maintainer_docs},{"$limit": ITEMS_PER_PAGE}],
-            'as': 'maintainer'
-        }
-    },
-        {
-        '$lookup': {
-            'from': 'contributor',
-            'pipeline': [
+                    {"$skip": (int(maintainer_page)-1) * maintainer_docs}, {"$limit": ITEMS_PER_PAGE}],
+                'as': 'maintainer'
+            }
+        },
+            {
+            '$lookup': {
+                'from': 'contributor',
+                'pipeline': [
                     {
                         '$match': {
                             'is_admin_approved': True,
                             'project_id': project_id
                         }
-                    },{"$skip": (int(contributor_page)-1) * contributor_docs},{"$limit": ITEMS_PER_PAGE}],
+                    }, {"$skip": (int(contributor_page)-1) * contributor_docs}, {"$limit": ITEMS_PER_PAGE}],
 
-            'as': 'contributor'
+                'as': 'contributor'
+            }
         }
-    }
-    ]
+        ]
     return doc
 
 
