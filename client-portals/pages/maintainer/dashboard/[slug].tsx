@@ -56,19 +56,16 @@ const ProjectDetail = () => {
     const { slug } = router.query;
     const token = sessionStorage.getItem("token");
     instance
-      .get(
-        `maintainer/projects?projectId=${slug}&contributor=true&maintainer=1`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      .get(`maintainer/projects?projectId=${slug}&contributor=1&maintainer=1`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
-        setContributorsData(res.data.contributor);
-        setProjectName(res.data.project_name);
-        setProjectId(res.data._id);
-        setMaintainers(res.data.maintainer);
+        setContributorsData(res.data[0].contributor);
+        setProjectName(res.data[0].project_name);
+        setProjectId(res.data[0]._id);
+        setMaintainers(res.data[0].maintainer);
         setLoading(false);
       })
       .catch((err) => {

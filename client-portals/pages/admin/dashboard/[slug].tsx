@@ -28,13 +28,13 @@ const MaintainerPage = () => {
     }
   }, [authContext]);
 
-  const acceptMaintainerHandler = async (project_id, maintainer_id) => {
+  const acceptMaintainerHandler = async (project_id, maintainer_id, email) => {
     const recaptchaToken = await getRecaptchaToken("post");
     const token = sessionStorage.getItem("token");
     await instance
       .post(
         "admin/projects?role=maintainer",
-        { project_id: project_id, maintainer_id: maintainer_id },
+        { project_id: project_id, maintainer_id: maintainer_id, email },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -111,7 +111,9 @@ const MaintainerPage = () => {
               </div>
             ) : (
               <button
-                onClick={() => acceptMaintainerHandler(projectId, person._id)}
+                onClick={() =>
+                  acceptMaintainerHandler(projectId, person._id, person.email)
+                }
                 className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
               >
                 Approve Maintainer

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Formik, Form, FormikState } from "formik";
+import { Formik, Form, FormikState, Field } from "formik";
 import { ResetPasswordData, SetPasswordData } from "../../../utils/interfaces";
 import {
   resetPasswordValidation,
@@ -16,11 +16,11 @@ import Loading from "../../../utils/icons/loading";
 
 const ResetPassword = ({ action, queryToken }) => {
   //@ts-ignore
-  const initialValuesReset: { email: string } = {
+  const initialValuesReset: ResetPasswordData = {
     email: "",
   };
   //@ts-ignore
-  const initialValuesSet: { password: string } = {
+  const initialValuesSet: SetPasswordData = {
     password: "",
   };
 
