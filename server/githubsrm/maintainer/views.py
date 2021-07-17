@@ -115,15 +115,21 @@ class Login(APIView):
         doc_list = list(entry.find_all_Maintainer_with_email(
             request.data["email"]))
 
-        payload = {}
-        payload["email"] = doc_list[0]["email"]
-        payload["name"] = doc_list[0]["name"]
-        payload["project_id"] = [i["project_id"] for i in doc_list]
+        if doc_list:
 
-        if jwt := key.issue_key(payload):
-            return JsonResponse(data={"key": jwt}, status=status.HTTP_200_OK)
-        else:
-            return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
+            payload = {}
+            payload["email"] = doc_list[0]["email"]
+            payload["name"] = doc_list[0]["name"]
+            payload["project_id"] = [i["project_id"] for i in doc_list]
+
+            if jwt := key.issue_key(payload):
+                return JsonResponse(data={"key": jwt}, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
+
+        return JsonResponse(data={
+            "error": "Email not found"
+        }, status=400)
 
 
 class SetPassword(APIView):
