@@ -203,7 +203,7 @@ class ProjectsAdmin(APIView):
                                         "project_name": project["project_name"],
                                         "email": maintainer["email"]
                                     }):
-                                Thread(service.wrapper_email, kwargs={
+                                Thread(target=service.wrapper_email, kwargs={
                                     "role": "new_maintainer_notification",
                                     "data": {
                                         "name": "Maintainer",
@@ -231,7 +231,7 @@ class ProjectsAdmin(APIView):
                                         "reset_token": password,
                                         "email": maintainer["email"]
                                     }):
-                                Thread(service.wrapper_email, kwargs={
+                                Thread(target=service.wrapper_email, kwargs={
                                     "role": "new_maintainer_notification",
                                     "data": {
                                         "name": "Maintainer",
@@ -264,9 +264,13 @@ class ProjectsAdmin(APIView):
                                                     private=validate.get("private")):
 
                     project, maintainer = details
+                    email_document = entry.get_all_maintainer_emails(
+                        project=project)
 
+                    email_document["email"].append(maintainer.pop("email"))
+                    maintainer["name"] = "Maintainer(s)"
                     if service.wrapper_email(
-                            role="project_approval", data={**project, **maintainer}):
+                            role="project_approval", data={**project, **maintainer, **email_document}, send_all=True):
                         return JsonResponse(data={
                             "Approved Project": validate.get("project_id")
                         }, status=200)

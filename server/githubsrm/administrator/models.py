@@ -1,4 +1,5 @@
 import secrets
+from datetime import datetime
 from hashlib import sha256
 from typing import Any, Dict
 
@@ -6,7 +7,6 @@ import pymongo
 from django.conf import settings
 from dotenv import load_dotenv
 from pymongo import ReturnDocument
-from datetime import datetime
 
 load_dotenv()
 
@@ -95,7 +95,6 @@ class AdminEntry:
                 return False
             project = self._update_project(project_id=project_id,
                                            maintainer_id=maintainer_id)
-
             return project, maintainer
         return False
 
@@ -119,7 +118,7 @@ class AdminEntry:
         return project
 
     def check_existing_maintainer(self, email: str) -> bool:
-        """Check for existing maintainer to determine if new keys are generated of 
+        """Check for existing maintainer to determine if new keys are generated of
            or old keys are used.
 
         Args:
@@ -284,3 +283,24 @@ class AdminEntry:
         })
 
         return True
+
+    def get_all_maintainer_emails(self, project: Dict[str, Any]) -> Dict[str, Any]:
+        """Get all maintainer emails from projects
+
+        Args:
+            project (Dict[str, Any]): project document
+
+        Returns:
+            Dict[str, Any]: list of all maintainer emails
+        """
+
+        maintainer_ids = project["maintainer_id"]
+        maintainers = list(self.db.maintainer.find({
+            "_id": {"$in": maintainer_ids}
+        }))
+
+        doc = {}
+
+        doc["email"] = [maintainer["email"] for maintainer in maintainers]
+
+        return doc
