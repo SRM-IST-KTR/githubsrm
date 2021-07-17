@@ -1,11 +1,13 @@
+import pprint
+import random
 from math import ceil
 from typing import Any, Dict
-import random
+
 import jwt
-import pprint
+from administrator import jwt_keys
+
 from . import entry
 
-from administrator import jwt_keys
 entry = entry.db
 
 
@@ -54,10 +56,16 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
     Returns:
         doc: project/maintainer/contributor
     """
+    try:
 
-    projects_ids = decode_payload(
-        request.headers["Authorization"].split()[1])["project_id"]
-    project_id = request.GET["projectId"]
+        projects_ids = decode_payload(
+            request.headers["Authorization"].split()[1])["project_id"]
+        project_id = request.GET["projectId"]
+
+    except Exception as e:
+        return {
+            "error": "inconsistant data"
+        }
 
     maintainer_page, contributor_page = request.GET.get(
         "maintainer"), request.GET.get("contributor")
@@ -78,23 +86,23 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         contributor_count = doc[0]["contributor"][0]["count"]
     except Exception as e:
         pass
-    
+
     try:
         docs = list(entry.project.aggregate(get_pagnation_aggregate(project_id=project_id, count=False,
                                                                     maintainer_page=maintainer_page, contributor_page=contributor_page,
 
                                                                     maintainer_docs=maintainer_count, contributor_docs=contributor_count)))
+
+        docs.append({
+            "maintainerHasNextPage": (ITEMS_PER_PAGE * int(maintainer_page)) < int(maintainer_count),
+            "contributorHasNextPage": (ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
+        })
+
     except Exception as e:
         return{
             "error": "Page does not exist"
         }
-    print(doc)
-    docs.append({
-        "maintainerHasNextPage": (ITEMS_PER_PAGE * int(maintainer_page))  < int(maintainer_count),
-        "contributorHasNextPage": (ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
-    })
-    
-    
+
     return docs
 
 
@@ -163,7 +171,6 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
         }
         ]
 
-    
     return doc
 
 
@@ -176,7 +183,7 @@ def RequestSetPassword(email):
     }, update={
         "$set": {"reset": True}
     })
-    expiry =0.5
+    expiry = 0.5
     if not document:
         doc = {
             "email": email,
