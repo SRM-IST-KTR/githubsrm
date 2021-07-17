@@ -1,5 +1,8 @@
+from threading import Thread
+
 from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
+from maintainer.utils import RequestSetPassword
 from rest_framework import status
 from rest_framework.views import APIView
 
@@ -7,10 +10,8 @@ from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
-from maintainer.utils import RequestSetPassword
-from .utils import (
-    project_pagination, project_single_project, accepted_project_pagination
-)
+from .utils import (accepted_project_pagination, project_pagination,
+                    project_single_project)
 
 
 class RegisterAdmin(APIView):
@@ -153,7 +154,12 @@ class ProjectsAdmin(APIView):
                     if len(project['maintainer_id']) == 1:
                         if existing:
                             if service.wrapper_email(
-                                    role="existing_alpha_maintainer", data=maintainer):
+                                    role="project_submission_approval", data={
+                                        "name": maintainer["name"],
+                                        "project_name": project["name"],
+                                        "email": maintainer["email"],
+                                        "project_id": project["_id"]
+                                    }):
                                 return JsonResponse(data={
                                     "success": "Approved existing maintainer"
                                 }, status=200)
@@ -168,9 +174,15 @@ class ProjectsAdmin(APIView):
                         else:
                             password = RequestSetPassword(
                                 email=validate.get("email"))
-                            print(password)
+
                             if service.wrapper_email(
-                                    role="alpha_maintainer_w_password", data=maintainer):
+                                    role="project_submission_approval_w_password_link", data={
+                                        "name": maintainer["name"],
+                                        "project_name": project["name"],
+                                        "reset_token": password,
+                                        "email": maintainer["email"],
+                                        "project_id": project["_id"]
+                                    }):
                                 return JsonResponse(data={
                                     "success": "Approved new maintainer"
                                 }, status=200)
@@ -186,9 +198,20 @@ class ProjectsAdmin(APIView):
 
                         if existing:
                             if service.wrapper_email(
-                                    role="beta_maintainer_approval", data=maintainer):
-                                service.wrapper_email(
-                                    role="beta_maintainer_approval_to_alpha", data=None)
+                                    role="welcome_maintainer", data={
+                                        "name": maintainer["name"],
+                                        "project_name": project["name"],
+                                        "email": maintainer["email"]
+                                    }):
+                                Thread(service.wrapper_email, kwargs={
+                                    "role": "new_maintainer_notification",
+                                    "data": {
+                                        "name": "Maintainer",
+                                        "project_name": project["name"],
+                                        "beta_name": maintainer["name"],
+                                        "beta_email": maintainer["email"]
+                                    }
+                                }).start()
                                 return JsonResponse(data={
                                     "Approved existing maintainer": True
                                 }, status=200)
@@ -200,12 +223,22 @@ class ProjectsAdmin(APIView):
                             password = RequestSetPassword(
                                 email=validate.get("email"))
 
-                            print(password)
-
                             if service.wrapper_email(
-                                    role="beta_maintainer_approval_w_password", data=maintainer):
-                                service.wrapper_email(
-                                    role="beta_maintainer_approval_to_alpha", data=maintainer)
+                                    role="welcome_maintainer_w_password_link", data={
+                                        "name": maintainer["name"],
+                                        "project_name": project["name"],
+                                        "reset_token": password,
+                                        "email": maintainer["email"]
+                                    }):
+                                Thread(service.wrapper_email, kwargs={
+                                    "role": "new_maintainer_notification",
+                                    "data": {
+                                        "name": "Maintainer",
+                                        "project_name": project["name"],
+                                        "beta_name": maintainer["name"],
+                                        "beta_email": maintainer["email"]
+                                    }
+                                }).start()
 
                                 return JsonResponse(data={
                                     "Approved new maintainer": True

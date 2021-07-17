@@ -129,11 +129,14 @@ class Maintainer(APIView):
             if 'error' not in validate:
 
                 if 'project_id' in validate:
-                    # BETA MAINTAINER
+
                     if open_entry_checks.validate_beta_maintainer(doc=validate):
                         if id := open_entry.enter_beta_maintainer(doc=request.data):
 
-                            if service.wrapper_email(role='beta', data=validate):
+                            if service.wrapper_email(role='maintainer_received', data={
+                                "name": validate["name"],
+                                "project_name": validate["project_name"]
+                            }):
                                 Thread(target=service.sns, kwargs={'payload': {
                                     'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
                                         Details: \n \
@@ -155,7 +158,6 @@ class Maintainer(APIView):
                 if open_entry_checks.check_existing(description=validate['description'],
                                                     project_name=validate['project_name'],
                                                     project_url=validate['project_url']):
-                    # Enter alpha maintainer
 
                     return response.Response({
                         "error": "Project Exists"
@@ -166,10 +168,12 @@ class Maintainer(APIView):
                     validate['project_name'] = value[2]
                     validate['description'] = value[3]
 
-                    #! DON'T SEND PROJECT ID HERE WAIT FOR ADMIN APPROVAL SEND APPROVAL MAILS
-                    #! AFTER THE ALPHA MAINTAINER IS APPROVED.
+                    if service.wrapper_email(role='project_submission_confirmation', data={
+                        "project_name": validate["project_name"],
+                        "name": validate["name"],
+                        "project_description": validate["project_description"]
 
-                    if service.wrapper_email(role='alpha', data=validate):
+                    }):
                         Thread(target=service.sns, kwargs={'payload': {
                             'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
                                         Details: \n \
