@@ -1,7 +1,11 @@
 from math import ceil
 from typing import Any, Dict
+import random
 import jwt
+import pprint
 from . import entry
+
+from administrator import jwt_keys
 entry = entry.db
 
 
@@ -55,46 +59,113 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         request.headers["Authorization"].split()[1])["project_id"]
     project_id = request.GET["projectId"]
 
-    page_maintainer, page_contributor = request.GET.get(
+    maintainer_page, contributor_page = request.GET.get(
         "maintainer"), request.GET.get("contributor")
 
     if project_id not in projects_ids:
         return {"error": "wrong ID"}
 
-    project = entry.project.find_one({"_id": project_id})
-    if project:
-        try:
-            if page_maintainer:
-                maintainers = entry.maintainer.aggregate(pipeline=[
-                    {"$match": {"project_id": project_id}},
-                    {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
-                    {"$limit": ITEMS_PER_PAGE}
-                ])
+    doc = entry.project.aggregate(
+        get_pagnation_agrgation(project_id=project_id, count=True))
 
-                if maintainers:
-                    project["maintainer"] = maintainers
-                else:
-                    raise
+    doc = list(doc)
+   
+    maintainer_count = 0
+    contributor_count = 0
 
-            if page_contributor:
-                contributors = entry.contributor.aggregate(pipeline=[
-                    {"$match": {"interested_project": project_id}},
-                    {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
-                    {"$limit": ITEMS_PER_PAGE}
-                ])
+    try:
+        maintainer_count = doc[0]["maintainer"][0]["count"]
+        contributor_count = doc[0]["contributor"][0]["count"]
+    except Exception as e:
+        pass
+    docs = list(entry.project.aggregate(get_pagnation_agrgation(project_id=project_id, count=False,
+                                                                maintainer_page=maintainer_page, contributor_page=contributor_page,
+                                                                maintainer_docs=maintainer_count, contributor_docs=contributor_count)))
+    return docs
 
-                if contributors:
-                    project["contributor"] = contributors
+def get_pagnation_agrgation(count: bool, project_id, maintainer_docs=None, contributor_docs=None,
+                            maintainer_page=None, contributor_page=None, ):
 
-                else:
-                    raise
-        except Exception as e:
-            return {
-                "error": "contributor and maintainers not found"
-            }    
-
-        return project
-    
-    return {
-        "error": "project not found"
+    doc = [{
+        '$match': {'_id': project_id}
+    },
+        {
+        '$lookup': {
+            'from': 'maintainer',
+            'pipeline': [
+                    {
+                        '$match': {'is_admin_approved': True, 'project_id': project_id}
+                    }, {"$count": "count"}
+            ],
+            'as': 'maintainer'
+        }
+    },
+        {
+        '$lookup': {
+            'from': 'contributor',
+            'pipeline': [
+                    {
+                        '$match': {
+                            'is_admin_approved': True,
+                            'project_id': project_id
+                        }
+                    }, {"$count": "count"}
+            ],
+            'as': 'contributor'
+        }
     }
+    ]
+    if count:
+        return doc
+    else:
+        doc = [{
+        '$match': {'_id': project_id}
+    },
+        {
+        '$lookup': {
+            'from': 'maintainer',
+            'pipeline': [
+                    {
+                        '$match': {'is_admin_approved': True, 'project_id': project_id}
+                    },
+             {"$skip": (int(maintainer_page)-1) * maintainer_docs},{"$limit": ITEMS_PER_PAGE}],
+            'as': 'maintainer'
+        }
+    },
+        {
+        '$lookup': {
+            'from': 'contributor',
+            'pipeline': [
+                    {
+                        '$match': {
+                            'is_admin_approved': True,
+                            'project_id': project_id
+                        }
+                    },{"$skip": (int(contributor_page)-1) * contributor_docs},{"$limit": ITEMS_PER_PAGE}],
+
+            'as': 'contributor'
+        }
+    }
+    ]
+    return doc
+
+
+def RequestSetPassword(email):
+    """
+    When new user is created or when the user requests a change in password
+    """
+    document = entry.maintainer_credentials.find_one_and_update({
+        "email": email
+    }, update={
+        "$set": {"reset": True}
+    })
+
+    if not document:
+        doc = {
+            "email": email,
+            "password": "".join(random.choice("ABHISHEK") for i in range(10)),
+            "reset": True
+        }
+        entry.maintainer_credentials.insert_one(doc)
+
+    return jwt_keys.issue_key({"email": email}, expiry=0.5)
