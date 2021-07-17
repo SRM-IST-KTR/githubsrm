@@ -1,11 +1,13 @@
 
 import os
+import pathlib
 from typing import Any, Dict, TypedDict
+
+import boto3
 import httpx
 from dotenv import load_dotenv
-import boto3
-import pathlib
 from jinja2 import Template
+
 from .models import Entry
 
 open_entry = Entry()
@@ -101,7 +103,7 @@ class BotoService:
             print(e)
             return
 
-    def wrapper_email(self, role: str, data: Dict[str, Any]) -> bool:
+    def wrapper_email(self, role: str, data: Dict[str, Any], send_all=False) -> bool:
         """Send Emails to contributors and maintainers
 
         Args:
@@ -113,18 +115,31 @@ class BotoService:
         client = boto3.client('sesv2', region_name='ap-south-1')
 
         try:
-            client.send_email(
-                FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
-                Destination={
-                    'ToAddresses': [
-                        data.get('email'),
+            if send_all:
+                client.send_email(
+                    FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
+                    Destination={
+                        'ToAddresses': data.get("email"),
+                    },
+                    ReplyToAddresses=[
+                        'community@githubsrm.tech',
                     ],
-                },
-                ReplyToAddresses=[
-                    'community@githubsrm.tech',
-                ],
-                Content=self.get_email_content(role=role, data=data)
-            )
+                    Content=self.get_email_content(role=role, data=data)
+                )
+            else:
+                client.send_email(
+                    FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
+                    Destination={
+                        'ToAddresses': [
+                            data.get('email'),
+                        ],
+                    },
+                    ReplyToAddresses=[
+                        'community@githubsrm.tech',
+                    ],
+                    Content=self.get_email_content(role=role, data=data)
+                )
+
             return True
 
         except Exception as e:
