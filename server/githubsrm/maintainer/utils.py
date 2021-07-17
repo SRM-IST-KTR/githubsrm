@@ -61,36 +61,40 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
     if project_id not in projects_ids:
         return {"error": "wrong ID"}
 
-    doc = {}
+    project = entry.project.find_one({"_id": project_id})
+    if project:
+        try:
+            if page_maintainer:
+                maintainers = entry.maintainer.aggregate(pipeline=[
+                    {"$match": {"project_id": project_id}},
+                    {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
+                    {"$limit": ITEMS_PER_PAGE}
+                ])
 
-    try:
-        if page_maintainer:
-            maintainers = entry.maintainer.aggregate(pipeline=[
-                {"$match": {"project_id": project_id}},
-                {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
-                {"$limit": ITEMS_PER_PAGE}
-            ])
+                if maintainers:
+                    project["maintainer"] = maintainers
+                else:
+                    raise
 
-            if maintainers:
-                doc = maintainers
-            else:
-                raise
+            if page_contributor:
+                contributors = entry.contributor.aggregate(pipeline=[
+                    {"$match": {"interested_project": project_id}},
+                    {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
+                    {"$limit": ITEMS_PER_PAGE}
+                ])
 
-        if page_contributor:
-            contributors = entry.contributor.aggregate(pipeline=[
-                {"$match": {"interested_project": project_id}},
-                {"$skip": (page_maintainer-1) * ITEMS_PER_PAGE},
-                {"$limit": ITEMS_PER_PAGE}
-            ])
+                if contributors:
+                    project["contributor"] = contributors
 
-            if contributors:
-                doc = {**doc, **contributors}
+                else:
+                    raise
+        except Exception as e:
+            return {
+                "error": "contributor and maintainers not found"
+            }    
 
-            else:
-                raise
-    except Exception as e:
-        return {
-            "error": "contributor and maintainers not found"
-        }    
-
-    return doc
+        return project
+    
+    return {
+        "error": "project not found"
+    }

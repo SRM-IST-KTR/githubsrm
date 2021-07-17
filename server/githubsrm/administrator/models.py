@@ -151,7 +151,8 @@ class AdminEntry:
         hashed_password = sha256(password.encode()).hexdigest()
 
         doc = {"email": email,
-               "password": hashed_password}
+               "password": hashed_password,
+               "reset":True}
 
         self.db.maintainer_credentials.insert_one(document=doc)
 

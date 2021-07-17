@@ -127,7 +127,7 @@ class Login(APIView):
 
 
 
-class ResetPassword(APIView):
+class SetPassword(APIView):
 
     throttle_classes = [PostThrottle]
 
@@ -156,7 +156,7 @@ class ResetPassword(APIView):
                     "error": str(validate.get("error"))
                 }, status=400)
 
-            if entry.update_password(email=request.data.get("email")):
+            if entry.set_password(email=request.data.get("email")):
                 return JsonResponse(data={
                     "updated password": True
                 }, status=200)

@@ -1,9 +1,10 @@
 
 from hashlib import sha256
-from typing import Dict, Iterable
+from typing import Iterable, Dict, Any
 import pymongo
 from django.conf import settings
-from pymongo.database import Database
+from apis import service
+from administrator import jwt_keys
 
 
 class Entry:
@@ -44,14 +45,14 @@ class Entry:
 
         return False
 
-    def find_Maintainer_with_email(self, email) -> Dict:
+    def find_Maintainer_with_email(self, email:str) -> Dict[str, Any]:
         """To find maintainer with email
 
         Args:
             email
 
         Returns:
-            Iterable
+            Dict
         """
         return self.db.maintainer_credentials.find_one({"email": email})
 
@@ -66,31 +67,32 @@ class Entry:
         """
         return self.db.maintainer.find({"email": email})
 
-    def update_password(self, current_password: str, new_password: str,
-                        maintainer_email: str) -> bool:
-        """Change password if current_password is correct
+    def reset_password(self, key: str, password: str) -> bool:
+        """Set maintainer password
 
         Args:
-            current_password (str): current maintainer password
-            new_password (str): new maintainer password
-            maintainer_email (str): srm email
+            key (str): jwt key obtained from request
+            password (str): new password
+
         Returns:
-            bool
+            bool:
         """
 
-        current_password = sha256(current_password.encode()).hexdigest()
-        new_password = sha256(new_password.encode()).hexdigest()
+        decode = jwt_keys.verify_key(key=key)
+        if decode:
+            if "email" not in decode:
+                return False
 
-        verify = self.db.maintainer_credentials.find_one_and_update({
-            "$and": [
-                {"email": maintainer_email},
-                {"password": current_password}
-            ]
-        }, update={
-            "$set": {"password": new_password}
-        })
+            maintainer = self.db.maintainer_credentials.find_one_and_update({
+                "$and": [
+                    {"email": decode.get("email")},
+                    {"reset": True}
+                ]
+            }, update={
+                "$set": {"password": sha256(password.encode()).hexdigest(), "reset": False}
+            })
 
-        if verify:
-            return True
-
+            if maintainer:
+                return True
+            return False
         return False
