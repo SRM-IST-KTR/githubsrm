@@ -87,8 +87,8 @@ const ProjectDetail = () => {
             (m) => m.name !== authContext.username
           )}
         />
-        <div className="overflow-scroll w-full">
-          {contributorsData.length > 0 ? (
+        <div className="overflow-auto w-full">
+          {contributorsData?.length > 0 ? (
             <table className="table text-white border-separate space-y-6 text-sm">
               <thead className="bg-base-teal text-white">
                 <tr>
@@ -160,15 +160,15 @@ const ProjectDetail = () => {
               </tbody>
             </table>
           ) : (
-            <h2 className="text-4xl font-extrabold text-white mb-5">
-              No contributor applications yet!
+            <h2 className="text-4xl font-extrabold text-white mb-5 no-scrollbar">
+              No contributor applications yet!!
             </h2>
           )}
         </div>
       </div>
     </Layout>
   ) : (
-    <div className="min-h-screen flex justify-center p-5 bg-base-blue">
+    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
       <CSSLoader />
     </div>
   );

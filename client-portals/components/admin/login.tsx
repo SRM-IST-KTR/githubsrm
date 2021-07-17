@@ -13,6 +13,7 @@ const AdminLogin = () => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState<boolean>(false);
 
+  //@ts-ignore
   const initialValues: AdminLoginData = {
     email: "",
     password: "",

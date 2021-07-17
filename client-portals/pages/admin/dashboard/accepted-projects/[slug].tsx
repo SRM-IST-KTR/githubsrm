@@ -9,6 +9,7 @@ import { Layout } from "../../../../components/shared";
 import Link from "next/link";
 import { getRecaptchaToken } from "../../../../services/recaptcha";
 import { ContributorsProps } from "../../../../utils/interfaces";
+import CSSLoader from "../../../../components/shared/loader";
 
 const headings = [
   "Name",
@@ -86,10 +87,8 @@ const ContributorsPage = () => {
   }, [accepted]);
 
   return loading ? (
-    <div className="min-h-screen flex justify-center p-5 bg-base-blue">
-      <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
-        loading..
-      </h1>
+    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
+      <CSSLoader />
     </div>
   ) : (
     <Layout type="admin">
@@ -97,7 +96,7 @@ const ContributorsPage = () => {
         {projectName}
       </h1>
 
-      <div className="overflow-scroll w-full">
+      <div className="overflow-auto w-full">
         {contributorsData[0] ? (
           <table className="table text-white border-separate space-y-6 text-sm">
             <thead className="bg-base-teal text-white">
@@ -193,7 +192,7 @@ const ContributorsPage = () => {
             </tbody>
           </table>
         ) : (
-          <h1 className="text-5xl text-gray-200 mt-10">
+          <h1 className="text-5xl text-gray-200 mt-10 overflow-auto no-scrollbar">
             No Contributors Yet!!
           </h1>
         )}

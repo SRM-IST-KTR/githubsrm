@@ -10,13 +10,16 @@ import {
 import { Input, Layout } from "../../shared";
 import Markdown from "react-markdown";
 import { postResetPassword, postSetPassword } from "../../../services/api";
-import { successToast } from "../../../utils/functions/toast";
+import { successToast, errToast } from "../../../utils/functions/toast";
+import jwt from "jsonwebtoken";
+import Loading from "../../../utils/icons/loading";
 
 const ResetPassword = ({ action, queryToken }) => {
+  //@ts-ignore
   const initialValuesReset: { email: string } = {
     email: "",
   };
-
+  //@ts-ignore
   const initialValuesSet: { password: string } = {
     password: "",
   };
@@ -41,11 +44,17 @@ const ResetPassword = ({ action, queryToken }) => {
     resetForm: (nextState?: Partial<FormikState<SetPasswordData>>) => void
   ) => {
     setLoading(true);
-    const res = await postSetPassword(values, queryToken);
-    setLoading(false);
-    if (res) {
-      successToast("password will be set");
-      resetForm({ values: { ...initialValuesSet } });
+    var decodedToken = jwt.decode(queryToken);
+    var dateNow = new Date();
+    if (decodedToken.exp && decodedToken.exp > dateNow.getTime() / 1000) {
+      const res = await postSetPassword(values, queryToken);
+      setLoading(false);
+      if (res) {
+        successToast("password will be set");
+        resetForm({ values: { ...initialValuesSet } });
+      }
+    } else {
+      errToast("Expired");
     }
   };
 
@@ -80,7 +89,13 @@ const ResetPassword = ({ action, queryToken }) => {
                       : "cursor-pointer"
                   } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
                 >
-                  {loading ? "loading.." : "Submit"}
+                  {loading ? (
+                    <span className="flex w-6 mx-auto">
+                      <Loading />
+                    </span>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
               </div>
               {Object.keys(errors).map((error) => {
@@ -124,7 +139,13 @@ const ResetPassword = ({ action, queryToken }) => {
                       : "cursor-pointer"
                   } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
                 >
-                  {loading ? "loading.." : "Submit"}
+                  {loading ? (
+                    <span className="flex w-6 mx-auto">
+                      <Loading />
+                    </span>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
               </div>
               {Object.keys(errors).map((error) => {

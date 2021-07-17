@@ -20,6 +20,7 @@ const MaintainerLogin = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const authContext = useContext(AuthContext);
 
+  //@ts-ignore
   const initialValues: MaintainerLoginData = {
     email: "",
     password: "",

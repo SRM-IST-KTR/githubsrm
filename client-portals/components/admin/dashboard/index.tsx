@@ -63,7 +63,7 @@ const ProjectApplications = () => {
 
   return !loading ? (
     <Layout type="admin">
-      <div className="overflow-scroll">
+      <div className="overflow-auto">
         <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
         <table className="table text-white border-separate space-y-6 text-sm">
           <thead className="bg-base-teal text-white">
@@ -111,12 +111,14 @@ const ProjectApplications = () => {
                     <div>{data.private ? "private" : "public"}</div>
                   </div>
                 </td>
-                <td className="p-3 w-44">
-                  <div className="flex align-items-center  overflow-scroll">
-                    <div>{data.description}</div>
+                <td className="p-3">
+                  <div className="flex max-w-3xl overflow-auto word-wrap no-scrollbar">
+                    <div className="overflow-auto word-wrap no-scrollbar">
+                      {data.description}
+                    </div>
                   </div>
                 </td>
-                <td className="p-3 ">
+                <td className="p-3">
                   {data.is_admin_approved ? (
                     <TiTick className="text-green-500 text-4xl" />
                   ) : (
@@ -166,7 +168,9 @@ const ProjectApplications = () => {
       </div>
     </Layout>
   ) : (
-    <CSSLoader />
+    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
+      <CSSLoader />
+    </div>
   );
 };
 

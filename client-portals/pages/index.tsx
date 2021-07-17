@@ -15,6 +15,7 @@ const IndexPage = () => {
       }
     }
   }, [authContext]);
+
   return (
     <div className="min-h-screen bg-base-blue flex flex-col justify-center items-center">
       <Link href="/maintainer">

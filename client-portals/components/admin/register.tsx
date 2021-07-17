@@ -14,6 +14,7 @@ const AdminRegister = () => {
   const [authToken, setAuthToken] = useState<string>("");
   const [loding, setLoading] = useState<boolean>(true);
 
+  //@ts-ignore
   const initialValues: AdminRegisterData = {
     email: "",
     password: "",
@@ -24,7 +25,6 @@ const AdminRegister = () => {
     resetForm: (nextState?: Partial<FormikState<AdminRegisterData>>) => void
   ) => {
     setLoading(true);
-    const authToken = sessionStorage.getItem("token");
     const res = await postAdminRegister(values, authToken);
     if (res) {
       successToast("Admin registered successfully!");

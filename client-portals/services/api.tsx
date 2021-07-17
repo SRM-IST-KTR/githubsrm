@@ -11,7 +11,7 @@ import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
 
 const instance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
+  baseURL: `https://dev.githubsrm.tech`,
 });
 
 export const postAcceptProjectHandler = async (

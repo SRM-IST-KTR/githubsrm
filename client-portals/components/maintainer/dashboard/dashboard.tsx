@@ -6,6 +6,7 @@ import instance from "../../../services/api";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import { MaintainerProjectsProps } from "../../../utils/interfaces";
+import CSSLoader from "../../shared/loader";
 
 const index = () => {
   const [projects, setProjects] = useState<MaintainerProjectsProps[]>([]);
@@ -35,10 +36,8 @@ const index = () => {
   }, [accepted, pageNo]);
 
   return loading ? (
-    <div className="min-h-screen flex justify-center p-5 bg-base-blue">
-      <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
-        loading..
-      </h1>
+    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
+      <CSSLoader />
     </div>
   ) : (
     <Layout type="maintainer">

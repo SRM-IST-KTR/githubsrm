@@ -9,7 +9,7 @@ const AcceptedProjectsPage = () => {
 
   useEffect(() => {
     if (!authContext.isAuth || !authContext.isAdmin) {
-      router.replace("admin/dashboard/accepted-projects", "/");
+      router.replace("/");
     }
   }, [authContext]);
 
