@@ -45,7 +45,8 @@ class EntryCheck:
         return
 
     def check_contributor(self, interested_project: str,
-                          reg_number: str) -> bool:
+                          reg_number: str, github_id: str,
+                          srm_email: str) -> bool:
         """Existing contributor to same project
 
         Args:
@@ -63,13 +64,15 @@ class EntryCheck:
 
         result = self.db.contributor.find_one({"$and": [
             {"interested_project": interested_project},
-            {"reg_number": reg_number}
-        ]})
+            {"$or": [{"reg_number": reg_number},
+                     {"github_id": github_id}, {"srm_email": srm_email}]
+             }]})
 
         results = self.db.maintainer.find_one({
             "$and": [
-                {"reg_number": reg_number},
-                {"project_id": interested_project}
+                {"project_id": interested_project},
+                {"$or": [{"reg_number": reg_number},
+                         {"github_id": github_id}, {"srm_email": srm_email}]}
             ]
         })
 
@@ -86,13 +89,17 @@ class EntryCheck:
 
         Args:
             github_id (str): beta github ID
-            project_id (str): project ID 
+            project_id (str): project ID
         Returns:
             bool
         """
 
-        result = self.db.maintainer.count_documents(
-            {"github_id": github_id, "project_id": project_id, "srm_email": srm_email})
+        result = self.db.maintainer.count_documents({
+            "project_id": project_id,
+            "$or": [
+                {"github_id": github_id}, {"srm_email": srm_email}
+            ]
+        })
 
         if result >= 1:
             return True
@@ -113,7 +120,7 @@ class EntryCheck:
         if self.check_existing_beta(github_id=doc.get('github_id'),
                                     project_id=doc.get('project_id'),
                                     srm_email=doc.get('srm_email')):
-            return
+            return None
 
         if self.check_approved_project(
                 identifier=doc.get('project_id')

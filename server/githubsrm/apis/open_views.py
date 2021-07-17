@@ -10,9 +10,8 @@ from django.template.exceptions import TemplateDoesNotExist
 from rest_framework import response, status
 from rest_framework.views import APIView
 
-from apis import (
-    open_entry, open_entry_checks, service, PostThrottle, check_token
-)
+from apis import (PostThrottle, check_token, open_entry, open_entry_checks,
+                  service)
 
 from .definitions import *
 from .utils import conditional_render
@@ -58,7 +57,8 @@ class Contributor(APIView):
 
             if 'error' not in validate:
                 if open_entry_checks.check_contributor(validate['interested_project'],
-                                                       validate['reg_number']):
+                                                       validate['reg_number'], validate["github_id"],
+                                                       validate["srm_email"]):
                     return response.Response({
                         "invalid data": "Contributor for project exists / Project not approved"
                     }, status=status.HTTP_400_BAD_REQUEST)
@@ -133,7 +133,7 @@ class Maintainer(APIView):
                     if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
                         if id := open_entry.enter_beta_maintainer(doc=request.data):
-                            #TODO ROLL BACK
+                            # TODO ROLL BACK
                             if service.wrapper_email(role='maintainer_received', data={
                                 "name": validate["name"],
                                 "project_name": details["project_name"],
