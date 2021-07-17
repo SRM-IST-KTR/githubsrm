@@ -156,7 +156,7 @@ class ProjectsAdmin(APIView):
                             if service.wrapper_email(
                                     role="project_submission_approval", data={
                                         "name": maintainer["name"],
-                                        "project_name": project["name"],
+                                        "project_name": project["project_name"],
                                         "email": maintainer["email"],
                                         "project_id": project["_id"]
                                     }):
@@ -178,10 +178,10 @@ class ProjectsAdmin(APIView):
                             if service.wrapper_email(
                                     role="project_submission_approval_w_password_link", data={
                                         "name": maintainer["name"],
-                                        "project_name": project["name"],
+                                        "project_name": project["project_name"],
                                         "reset_token": password,
                                         "email": maintainer["email"],
-                                        "project_id": project["_id"]
+                                        "project_id": project["_id"],
                                     }):
                                 return JsonResponse(data={
                                     "success": "Approved new maintainer"
@@ -200,14 +200,15 @@ class ProjectsAdmin(APIView):
                             if service.wrapper_email(
                                     role="welcome_maintainer", data={
                                         "name": maintainer["name"],
-                                        "project_name": project["name"],
+                                        "project_name": project["project_name"],
                                         "email": maintainer["email"]
                                     }):
                                 Thread(service.wrapper_email, kwargs={
                                     "role": "new_maintainer_notification",
                                     "data": {
                                         "name": "Maintainer",
-                                        "project_name": project["name"],
+                                        "email": request.data["email"],
+                                        "project_name": project["project_name"],
                                         "beta_name": maintainer["name"],
                                         "beta_email": maintainer["email"]
                                     }
@@ -226,7 +227,7 @@ class ProjectsAdmin(APIView):
                             if service.wrapper_email(
                                     role="welcome_maintainer_w_password_link", data={
                                         "name": maintainer["name"],
-                                        "project_name": project["name"],
+                                        "project_name": project["project_name"],
                                         "reset_token": password,
                                         "email": maintainer["email"]
                                     }):
@@ -234,7 +235,8 @@ class ProjectsAdmin(APIView):
                                     "role": "new_maintainer_notification",
                                     "data": {
                                         "name": "Maintainer",
-                                        "project_name": project["name"],
+                                        "email": request.data["email"],
+                                        "project_name": project["project_name"],
                                         "beta_name": maintainer["name"],
                                         "beta_email": maintainer["email"]
                                     }
@@ -279,10 +281,18 @@ class ProjectsAdmin(APIView):
                 }, status=400)
 
             else:
-                if contributor := entry.approve_contributor(project_id=validate.get("project_id"),
-                                                            contributor_id=validate.get("contributor_id")):
+                if details := entry.approve_contributor(project_id=validate.get("project_id"),
+                                                        contributor_id=validate.get("contributor_id")):
+
+                    contributor, project = details
+
                     if service.wrapper_email(
-                            role="approve_contributor", data=contributor):
+                            role="contributor_approval", data={
+                                "name": contributor["name"],
+                                "email": contributor["email"],
+                                "project_name": project["project_name"],
+                                "project_url": project["project_url"]
+                            }):
                         return JsonResponse(data={
                             "admin_approved": True
                         }, status=200)
