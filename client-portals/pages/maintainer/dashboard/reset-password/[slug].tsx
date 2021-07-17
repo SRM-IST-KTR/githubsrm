@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
-import { ResetPassword } from "../../../components/maintainer/dashboard";
-import { AuthContext } from "../../../context/AuthContext";
+import { ResetPassword } from "../../../../components/maintainer/dashboard";
+import { AuthContext } from "../../../../context/AuthContext";
 import { useRouter } from "next/router";
 
 const ProfilePage = () => {
@@ -13,7 +13,9 @@ const ProfilePage = () => {
     }
   }, [authContext]);
 
-  return <ResetPassword />;
+  const { slug } = router.query;
+
+  return <ResetPassword action={slug} />;
 };
 
 export default ProfilePage;

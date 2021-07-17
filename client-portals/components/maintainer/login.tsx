@@ -1,4 +1,6 @@
-import { Formik, Form } from "formik";
+import React, { useState } from "react";
+import { Formik, Form, FormikState } from "formik";
+import Markdown from "react-markdown";
 import { MaintainerLoginData } from "../../utils/interfaces";
 import {
   maintainerLoginValidation,
@@ -14,12 +16,16 @@ import { useContext } from "react";
 
 const MaintainerLogin = () => {
   const authContext = useContext(AuthContext);
-  const initialValues: { email: string; password: string } = {
+
+  const initialValues: MaintainerLoginData = {
     email: "",
     password: "",
   };
 
-const submitValues = async (values: MaintainerLoginData) => {
+  const submitValues = async (
+    values: MaintainerLoginData,
+    resetForm: (nextState?: Partial<FormikState<MaintainerLoginData>>) => void
+  ) => {
     const recaptchaToken = await getRecaptchaToken("post");
     await instance
       .post("maintainer/login", values, {
@@ -33,6 +39,7 @@ const submitValues = async (values: MaintainerLoginData) => {
           authContext.decode();
           successToast("Logged In successfully!");
           Router.push("maintainer/dashboard");
+          resetForm({ values: { ...initialValues } });
         }
       })
       .catch((err) => {
@@ -48,24 +55,43 @@ const submitValues = async (values: MaintainerLoginData) => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={submitValues}
+        onSubmit={(values, { resetForm }) => submitValues(values, resetForm)}
         validationSchema={maintainerLoginValidation}
       >
-        <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-          {maintainerLoginInputs.map((input) => (
-            <div className="border-2 border-gray-700 rounded my-4 p-4">
-              <Input key={input.id} {...input} />
+        {({ errors, touched }) => (
+          <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+            {maintainerLoginInputs.map((input) => (
+              <div className="border-2 border-gray-700 rounded my-4 p-4">
+                <Input key={input.id} {...input} />
+              </div>
+            ))}
+            <div className="flex justify-center">
+              <button
+                disabled={Object.keys(errors).length > 0}
+                type="submit"
+                className={`${
+                  Object.keys(errors).length > 0
+                    ? "cursor-not-allowed bg-opacity-70"
+                    : "cursor-pointer"
+                } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+              >
+                Submit
+              </button>
             </div>
-          ))}
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="rounded-xl font-bold items-center my-3 bg-base-teal p-3"
-            >
-              Submit
-            </button>
-          </div>
-        </Form>
+            {Object.keys(errors).map((error) => {
+              if (touched[error]) {
+                return (
+                  <Markdown
+                    key={error.trim()}
+                    className="text-red-500 my-2 lg:my-1"
+                  >
+                    {errors[error] as string}
+                  </Markdown>
+                );
+              }
+            })}
+          </Form>
+        )}
       </Formik>
     </div>
   );

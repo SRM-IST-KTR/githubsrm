@@ -5,6 +5,7 @@ import {
   adminRegisterValidation,
   adminLoginValidation,
   resetPasswordValidation,
+  setPasswordValidation,
 } from "./constants";
 
 export interface InputClassNameProps {
@@ -92,3 +93,6 @@ export interface AdminLoginData
 
 export interface ResetPasswordData
   extends Yup.InferType<typeof resetPasswordValidation> {}
+
+export interface SetPasswordData
+  extends Yup.InferType<typeof setPasswordValidation> {}
