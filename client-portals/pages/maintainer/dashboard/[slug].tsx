@@ -8,7 +8,13 @@ import { successToast, errToast } from "../../../utils/functions/toast";
 import { AuthContext } from "../../../context/authContext";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
+import {
+  ContributorProps,
+  OtherMaintainersProps,
+} from "../../../utils/interfaces";
 import Link from "next/link";
+import Loader from "../../../components/shared/loader";
+import { postAcceptContributor } from "../../../services/api";
 
 const headings = [
   "Name",
@@ -21,8 +27,10 @@ const headings = [
 ];
 
 const ProjectDetail = () => {
-  const [contributorsData, setContributorsData] = useState([]);
-  const [maintainers, setMaintainers] = useState([]);
+  const [contributorsData, setContributorsData] = useState<ContributorProps[]>(
+    []
+  );
+  const [maintainers, setMaintainers] = useState<OtherMaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -37,26 +45,13 @@ const ProjectDetail = () => {
   }, [authContext]);
 
   const acceptContributorHandler = async (project_id, contributor_id) => {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance
-      .post(
-        "maintainer/projects?role=contributor",
-        { project_id: project_id, contributor_id: contributor_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": recaptchaToken,
-          },
-        }
-      )
-      .then((res) => {
-        setAccepted(true);
-        successToast("Contributor Approved sucessfully!");
-      })
-      .catch((err) => {
-        errToast(err.message);
-      });
+    setLoading(true);
+    const res = await postAcceptContributor(project_id, contributor_id);
+    if (res) {
+      setAccepted(true);
+      successToast("Contributor Approved sucessfully!");
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -176,9 +171,7 @@ const ProjectDetail = () => {
     </Layout>
   ) : (
     <div className="min-h-screen flex justify-center p-5 bg-base-blue">
-      <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
-        loading..
-      </h1>
+      <Loader />
     </div>
   );
 };

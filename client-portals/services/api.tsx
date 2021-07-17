@@ -132,6 +132,30 @@ export const postResetPassword = async (
   }
 };
 
+export const postAcceptContributor = async (
+  project_id,
+  contributor_id
+): Promise<boolean> => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.post(
+      "maintainer/projects?role=contributor",
+      { project_id: project_id, contributor_id: contributor_id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
+        },
+      }
+    );
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
 export const errorHandler = (err?: AxiosError | any) => {
   let errMessage: string = "Oops! Something went wrong.";
   if (err) {
