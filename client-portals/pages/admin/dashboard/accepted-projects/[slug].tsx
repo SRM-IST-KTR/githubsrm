@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import { AuthContext } from "../../../../context/AuthContext";
+import { AuthContext } from "../../../../context/authContext";
 import instance from "../../../../services/api";
 import { successToast, errToast } from "../../../../utils/functions/toast";
 import { TiTick } from "react-icons/ti";
@@ -79,7 +79,6 @@ const ContributorsPage = () => {
         setProjectName(res.data.project.project_name);
         setProjectId(res.data.project._id);
         setLoading(false);
-   
       })
       .catch((err) => {
         setLoading(false);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import instance from "../../../services/api";
+import instance, { errorHandler } from "../../../services/api";
 import { TiTick } from "react-icons/ti";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { successToast, errToast } from "../../../utils/functions/toast";
@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Layout } from "../../shared";
 import { getRecaptchaToken } from "../../../services/recaptcha";
 import { TableProjectsProps } from "../../../utils/interfaces";
+import Loader from "../../shared/loader";
+import { postAcceptProjectHandler } from "../../../services/api";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
@@ -28,30 +30,42 @@ const ProjectApplications = () => {
   ];
 
   const acceptProjectHandler = async (project_id, isprivate, project_url) => {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance
-      .post(
-        `admin/projects?projectId=${project_id}&role=project`,
-        {
-          project_id: project_id,
-          private: isprivate,
-          project_url: project_url,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": recaptchaToken,
-          },
-        }
-      )
-      .then((res) => {
-        setAccepted(true);
-        successToast("Project Approved sucessfully!");
-      })
-      .catch((err) => {
-        errToast(err.message);
-      });
+    // const recaptchaToken = await getRecaptchaToken("post");
+    // const token = sessionStorage.getItem("token");
+    // await instance
+    //   .post(
+    //     `admin/projects?projectId=${project_id}&role=project`,
+    //     {
+    //       project_id: project_id,
+    //       private: isprivate,
+    //       project_url: project_url,
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "X-RECAPTCHA-TOKEN": recaptchaToken,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     setAccepted(true);
+    //     successToast("Project Approved sucessfully!");
+    //   })
+    //   .catch((err) => {
+    //     errToast(err.message);
+    //   });
+    setLoading(true);
+    const res = await postAcceptProjectHandler(
+      project_id,
+      isprivate,
+      project_url
+    );
+    if (res) {
+      setAccepted(true);
+      successToast("Project Approved successfully!");
+    } else {
+      errToast("Error, Please Try Again!");
+    }
   };
 
   useEffect(() => {
@@ -178,11 +192,7 @@ const ProjectApplications = () => {
       </div>
     </Layout>
   ) : (
-    <div className="min-h-screen flex justify-center p-5 bg-base-blue">
-      <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
-        loading..
-      </h1>
-    </div>
+    <Loader />
   );
 };
 

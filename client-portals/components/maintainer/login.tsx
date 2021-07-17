@@ -11,11 +11,13 @@ import { getRecaptchaToken } from "../../services/recaptcha";
 import instance from "../../services/api";
 import Router from "next/router";
 import { successToast, errToast } from "../../utils/functions/toast";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
 import Link from "next/link";
+import { postMaintainerLogin } from "../../services/api";
 
 const MaintainerLogin = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const authContext = useContext(AuthContext);
 
   const initialValues: MaintainerLoginData = {
@@ -27,25 +29,14 @@ const MaintainerLogin = () => {
     values: MaintainerLoginData,
     resetForm: (nextState?: Partial<FormikState<MaintainerLoginData>>) => void
   ) => {
-    const recaptchaToken = await getRecaptchaToken("post");
-    await instance
-      .post("maintainer/login", values, {
-        headers: {
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      })
-      .then((res) => {
-        if (res.status == 200) {
-          sessionStorage.setItem("token", res.data.key);
-          authContext.decode();
-          successToast("Logged In successfully!");
-          Router.push("maintainer/dashboard");
-          resetForm({ values: { ...initialValues } });
-        }
-      })
-      .catch((err) => {
-        errToast(err.message);
-      });
+    setLoading(true);
+    const res = await postMaintainerLogin(values);
+    if (res) {
+      authContext.decode();
+      successToast("Logged In successfully!");
+      Router.push("maintainer/dashboard");
+      resetForm({ values: { ...initialValues } });
+    }
   };
 
   return (

@@ -1,9 +1,9 @@
 import Card from "../../../shared/card";
 import React, { useState, useEffect } from "react";
-import instance from "../../../../services/api";
-import { errToast } from "../../../../utils/functions/toast";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { AcceptedProjectProps } from "../../../../utils/interfaces";
+import { getAcceptedProjects } from "../../../../services/api";
+import Loader from "../../../shared/loader";
 
 const AcceptedProjectsCards = () => {
   const [acceptedProjects, setAcceptedProjects] = useState<
@@ -14,23 +14,19 @@ const AcceptedProjectsCards = () => {
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
+  const AcceptedProjects = async () => {
     const token = sessionStorage.getItem("token");
-    instance
-      .get(`admin/projects/accepted?page=${pageNo}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setAcceptedProjects(res.data.records);
-        sethasNextPage(res.data.hasNextPage);
-        sethasPrevPage(res.data.hasPreviousPage);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
+    const res = await getAcceptedProjects(pageNo, token);
+    if (res) {
+      setAcceptedProjects(res.records);
+      sethasNextPage(res.hasNextPage);
+      sethasPrevPage(res.hasPreviousPage);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    AcceptedProjects();
   }, [pageNo]);
 
   return !loading ? (
@@ -82,9 +78,7 @@ const AcceptedProjectsCards = () => {
       )}
     </>
   ) : (
-    <h1 className="text-7xl font-extrabold text-gray-100 text-center pt-20 animate-pulse">
-      loading..
-    </h1>
+    <Loader />
   );
 };
 

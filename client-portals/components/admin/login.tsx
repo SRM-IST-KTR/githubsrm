@@ -1,17 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Formik, Form, FormikState } from "formik";
 import Router from "next/router";
 import Markdown from "react-markdown";
 import { AdminLoginData } from "../../utils/interfaces";
 import { adminLoginValidation, adminLoginInputs } from "../../utils/constants";
 import { Input } from "../shared";
-import instance from "../../services/api";
-import { successToast, errToast } from "../../utils/functions/toast";
-import { AuthContext } from "../../context/AuthContext";
-import { getRecaptchaToken } from "../../services/recaptcha";
+import { successToast } from "../../utils/functions/toast";
+import { AuthContext } from "../../context/authContext";
+import { postAdminLogin } from "../../services/api";
 
 const AdminLogin = () => {
   const authContext = useContext(AuthContext);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const initialValues: AdminLoginData = {
     email: "",
@@ -22,23 +22,15 @@ const AdminLogin = () => {
     values: AdminLoginData,
     resetForm: (nextState?: Partial<FormikState<AdminLoginData>>) => void
   ) => {
-    const recaptchaToken = await getRecaptchaToken("post");
-    await instance
-      .post("admin/login", values, {
-        headers: {
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      })
-      .then((res) => {
-        sessionStorage.setItem("token", res.data.keys);
-        authContext.decode();
-        successToast("Logged In successfully!");
-        Router.push("admin/dashboard");
-        resetForm({ values: { ...initialValues } });
-      })
-      .catch((err) => {
-        errToast(err.message);
-      });
+    setLoading(true);
+    const res = await postAdminLogin(values);
+    if (res) {
+      authContext.decode();
+      successToast("Logged In successfully!");
+      Router.push("admin/dashboard");
+      setLoading(false);
+      resetForm({ values: { ...initialValues } });
+    }
   };
 
   return (

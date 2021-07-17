@@ -1,7 +1,7 @@
 import router from "next/router";
 import React, { useEffect, useContext } from "react";
 import MaintainerLogin from "../../components/maintainer/login";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/authContext";
 
 const MaintainerLoginPage = () => {
   const authContext = useContext(AuthContext);

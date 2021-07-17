@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { Formik, Form, FormikState } from "formik";
 import { ResetPasswordData, SetPasswordData } from "../../../utils/interfaces";
 import {
@@ -10,8 +10,9 @@ import {
 import { Input, Layout } from "../../shared";
 import { getRecaptchaToken } from "../../../services/recaptcha";
 import instance from "../../../services/api";
-import { successToast, errToast } from "../../../utils/functions/toast";
 import Markdown from "react-markdown";
+import { postResetPassword } from "../../../services/api";
+import { successToast } from "../../../utils/functions/toast";
 
 const ResetPassword = ({ action, ...props }) => {
   const initialValues: SetPasswordData = {
@@ -19,26 +20,18 @@ const ResetPassword = ({ action, ...props }) => {
     passwordConfirmation: "",
   };
 
+  const [loading, setLoading] = useState<boolean>(true);
+
   const submitValues = async (
-    values: SetPasswordData,
+    values: ResetPasswordData,
     resetForm: (nextState?: Partial<FormikState<SetPasswordData>>) => void
   ) => {
-    const token = sessionStorage.getItem("token");
-    const recaptchaToken = await getRecaptchaToken("post");
-    await instance
-      .post("maintainer/reset-password", values, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      })
-      .then((res) => {
-        successToast("Password updated!");
-        resetForm({ values: { ...initialValues } });
-      })
-      .catch((err) => {
-        errToast(err.message);
-      });
+    setLoading(true);
+    const res = await postResetPassword(values);
+    if (res) {
+      successToast("Password changed successfully!");
+      resetForm({ values: { ...initialValues } });
+    }
   };
 
   return (

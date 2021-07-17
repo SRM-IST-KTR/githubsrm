@@ -7,12 +7,12 @@ import {
   adminRegisterInputs,
 } from "../../utils/constants";
 import { Input } from "../shared";
-import instance from "../../services/api";
-import { successToast, errToast } from "../../utils/functions/toast";
-import { getRecaptchaToken } from "../../services/recaptcha";
+import { postAdminRegister } from "../../services/api";
+import { successToast } from "../../utils/functions/toast";
 
 const AdminRegister = () => {
-  const [authToken, setAuthToken] = useState("");
+  const [authToken, setAuthToken] = useState<string>("");
+  const [loding, setLoading] = useState<boolean>(true);
 
   const initialValues: AdminRegisterData = {
     email: "",
@@ -23,21 +23,13 @@ const AdminRegister = () => {
     values: AdminRegisterData,
     resetForm: (nextState?: Partial<FormikState<AdminRegisterData>>) => void
   ) => {
-    const recaptchaToken = await getRecaptchaToken("post");
-    await instance
-      .post("/admin/register", values, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      })
-      .then((res) => {
-        successToast("Admin registered successfully!");
-        resetForm({ values: { ...initialValues } });
-      })
-      .catch((err) => {
-        errToast(err.message);
-      });
+    setLoading(true);
+    const authToken = sessionStorage.getItem("token");
+    const res = await postAdminRegister(values, authToken);
+    if (res) {
+      successToast("Admin registered successfully!");
+      resetForm({ values: { ...initialValues } });
+    }
   };
 
   return (

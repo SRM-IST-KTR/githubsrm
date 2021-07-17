@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Card } from ".";
 import { Layout } from "../../shared";
-import { AuthContext } from "../../../context/AuthContext";
+import { AuthContext } from "../../../context/authContext";
 import instance from "../../../services/api";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { successToast, errToast } from "../../../utils/functions/toast";

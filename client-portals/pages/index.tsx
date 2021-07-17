@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react";
 import Link from "next/link";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/authContext";
 import Router from "next/router";
 
 const IndexPage = () => {
