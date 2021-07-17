@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "./navbar";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/authContext";
 
 const admin_links = [
   {
