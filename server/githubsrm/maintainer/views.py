@@ -45,7 +45,14 @@ class Projects(APIView):
             if 'error' in validate:
                 return JsonResponse(data=validate, status=400)
 
-            if entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
+            if doc:=entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
+                service.wrapper_email(role="contributor_approval",data={
+                    "email":doc["email"],
+                    "name":doc["name"],
+                    "project_name":doc["project_name"],
+                    "project_url":doc["project_url"]
+                    })
+
                 return JsonResponse(data={
                     "approved contributor": True
                 }, status=200)
