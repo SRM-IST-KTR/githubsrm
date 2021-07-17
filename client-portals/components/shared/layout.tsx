@@ -22,10 +22,6 @@ const maintainer_links = [
     link: "/maintainer/reset-password/reset",
     name: "Reset Password",
   },
-  {
-    link: "/maintainer/reset-password/set",
-    name: "Set Password",
-  },
 ];
 
 export default function Layout({ type, children }) {
