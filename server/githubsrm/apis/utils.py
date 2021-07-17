@@ -84,6 +84,11 @@ class SNSpayload(TypedDict):
 class BotoService:
 
     def sns(self, payload: SNSpayload) -> None:
+        """Send notifications to admins
+
+        Args:
+            payload (SNSpayload): SNSpayload
+        """
         client = boto3.client('sns', region_name='ap-south-1')
 
         try:
@@ -142,7 +147,7 @@ class BotoService:
                 emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
                                     project_data={"project_name": data["project_name"], "project_id": data.get("_id")})
             )
-            
+
         elif role == 'beta':
             project = open_entry.get_project_from_id(
                 identifier=data["project_id"])
@@ -153,7 +158,7 @@ class BotoService:
                 emailHTML=emailbody(file='beta_maintainer_accept.html', name=data['name'], role=role,
                                     project_data={"project_name": project_name})
             )
-            
+
         # TODO : Change contents of email and make email templates
         elif role == 'existing_alpha_maintainer':
             return email_template(
@@ -162,7 +167,7 @@ class BotoService:
                 emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
                                     project_data={"project_name": data.get("project_name")})
             )
-            
+
         elif role == 'alpha_maintainer_w_password':
             return email_template(
                 subject="Submission Confirmation | GitHub Community SRM",
@@ -170,7 +175,7 @@ class BotoService:
                 emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
                                     project_data={"project_name": data.get("project_name")})
             )
-            
+
         elif role == 'beta_maintainer_approval':
             return email_template(
                 subject="Submission Confirmation | GitHub Community SRM",
@@ -178,7 +183,7 @@ class BotoService:
                 emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
                                     project_data={"project_name": data.get("project_name")})
             )
-            
+
         elif role == 'beta_maintainer_approval_to_alpha':
             return email_template(
                 subject="Submission Confirmation | GitHub Community SRM",
@@ -186,7 +191,7 @@ class BotoService:
                 emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
                                     project_data={"project_name": data.get("project_name")})
             )
-            
+
         elif role == 'beta_maintainer_approval_w_password':
             return email_template(
                 subject="Submission Confirmation | GitHub Community SRM",
@@ -194,7 +199,7 @@ class BotoService:
                 emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
                                     project_data={"project_name": data.get("project_name")})
             )
-            
+
         elif role == 'approve_project':
             return email_template(
                 subject="Submission Confirmation | GitHub Community SRM",
@@ -202,7 +207,7 @@ class BotoService:
                 emailHTML=emailbody(file='alpha_maintainer_code.html', name=data['name'], role=role,
                                     project_data={"project_name": data.get("project_name")})
             )
-            
+
         else:
             return {
                 'Simple': {
