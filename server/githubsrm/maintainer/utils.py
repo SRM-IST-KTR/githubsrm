@@ -154,6 +154,12 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
             }
         }
         ]
+
+    doc.append({
+        "maintainerHasNextPage": (ITEMS_PER_PAGE * maintainer_page)  < maintainer_docs,
+        "contributorHasNextPage": (ITEMS_PER_PAGE * contributor_page) < contributor_docs
+    })
+    
     return doc
 
 
