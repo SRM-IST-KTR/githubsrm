@@ -258,13 +258,13 @@ class ProjectsAdmin(APIView):
             elif params == 'project':
                 if details := entry.approve_project(identifier=validate.get("project_id"),
                                                     project_url=validate.get(
-                        "project_url"),
-                        private=validate.get("private")):
+                                                        "project_url"),
+                                                    private=validate.get("private")):
 
                     project, maintainer = details
 
                     if service.wrapper_email(
-                            role="approve_project", data={**project, **maintainer}):
+                            role="project_approval", data={**project, **maintainer}):
                         return JsonResponse(data={
                             "Approved Project": validate.get("project_id")
                         }, status=200)

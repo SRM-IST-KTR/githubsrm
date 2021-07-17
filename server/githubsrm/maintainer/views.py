@@ -45,7 +45,14 @@ class Projects(APIView):
             if 'error' in validate:
                 return JsonResponse(data=validate, status=400)
 
-            if entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
+            if doc:=entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
+                service.wrapper_email(role="contributor_approval",data={
+                    "email":doc["email"],
+                    "name":doc["name"],
+                    "project_name":doc["project_name"],
+                    "project_url":doc["project_url"]
+                    })
+
                 return JsonResponse(data={
                     "approved contributor": True
                 }, status=200)
@@ -211,9 +218,7 @@ class ResetPassword(APIView):
         jwt_link = RequestSetPassword(email)
         print(jwt_link)
 
-        # TODO : ADD template here to send email
-        service.wrapper_email(role="set-password",
-                              data={"interested_project": jwt_link, "email": email})
+        service.wrapper_email(role="forgot_password", data={"name": doc["name"], "email": email,"reset_token":jwt_link})
 
         # send 200 in all cases
         return JsonResponse({}, status=status.HTTP_200_OK)
