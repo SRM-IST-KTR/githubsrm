@@ -78,6 +78,7 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         contributor_count = doc[0]["contributor"][0]["count"]
     except Exception as e:
         pass
+    
     try:
         docs = list(entry.project.aggregate(get_pagnation_aggregate(project_id=project_id, count=False,
                                                                     maintainer_page=maintainer_page, contributor_page=contributor_page,
@@ -87,6 +88,13 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         return{
             "error": "Page does not exist"
         }
+    print(doc)
+    docs.append({
+        "maintainerHasNextPage": (ITEMS_PER_PAGE * int(maintainer_page))  < int(maintainer_count),
+        "contributorHasNextPage": (ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
+    })
+    
+    
     return docs
 
 
@@ -146,7 +154,7 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
                     {
                         '$match': {
                             'is_admin_approved': True,
-                            'project_id': project_id
+                            'interested_project': project_id
                         }
                     }, {"$skip": (int(contributor_page)-1) * contributor_docs}, {"$limit": ITEMS_PER_PAGE}],
 
@@ -154,6 +162,8 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
             }
         }
         ]
+
+    
     return doc
 
 
@@ -166,7 +176,7 @@ def RequestSetPassword(email):
     }, update={
         "$set": {"reset": True}
     })
-
+    expiry =0.5
     if not document:
         doc = {
             "email": email,
@@ -174,5 +184,6 @@ def RequestSetPassword(email):
             "reset": True
         }
         entry.maintainer_credentials.insert_one(doc)
+        expiry = 168
 
-    return jwt_keys.issue_key({"email": email}, expiry=0.5)
+    return jwt_keys.issue_key({"email": email}, expiry=expiry)

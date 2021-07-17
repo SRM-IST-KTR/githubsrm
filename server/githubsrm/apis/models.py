@@ -87,11 +87,10 @@ class Entry:
         tags = doc.pop("tags")
         project_name = doc.pop('project_name')
 
-        time_stamp = datetime.strftime(datetime.now(), format="%d-%m-%Y")
         project_id = self.get_uid()
         _id = self.get_uid()
         doc = {**doc, **{"_id": _id}, **{"project_id": project_id},
-               **{"is_admin_approved": False}, **{"time_stamp": time_stamp}}
+               **{"is_admin_approved": False}}
         try:
             existing_maintainer = self.db.maintainer.find_one(
                 {"srm_email": doc.get("srm_email"),
@@ -156,7 +155,7 @@ class Entry:
             print(e)
             return
 
-    def enter_contributor(self, doc: Dict[str, Any]) -> None:
+    def enter_contributor(self, doc: Dict[str, Any]) -> Dict[str, str]:
         """Addition of contributors for avaliable Projects
 
         Args:
@@ -167,12 +166,14 @@ class Entry:
         doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False},
                **{"is_maintainer_approved": False}, **{"is_added_to_repo": False}}
 
-        if not self.db.project.find_one({"_id": doc.get('interested_project')}):
+        project_doc = self.db.project.find_one(
+            {"_id": doc.get('interested_project')})
+        if not project_doc:
             return
 
         try:
             self.db.contributor.insert_one(doc)
-            return True
+            return {**doc, **project_doc}
 
         except Exception as e:
             print(e)

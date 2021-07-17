@@ -63,8 +63,9 @@ class Contributor(APIView):
                         "invalid data": "Contributor for project exists / Project not approved"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                if open_entry.enter_contributor(validate):
-                    if service.wrapper_email(role='contributor', data=validate):
+                if doc := open_entry.enter_contributor(validate):
+                    if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
+                                                                                "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
                         return response.Response({
                             "valid": validate
                         }, status=status.HTTP_201_CREATED)
@@ -128,11 +129,16 @@ class Maintainer(APIView):
             if 'error' not in validate:
 
                 if 'project_id' in validate:
-                    # BETA MAINTAINER
-                    if open_entry_checks.validate_beta_maintainer(doc=validate):
-                        if id := open_entry.enter_beta_maintainer(doc=request.data):
 
-                            if service.wrapper_email(role='beta', data=validate):
+                    if details := open_entry_checks.validate_beta_maintainer(doc=validate):
+
+                        if id := open_entry.enter_beta_maintainer(doc=request.data):
+                            #TODO ROLL BACK
+                            if service.wrapper_email(role='maintainer_received', data={
+                                "name": validate["name"],
+                                "project_name": details["project_name"],
+                                "email": validate["email"]
+                            }):
                                 Thread(target=service.sns, kwargs={'payload': {
                                     'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
                                         Details: \n \
@@ -154,7 +160,6 @@ class Maintainer(APIView):
                 if open_entry_checks.check_existing(description=validate['description'],
                                                     project_name=validate['project_name'],
                                                     project_url=validate['project_url']):
-                    # Enter alpha maintainer
 
                     return response.Response({
                         "error": "Project Exists"
@@ -164,11 +169,14 @@ class Maintainer(APIView):
                     validate['project_id'] = value[0]
                     validate['project_name'] = value[2]
                     validate['description'] = value[3]
+                    # TODO ROLL BACK HERE IF FAILS
+                    if service.wrapper_email(role='project_submission_confirmation', data={
+                        "project_name": validate["project_name"],
+                        "name": validate["name"],
+                        "project_description": validate["description"],
+                        "email": validate["email"]
 
-                    #! DON'T SEND PROJECT ID HERE WAIT FOR ADMIN APPROVAL SEND APPROVAL MAILS
-                    #! AFTER THE ALPHA MAINTAINER IS APPROVED.
-
-                    if service.wrapper_email(role='alpha', data=validate):
+                    }):
                         Thread(target=service.sns, kwargs={'payload': {
                             'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
                                         Details: \n \

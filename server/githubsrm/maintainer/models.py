@@ -12,7 +12,7 @@ class Entry:
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
 
-    def approve_contributor(self, project_id: str, contributor_id: str) -> bool:
+    def approve_contributor(self, project_id: str, contributor_id: str) -> Any:
         """Maintainer approve contributor
 
         Args:
@@ -33,7 +33,7 @@ class Entry:
         if contributor:
             if contributor.get("is_maintainer_approved") and contributor.get("is_admin_approved"):
                 return False
-            self.db.project.find_one_and_update(
+            project_doc = self.db.project.find_one_and_update(
                 {"_id": project_id},
                 update={
                     "$addToSet": {
@@ -41,11 +41,11 @@ class Entry:
                     }
                 }
             )
-            return True
+            return {**project_doc, **contributor}
 
         return False
 
-    def find_Maintainer_with_email(self, email:str) -> Dict[str, Any]:
+    def find_Maintainer_with_email(self, email: str) -> Dict[str, Any]:
         """To find maintainer with email
 
         Args:

@@ -6,6 +6,7 @@ import pymongo
 from django.conf import settings
 from dotenv import load_dotenv
 from pymongo import ReturnDocument
+from datetime import datetime
 
 load_dotenv()
 
@@ -86,15 +87,15 @@ class AdminEntry:
         maintainer = self.db.maintainer.find_one_and_update(
             {"_id": maintainer_id, "project_id": project_id},
             update={
-                "$set": {"is_admin_approved": True}
+                "$set": {"is_admin_approved": True, "time_stamp": str(datetime.strftime(datetime.now(), format="%Y-%m-%d"))}
             }, return_document=ReturnDocument.BEFORE)
 
         if maintainer:
             if maintainer.get('is_admin_approved'):
-                # ? Maintainer already approved
                 return False
             project = self._update_project(project_id=project_id,
                                            maintainer_id=maintainer_id)
+
             return project, maintainer
         return False
 
@@ -151,7 +152,7 @@ class AdminEntry:
 
         doc = {"email": email,
                "password": password,
-               "reset":True}
+               "reset": True}
 
         self.db.maintainer_credentials.insert_one(document=doc)
 
@@ -210,7 +211,9 @@ class AdminEntry:
             if contributor.get("is_admin_approved"):
                 return False
 
-            return contributor
+            project = self.db.project.find_one(
+                {"_id": contributor["interested_project"]})
+            return contributor, project
 
         return False
 

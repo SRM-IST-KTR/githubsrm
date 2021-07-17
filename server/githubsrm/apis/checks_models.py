@@ -41,7 +41,7 @@ class EntryCheck:
         result = self.db.project.find_one({"_id": identifier})
 
         if result:
-            return result['is_admin_approved']
+            return result
         return
 
     def check_contributor(self, interested_project: str,
@@ -94,7 +94,6 @@ class EntryCheck:
         result = self.db.maintainer.count_documents(
             {"github_id": github_id, "project_id": project_id, "srm_email": srm_email})
 
-
         if result >= 1:
             return True
 
@@ -121,9 +120,10 @@ class EntryCheck:
         ) is None:
             return None
 
-        if self.check_approved_project(
+        if details := self.check_approved_project(
                 identifier=doc.get('project_id')
-        ) is False:
-            return True
+        ):
+            if details["is_admin_approved"] is False:
+                return details
 
         return None
