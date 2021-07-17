@@ -72,7 +72,7 @@ class MaintainerSchema:
                 return self.approve_valid_schema().validate(self.data)
             elif self.path == '/maintainer/login':
                 return self.login_valid_schema().validate(self.data)
-            elif self.path == '/maintainer/reset-password/reset':
+            elif self.path == '/maintainer/reset-password/set':
                 return self.reset_valid_schema().validate(self.data)
             else:
                 return self.set_valid_schema().validate(self.data)

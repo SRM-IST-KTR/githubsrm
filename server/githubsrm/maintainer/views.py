@@ -126,12 +126,12 @@ class Login(APIView):
             return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
 
 
-class ResetPassword(APIView):
+class SetPassword(APIView):
 
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
-        """Reset password
+        """set password
 
         Args:
             request
@@ -163,7 +163,7 @@ class ResetPassword(APIView):
 
             password = request.data.get("password")
             if key.verify_key(key=jwt):
-                Thread(target=entry.reset_password, kwargs={
+                Thread(target=entry.set_password, kwargs={
                     "key": jwt,
                     "password": password
                 }).start()
@@ -175,7 +175,7 @@ class ResetPassword(APIView):
         }, status=401)
 
 
-class SetPassword(APIView):
+class ResetPassword(APIView):
 
     throttle_classes = [PostThrottle]
 
@@ -200,13 +200,14 @@ class SetPassword(APIView):
 
         # send 200 even if email is not found
         if not doc:
-            return JsonResponse(status=status.HTTP_200_OK)
+            return JsonResponse({}, status=status.HTTP_200_OK)
 
         jwt_link = RequestSetPassword(email)
         print(jwt_link)
 
         # TODO : ADD template here to send email
-        # service.wrapper_email()
+        service.wrapper_email(role="set-password",
+                              data={"interested_project": jwt_link, "email": email})
 
         # send 200 in all cases
-        return JsonResponse(status=status.HTTP_200_OK)
+        return JsonResponse({}, status=status.HTTP_200_OK)
