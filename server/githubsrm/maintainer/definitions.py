@@ -43,6 +43,18 @@ class MaintainerSchema:
         """
 
         validator = Schema(schema={
+            "password": And(str, lambda password: len(password.strip()) > 0)
+        })
+
+        return validator
+
+    def set_valid_schema(self) -> Schema:
+        """Returns valid schema for set password
+
+        Returns:
+            Schema
+        """
+        validator = Schema(schema={
             "email": And(str, lambda email: len(email.strip()) > 0)
         })
 
@@ -60,8 +72,9 @@ class MaintainerSchema:
                 return self.approve_valid_schema().validate(self.data)
             elif self.path == '/maintainer/login':
                 return self.login_valid_schema().validate(self.data)
-            else:
+            elif self.path == '/maintainer/reset-password/reset':
                 return self.reset_valid_schema().validate(self.data)
-
+            else:
+                return self.set_valid_schema().validate(self.data)
         except SchemaError as e:
             return {"invalid data": self.data, "error": str(e)}

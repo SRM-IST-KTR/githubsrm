@@ -1,17 +1,16 @@
 from hashlib import sha256
-from xml.dom.minidom import Entity
 
 from administrator.issue_jwt import IssueKey
-from apis import PostThrottle, check_token
+from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
-
+from threading import Thread
 from maintainer import entry
 
 from . import entry
 from .definitions import MaintainerSchema
-from .utils import project_pagination, project_single_project
+from .utils import project_pagination, project_single_project, RequestSetPassword
 
 key = IssueKey()
 db = entry.db
@@ -77,7 +76,7 @@ class Projects(APIView):
             return JsonResponse(project_pagination(request, **kwargs), status=status.HTTP_200_OK)
 
         elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
-            return JsonResponse(project_single_project(request, **kwargs), status=status.HTTP_200_OK)
+            return JsonResponse(project_single_project(request, **kwargs), status=status.HTTP_200_OK, safe=False)
 
         else:
             return JsonResponse(data={
@@ -100,19 +99,21 @@ class Login(APIView):
             return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
 
         if not check_token(reCaptcha):
-             return JsonResponse(data={"error": "Invalid recaptcha token"}, status=401)
+            return JsonResponse(data={"error": "Invalid recaptcha token"}, status=401)
 
         validate = MaintainerSchema(request.data, path=request.path).valid()
         if 'error' in validate:
             return JsonResponse(data={"error": validate.get("error")}, status=400)
 
         password_hashed = sha256(request.data["password"].encode()).hexdigest()
-        user_credentials = entry.find_Maintainer_with_email(request.data["email"])
+        user_credentials = entry.find_Maintainer_with_email(
+            request.data["email"])
 
         if user_credentials["password"] != password_hashed:
             return JsonResponse(data={"message": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        doc_list = list(entry.find_all_Maintainer_with_email(request.data["email"]))
+        doc_list = list(entry.find_all_Maintainer_with_email(
+            request.data["email"]))
 
         payload = {}
         payload["email"] = doc_list[0]["email"]
@@ -125,14 +126,12 @@ class Login(APIView):
             return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
 
 
-
-
-class SetPassword(APIView):
+class ResetPassword(APIView):
 
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
-        """Handle reset password
+        """Reset password
 
         Args:
             request
@@ -140,31 +139,74 @@ class SetPassword(APIView):
         Returns:
             JsonResponse
         """
+        try:
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
+        except KeyError as e:
+            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
+
+        if check_token(reCaptcha):
+            validate = MaintainerSchema(
+                data=request.data, path=request.path).valid()
+            if 'error' in validate:
+                return JsonResponse(data={"error": validate.get("error")}, status=400)
+
+            try:
+                token = request.headers.get("Authorization").split()
+                token_type, token = token[0], token[1]
+                assert token_type == 'Bearer'
+            except Exception as e:
+                return JsonResponse(data={
+                    "error": "Invalid token"
+                }, status=400)
+
+            jwt = token
+
+            password = request.data.get("password")
+            if key.verify_key(key=jwt):
+                Thread(target=entry.reset_password, kwargs={
+                    "key": jwt,
+                    "password": password
+                }).start()
+
+            return JsonResponse(data={}, status=200)
+
+        return JsonResponse(data={
+            "error": "Invalid recaptcha"
+        }, status=401)
+
+
+class SetPassword(APIView):
+
+    throttle_classes = [PostThrottle]
+
+    def post(self, request, **kwargs) -> JsonResponse:
 
         try:
             reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except Exception as e:
-            return JsonResponse(data={
-                "error": "recaptcha token not found"
-            }, status=401)
+        except KeyError as e:
+            print(e)
+            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
 
-        if check_token(reCaptcha):
+        if not check_token(reCaptcha):
+            return JsonResponse(data={"error": "Invalid recaptcha"}, status=401)
 
-            validate = MaintainerSchema(request.data, request.path).valid()
-            if 'error' in validate:
-                return JsonResponse(data={
-                    "error": str(validate.get("error"))
-                }, status=400)
+        validate = MaintainerSchema(
+            data=request.data, path=request.path).valid()
+        if 'error' in validate:
+            return JsonResponse(data={"error": validate.get("error")}, status=400)
 
-            if entry.set_password(email=request.data.get("email")):
-                return JsonResponse(data={
-                    "updated password": True
-                }, status=200)
+        email = request.data.get("email")
+        doc = entry.find_Maintainer_with_email(email)
 
-            return JsonResponse(data={
-                "error": "invalid credentials"
-            }, status=400)
+        # send 200 even if email is not found
+        if not doc:
+            return JsonResponse(status=status.HTTP_200_OK)
 
-        return JsonResponse(data={
-            "error": "Invalid reCaptcha token"
-        }, status=401)
+        jwt_link = RequestSetPassword(email)
+        print(jwt_link)
+
+        # TODO : ADD template here to send email
+        # service.wrapper_email()
+
+        # send 200 in all cases
+        return JsonResponse(status=status.HTTP_200_OK)
