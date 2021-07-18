@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import instance, { errorHandler } from "../../../services/api";
+import instance from "../../../services/api";
 import { TiTick } from "react-icons/ti";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import Link from "next/link";
 import { Layout } from "../../shared";
-import { getRecaptchaToken } from "../../../services/recaptcha";
 import { TableProjectsProps } from "../../../utils/interfaces";
 import CSSLoader from "../../shared/loader";
 import { postAcceptProjectHandler } from "../../../services/api";
