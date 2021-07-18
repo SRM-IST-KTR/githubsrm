@@ -6,6 +6,7 @@ import {
   adminLoginValidation,
   resetPasswordValidation,
   setPasswordValidation,
+  projectVisibiltyValidation,
 } from "./constants";
 
 export interface InputClassNameProps {
@@ -82,15 +83,20 @@ export interface OtherMaintainersProps {
   name: string;
 }
 export interface ContributorProps {
+  contributor: [
+    _id: string,
+  name: string,
+  email: string
+  srm_email: string
+  github_id: string
+  reg_number: string
+  branch: string
+  poa: string
+  is_maintainer_approved: boolean
+  ]
+  project_name: string;
+  maintainer: []
   _id: string;
-  name: string;
-  email: string;
-  srm_email: string;
-  github_id: string;
-  reg_number: string;
-  branch: string;
-  poa: string;
-  is_maintainer_approved: boolean;
 }
 
 export interface AcceptedProjectsProps {
@@ -113,3 +119,6 @@ export interface ResetPasswordData
 
 export interface SetPasswordData
   extends Yup.InferType<typeof setPasswordValidation> {}
+
+export interface ProjectVisibilityData
+  extends Yup.InferType<typeof projectVisibiltyValidation> {}
