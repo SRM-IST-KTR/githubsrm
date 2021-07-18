@@ -31,6 +31,8 @@ const AdminRegister = () => {
       successToast("Admin registered successfully!");
       resetForm({ values: { ...initialValues } });
       setLoading(false);
+    } else {
+      setLoading(false);
     }
   };
 

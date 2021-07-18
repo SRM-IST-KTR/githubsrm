@@ -32,6 +32,8 @@ const AdminLogin = () => {
       Router.push("admin/dashboard");
       setLoading(false);
       resetForm({ values: { ...initialValues } });
+    } else {
+      setLoading(false);
     }
   };
 
