@@ -118,6 +118,11 @@ class Login(APIView):
         user_credentials = entry.find_Maintainer_credentials_with_email(
             request.data["email"])
 
+        if not user_credentials:
+            return JsonResponse(data={
+                "error": "Maintainer not found / Not approved"
+            }, status=400)
+
         if user_credentials["password"] != password_hashed:
             return JsonResponse(data={"message": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED)
 
