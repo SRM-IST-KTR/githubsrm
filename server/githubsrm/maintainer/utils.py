@@ -1,4 +1,3 @@
-import pprint
 import random
 from math import ceil
 from typing import Any, Dict
@@ -43,8 +42,11 @@ def project_pagination(request, **kwargs):
             }
         raise Exception()
     except Exception as e:
-        print(e)
-        return {"error": "Page does not exist"}
+        return {
+            "hasNextPage": False,
+            "hasPreviousPage": False,
+            "records": []
+        }
 
 
 def project_single_project(request, **kwargs) -> Dict[str, Any]:
@@ -99,8 +101,10 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         })
 
     except Exception as e:
-        return{
-            "error": "Page does not exist"
+        return {
+            "hasNextPage": False,
+            "hasPreviousPage": False,
+            "records": []
         }
 
     return docs
