@@ -135,5 +135,7 @@ def accepted_project_pagination(request, **kwargs) -> response.JsonResponse:
     except Exception as e:
         print(e)
         return response.JsonResponse({
-            "error": "page does not exist"
-        }, status=400)
+            "hasNextPage": False,
+            "hasPreviousPage": False,
+            "record": []
+        }, status=200)
