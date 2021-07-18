@@ -39,6 +39,9 @@ const index = () => {
     </div>
   ) : (
     <Layout type="maintainer">
+      <div className="flex justify-center font-extrabold text-white text-4xl">
+        My Projects
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
         {projects?.map((item) => (
           <Card

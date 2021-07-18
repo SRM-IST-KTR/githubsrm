@@ -31,7 +31,7 @@ export default function Layout({ type, children }) {
       {authContext.isAuth && (
         <Navbar links={type === "admin" ? admin_links : maintainer_links} />
       )}
-      <div className="min-h-screen p-10  w-full">{children}</div>
+      <div className="min-h-screen p-10 w-full">{children}</div>
     </div>
   );
 }

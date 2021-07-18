@@ -81,33 +81,44 @@ const MaintainerPage = () => {
   ) : (
     <Layout type="admin">
       <h1 className="text-4xl text-center font-extrabold text-white mb-7">
-        All maintainer applications of {projectName}
+        Maintainer Applications of "{projectName}"
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {maintainerData.map((person) => (
-          <div key={person._id} className="p-5 rounded-xl  shadow-2xl">
-            <h2 className="text-2xl font-medium text-white mb-5">
+          <div
+            key={person._id}
+            className="p-5 rounded-xl shadow-2xl bg-white text-base-black"
+          >
+            <h2 className="text-xl font-medium mb-5">
+              <span className="font-bold">Name: </span>
               {person.name}
             </h2>
-            <h2 className="text-2xl font-medium text-white mb-5">
+            <h2 className="text-xl font-medium mb-5">
+              <span className="font-bold">Email: </span>
               {person.email}
             </h2>
             <Link href={person.github_id}>
-              <div className="cursor-pointer hover:text-gray-800 p-2  flex text-2xl font-medium text-white mb-5">
-                <FiGithub /> <span className="ml-1">{person.github_id}</span>
+              <div className="cursor-pointer hover:text-gray-800 flex text-xl font-medium mb-5">
+                <span className="font-bold">Github ID: </span>
+                <span className="ml-1 flex">
+                  <FiGithub />
+                  {person.github_id}
+                </span>
               </div>
             </Link>
-            <h2 className="text-2xl font-medium text-white mb-5">
+            <h2 className="text-xl font-medium mb-5">
+              <span className="font-bold">Registration Number: </span>
               {person.reg_number}
             </h2>
-            <h2 className="text-2xl font-medium text-white mb-5">
+            <h2 className="text-xl font-medium mb-5">
+              <span className="font-bold">Branch: </span>
               {person.branch}
             </h2>
             {person.is_admin_approved ? (
               <div className="flex flex-col justify-center items-center text-4xl font-medium text-base-green mt-5">
                 <TiTick className="text-green-500 text-5xl" />
-                <p> approved</p>
+                <p>Approved</p>
               </div>
             ) : (
               <button
