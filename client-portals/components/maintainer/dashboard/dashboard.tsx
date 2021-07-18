@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from ".";
 import { Layout } from "../../shared";
-import { AuthContext } from "../../../context/authContext";
 import instance from "../../../services/api";
 import { GrNext, GrPrevious } from "react-icons/gr";
-import { successToast, errToast } from "../../../utils/functions/toast";
 import { MaintainerProjectsProps } from "../../../utils/interfaces";
 import CSSLoader from "../../shared/loader";
 

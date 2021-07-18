@@ -3,11 +3,9 @@ import { useRouter } from "next/router";
 import OtherMaintainers from "../../../components/maintainer/dashboard/othermaintainers";
 import { Layout } from "../../../components/shared";
 import instance from "../../../services/api";
-import { getRecaptchaToken } from "../../../services/recaptcha";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import { AuthContext } from "../../../context/authContext";
 import { TiTick } from "react-icons/ti";
-import { ImCross } from "react-icons/im";
 import {
   ContributorProps,
   OtherMaintainersProps,
