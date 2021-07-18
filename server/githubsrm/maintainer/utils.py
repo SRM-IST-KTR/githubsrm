@@ -94,11 +94,9 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
                                                                     maintainer_page=maintainer_page, contributor_page=contributor_page,
 
                                                                     maintainer_docs=maintainer_count, contributor_docs=contributor_count)))
-
-        docs.append({
-            "maintainerHasNextPage": (ITEMS_PER_PAGE * int(maintainer_page)) < int(maintainer_count),
-            "contributorHasNextPage": (ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
-        })
+        docs =docs[0]
+        docs["maintainerHasNextPage"] = (ITEMS_PER_PAGE * int(maintainer_page)) < int(maintainer_count)
+        docs["contributorHasNextPage"] = (ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
 
     except Exception as e:
         return {
