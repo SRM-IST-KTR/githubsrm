@@ -9,10 +9,11 @@ import {
 import { Input } from "../shared";
 import { postAdminRegister } from "../../services/api";
 import { successToast } from "../../utils/functions/toast";
+import Loading from "../../utils/icons/loading";
 
 const AdminRegister = () => {
   const [authToken, setAuthToken] = useState<string>("");
-  const [loding, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   //@ts-ignore
   const initialValues: AdminRegisterData = {
@@ -29,6 +30,7 @@ const AdminRegister = () => {
     if (res) {
       successToast("Admin registered successfully!");
       resetForm({ values: { ...initialValues } });
+      setLoading(false);
     }
   };
 
@@ -71,7 +73,13 @@ const AdminRegister = () => {
                     : "cursor-pointer"
                 } text-white bg-base-teal w-32 py-4 my-3 font-semibold rounded-lg`}
               >
-                Register
+                {loading ? (
+                  <span className="flex w-6 mx-auto">
+                    <Loading />
+                  </span>
+                ) : (
+                  "Register"
+                )}
               </button>
             </div>
             {Object.keys(errors).map((error) => {

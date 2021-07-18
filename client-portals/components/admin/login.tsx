@@ -8,6 +8,7 @@ import { Input } from "../shared";
 import { successToast } from "../../utils/functions/toast";
 import { AuthContext } from "../../context/authContext";
 import { postAdminLogin } from "../../services/api";
+import Loading from "../../utils/icons/loading";
 
 const AdminLogin = () => {
   const authContext = useContext(AuthContext);
@@ -65,7 +66,13 @@ const AdminLogin = () => {
                     : "cursor-pointer"
                 } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
               >
-                Submit
+                {loading ? (
+                  <span className="flex w-6 mx-auto">
+                    <Loading />
+                  </span>
+                ) : (
+                  "Login"
+                )}
               </button>
             </div>
             {Object.keys(errors).map((error) => {
