@@ -8,6 +8,7 @@ import { Layout } from "../../shared";
 import { TableProjectsProps } from "../../../utils/interfaces";
 import CSSLoader from "../../shared/loader";
 import { postAcceptProjectHandler } from "../../../services/api";
+import ProjectVisibility from "./projectVisibilityPopup";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
@@ -165,6 +166,7 @@ const ProjectApplications = () => {
           <GrNext className="text-2xl font-extrabold" />
         </button>
       </div>
+      <ProjectVisibility />
     </Layout>
   ) : (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">

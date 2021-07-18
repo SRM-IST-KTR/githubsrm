@@ -7,12 +7,13 @@ import {
   ResetPasswordData,
   SetPasswordData,
   AcceptedProjectsProps,
+  ContributorProps,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
 
 const instance = axios.create({
-  baseURL: `https://dev.githubsrm.tech`,
+  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
 });
 
 export const postAcceptProjectHandler = async (
@@ -93,6 +94,27 @@ export const getAcceptedProjects = async (
         },
       })
     ).data;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const getContributorsApplications = async (
+  token,
+  slug
+): Promise<ContributorProps[] | false> => {
+  try {
+    return await (
+      await instance.get(
+        `maintainer/projects?projectId=${slug}&contributor=1&maintainer=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+    ).data[0];
   } catch (error) {
     errorHandler(error);
     return false;

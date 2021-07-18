@@ -12,7 +12,10 @@ import {
 } from "../../../utils/interfaces";
 import Link from "next/link";
 import CSSLoader from "../../../components/shared/loader";
-import { postAcceptContributor } from "../../../services/api";
+import {
+  postAcceptContributor,
+  getContributorsApplications,
+} from "../../../services/api";
 
 const headings = [
   "Name",
@@ -25,9 +28,7 @@ const headings = [
 ];
 
 const ProjectDetail = () => {
-  const [contributorsData, setContributorsData] = useState<ContributorProps[]>(
-    []
-  );
+  const [contributorsData, setContributorsData] = useState<[]>([]);
   const [maintainers, setMaintainers] = useState<OtherMaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
@@ -52,25 +53,23 @@ const ProjectDetail = () => {
     }
   };
 
+  const _getContributorsApplications = async (token, slug) => {
+    const res = await getContributorsApplications(token, slug);
+    if (res) {
+      setContributorsData(res.contributor);
+      setProjectName(res.project_name);
+      setProjectId(res._id);
+      setMaintainers(res.maintainer);
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const { slug } = router.query;
     const token = sessionStorage.getItem("token");
-    instance
-      .get(`maintainer/projects?projectId=${slug}&contributor=1&maintainer=1`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setContributorsData(res.data[0].contributor);
-        setProjectName(res.data[0].project_name);
-        setProjectId(res.data[0]._id);
-        setMaintainers(res.data[0].maintainer);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
+    _getContributorsApplications(token, slug);
   }, [accepted]);
 
   return !loading ? (
