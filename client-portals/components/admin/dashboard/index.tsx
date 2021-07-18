@@ -8,7 +8,7 @@ import { Layout } from "../../shared";
 import { TableProjectsProps } from "../../../utils/interfaces";
 import CSSLoader from "../../shared/loader";
 import { postAcceptProjectHandler } from "../../../services/api";
-import ProjectVisibility from "./projectVisibilityPopup";
+// import ProjectVisibility from "./projectVisibilityPopup";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
@@ -18,7 +18,7 @@ const ProjectApplications = () => {
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [pageLoading, setPageLoading] = useState<boolean>(true);
 
   const headings = [
     "Maintainers",
@@ -30,7 +30,6 @@ const ProjectApplications = () => {
   ];
 
   const acceptProjectHandler = async (project_id, isprivate, project_url) => {
-    setLoading(true);
     const res = await postAcceptProjectHandler(
       project_id,
       isprivate,
@@ -43,6 +42,7 @@ const ProjectApplications = () => {
   };
 
   useEffect(() => {
+    let mounted = true;
     const token = sessionStorage.getItem("token");
     instance
       .get(`admin/projects?page=${pageNo}`, {
@@ -51,17 +51,22 @@ const ProjectApplications = () => {
         },
       })
       .then((res) => {
-        setTableDataProjects(res.data.records);
-        sethasNextPage(res.data.hasNextPage);
-        sethasPrevPage(res.data.hasPreviousPage);
-        setLoading(false);
+        if (mounted) {
+          setTableDataProjects(res.data.records);
+          sethasNextPage(res.data.hasNextPage);
+          sethasPrevPage(res.data.hasPreviousPage);
+        }
       })
       .catch((err) => {
-        setLoading(false);
+        errToast("eww");
       });
-  }, [accepted, pageNo]);
 
-  return !loading ? (
+    return () => {
+      mounted = false;
+    };
+  }, [pageNo]);
+
+  return true ? (
     <Layout type="admin">
       <div className="overflow-auto">
         <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
@@ -166,7 +171,7 @@ const ProjectApplications = () => {
           <GrNext className="text-2xl font-extrabold" />
         </button>
       </div>
-      <ProjectVisibility />
+      {/* <ProjectVisibility /> */}
     </Layout>
   ) : (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">

@@ -14,38 +14,39 @@ const AcceptedProjectsCards = () => {
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const AcceptedProjects = async () => {
-    const token = sessionStorage.getItem("token");
-    const res = await getAcceptedProjects(pageNo, token);
-    if (res) {
-      setAcceptedProjects(res.records);
-      sethasNextPage(res.hasNextPage);
-      sethasPrevPage(res.hasPreviousPage);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    AcceptedProjects();
+    let mounted = true;
+    const token = sessionStorage.getItem("token");
+    const res = getAcceptedProjects(pageNo, token);
+    if (res) {
+      if (mounted) {
+        setAcceptedProjects(res.records);
+        sethasNextPage(res.hasNextPage);
+        sethasPrevPage(res.hasPreviousPage);
+        setLoading(false);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
   }, [pageNo]);
 
   return !loading ? (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-        {acceptedProjects[0] &&
-          acceptedProjects.map(
-            (item) =>
-              item.is_admin_approved && (
-                <Card
-                  url={`/admin/dashboard/accepted-projects/${item._id}`}
-                  name={item.project_name}
-                  desc={item.description}
-                  key={item._id}
-                />
-              )
-          )}
+        {acceptedProjects?.map(
+          (item) =>
+            item.is_admin_approved && (
+              <Card
+                url={`/admin/dashboard/accepted-projects/${item._id}`}
+                name={item.project_name}
+                desc={item.description}
+                key={item._id}
+              />
+            )
+        )}
       </div>
-      {acceptedProjects[0] ? (
+      {acceptedProjects ? (
         <div className="flex justify-center my-14">
           <button
             disabled={!hasPrevPage}
