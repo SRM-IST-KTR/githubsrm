@@ -42,7 +42,13 @@ const AuthContextProvider: React.FC = (props) => {
   };
 
   useEffect(() => {
-    decode();
+    let mounted = true;
+    if (mounted) {
+      decode();
+    }
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const logoutHandler = () => {

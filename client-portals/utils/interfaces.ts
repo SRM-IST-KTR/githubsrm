@@ -85,17 +85,17 @@ export interface OtherMaintainersProps {
 export interface ContributorProps {
   contributor: [
     _id: string,
-  name: string,
-  email: string
-  srm_email: string
-  github_id: string
-  reg_number: string
-  branch: string
-  poa: string
-  is_maintainer_approved: boolean
-  ]
+    name: string,
+    email: string,
+    srm_email: string,
+    github_id: string,
+    reg_number: string,
+    branch: string,
+    poa: string,
+    is_maintainer_approved: boolean
+  ];
   project_name: string;
-  maintainer: []
+  maintainer: [];
   _id: string;
 }
 
