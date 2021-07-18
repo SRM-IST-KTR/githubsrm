@@ -98,6 +98,7 @@ const Input = (props: InputProps) => {
               <option
                 key={option.name}
                 className={props.selectOptions?.optionClassName}
+                //@ts-ignore
                 value={option.value}
               >
                 {option.name}

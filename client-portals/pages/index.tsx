@@ -25,7 +25,7 @@ const IndexPage = () => {
         </span>
       </Link>
       <Link href="/admin">
-        <span className="py-7 cursor-pointer hover:opacity-50 px-20 mt-6 rounded-xl shadow-xl bg-base-green font-bold text-white transform hover:scale-110 hover:opacity-80">
+        <span className="py-7 cursor-pointer px-20 mt-6 rounded-xl shadow-xl bg-base-green font-bold text-white transform hover:scale-110 hover:opacity-80">
           Admin
         </span>
       </Link>

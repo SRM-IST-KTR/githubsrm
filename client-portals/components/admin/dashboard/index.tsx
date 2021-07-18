@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import instance from "../../../services/api";
 import { TiTick } from "react-icons/ti";
 import { GrNext, GrPrevious } from "react-icons/gr";
-import { successToast, errToast } from "../../../utils/functions/toast";
 import Link from "next/link";
 import { Layout } from "../../shared";
 import { TableProjectsProps } from "../../../utils/interfaces";
@@ -18,7 +17,6 @@ const ProjectApplications = () => {
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
-  const [pageLoading, setPageLoading] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
   const [projId, setProjId] = useState<string>("");
 
@@ -62,7 +60,7 @@ const ProjectApplications = () => {
       <div className="overflow-auto flex flex-col justify-center">
         <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
         <table className="table text-white border-separate space-y-6 text-sm">
-          <thead className="bg-base-teal text-white">
+          <thead className="bg-base-teal text-white text-xl">
             <tr>
               {headings.map((head) => (
                 <th key={head} className="px-3 text-left">

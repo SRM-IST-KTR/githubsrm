@@ -5,12 +5,11 @@ import { MaintainerLoginData } from "../../utils/interfaces";
 import {
   maintainerLoginValidation,
   maintainerLoginInputs,
+  customInputClasses,
 } from "../../utils/constants";
 import { Input } from "../shared";
-import { getRecaptchaToken } from "../../services/recaptcha";
-import instance from "../../services/api";
 import Router from "next/router";
-import { successToast, errToast } from "../../utils/functions/toast";
+import { successToast } from "../../utils/functions/toast";
 import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
 import Link from "next/link";
@@ -53,9 +52,12 @@ const MaintainerLogin = () => {
       >
         {({ errors, touched }) => (
           <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-            {maintainerLoginInputs.map((input) => (
-              <div className="border-2 border-gray-700 rounded my-4 p-4">
-                <Input key={input.id} {...input} />
+            {maintainerLoginInputs.map((input, index) => (
+              <div
+                key={index}
+                className="border-2 border-gray-700 rounded my-4 p-4"
+              >
+                <Input key={input.id} {...input} {...customInputClasses} />
               </div>
             ))}
             <div className="flex flex-col items-center justify-center">

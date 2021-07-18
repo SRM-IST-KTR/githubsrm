@@ -11,8 +11,8 @@ const Card = ({ name, desc, url }) => {
         </p>
       </div>
       <Link href={url}>
-        <button className="flex rounded-xl font-bold items-center my-3  bg-base-teal p-3">
-          Open
+        <button className="flex rounded-xl font-bold items-center my-3  bg-base-teal p-3 text-white">
+          Open Contributors' Applications
         </button>
       </Link>
     </div>

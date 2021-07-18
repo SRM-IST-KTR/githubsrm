@@ -3,7 +3,11 @@ import { Formik, Form, FormikState } from "formik";
 import Router from "next/router";
 import Markdown from "react-markdown";
 import { AdminLoginData } from "../../utils/interfaces";
-import { adminLoginValidation, adminLoginInputs } from "../../utils/constants";
+import {
+  adminLoginValidation,
+  adminLoginInputs,
+  customInputClasses,
+} from "../../utils/constants";
 import { Input } from "../shared";
 import { successToast } from "../../utils/functions/toast";
 import { AuthContext } from "../../context/authContext";
@@ -50,12 +54,12 @@ const AdminLogin = () => {
       >
         {({ errors, touched }) => (
           <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-            {adminLoginInputs.map((input) => (
+            {adminLoginInputs.map((input, index) => (
               <div
-                key={input.id}
+                key={index}
                 className="border-2 border-gray-700 rounded my-4 p-4"
               >
-                <Input {...input} />
+                <Input key={input.id} {...input} {...customInputClasses} />
               </div>
             ))}
             <div className="flex justify-center">

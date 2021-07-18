@@ -6,6 +6,7 @@ import {
   resetPasswordInputs,
   setPasswordValidation,
   setPasswordInputs,
+  customInputClasses,
 } from "../../../utils/constants";
 import { Input, Layout } from "../../shared";
 import Markdown from "react-markdown";
@@ -74,9 +75,12 @@ const ResetPassword = ({ action, queryToken }) => {
         >
           {({ errors, touched }) => (
             <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-              {setPasswordInputs.map((input) => (
-                <div className="border-2 border-gray-700 rounded my-4 p-4">
-                  <Input key={input.id} {...input} />
+              {setPasswordInputs.map((input, index) => (
+                <div
+                  key={index}
+                  className="border-2 border-gray-700 rounded my-4 p-4"
+                >
+                  <Input key={input.id} {...input} {...customInputClasses} />
                 </div>
               ))}
 

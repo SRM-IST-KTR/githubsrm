@@ -22,6 +22,9 @@ export const maintainerLoginInputs: InputProps[] = [
     type: "email",
     placeholder: "community@githubsrm.tech",
     required: true,
+    inputClassName: {
+      default: "w-full",
+    },
   },
   {
     id: "password",
@@ -56,6 +59,9 @@ export const adminLoginInputs: InputProps[] = [
     type: "email",
     placeholder: "community@githubsrm.tech",
     required: true,
+    inputClassName: {
+      default: "w-full bg-red-800",
+    },
   },
   {
     id: "password",
@@ -63,6 +69,9 @@ export const adminLoginInputs: InputProps[] = [
     type: "password",
     placeholder: "*********",
     required: true,
+    inputClassName: {
+      default: "w-full bg-red-800",
+    },
   },
 ];
 
@@ -83,6 +92,9 @@ export const resetPasswordInputs: InputProps[] = [
     type: "email",
     placeholder: "jd5673@srmist.edu.in",
     required: true,
+    inputClassName: {
+      default: "w-full",
+    },
   },
 ];
 

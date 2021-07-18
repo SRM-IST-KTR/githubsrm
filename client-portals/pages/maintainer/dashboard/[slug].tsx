@@ -25,6 +25,7 @@ const headings = [
   "Reg No",
   "Branch",
   "Proposal",
+  "Maintainer Approval",
 ];
 
 const ProjectDetail = () => {
@@ -86,7 +87,7 @@ const ProjectDetail = () => {
         <div className="overflow-auto w-full">
           {contributorsData?.length > 0 ? (
             <table className="table text-white border-separate space-y-6 text-sm">
-              <thead className="bg-base-teal text-white">
+              <thead className="bg-base-teal text-white text-xl font-extrabold">
                 <tr>
                   {headings.map((head) => (
                     <th key={head} className="px-3 text-left">
