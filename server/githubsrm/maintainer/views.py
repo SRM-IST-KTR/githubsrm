@@ -115,7 +115,7 @@ class Login(APIView):
             return JsonResponse(data={"error": validate.get("error")}, status=400)
 
         password_hashed = sha256(request.data["password"].encode()).hexdigest()
-        user_credentials = entry.find_Maintainer_with_email(
+        user_credentials = entry.find_Maintainer_credentials_with_email(
             request.data["email"])
 
         if user_credentials["password"] != password_hashed:
