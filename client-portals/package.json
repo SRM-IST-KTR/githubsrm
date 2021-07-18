@@ -23,6 +23,7 @@
     "react-icons": "^4.2.0",
     "react-loader-spinner": "^4.0.0",
     "react-markdown": "^6.0.2",
+    "react-modal": "^3.14.3",
     "react-toastify": "^7.0.4",
     "recaptcha-v3": "^1.9.1",
     "tailwindcss": "^2.0.2",
