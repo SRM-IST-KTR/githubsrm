@@ -16,28 +16,16 @@ const instance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
 });
 
-export const postAcceptProjectHandler = async (
-  project_id,
-  isprivate,
-  project_url
-): Promise<boolean> => {
+export const postAcceptProjectHandler = async (values): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
     const token = sessionStorage.getItem("token");
-    await instance.post(
-      `admin/projects?projectId=${project_id}&role=project`,
-      {
-        project_id: project_id,
-        private: isprivate,
-        project_url: project_url,
+    await instance.post(`admin/projects?role=project`, values, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      }
-    );
+    });
     return true;
   } catch (error) {
     errorHandler(error);

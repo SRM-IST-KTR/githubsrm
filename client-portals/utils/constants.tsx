@@ -93,8 +93,8 @@ export const projectVisibilityInputs: InputProps[] = [
     type: "select",
     selectOptions: {
       options: [
-        { value: "private", name: "Private" },
-        { value: "public", name: "Public" },
+        { value: true, name: "Private" },
+        { value: false, name: "Public" },
       ],
     },
     required: true,
@@ -144,6 +144,6 @@ export const setPasswordValidation = Yup.object().shape({
 });
 
 export const projectVisibiltyValidation = Yup.object().shape({
-  private: Yup.string().trim().required("**Project Visiblity:** Missing"),
+  private: Yup.boolean().required("**Project Type:** Missing"),
   project_url: Yup.string().trim().required("**Project URL:** Missing"),
 });

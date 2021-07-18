@@ -7,8 +7,8 @@ import Link from "next/link";
 import { Layout } from "../../shared";
 import { TableProjectsProps } from "../../../utils/interfaces";
 import CSSLoader from "../../shared/loader";
-import { postAcceptProjectHandler } from "../../../services/api";
-// import ProjectVisibility from "./projectVisibilityPopup";
+import ProjectVisibility from "./projectVisibilityPopup";
+import { errorHandler } from "../../../services/api";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
@@ -19,6 +19,8 @@ const ProjectApplications = () => {
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(true);
+  const [open, setOpen] = useState<boolean>(false);
+  const [projId, setProjId] = useState<string>("");
 
   const headings = [
     "Maintainers",
@@ -27,19 +29,8 @@ const ProjectApplications = () => {
     "Tags",
     "Private",
     "Project Description",
+    "Project Approval",
   ];
-
-  const acceptProjectHandler = async (project_id, isprivate, project_url) => {
-    const res = await postAcceptProjectHandler(
-      project_id,
-      isprivate,
-      project_url
-    );
-    if (res) {
-      setAccepted(true);
-      successToast("Project Approved successfully!");
-    }
-  };
 
   useEffect(() => {
     let mounted = true;
@@ -58,7 +49,7 @@ const ProjectApplications = () => {
         }
       })
       .catch((err) => {
-        errToast("eww");
+        errorHandler(err);
       });
 
     return () => {
@@ -68,7 +59,7 @@ const ProjectApplications = () => {
 
   return true ? (
     <Layout type="admin">
-      <div className="overflow-auto">
+      <div className="overflow-auto flex flex-col justify-center">
         <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
         <table className="table text-white border-separate space-y-6 text-sm">
           <thead className="bg-base-teal text-white">
@@ -86,7 +77,7 @@ const ProjectApplications = () => {
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <Link href={`/admin/dashboard/${data._id}`}>
-                      <div className="cursor-pointer rounded-lg bg-gray-700 p-3 hover:bg-gray-900">
+                      <div className="cursor-pointer rounded-lg bg-gray-700 p-3 hover:bg-gray-900 ">
                         Open
                       </div>
                     </Link>
@@ -128,13 +119,10 @@ const ProjectApplications = () => {
                     <TiTick className="text-green-500 text-4xl" />
                   ) : (
                     <button
-                      onClick={() =>
-                        acceptProjectHandler(
-                          data._id,
-                          data.private,
-                          data.project_url
-                        )
-                      }
+                      onClick={() => {
+                        setOpen(true);
+                        setProjId(data._id);
+                      }}
                       className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                     >
                       Approve project
@@ -171,7 +159,11 @@ const ProjectApplications = () => {
           <GrNext className="text-2xl font-extrabold" />
         </button>
       </div>
-      {/* <ProjectVisibility /> */}
+      <ProjectVisibility
+        projectId={projId}
+        close={() => setOpen(false)}
+        isOpen={open}
+      />
     </Layout>
   ) : (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
