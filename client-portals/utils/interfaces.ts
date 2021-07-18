@@ -23,7 +23,7 @@ export interface InputProps extends InputClassNameProps {
   label?: string;
   placeholder?: string;
   selectOptions?: {
-    options: { value: string; name: string }[];
+    options: { value: boolean; name: string }[];
     optionClassName?: string;
   };
   description?: string;

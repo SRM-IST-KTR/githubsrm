@@ -96,7 +96,7 @@ const Input = (props: InputProps) => {
             </option>
             {props.selectOptions?.options.map((option) => (
               <option
-                key={option.value.trim()}
+                key={option.name}
                 className={props.selectOptions?.optionClassName}
                 value={option.value}
               >
