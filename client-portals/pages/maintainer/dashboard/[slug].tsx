@@ -27,8 +27,10 @@ const headings = [
 ];
 
 const ProjectDetail = () => {
-  const [contributorsData, setContributorsData] = useState([]);
-  const [maintainers, setMaintainers] = useState([]);
+  const [contributorsData, setContributorsData] = useState<ContributorProps[]>(
+    []
+  );
+  const [maintainers, setMaintainers] = useState<OtherMaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
