@@ -92,6 +92,13 @@ export interface ContributorProps {
   poa: string;
   is_maintainer_approved: boolean;
 }
+
+export interface AcceptedProjectsProps {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  records: [];
+}
+
 export interface MaintainerLoginData
   extends Yup.InferType<typeof maintainerLoginValidation> {}
 

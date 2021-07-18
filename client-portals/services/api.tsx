@@ -6,6 +6,7 @@ import {
   MaintainerLoginData,
   ResetPasswordData,
   SetPasswordData,
+  AcceptedProjectsProps,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
@@ -80,7 +81,10 @@ export const postAdminRegister = async (
   }
 };
 
-export const getAcceptedProjects = async (pageNo, token): Promise<Object> => {
+export const getAcceptedProjects = async (
+  pageNo,
+  token
+): Promise<AcceptedProjectsProps[] | false> => {
   try {
     return await (
       await instance.get(`admin/projects/accepted?page=${pageNo}`, {
