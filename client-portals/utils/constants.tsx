@@ -86,6 +86,28 @@ export const resetPasswordInputs: InputProps[] = [
   },
 ];
 
+export const projectVisibilityInputs: InputProps[] = [
+  {
+    id: "private",
+    label: "Project Type",
+    type: "select",
+    selectOptions: {
+      options: [
+        { value: "private", name: "Private" },
+        { value: "public", name: "Public" },
+      ],
+    },
+    required: true,
+  },
+  {
+    id: "project_url",
+    label: "Project URL",
+    type: "text",
+    placeholder: "https://github.com/ID/PROJECT-NAME",
+    required: true,
+  },
+];
+
 export const maintainerLoginValidation = Yup.object().shape({
   email: Yup.string()
     .trim()
@@ -119,4 +141,9 @@ export const resetPasswordValidation = Yup.object().shape({
 
 export const setPasswordValidation = Yup.object().shape({
   password: Yup.string().required("**Password:** Missing").min(2),
+});
+
+export const projectVisibiltyValidation = Yup.object().shape({
+  private: Yup.string().trim().required("**Project Visiblity:** Missing"),
+  project_url: Yup.string().trim().required("**Project URL:** Missing"),
 });
