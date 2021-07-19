@@ -34,9 +34,14 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
 
   const submitValues = async (values) => {
     values.project_id = projectId;
+    setLoading(true);
     const res = await postAcceptProjectHandler(values);
     if (res) {
       successToast("Project Approved successfully!");
+      setLoading(false);
+      window.location.reload();
+    } else {
+      setLoading(false);
     }
   };
 
@@ -77,7 +82,7 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
                         : "cursor-pointer"
                     } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
                   >
-                    Submit
+                    {loading ? <Loading /> : "Approve"}
                   </button>
                 </div>
                 {Object.keys(errors).map((error) => {
