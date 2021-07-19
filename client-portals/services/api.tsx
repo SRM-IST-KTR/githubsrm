@@ -8,9 +8,11 @@ import {
   SetPasswordData,
   AcceptedProjectsProps,
   ContributorProps,
+  MaintainersProps,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
+import { boolean } from "yup/lib/locale";
 
 const instance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
@@ -181,6 +183,96 @@ export const postAcceptContributor = async (
       }
     );
     return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const postAcceptMaintainer = async (
+  project_id,
+  maintainer_id,
+  email
+): Promise<boolean> => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.post(
+      "admin/projects?role=maintainer",
+      { project_id: project_id, maintainer_id: maintainer_id, email },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
+        },
+      }
+    );
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const getMaintainerApplications = async (
+  slug,
+  token
+): Promise<MaintainersProps[] | false> => {
+  try {
+    return await (
+      await instance.get(
+        `admin/projects?projectId=${slug}&contributor=false&maintainer=true`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+    ).data;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const postAcceptProject = async (
+  project_id,
+  contributor_id
+): Promise<boolean> => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.post(
+      "admin/projects?role=contributor",
+      { contributor_id: contributor_id, project_id: project_id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
+        },
+      }
+    );
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const getProject = async (
+  slug,
+  token
+): Promise<MaintainersProps[] | boolean> => {
+  try {
+    return await (
+      await instance.get(
+        `admin/projects?projectId=${slug}&contributor=true&maintainer=true`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+    ).data;
   } catch (error) {
     errorHandler(error);
     return false;
