@@ -101,9 +101,11 @@ const ProjectDetail = () => {
             )}
           />
           <div className="overflow-auto w-full">
-            <h2 className="mr-5 mb-3 font-bold text-white text-2xl">
-              Contributors' Applications
-            </h2>
+            {contributorsData?.length === 0 && (
+              <h2 className="mr-5 mb-3 font-bold text-white text-2xl">
+                Contributors' Applications
+              </h2>
+            )}
             {contributorsData?.length > 0 ? (
               <div className="text-white border-separate space-y-6 text-sm">
                 <thead className="bg-base-teal text-white text-xl font-extrabold">
