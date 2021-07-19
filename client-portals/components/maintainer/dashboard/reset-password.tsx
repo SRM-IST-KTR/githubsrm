@@ -46,18 +46,23 @@ const ResetPassword = ({ action, queryToken }) => {
     resetForm: (nextState?: Partial<FormikState<SetPasswordData>>) => void
   ) => {
     delete values.confirm_password;
-    setLoading(true);
-    var decodedToken = jwt.decode(queryToken);
-    var dateNow = new Date();
-    if (decodedToken.exp && decodedToken.exp > dateNow.getTime() / 1000) {
-      const res = await postSetPassword(values, queryToken);
-      setLoading(false);
-      if (res) {
-        successToast("Password set successfully!");
-        resetForm({ values: { ...initialValuesSet } });
+    if (queryToken) {
+      setLoading(true);
+      var decodedToken = jwt.decode(queryToken);
+      var dateNow = new Date();
+      if (decodedToken.exp && decodedToken.exp > dateNow.getTime() / 1000) {
+        const res = await postSetPassword(values, queryToken);
+        if (res) {
+          successToast("Password set successfully!");
+          resetForm({ values: { ...initialValuesSet } });
+          setLoading(false);
+        }
+      } else {
+        errToast("Time to set password has expired");
+        setLoading(false);
       }
     } else {
-      errToast("Expired");
+      errToast("You do not have access to set password!");
     }
   };
 
