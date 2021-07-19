@@ -273,7 +273,7 @@ def beta_maintainer_support(existing: bool, project: Dict[str, str],
             }).start()
 
             return {
-                "message": {"error": "Approved new maintainer"},
+                "message": {"success": "Approved new maintainer"},
                 "status": 200
             }
         else:
