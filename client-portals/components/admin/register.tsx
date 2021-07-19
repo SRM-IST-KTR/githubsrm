@@ -11,6 +11,7 @@ import { Input } from "../shared";
 import { postAdminRegister } from "../../services/api";
 import { successToast } from "../../utils/functions/toast";
 import Loading from "../../utils/icons/loading";
+import Footer from "../shared/footer";
 
 const AdminRegister = () => {
   const [authToken, setAuthToken] = useState<string>("");
@@ -38,69 +39,74 @@ const AdminRegister = () => {
   };
 
   return (
-    <div className="min-h-screen p-14 bg-base-blue">
-      <h1 className="flex justify-center text-4xl font-extrabold text-white">
-        Admin Registration
-      </h1>
+    <>
+      <div className="min-h-screen p-14 bg-base-blue">
+        <h1 className="flex justify-center text-4xl font-extrabold text-white">
+          Admin Registration
+        </h1>
 
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values, { resetForm }) => submitValues(values, resetForm)}
-        validationSchema={adminRegisterValidation}
-      >
-        {({ errors, touched }) => (
-          <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-            {adminRegisterInputs.map((input) => (
-              <div
-                key={input.id}
-                className="border-2 border-gray-700 rounded my-4 p-4"
-              >
-                <Input {...input} {...customInputClasses} />
+        <Formik
+          initialValues={initialValues}
+          onSubmit={(values, { resetForm }) => submitValues(values, resetForm)}
+          validationSchema={adminRegisterValidation}
+        >
+          {({ errors, touched }) => (
+            <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+              {adminRegisterInputs.map((input) => (
+                <div
+                  key={input.id}
+                  className="border-2 border-gray-700 rounded my-4 p-4"
+                >
+                  <Input {...input} {...customInputClasses} />
+                </div>
+              ))}
+              <Field
+                onChange={(e) => setAuthToken(e.target.value)}
+                className="border-2 border-gray-800 rounded-md p-3 mt-3"
+                type="password"
+                name="token"
+                label="Secret Key"
+                placeholder="Secret Key"
+              />
+              {Object.keys(errors).map((error) => {
+                if (touched[error]) {
+                  return (
+                    <Markdown
+                      key={error.trim()}
+                      className="text-red-500 my-2 lg:my-2"
+                    >
+                      {errors[error] as string}
+                    </Markdown>
+                  );
+                }
+              })}
+              <div className="flex justify-center">
+                <button
+                  disabled={Object.keys(errors).length > 0}
+                  type="submit"
+                  className={`${
+                    Object.keys(errors).length > 0
+                      ? "cursor-not-allowed bg-opacity-70"
+                      : "cursor-pointer"
+                  } text-white bg-base-teal w-32 py-4 my-3 font-semibold rounded-lg`}
+                >
+                  {loading ? (
+                    <span className="flex w-6 mx-auto">
+                      <Loading />
+                    </span>
+                  ) : (
+                    "Register"
+                  )}
+                </button>
               </div>
-            ))}
-            <Field
-              onChange={(e) => setAuthToken(e.target.value)}
-              className="border-2 border-gray-800 rounded-md p-3 mt-3"
-              type="password"
-              name="token"
-              label="Secret Key"
-              placeholder="Secret Key"
-            />
-            {Object.keys(errors).map((error) => {
-              if (touched[error]) {
-                return (
-                  <Markdown
-                    key={error.trim()}
-                    className="text-red-500 my-2 lg:my-2"
-                  >
-                    {errors[error] as string}
-                  </Markdown>
-                );
-              }
-            })}
-            <div className="flex justify-center">
-              <button
-                disabled={Object.keys(errors).length > 0}
-                type="submit"
-                className={`${
-                  Object.keys(errors).length > 0
-                    ? "cursor-not-allowed bg-opacity-70"
-                    : "cursor-pointer"
-                } text-white bg-base-teal w-32 py-4 my-3 font-semibold rounded-lg`}
-              >
-                {loading ? (
-                  <span className="flex w-6 mx-auto">
-                    <Loading />
-                  </span>
-                ) : (
-                  "Register"
-                )}
-              </button>
-            </div>
-          </Form>
-        )}
-      </Formik>
-    </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+      <div className="fixed bottom-0 w-full">
+        <Footer />
+      </div>
+    </>
   );
 };
 
