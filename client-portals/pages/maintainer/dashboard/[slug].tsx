@@ -54,6 +54,7 @@ const ProjectDetail = () => {
 
   const _getContributorsApplications = async (token, slug) => {
     const res = await getContributorsApplications(token, slug);
+    console.log(res);
     if (res) {
       setContributorsData(res.contributor);
       setProjectName(res.project_name);
@@ -83,7 +84,7 @@ const ProjectDetail = () => {
           )}
         />
         <div className="overflow-auto w-full">
-          {contributorsData?.length > 0 ? (
+          {contributorsData.length > 0 ? (
             <div className="text-white border-separate space-y-6 text-sm">
               <thead className="bg-base-teal text-white text-xl font-extrabold">
                 <tr>

@@ -102,7 +102,7 @@ export const getContributorsApplications = async (
           },
         }
       )
-    ).data[0];
+    ).data;
   } catch (error) {
     errorHandler(error);
     return false;
