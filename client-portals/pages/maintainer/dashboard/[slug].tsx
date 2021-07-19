@@ -16,6 +16,7 @@ import {
   getContributorsApplications,
 } from "../../../services/api";
 import Footer from "../../../components/shared/footer";
+import Loading from "../../../utils/icons/loading";
 
 const headings = [
   "Name",
@@ -36,7 +37,9 @@ const ProjectDetail = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loading2, setLoading2] = useState<boolean>(true);
+
   const router = useRouter();
   const authContext = useContext(AuthContext);
 
@@ -66,9 +69,9 @@ const ProjectDetail = () => {
       setProjectName(res.project_name);
       setProjectId(res._id);
       setMaintainers(res.maintainer);
-      setLoading(false);
+      setLoading2(false);
     } else {
-      setLoading(false);
+      setLoading2(false);
     }
   };
 
@@ -78,7 +81,7 @@ const ProjectDetail = () => {
     _getContributorsApplications(token, slug);
   }, [router.query, accepted]);
 
-  return !loading ? (
+  return !loading2 ? (
     <>
       <Layout type="maintainer">
         <div className="flex flex-col justify-center items-center">
@@ -91,7 +94,7 @@ const ProjectDetail = () => {
             )}
           />
           <div className="overflow-auto w-full">
-            {contributorsData.length > 0 ? (
+            {contributorsData?.length > 0 ? (
               <div className="text-white border-separate space-y-6 text-sm">
                 <thead className="bg-base-teal text-white text-xl font-extrabold">
                   <tr>
@@ -103,7 +106,7 @@ const ProjectDetail = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {contributorsData.map((person) => (
+                  {contributorsData?.map((person) => (
                     <tr key={person._id} className="bg-gray-800">
                       <td className="p-3">
                         <div className="flex align-items-center">
@@ -154,7 +157,7 @@ const ProjectDetail = () => {
                             }
                             className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                           >
-                            Approve Contributor
+                            {loading ? <Loading /> : "Approve Contributor"}
                           </button>
                         )}
                       </td>
