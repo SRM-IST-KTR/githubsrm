@@ -304,3 +304,19 @@ class AdminEntry:
         doc["email"] = [maintainer["email"] for maintainer in maintainers]
 
         return doc
+
+    def get_maintainer_email(self, identifier: str) -> str:
+        """Get maintainer email from identifier
+
+        Args:
+            identifier (str): maintainer id
+
+        Returns:
+            str: email
+        """
+
+        maintainer = self.db.maintainer.find_one({"_id": identifier})
+        if maintainer:
+            return maintainer["email"]
+
+        return False

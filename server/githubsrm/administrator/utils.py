@@ -166,17 +166,6 @@ def alpha_maintainer_support(existing: bool, project: Dict[str, str],
                     "project_id": project["_id"]
                 }):
 
-            Thread(target=service.wrapper_email, kwargs={
-                "role": "new_maintainer_notification",
-                "data": {
-                    "name": "Maintainer",
-                    "email": request.data["email"],
-                    "project_name": project["project_name"],
-                    "beta_name": maintainer["name"],
-                    "beta_email": maintainer["email"]
-                }
-            }).start()
-
             return {
                 "message": {"success": "Approved existing maintainer"},
                 "status": 200
@@ -217,13 +206,14 @@ def alpha_maintainer_support(existing: bool, project: Dict[str, str],
 
 
 def beta_maintainer_support(existing: bool, project: Dict[str, str],
-                            maintainer: Dict[str, str], request) -> Dict[str, str]:
+                            maintainer: Dict[str, str], alpha_email: str, request) -> Dict[str, str]:
     """Support for beta maintainer flow
 
     Args:
         existing (bool): is existing beta maintainer
         project (Dict[str, str]): project document
         maintainer (Dict[str, str]): maintainer document
+        alpha_email (str): alpha maintainer email
         request
 
     Returns:
@@ -240,7 +230,7 @@ def beta_maintainer_support(existing: bool, project: Dict[str, str],
                 "role": "new_maintainer_notification",
                 "data": {
                     "name": "Maintainer",
-                    "email": request.data["email"],
+                    "email": alpha_email,
                     "project_name": project["project_name"],
                     "beta_name": maintainer["name"],
                     "beta_email": maintainer["email"]
@@ -275,7 +265,7 @@ def beta_maintainer_support(existing: bool, project: Dict[str, str],
                 "role": "new_maintainer_notification",
                 "data": {
                     "name": "Maintainer",
-                    "email": request.data["email"],
+                    "email": alpha_email,
                     "project_name": project["project_name"],
                     "beta_name": maintainer["name"],
                     "beta_email": maintainer["email"]
@@ -283,7 +273,7 @@ def beta_maintainer_support(existing: bool, project: Dict[str, str],
             }).start()
 
             return {
-                "message": {"Approved new maintainer"},
+                "message": {"error": "Approved new maintainer"},
                 "status": 200
             }
         else:

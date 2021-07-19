@@ -1,8 +1,6 @@
-from threading import Thread
 
 from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
-from maintainer.utils import RequestSetPassword
 from rest_framework import status
 from rest_framework.views import APIView
 
@@ -10,7 +8,8 @@ from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
-from .utils import (accepted_project_pagination, alpha_maintainer_support, beta_maintainer_support, project_pagination,
+from .utils import (accepted_project_pagination, alpha_maintainer_support,
+                    beta_maintainer_support, project_pagination,
                     project_single_project)
 
 
@@ -158,8 +157,11 @@ class ProjectsAdmin(APIView):
                                             status=response.get("status"))
 
                     if len(project['maintainer_id']) > 1:
+                        alpha_email = entry.get_maintainer_email(
+                            identifier=project["maintainer_id"][0])
                         response = beta_maintainer_support(existing=existing, project=project,
-                                                           maintainer=maintainer, request=request)
+                                                           maintainer=maintainer, alpha_email=alpha_email,
+                                                           request=request)
 
                         return JsonResponse(data=response.get("message"), status=response.get("status"))
 
@@ -178,16 +180,21 @@ class ProjectsAdmin(APIView):
                         project=project)
 
                     email_document["email"].append(maintainer.pop("email"))
-                    maintainer["name"] = "Maintainer(s)"
                     if service.wrapper_email(
-                            role="project_approval", data={**project, **maintainer, **email_document}, send_all=True):
+                            role="project_approval", data={**{
+                                "name": "Maintainer{s)",
+                                "project_name": project["project_name"],
+                                "project_url": project["project_url"],
+                                "project_id": project["_id"]
+
+                            }, **email_document}, send_all=True):
                         return JsonResponse(data={
                             "Approved Project": validate.get("project_id")
                         }, status=200)
 
                     entry.reset_status_project(project=project)
                     return JsonResponse(data={
-                        "error": "Email failed"
+                        "error": "email failed"
                     }, status=500)
 
                 return JsonResponse(data={
@@ -198,23 +205,9 @@ class ProjectsAdmin(APIView):
                 if details := entry.approve_contributor(project_id=validate.get("project_id"),
                                                         contributor_id=validate.get("contributor_id")):
 
-                    contributor, project = details
-
-                    if service.wrapper_email(
-                            role="contributor_approval", data={
-                                "name": contributor["name"],
-                                "email": contributor["email"],
-                                "project_name": project["project_name"],
-                                "project_url": project["project_url"]
-                            }):
-                        return JsonResponse(data={
-                            "admin_approved": True
-                        }, status=200)
-
-                    entry.reset_status_contributor(contributor=contributor)
                     return JsonResponse(data={
-                        "error": "email not sent"
-                    }, status=500)
+                        "admin_approved": True
+                    }, status=200)
 
                 return JsonResponse(data={
                     "error": "contributor/project does not exist / contributor already approved"
