@@ -59,7 +59,10 @@ class EntryCheck:
 
         result = self.db.project.find_one({"_id": interested_project})
 
-        if not result['is_admin_approved']:
+        try:
+            if not result['is_admin_approved']:
+                return True
+        except Exception as e:
             return True
 
         result = self.db.contributor.find_one({"$and": [
