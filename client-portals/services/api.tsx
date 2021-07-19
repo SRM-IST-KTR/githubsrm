@@ -67,7 +67,11 @@ export const postAdminRegister = async (
     });
     return true;
   } catch (error) {
-    errorHandler(error);
+    if (error.response?.status === 400) {
+      errToast("User already exists");
+    } else {
+      errorHandler(error);
+    }
     return false;
   }
 };

@@ -63,7 +63,6 @@ const ProjectDetail = () => {
 
   const _getContributorsApplications = async (token, slug) => {
     const res = await getContributorsApplications(token, slug);
-    console.log(res);
     if (res) {
       setContributorsData(res.contributor);
       setProjectName(res.project_name);
