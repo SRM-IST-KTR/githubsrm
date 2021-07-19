@@ -17,6 +17,7 @@ const ProjectApplications = () => {
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
   const [projId, setProjId] = useState<string>("");
 
@@ -45,9 +46,10 @@ const ProjectApplications = () => {
           sethasNextPage(res.data.hasNextPage);
           sethasPrevPage(res.data.hasPreviousPage);
         }
+        setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        setLoading(false);
       });
 
     return () => {
@@ -55,7 +57,7 @@ const ProjectApplications = () => {
     };
   }, [pageNo]);
 
-  return true ? (
+  return !loading ? (
     <>
       <Layout type="admin">
         <div className="overflow-auto flex flex-col justify-center">
