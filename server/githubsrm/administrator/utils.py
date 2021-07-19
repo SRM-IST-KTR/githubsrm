@@ -1,10 +1,13 @@
 from math import ceil
+from threading import Thread
 from typing import Dict
 
-from apis import open_entry
+from apis import open_entry, service
 from django.http import response
 from rest_framework import status
 
+from administrator import entry
+from maintainer.utils import RequestSetPassword
 from .models import AdminEntry
 
 ITEMS_PER_PAGE = 10
@@ -84,7 +87,7 @@ def project_single_project(request, **kwargs):
             record["contributor"] = {"contributor": contributorData}
 
         return response.JsonResponse(record, status=status.HTTP_200_OK)
-    except:
+    except Exception as e:
         return response.JsonResponse(
             {"error": "Project doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -139,3 +142,156 @@ def accepted_project_pagination(request, **kwargs) -> response.JsonResponse:
             "hasPreviousPage": False,
             "record": []
         }, status=200)
+
+
+def alpha_maintainer_support(existing: bool, project: Dict[str, str],
+                             maintainer: Dict[str, str], request) -> Dict[str, str]:
+    """Support for alpha maintainer flow
+
+    Args:
+        existing (bool): defines credentials state
+        project (Dict[str, str]): project document
+        maintainer (Dict[str, str]): maintainer document
+        request: request object
+
+    Returns:
+        Dict[str, str]: response
+    """
+    if existing:
+        if service.wrapper_email(
+                role="project_submission_approval", data={
+                    "name": maintainer["name"],
+                    "project_name": project["project_name"],
+                    "email": maintainer["email"],
+                    "project_id": project["_id"]
+                }):
+
+            Thread(target=service.wrapper_email, kwargs={
+                "role": "new_maintainer_notification",
+                "data": {
+                    "name": "Maintainer",
+                    "email": request.data["email"],
+                    "project_name": project["project_name"],
+                    "beta_name": maintainer["name"],
+                    "beta_email": maintainer["email"]
+                }
+            }).start()
+
+            return {
+                "message": {"success": "Approved existing maintainer"},
+                "status": 200
+            }
+
+        else:
+            entry.reset_status_maintainer(
+                identifier=maintainer["_id"], project_id=project["_id"]
+            )
+            return {
+                "message": {"error": "email failed"},
+                "status": 500
+            }
+    else:
+        password = RequestSetPassword(email=request.data.get("email"))
+        if service.wrapper_email(
+                role="project_submission_approval_w_password_link", data={
+                    "name": maintainer["name"],
+                    "project_name": project["project_name"],
+                    "reset_token": password,
+                    "email": maintainer["email"],
+                    "project_id": project["_id"],
+                }):
+            return {
+                "message": {"success": "Approved new maintainer"},
+                "status": 200
+            }
+
+        else:
+            entry.reset_status_maintainer(
+                identifier=maintainer["_id"], project_id=project["_id"]
+            )
+
+            return {
+                "message": {"error": "email failed"},
+                "status": 500
+            }
+
+
+def beta_maintainer_support(existing: bool, project: Dict[str, str],
+                            maintainer: Dict[str, str], request) -> Dict[str, str]:
+    """Support for beta maintainer flow
+
+    Args:
+        existing (bool): is existing beta maintainer
+        project (Dict[str, str]): project document
+        maintainer (Dict[str, str]): maintainer document
+        request
+
+    Returns:
+        Dict[str, str]: response
+    """
+    if existing:
+        if service.wrapper_email(
+                role="welcome_maintainer", data={
+                    "name": maintainer["name"],
+                    "project_name": project["project_name"],
+                    "email": maintainer["email"]
+                }):
+            Thread(target=service.wrapper_email, kwargs={
+                "role": "new_maintainer_notification",
+                "data": {
+                    "name": "Maintainer",
+                    "email": request.data["email"],
+                    "project_name": project["project_name"],
+                    "beta_name": maintainer["name"],
+                    "beta_email": maintainer["email"]
+                }
+            }).start()
+
+            return {
+                "message": {"success": "Approved existing maintainer"},
+                "status": 200
+            }
+
+        else:
+            entry.reset_status_maintainer(
+                identifier=maintainer["_id"], project_id=project["_id"])
+
+            return {
+                "message": {"error": "email failed"},
+                "status": 500
+            }
+
+    else:
+        password = RequestSetPassword(email=request.data.get("email"))
+
+        if service.wrapper_email(
+                role="welcome_maintainer_w_password_link", data={
+                    "name": maintainer["name"],
+                    "project_name": project["project_name"],
+                    "reset_token": password,
+                    "email": maintainer["email"]
+                }):
+            Thread(target=service.wrapper_email, kwargs={
+                "role": "new_maintainer_notification",
+                "data": {
+                    "name": "Maintainer",
+                    "email": request.data["email"],
+                    "project_name": project["project_name"],
+                    "beta_name": maintainer["name"],
+                    "beta_email": maintainer["email"]
+                }
+            }).start()
+
+            return {
+                "message": {"Approved new maintainer"},
+                "status": 200
+            }
+        else:
+            entry.reset_status_maintainer(
+                identifier=maintainer["_id"], project_id=project["_id"]
+            )
+
+            return {
+                "message": {"error": "email failed"},
+                "status": 500
+            }
