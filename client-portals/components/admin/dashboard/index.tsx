@@ -13,7 +13,6 @@ const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
     TableProjectsProps[]
   >([]);
-  const [accepted, setAccepted] = useState<boolean>(false);
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
@@ -59,7 +58,8 @@ const ProjectApplications = () => {
     <Layout type="admin">
       <div className="overflow-auto flex flex-col justify-center">
         <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
-        <table className="table text-white border-separate space-y-6 text-sm">
+
+        <div className="text-white border-separate space-y-6 text-sm">
           <thead className="bg-base-teal text-white text-xl">
             <tr>
               {headings.map((head) => (
@@ -69,6 +69,7 @@ const ProjectApplications = () => {
               ))}
             </tr>
           </thead>
+
           <tbody>
             {tableDataProjects.map((data) => (
               <tr key={data._id} className="bg-gray-800">
@@ -81,16 +82,19 @@ const ProjectApplications = () => {
                     </Link>
                   </div>
                 </td>
+
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <div>{data.project_name}</div>
                   </div>
                 </td>
+
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <div>{data.project_url}</div>
                   </div>
                 </td>
+
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <div>
@@ -100,11 +104,13 @@ const ProjectApplications = () => {
                     </div>
                   </div>
                 </td>
+
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <div>{data.private ? "private" : "public"}</div>
                   </div>
                 </td>
+
                 <td className="p-3">
                   <div className="flex max-w-3xl overflow-auto word-wrap no-scrollbar">
                     <div className="overflow-auto word-wrap no-scrollbar">
@@ -112,6 +118,7 @@ const ProjectApplications = () => {
                     </div>
                   </div>
                 </td>
+
                 <td className="p-3">
                   {data.is_admin_approved ? (
                     <TiTick className="text-green-500 text-4xl" />
@@ -130,8 +137,9 @@ const ProjectApplications = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </div>
       </div>
+
       <div className="flex justify-center my-5">
         <button
           disabled={!hasPrevPage}

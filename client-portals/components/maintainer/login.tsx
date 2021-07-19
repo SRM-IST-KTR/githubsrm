@@ -51,7 +51,7 @@ const MaintainerLogin = () => {
         validationSchema={maintainerLoginValidation}
       >
         {({ errors, touched }) => (
-          <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+          <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
             {maintainerLoginInputs.map((input, index) => (
               <div
                 key={index}
@@ -60,6 +60,18 @@ const MaintainerLogin = () => {
                 <Input key={input.id} {...input} {...customInputClasses} />
               </div>
             ))}
+            {Object.keys(errors).map((error) => {
+              if (touched[error]) {
+                return (
+                  <Markdown
+                    key={error.trim()}
+                    className="text-red-500 my-2 lg:my-2"
+                  >
+                    {errors[error] as string}
+                  </Markdown>
+                );
+              }
+            })}
             <div className="flex flex-col items-center justify-center">
               <button
                 disabled={Object.keys(errors).length > 0}
@@ -78,19 +90,6 @@ const MaintainerLogin = () => {
                 </Link>
               </div>
             </div>
-
-            {Object.keys(errors).map((error) => {
-              if (touched[error]) {
-                return (
-                  <Markdown
-                    key={error.trim()}
-                    className="text-red-500 my-2 lg:my-1"
-                  >
-                    {errors[error] as string}
-                  </Markdown>
-                );
-              }
-            })}
           </Form>
         )}
       </Formik>
