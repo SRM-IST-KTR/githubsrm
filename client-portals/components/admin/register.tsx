@@ -15,7 +15,7 @@ import Footer from "../shared/footer";
 
 const AdminRegister = () => {
   const [authToken, setAuthToken] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   //@ts-ignore
   const initialValues: AdminRegisterData = {
