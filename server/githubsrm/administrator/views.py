@@ -184,7 +184,7 @@ class ProjectsAdmin(APIView):
                             role="project_approval", data={**{
                                 "name": "Maintainer{s)",
                                 "project_name": project["project_name"],
-                                "project_url": project["project_url"],
+                                "project_url": validate["project_url"],
                                 "project_id": project["_id"]
 
                             }, **email_document}, send_all=True):
