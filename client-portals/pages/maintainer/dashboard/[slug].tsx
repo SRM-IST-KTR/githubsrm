@@ -4,6 +4,7 @@ import OtherMaintainers from "../../../components/maintainer/dashboard/othermain
 import { Layout } from "../../../components/shared";
 import { successToast } from "../../../utils/functions/toast";
 import { AuthContext } from "../../../context/authContext";
+import { GrNext, GrPrevious } from "react-icons/gr";
 import { TiTick } from "react-icons/ti";
 import {
   ContributorProps,
@@ -16,7 +17,6 @@ import {
   getContributorsApplications,
 } from "../../../services/api";
 import Footer from "../../../components/shared/footer";
-import Loading from "../../../utils/icons/loading";
 
 const headings = [
   "Name",
@@ -36,6 +36,9 @@ const ProjectDetail = () => {
   const [maintainers, setMaintainers] = useState<OtherMaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
+  const [pageNo, setPageNo] = useState<number>(1);
+  const [hasNextPage, sethasNextPage] = useState<boolean>(false);
+  const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [accepted, setAccepted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
@@ -68,6 +71,10 @@ const ProjectDetail = () => {
       setProjectName(res.project_name);
       setProjectId(res._id);
       setMaintainers(res.maintainer);
+      sethasNextPage(res.contributorHasNextPage);
+      if (pageNo > 1) {
+        sethasPrevPage(true);
+      }
       setLoading2(false);
     } else {
       setLoading2(false);
@@ -156,13 +163,40 @@ const ProjectDetail = () => {
                             }
                             className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                           >
-                            {loading ? <Loading /> : "Approve Contributor"}
+                            {loading ? <CSSLoader /> : "Approve Contributor"}
                           </button>
                         )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
+                <div className="fixed flex justify-center w-full bottom-40 mb-44">
+                  <button
+                    disabled={!hasPrevPage}
+                    className={`${
+                      !hasPrevPage
+                        ? "opacity-10 cursor-not-allowed"
+                        : "hover:bg-base-green focus:bg-base-green"
+                    } p-3 rounded-full`}
+                    onClick={() => setPageNo(pageNo - 1)}
+                  >
+                    <GrPrevious className="text-2xl font-extrabold" />
+                  </button>
+                  <h2 className="text-gray-50 text-4xl  font-medium mx-3">
+                    {pageNo}
+                  </h2>
+                  <button
+                    disabled={!hasNextPage}
+                    className={`${
+                      !hasNextPage
+                        ? "opacity-10 cursor-not-allowed"
+                        : "hover:bg-base-green focus:bg-base-green"
+                    } p-3 rounded-full`}
+                    onClick={() => setPageNo(pageNo + 1)}
+                  >
+                    <GrNext className="text-2xl font-extrabold" />
+                  </button>
+                </div>
               </div>
             ) : (
               <h2 className="text-5xl text-center font-extrabold text-white mb-5 no-scrollbar">
