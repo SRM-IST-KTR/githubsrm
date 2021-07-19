@@ -9,7 +9,7 @@ const Navbar = ({ links }) => {
   const authContext = useContext(AuthContext);
 
   return (
-    <div className="absolute top-0 left-0 right-0 flex flex-wrap items-center justify-between px-2 py-3 bg-base-black mb-3 text-white">
+    <div className="absolute top-0 left-0 right-0 flex flex-wrap items-center justify-between px-2 py-3 bg-gray-800 mb-3 text-white">
       <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
         <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
           <h2 className="mr-5 font-bold text-2xl">
@@ -34,7 +34,7 @@ const Navbar = ({ links }) => {
             {links.map((item) => (
               <div
                 key={item.name}
-                className="mx-2 text-xl p-3 transform hover:scale-110"
+                className="mx-2 text-xl p-3 hover:text-base-teal transform hover:scale-110"
               >
                 <Link href={item.link}>{item.name}</Link>
               </div>
