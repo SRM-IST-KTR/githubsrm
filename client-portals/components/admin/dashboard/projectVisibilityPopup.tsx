@@ -82,7 +82,13 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
                         : "cursor-pointer"
                     } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
                   >
-                    {loading ? <Loading /> : "Approve"}
+                    {loading ? (
+                      <span className="flex w-6 mx-auto">
+                        <Loading />
+                      </span>
+                    ) : (
+                      "Approve"
+                    )}
                   </button>
                 </div>
                 {Object.keys(errors).map((error) => {

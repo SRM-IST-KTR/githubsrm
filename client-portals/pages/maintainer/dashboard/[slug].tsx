@@ -17,6 +17,7 @@ import {
   getContributorsApplications,
 } from "../../../services/api";
 import Footer from "../../../components/shared/footer";
+import Loading from "../../../utils/icons/loading";
 
 const headings = [
   "Name",
@@ -171,7 +172,13 @@ const ProjectDetail = () => {
                             }
                             className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                           >
-                            {loading ? <CSSLoader /> : "Approve Contributor"}
+                            {loading ? (
+                              <span className="flex w-6 mx-auto">
+                                <Loading />
+                              </span>
+                            ) : (
+                              "Approve Contributor"
+                            )}
                           </button>
                         )}
                       </td>
