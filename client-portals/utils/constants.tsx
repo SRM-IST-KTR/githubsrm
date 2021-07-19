@@ -95,18 +95,6 @@ export const resetPasswordInputs: InputProps[] = [
 
 export const projectVisibilityInputs: InputProps[] = [
   {
-    id: "private",
-    label: "Project Type",
-    type: "select",
-    selectOptions: {
-      options: [
-        { value: true, name: "Private" },
-        { value: false, name: "Public" },
-      ],
-    },
-    required: true,
-  },
-  {
     id: "project_url",
     label: "Project URL",
     type: "text",
