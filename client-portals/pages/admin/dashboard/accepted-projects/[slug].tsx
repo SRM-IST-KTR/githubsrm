@@ -9,6 +9,7 @@ import { Layout } from "../../../../components/shared";
 import Link from "next/link";
 import { ContributorsProps } from "../../../../utils/interfaces";
 import CSSLoader from "../../../../components/shared/loader";
+import Loading from "../../../../utils/icons/loading";
 
 const headings = [
   "Name",
@@ -29,13 +30,17 @@ const ContributorsPage = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loading2, setLoading2] = useState<boolean>(true);
+
   const router = useRouter();
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext.isAuth || !authContext.isAdmin) {
-      router.replace("/admin/dashboard/accepted-projects/", "/");
+    if (authContext.authReady) {
+      if (!authContext.isAuth || !authContext.isAdmin) {
+        router.replace("/admin/dashboard/accepted-projects/", "/");
+      }
     }
   }, [authContext]);
 
@@ -50,13 +55,13 @@ const ContributorsPage = () => {
   };
 
   const _getProject = async (slug, token) => {
-    setLoading(true);
+    setLoading2(true);
     const res = await getProject(slug, token);
     if (res) {
       setContributorsData(res.contributor.contributor);
       setProjectName(res.project.project_name);
       setProjectId(res.project._id);
-      setLoading(false);
+      setLoading2(false);
     }
   };
 
@@ -64,9 +69,9 @@ const ContributorsPage = () => {
     const { slug } = router.query;
     const token = sessionStorage.getItem("token");
     _getProject(slug, token);
-  }, [accepted]);
+  }, [router.query, accepted]);
 
-  return loading ? (
+  return loading2 ? (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
       <CSSLoader />
     </div>
@@ -163,7 +168,7 @@ const ContributorsPage = () => {
                         }
                         className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                       >
-                        Approve Contributor
+                        {loading ? <Loading /> : "Approve Contributor"}
                       </button>
                     )}
                   </td>

@@ -85,7 +85,6 @@ export const getAcceptedProjects = async (
       })
     ).data;
   } catch (error) {
-    errorHandler(error);
     return false;
   }
 };
@@ -106,7 +105,6 @@ export const getContributorsApplications = async (
       )
     ).data;
   } catch (error) {
-    errorHandler(error);
     return false;
   }
 };
@@ -274,7 +272,6 @@ export const getProject = async (
       )
     ).data;
   } catch (error) {
-    errorHandler(error);
     return false;
   }
 };

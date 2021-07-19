@@ -13,13 +13,15 @@ import Link from "next/link";
 import { MaintainersProps } from "../../../utils/interfaces";
 import CSSLoader from "../../../components/shared/loader";
 import Footer from "../../../components/shared/footer";
+import Loading from "../../../utils/icons/loading";
 
 const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState<MaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loading2, setLoading2] = useState<boolean>(true);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -39,6 +41,8 @@ const MaintainerPage = () => {
       setAccepted(true);
       successToast("Maintainer Approved sucessfully!");
       setLoading(false);
+    } else {
+      setLoading(false);
     }
   };
 
@@ -48,9 +52,9 @@ const MaintainerPage = () => {
       setMaintainerData(res.maintainer.maintainer);
       setProjectName(res.project.project_name);
       setProjectId(res.project._id);
-      setLoading(false);
+      setLoading2(false);
     } else {
-      setLoading(false);
+      setLoading2(false);
     }
   };
 
@@ -60,7 +64,7 @@ const MaintainerPage = () => {
     _getMaintainerApplications(slug, token);
   }, [router.query, accepted]);
 
-  return loading ? (
+  return loading2 ? (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
       <CSSLoader />
     </div>
@@ -117,7 +121,7 @@ const MaintainerPage = () => {
                   }
                   className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                 >
-                  Approve Maintainer
+                  {loading ? <Loading /> : "Approve Maintainer"}
                 </button>
               )}
             </div>
