@@ -12,7 +12,6 @@ import {
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
-import { boolean } from "yup/lib/locale";
 
 const instance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
