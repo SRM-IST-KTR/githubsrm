@@ -8,8 +8,10 @@ const AcceptedProjectsPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext.isAuth || !authContext.isAdmin) {
-      router.replace("/");
+    if (authContext.authReady) {
+      if (!authContext.isAuth || !authContext.isAdmin) {
+        router.replace("/");
+      }
     }
   }, [authContext]);
 

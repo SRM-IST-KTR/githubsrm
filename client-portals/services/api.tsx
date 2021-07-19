@@ -73,7 +73,7 @@ export const postAdminRegister = async (
 export const getAcceptedProjects = async (
   pageNo,
   token
-): Promise<AcceptedProjectsProps[] | false> => {
+): Promise<any | false> => {
   try {
     return await (
       await instance.get(`admin/projects/accepted?page=${pageNo}`, {
