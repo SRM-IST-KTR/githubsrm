@@ -8,8 +8,10 @@ const Index = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext.isAuth || authContext.isAdmin) {
-      router.replace("maintainer/dashboard", "/");
+    if (authContext.authReady) {
+      if (!authContext.isAuth || authContext.isAdmin) {
+        router.replace("maintainer/dashboard", "/");
+      }
     }
   }, [authContext]);
 

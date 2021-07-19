@@ -34,6 +34,18 @@
     hyphens: auto;
   }
 
+  .custom-input {
+    @apply w-full;
+  }
+
+  .custom-input-wrapper {
+    @apply flex;
+  }
+
+  .custom-label {
+    @apply flex;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
