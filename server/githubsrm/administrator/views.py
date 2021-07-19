@@ -10,7 +10,7 @@ from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema, ApprovalSchema
 from .perms import AuthAdminPerms
-from .utils import (accepted_project_pagination, project_pagination,
+from .utils import (accepted_project_pagination, alpha_maintainer_support, beta_maintainer_support, project_pagination,
                     project_single_project)
 
 
@@ -152,106 +152,16 @@ class ProjectsAdmin(APIView):
                     )
 
                     if len(project['maintainer_id']) == 1:
-                        if existing:
-                            if service.wrapper_email(
-                                    role="project_submission_approval", data={
-                                        "name": maintainer["name"],
-                                        "project_name": project["project_name"],
-                                        "email": maintainer["email"],
-                                        "project_id": project["_id"]
-                                    }):
-                                return JsonResponse(data={
-                                    "success": "Approved existing maintainer"
-                                }, status=200)
-
-                            entry.reset_status_maintainer(
-                                identifier=maintainer["_id"], project_id=project["_id"])
-
-                            return JsonResponse(data={
-                                "error": "email failed"
-                            }, status=500)
-
-                        else:
-                            password = RequestSetPassword(
-                                email=validate.get("email"))
-
-                            if service.wrapper_email(
-                                    role="project_submission_approval_w_password_link", data={
-                                        "name": maintainer["name"],
-                                        "project_name": project["project_name"],
-                                        "reset_token": password,
-                                        "email": maintainer["email"],
-                                        "project_id": project["_id"],
-                                    }):
-                                return JsonResponse(data={
-                                    "success": "Approved new maintainer"
-                                }, status=200)
-
-                            entry.reset_status_maintainer(
-                                identifier=maintainer["_id"], project_id=project["_id"])
-
-                            return JsonResponse(data={
-                                "error": "email failed"
-                            }, status=500)
+                        response = alpha_maintainer_support(existing=existing, project=project,
+                                                            maintainer=maintainer, request=request)
+                        return JsonResponse(data=response.get("message"),
+                                            status=response.get("status"))
 
                     if len(project['maintainer_id']) > 1:
+                        response = beta_maintainer_support(existing=existing, project=project,
+                                                           maintainer=maintainer, request=request)
 
-                        if existing:
-                            if service.wrapper_email(
-                                    role="welcome_maintainer", data={
-                                        "name": maintainer["name"],
-                                        "project_name": project["project_name"],
-                                        "email": maintainer["email"]
-                                    }):
-                                Thread(target=service.wrapper_email, kwargs={
-                                    "role": "new_maintainer_notification",
-                                    "data": {
-                                        "name": "Maintainer",
-                                        "email": request.data["email"],
-                                        "project_name": project["project_name"],
-                                        "beta_name": maintainer["name"],
-                                        "beta_email": maintainer["email"]
-                                    }
-                                }).start()
-                                return JsonResponse(data={
-                                    "Approved existing maintainer": True
-                                }, status=200)
-
-                            entry.reset_status_maintainer(
-                                identifier=maintainer["_id"], project_id=project["_id"])
-
-                        else:
-                            password = RequestSetPassword(
-                                email=validate.get("email"))
-
-                            if service.wrapper_email(
-                                    role="welcome_maintainer_w_password_link", data={
-                                        "name": maintainer["name"],
-                                        "project_name": project["project_name"],
-                                        "reset_token": password,
-                                        "email": maintainer["email"]
-                                    }):
-                                Thread(target=service.wrapper_email, kwargs={
-                                    "role": "new_maintainer_notification",
-                                    "data": {
-                                        "name": "Maintainer",
-                                        "email": request.data["email"],
-                                        "project_name": project["project_name"],
-                                        "beta_name": maintainer["name"],
-                                        "beta_email": maintainer["email"]
-                                    }
-                                }).start()
-
-                                return JsonResponse(data={
-                                    "Approved new maintainer": True
-                                }, status=200)
-
-                            entry.reset_status_maintainer(
-                                identifier=maintainer["_id"], project_id=project["_id"])
-
-                            return JsonResponse(data={
-                                "error": "email not sent"
-                            }, status=500)
+                        return JsonResponse(data=response.get("message"), status=response.get("status"))
 
                 return JsonResponse(data={
                     "error": "Invalid data / Maintainer already approved"
