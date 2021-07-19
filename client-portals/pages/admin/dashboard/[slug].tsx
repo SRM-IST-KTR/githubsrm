@@ -66,7 +66,7 @@ const MaintainerPage = () => {
 
   return loading2 ? (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-      <CSSLoader />
+      <Loading />
     </div>
   ) : (
     <>
@@ -121,7 +121,7 @@ const MaintainerPage = () => {
                   }
                   className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                 >
-                  {loading ? <Loading /> : "Approve Maintainer"}
+                  {loading ? <CSSLoader /> : "Approve Maintainer"}
                 </button>
               )}
             </div>
