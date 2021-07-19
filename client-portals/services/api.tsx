@@ -6,7 +6,6 @@ import {
   MaintainerLoginData,
   ResetPasswordData,
   SetPasswordData,
-  AcceptedProjectsProps,
   ContributorProps,
   MaintainersProps,
 } from "../utils/interfaces";
@@ -95,7 +94,7 @@ export const getAcceptedProjects = async (
 export const getContributorsApplications = async (
   token,
   slug
-): Promise<ContributorProps[] | false> => {
+): Promise<any | false> => {
   try {
     return await (
       await instance.get(
@@ -218,7 +217,7 @@ export const postAcceptMaintainer = async (
 export const getMaintainerApplications = async (
   slug,
   token
-): Promise<MaintainersProps[] | false> => {
+): Promise<any | false> => {
   try {
     return await (
       await instance.get(
@@ -259,10 +258,7 @@ export const postAcceptProject = async (
   }
 };
 
-export const getProject = async (
-  slug,
-  token
-): Promise<MaintainersProps[] | boolean> => {
+export const getProject = async (slug, token): Promise<any> => {
   try {
     return await (
       await instance.get(

@@ -16,7 +16,6 @@ import {
   getContributorsApplications,
 } from "../../../services/api";
 import Footer from "../../../components/shared/footer";
-import Loading from "../../../utils/icons/loading";
 
 const headings = [
   "Name",
@@ -165,7 +164,7 @@ const ProjectDetail = () => {
                 </tbody>
               </div>
             ) : (
-              <h2 className="text-4xl font-extrabold text-white mb-5 no-scrollbar">
+              <h2 className="text-5xl text-center font-extrabold text-white mb-5 no-scrollbar">
                 No contributor applications yet!!
               </h2>
             )}
