@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Card = ({ name, desc, url }) => {
   return (
-    <div className="w-96 px-8 py-4 mx-auto bg-white rounded-lg shadow-md ">
+    <div className="md:w-3/4 w-full px-8 py-4 mx-auto bg-white rounded-lg shadow-md mt-6">
       <div className="mt-2">
         <p className="text-2xl font-bold text-gray-700">{name}</p>
         <p className="mt-2 text-gray-600 w-6/7 overflow-auto no-scrollbar word-wrap">

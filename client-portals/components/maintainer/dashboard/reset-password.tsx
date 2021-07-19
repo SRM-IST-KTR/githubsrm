@@ -74,7 +74,7 @@ const ResetPassword = ({ action, queryToken }) => {
           enableReinitialize
         >
           {({ errors, touched }) => (
-            <Form className="flex flex-col px-6 w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+            <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
               {setPasswordInputs.map((input, index) => (
                 <div
                   key={index}

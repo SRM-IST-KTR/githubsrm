@@ -5,6 +5,7 @@ import Markdown from "react-markdown";
 import {
   adminRegisterValidation,
   adminRegisterInputs,
+  customInputClasses,
 } from "../../utils/constants";
 import { Input } from "../shared";
 import { postAdminRegister } from "../../services/api";
@@ -54,7 +55,7 @@ const AdminRegister = () => {
                 key={input.id}
                 className="border-2 border-gray-700 rounded my-4 p-4"
               >
-                <Input {...input} />
+                <Input {...input} {...customInputClasses} />
               </div>
             ))}
             <Field
@@ -65,6 +66,18 @@ const AdminRegister = () => {
               label="Secret Key"
               placeholder="Secret Key"
             />
+            {Object.keys(errors).map((error) => {
+              if (touched[error]) {
+                return (
+                  <Markdown
+                    key={error.trim()}
+                    className="text-red-500 my-2 lg:my-2"
+                  >
+                    {errors[error] as string}
+                  </Markdown>
+                );
+              }
+            })}
             <div className="flex justify-center">
               <button
                 disabled={Object.keys(errors).length > 0}
@@ -84,18 +97,6 @@ const AdminRegister = () => {
                 )}
               </button>
             </div>
-            {Object.keys(errors).map((error) => {
-              if (touched[error]) {
-                return (
-                  <Markdown
-                    key={error.trim()}
-                    className="text-red-500 my-2 lg:my-1"
-                  >
-                    {errors[error] as string}
-                  </Markdown>
-                );
-              }
-            })}
           </Form>
         )}
       </Formik>

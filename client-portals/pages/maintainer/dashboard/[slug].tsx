@@ -2,14 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import OtherMaintainers from "../../../components/maintainer/dashboard/othermaintainers";
 import { Layout } from "../../../components/shared";
-import instance from "../../../services/api";
 import { successToast, errToast } from "../../../utils/functions/toast";
 import { AuthContext } from "../../../context/authContext";
 import { TiTick } from "react-icons/ti";
-import {
-  ContributorProps,
-  OtherMaintainersProps,
-} from "../../../utils/interfaces";
+import { OtherMaintainersProps } from "../../../utils/interfaces";
 import Link from "next/link";
 import CSSLoader from "../../../components/shared/loader";
 import {
@@ -86,7 +82,7 @@ const ProjectDetail = () => {
         />
         <div className="overflow-auto w-full">
           {contributorsData?.length > 0 ? (
-            <table className="table text-white border-separate space-y-6 text-sm">
+            <div className="text-white border-separate space-y-6 text-sm">
               <thead className="bg-base-teal text-white text-xl font-extrabold">
                 <tr>
                   {headings.map((head) => (
@@ -155,7 +151,7 @@ const ProjectDetail = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </div>
           ) : (
             <h2 className="text-4xl font-extrabold text-white mb-5 no-scrollbar">
               No contributor applications yet!!

@@ -27,11 +27,11 @@ const maintainer_links = [
 export default function Layout({ type, children }) {
   const authContext = React.useContext(AuthContext);
   return (
-    <div className="bg-base-blue">
+    <div className="relative bg-base-blue">
       {authContext.isAuth && (
         <Navbar links={type === "admin" ? admin_links : maintainer_links} />
       )}
-      <div className="min-h-screen p-10 w-full">{children}</div>
+      <div className="min-h-screen p-10 pt-32 w-full">{children}</div>
     </div>
   );
 }

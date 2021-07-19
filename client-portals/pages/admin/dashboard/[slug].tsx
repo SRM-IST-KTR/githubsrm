@@ -96,13 +96,16 @@ const MaintainerPage = () => {
             </h2>
             <h2 className="text-xl font-medium mb-5">
               <span className="font-bold">Email: </span>
-              {person.email}
+              {person.email.split("@")[0]}
+              <br className="sm:hidden" />@{person.email.split("@")[1]}
             </h2>
             <Link href={person.github_id}>
               <div className="cursor-pointer hover:text-gray-800 flex text-xl font-medium mb-5">
                 <span className="font-bold">Github ID: </span>
-                <span className="ml-1 flex">
-                  <FiGithub />
+                <span className="ml-1 flex items-center">
+                  <span className="mx-2">
+                    <FiGithub />
+                  </span>
                   {person.github_id}
                 </span>
               </div>

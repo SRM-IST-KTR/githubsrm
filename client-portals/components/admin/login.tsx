@@ -62,6 +62,18 @@ const AdminLogin = () => {
                 <Input key={input.id} {...input} {...customInputClasses} />
               </div>
             ))}
+            {Object.keys(errors).map((error) => {
+              if (touched[error]) {
+                return (
+                  <Markdown
+                    key={error.trim()}
+                    className="text-red-500 my-2 lg:my-2"
+                  >
+                    {errors[error] as string}
+                  </Markdown>
+                );
+              }
+            })}
             <div className="flex justify-center">
               <button
                 disabled={Object.keys(errors).length > 0}
@@ -81,18 +93,6 @@ const AdminLogin = () => {
                 )}
               </button>
             </div>
-            {Object.keys(errors).map((error) => {
-              if (touched[error]) {
-                return (
-                  <Markdown
-                    key={error.trim()}
-                    className="text-red-500 my-2 lg:my-1"
-                  >
-                    {errors[error] as string}
-                  </Markdown>
-                );
-              }
-            })}
           </Form>
         )}
       </Formik>
