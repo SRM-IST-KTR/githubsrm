@@ -40,7 +40,7 @@ const AcceptedProjectsCards = () => {
         ))}
       </div>
 
-      <div className="flex justify-center my-14">
+      <div className="fixed inline-flex w-full bottom-0 left-1/2 mb-32">
         <button
           disabled={!hasPrevPage}
           className={`${
