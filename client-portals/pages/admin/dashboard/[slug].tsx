@@ -22,7 +22,6 @@ const MaintainerPage = () => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    const { slug } = router.query;
     if (!authContext.isAuth || !authContext.isAdmin) {
       router.replace("/");
     }
