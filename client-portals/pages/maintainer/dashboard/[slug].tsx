@@ -21,7 +21,7 @@ import Footer from "../../../components/shared/footer";
 const headings = [
   "Name",
   "Email",
-  "SRM",
+  "SRM Email",
   "Github",
   "Reg No",
   "Branch",
@@ -131,9 +131,14 @@ const ProjectDetail = () => {
                       </td>
                       <td className="p-3">
                         <div className="flex align-items-center">
-                          <Link href={person.github_id}>
+                          <a
+                            className="hover:text-base-teal"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={`https://github.com/${person.github_id}`}
+                          >
                             <div> {person.github_id}</div>
-                          </Link>
+                          </a>
                         </div>
                       </td>
 
