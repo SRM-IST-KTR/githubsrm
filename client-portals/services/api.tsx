@@ -6,8 +6,8 @@ import {
   MaintainerLoginData,
   ResetPasswordData,
   SetPasswordData,
-  AcceptedProjectsProps,
   ContributorProps,
+  MaintainersProps,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
@@ -16,28 +16,16 @@ const instance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
 });
 
-export const postAcceptProjectHandler = async (
-  project_id,
-  isprivate,
-  project_url
-): Promise<boolean> => {
+export const postAcceptProjectHandler = async (values): Promise<boolean> => {
   try {
     const recaptchaToken = await getRecaptchaToken("post");
     const token = sessionStorage.getItem("token");
-    await instance.post(
-      `admin/projects?projectId=${project_id}&role=project`,
-      {
-        project_id: project_id,
-        private: isprivate,
-        project_url: project_url,
+    await instance.post(`admin/projects?role=project`, values, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      }
-    );
+    });
     return true;
   } catch (error) {
     errorHandler(error);
@@ -77,7 +65,11 @@ export const postAdminRegister = async (
     });
     return true;
   } catch (error) {
-    errorHandler(error);
+    if (error.response?.status === 400) {
+      errToast("User already exists");
+    } else {
+      errorHandler(error);
+    }
     return false;
   }
 };
@@ -85,7 +77,7 @@ export const postAdminRegister = async (
 export const getAcceptedProjects = async (
   pageNo,
   token
-): Promise<AcceptedProjectsProps[] | false> => {
+): Promise<any | false> => {
   try {
     return await (
       await instance.get(`admin/projects/accepted?page=${pageNo}`, {
@@ -95,7 +87,6 @@ export const getAcceptedProjects = async (
       })
     ).data;
   } catch (error) {
-    errorHandler(error);
     return false;
   }
 };
@@ -103,7 +94,7 @@ export const getAcceptedProjects = async (
 export const getContributorsApplications = async (
   token,
   slug
-): Promise<ContributorProps[] | false> => {
+): Promise<any | false> => {
   try {
     return await (
       await instance.get(
@@ -114,9 +105,8 @@ export const getContributorsApplications = async (
           },
         }
       )
-    ).data[0];
+    ).data;
   } catch (error) {
-    errorHandler(error);
     return false;
   }
 };
@@ -195,6 +185,92 @@ export const postAcceptContributor = async (
     return true;
   } catch (error) {
     errorHandler(error);
+    return false;
+  }
+};
+
+export const postAcceptMaintainer = async (
+  project_id,
+  maintainer_id,
+  email
+): Promise<boolean> => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.post(
+      "admin/projects?role=maintainer",
+      { project_id: project_id, maintainer_id: maintainer_id, email },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
+        },
+      }
+    );
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const getMaintainerApplications = async (
+  slug,
+  token
+): Promise<any | false> => {
+  try {
+    return await (
+      await instance.get(
+        `admin/projects?projectId=${slug}&contributor=false&maintainer=true`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+    ).data;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const postAcceptProject = async (
+  project_id,
+  contributor_id
+): Promise<boolean> => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.post(
+      "admin/projects?role=contributor",
+      { contributor_id: contributor_id, project_id: project_id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-RECAPTCHA-TOKEN": recaptchaToken,
+        },
+      }
+    );
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const getProject = async (slug, token): Promise<any> => {
+  try {
+    return await (
+      await instance.get(
+        `admin/projects?projectId=${slug}&contributor=true&maintainer=true`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+    ).data;
+  } catch (error) {
     return false;
   }
 };

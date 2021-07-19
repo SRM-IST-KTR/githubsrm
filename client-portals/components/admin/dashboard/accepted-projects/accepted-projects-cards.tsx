@@ -6,39 +6,31 @@ import { getAcceptedProjects } from "../../../../services/api";
 import CSSLoader from "../../../shared/loader";
 
 const AcceptedProjectsCards = () => {
-  const [acceptedProjects, setAcceptedProjects] = useState<
-    AcceptedProjectProps[]
-  >([]);
+  const [acceptedProjects, setAcceptedProjects] = useState([]);
   const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    let mounted = true;
+  const _getAcceptedProjects = async () => {
     const token = sessionStorage.getItem("token");
-    const res = getAcceptedProjects(pageNo, token);
+    const res = await getAcceptedProjects(pageNo, token);
     if (res) {
-      if (mounted) {
-        //@ts-ignore
-        setAcceptedProjects(res.records);
-        //@ts-ignore
-        sethasNextPage(res.hasNextPage);
-        //@ts-ignore
-        sethasPrevPage(res.hasPreviousPage);
-        setLoading(false);
-      }
+      setAcceptedProjects(res.records);
+      sethasNextPage(res.hasNextPage);
+      sethasPrevPage(res.hasPreviousPage);
+      setLoading(false);
     }
-    console.log(acceptedProjects);
-    return () => {
-      mounted = false;
-    };
+  };
+
+  useEffect(() => {
+    _getAcceptedProjects();
   }, [pageNo]);
 
   return !loading ? (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-        {acceptedProjects?.map((item) => (
+        {acceptedProjects.map((item) => (
           <Card
             url={`/admin/dashboard/accepted-projects/${item._id}`}
             name={item.project_name}
@@ -48,7 +40,7 @@ const AcceptedProjectsCards = () => {
         ))}
       </div>
 
-      <div className="flex justify-center my-14">
+      <div className="fixed inline-flex w-full bottom-0 left-1/2 mb-32">
         <button
           disabled={!hasPrevPage}
           className={`${

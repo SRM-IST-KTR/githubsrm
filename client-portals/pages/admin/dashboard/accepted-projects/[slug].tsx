@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../../../context/authContext";
-import instance from "../../../../services/api";
+import { getProject, postAcceptProject } from "../../../../services/api";
 import { successToast, errToast } from "../../../../utils/functions/toast";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
 import { Layout } from "../../../../components/shared";
 import Link from "next/link";
-import { getRecaptchaToken } from "../../../../services/recaptcha";
 import { ContributorsProps } from "../../../../utils/interfaces";
 import CSSLoader from "../../../../components/shared/loader";
+import Loading from "../../../../utils/icons/loading";
 
 const headings = [
   "Name",
@@ -19,7 +19,7 @@ const headings = [
   "Reg No",
   "Branch",
   "Proposal",
-  "maintainer approved?",
+  "Maintainer approved?",
   "Added to repo?",
 ];
 
@@ -30,63 +30,48 @@ const ContributorsPage = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loading2, setLoading2] = useState<boolean>(true);
+
   const router = useRouter();
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authContext.isAuth || !authContext.isAdmin) {
-      router.replace("/admin/dashboard/accepted-projects/", "/");
+    if (authContext.authReady) {
+      if (!authContext.isAuth || !authContext.isAdmin) {
+        router.replace("/admin/dashboard/accepted-projects/", "/");
+      }
     }
   }, [authContext]);
 
   const acceptMaintainerHandler = async (project_id, contributor_id) => {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance
-      .post(
-        "admin/projects?role=contributor",
-        { contributor_id: contributor_id, project_id: project_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "X-RECAPTCHA-TOKEN": recaptchaToken,
-          },
-        }
-      )
-      .then((res) => {
-        setAccepted(true);
-        successToast("Contributor Approved sucessfully!");
-      })
-      .catch((err) => {
-        errToast(err.message);
-      });
+    setLoading(true);
+    const res = await postAcceptProject(project_id, contributor_id);
+    if (res) {
+      setAccepted(true);
+      successToast("Contributor Approved sucessfully!");
+      setLoading(false);
+    }
+  };
+
+  const _getProject = async (slug, token) => {
+    setLoading2(true);
+    const res = await getProject(slug, token);
+    if (res) {
+      setContributorsData(res.contributor.contributor);
+      setProjectName(res.project.project_name);
+      setProjectId(res.project._id);
+      setLoading2(false);
+    }
   };
 
   useEffect(() => {
     const { slug } = router.query;
     const token = sessionStorage.getItem("token");
-    instance
-      .get(
-        `admin/projects?projectId=${slug}&contributor=true&maintainer=true`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => {
-        setContributorsData(res.data.contributor.contributor);
-        setProjectName(res.data.project.project_name);
-        setProjectId(res.data.project._id);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
-  }, [accepted]);
+    _getProject(slug, token);
+  }, [router.query, accepted]);
 
-  return loading ? (
+  return loading2 ? (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
       <CSSLoader />
     </div>
@@ -183,7 +168,7 @@ const ContributorsPage = () => {
                         }
                         className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                       >
-                        Approve Contributor
+                        {loading ? <Loading /> : "Approve Contributor"}
                       </button>
                     )}
                   </td>
