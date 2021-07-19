@@ -47,7 +47,7 @@ const ProjectApplications = () => {
         }
       })
       .catch((err) => {
-        errorHandler(err);
+        console.log(err);
       });
 
     return () => {

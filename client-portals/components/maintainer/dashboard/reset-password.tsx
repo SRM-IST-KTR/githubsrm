@@ -52,7 +52,7 @@ const ResetPassword = ({ action, queryToken }) => {
       const res = await postSetPassword(values, queryToken);
       setLoading(false);
       if (res) {
-        successToast("password will be set");
+        successToast("Password set successfully!");
         resetForm({ values: { ...initialValuesSet } });
       }
     } else {
