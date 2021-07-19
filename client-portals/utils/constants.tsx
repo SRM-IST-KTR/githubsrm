@@ -74,6 +74,13 @@ export const setPasswordInputs: InputProps[] = [
     placeholder: "*********",
     required: true,
   },
+  {
+    id: "confirm_password",
+    label: "Confirm Password",
+    type: "password",
+    placeholder: "*********",
+    required: true,
+  },
 ];
 
 export const resetPasswordInputs: InputProps[] = [
@@ -141,6 +148,9 @@ export const resetPasswordValidation = Yup.object().shape({
 
 export const setPasswordValidation = Yup.object().shape({
   password: Yup.string().required("**Password:** Missing").min(2),
+  confirm_password: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("**Confirm Password:** Missing"),
 });
 
 export const projectVisibiltyValidation = Yup.object().shape({
