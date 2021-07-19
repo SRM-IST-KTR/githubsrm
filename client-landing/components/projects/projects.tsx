@@ -7,6 +7,7 @@ import { getProjects } from "../../services/api";
 
 const Projects = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
   const [projects, setProjects] = useState<ProjectProps[]>([]);
 
   useEffect(() => {
@@ -15,8 +16,12 @@ const Projects = () => {
         const res = await getProjects();
         if (res) {
           setProjects(res);
+        } else {
+          setError(true);
         }
-      } catch (error) {}
+      } catch (error) {
+        setError(true);
+      }
       setLoading(false);
     })();
   }, []);
@@ -33,15 +38,25 @@ const Projects = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
-          {projects.length > 0 ? (
-            projects.map((project) => (
-              <Project key={project.project_name.trim()} project={project} />
-            ))
+          {!error ? (
+            projects.length > 0 ? (
+              projects.map((project) => (
+                <Project key={project.project_name.trim()} project={project} />
+              ))
+            ) : (
+              <>
+                <span />
+                <h3 className="text-center text-lg lg:text-2xl font-medium text-base-black min-h-30">
+                  No Projects available right now!
+                </h3>
+                <span />
+              </>
+            )
           ) : (
             <>
               <span />
-              <h3 className="text-center text-lg lg:text-2xl font-medium text-base-black min-h-30">
-                No Projects available right now!
+              <h3 className="text-center text-lg lg:text-2xl font-medium text-red-500 min-h-30">
+                Error fetching projects!
               </h3>
               <span />
             </>
