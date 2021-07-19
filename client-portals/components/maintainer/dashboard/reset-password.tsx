@@ -36,7 +36,7 @@ const ResetPassword = ({ action, queryToken }) => {
     const res = await postResetPassword(values);
     setLoading(false);
     if (res) {
-      successToast("Email Sent Successfully!");
+      successToast("Please check your email!");
       resetForm({ values: { ...initialValuesReset } });
     }
   };
