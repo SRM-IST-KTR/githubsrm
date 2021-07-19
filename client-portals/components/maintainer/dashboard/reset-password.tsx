@@ -45,6 +45,7 @@ const ResetPassword = ({ action, queryToken }) => {
     values: SetPasswordData,
     resetForm: (nextState?: Partial<FormikState<SetPasswordData>>) => void
   ) => {
+    delete values.confirm_password;
     setLoading(true);
     var decodedToken = jwt.decode(queryToken);
     var dateNow = new Date();
