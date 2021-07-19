@@ -156,7 +156,7 @@ const ProjectDetail = () => {
                             }
                             className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                           >
-                            {loading ? <Loading /> : "Approve Contributor"}
+                            {loading ? <CSSLoader /> : "Approve Contributor"}
                           </button>
                         )}
                       </td>

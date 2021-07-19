@@ -15,9 +15,10 @@ import { useContext } from "react";
 import Link from "next/link";
 import { postMaintainerLogin } from "../../services/api";
 import Footer from "../shared/footer";
+import Loading from "../../utils/icons/loading";
 
 const MaintainerLogin = () => {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const authContext = useContext(AuthContext);
 
   //@ts-ignore
@@ -84,7 +85,13 @@ const MaintainerLogin = () => {
                       : "cursor-pointer"
                   } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
                 >
-                  Submit
+                  {loading ? (
+                    <span className="flex w-6 mx-auto">
+                      <Loading />
+                    </span>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
                 <div className="text-md mt-5 hover:underline">
                   <Link href="/maintainer/reset-password/reset">
