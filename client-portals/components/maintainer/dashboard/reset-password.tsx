@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, Form, FormikState, Field } from "formik";
 import { ResetPasswordData, SetPasswordData } from "../../../utils/interfaces";
 import {
@@ -15,6 +15,7 @@ import { successToast, errToast } from "../../../utils/functions/toast";
 import jwt from "jsonwebtoken";
 import Loading from "../../../utils/icons/loading";
 import Footer from "../../shared/footer";
+import Router from "next/router";
 
 const ResetPassword = ({ action, queryToken }) => {
   //@ts-ignore
@@ -27,6 +28,17 @@ const ResetPassword = ({ action, queryToken }) => {
   };
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [jwtExpired, setJwtExpired] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (queryToken) {
+      var decodedToken = jwt.decode(queryToken);
+      var dateNow = new Date();
+      if (decodedToken?.exp && decodedToken.exp < dateNow.getTime() / 1000) {
+        setJwtExpired(true);
+      }
+    }
+  }, []);
 
   const submitValuesReset = async (
     values: ResetPasswordData,
@@ -56,6 +68,7 @@ const ResetPassword = ({ action, queryToken }) => {
           successToast("Password set successfully!");
           resetForm({ values: { ...initialValuesSet } });
           setLoading(false);
+          Router.replace("/maintainer");
         }
       } else {
         errToast("Time to set password has expired");
@@ -69,9 +82,11 @@ const ResetPassword = ({ action, queryToken }) => {
   return (
     <>
       <Layout type="maintainer">
-        <h1 className="flex justify-center text-4xl font-extrabold text-white">
-          {action === "set" ? "Set" : "Reset"} Your Password
-        </h1>
+        {!jwtExpired && (
+          <h1 className="flex justify-center text-4xl font-extrabold text-white">
+            {action === "set" ? "Set" : "Reset"} Your Password
+          </h1>
+        )}
         {action === "set" ? (
           <Formik
             initialValues={initialValuesSet}
@@ -83,46 +98,65 @@ const ResetPassword = ({ action, queryToken }) => {
           >
             {({ errors, touched }) => (
               <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-                {setPasswordInputs.map((input, index) => (
-                  <div
-                    key={index}
-                    className="border-2 border-gray-700 rounded my-4 p-4"
-                  >
-                    <Input key={input.id} {...input} {...customInputClasses} />
-                  </div>
-                ))}
+                {queryToken === undefined && (
+                  <h1 className="text-center text-4xl text-red-500 font-bold">
+                    You cannot access this!
+                  </h1>
+                )}
+                {jwtExpired ? (
+                  <h1 className="text-center text-4xl text-red-500 font-bold">
+                    Link Expired!
+                  </h1>
+                ) : (
+                  queryToken !== undefined && (
+                    <div>
+                      {setPasswordInputs.map((input, index) => (
+                        <div
+                          key={index}
+                          className="border-2 border-gray-700 rounded my-4 p-4"
+                        >
+                          <Input
+                            key={input.id}
+                            {...input}
+                            {...customInputClasses}
+                          />
+                        </div>
+                      ))}
 
-                <div className="flex justify-center">
-                  <button
-                    disabled={Object.keys(errors).length > 0}
-                    type="submit"
-                    className={`${
-                      Object.keys(errors).length > 0
-                        ? "cursor-not-allowed bg-opacity-70"
-                        : "cursor-pointer"
-                    } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
-                  >
-                    {loading ? (
-                      <span className="flex w-6 mx-auto">
-                        <Loading />
-                      </span>
-                    ) : (
-                      "Submit"
-                    )}
-                  </button>
-                </div>
-                {Object.keys(errors).map((error) => {
-                  if (touched[error]) {
-                    return (
-                      <Markdown
-                        key={error.trim()}
-                        className="text-red-500 my-2 lg:my-1"
-                      >
-                        {errors[error] as string}
-                      </Markdown>
-                    );
-                  }
-                })}
+                      <div className="flex justify-center">
+                        <button
+                          disabled={Object.keys(errors).length > 0}
+                          type="submit"
+                          className={`${
+                            Object.keys(errors).length > 0
+                              ? "cursor-not-allowed bg-opacity-70"
+                              : "cursor-pointer"
+                          } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                        >
+                          {loading ? (
+                            <span className="flex w-6 mx-auto">
+                              <Loading />
+                            </span>
+                          ) : (
+                            "Submit"
+                          )}
+                        </button>
+                      </div>
+                      {Object.keys(errors).map((error) => {
+                        if (touched[error]) {
+                          return (
+                            <Markdown
+                              key={error.trim()}
+                              className="text-red-500 my-2 lg:my-1"
+                            >
+                              {errors[error] as string}
+                            </Markdown>
+                          );
+                        }
+                      })}
+                    </div>
+                  )
+                )}
               </Form>
             )}
           </Formik>

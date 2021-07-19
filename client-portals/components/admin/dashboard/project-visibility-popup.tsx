@@ -25,6 +25,7 @@ const customStyles = {
 
 const ProjectVisibility = ({ isOpen, close, projectId }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [isPrivate, setIsPrivate] = useState<boolean>(false);
 
   //@ts-ignore
   const initialValues: ProjectVisibilityData = {
@@ -33,6 +34,7 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
   };
 
   const submitValues = async (values) => {
+    values.private = isPrivate;
     values.project_id = projectId;
     setLoading(true);
     const res = await postAcceptProjectHandler(values);
@@ -69,6 +71,27 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
                     key={input.id}
                     className="border-2 border-gray-700 rounded my-4 p-4"
                   >
+                    <div className="flex justify-center mt-2 mb-6">
+                      <button
+                        type="button"
+                        onClick={() => setIsPrivate(true)}
+                        className={`${
+                          isPrivate ? "bg-base-blue" : "cursor-pointer"
+                        } text-white bg-gray-400  w-20 py-1 font-semibold rounded-lg`}
+                      >
+                        Private
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsPrivate(false)}
+                        className={`${
+                          !isPrivate ? "bg-base-blue" : "cursor-pointer"
+                        } text-white bg-gray-400 ml-5 w-20 py-1 font-semibold rounded-lg`}
+                      >
+                        Public
+                      </button>
+                    </div>
+
                     <Input {...input} />
                   </div>
                 ))}
@@ -82,7 +105,13 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
                         : "cursor-pointer"
                     } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
                   >
-                    {loading ? <Loading /> : "Approve"}
+                    {loading ? (
+                      <span className="flex w-6 mx-auto">
+                        <Loading />
+                      </span>
+                    ) : (
+                      "Approve"
+                    )}
                   </button>
                 </div>
                 {Object.keys(errors).map((error) => {

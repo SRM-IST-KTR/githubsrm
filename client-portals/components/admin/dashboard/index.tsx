@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Layout } from "../../shared";
 import { TableProjectsProps } from "../../../utils/interfaces";
 import CSSLoader from "../../shared/loader";
-import ProjectVisibility from "./projectVisibilityPopup";
+import ProjectVisibility from "./project-visibility-popup";
 import { errorHandler } from "../../../services/api";
 import Footer from "../../shared/footer";
 
