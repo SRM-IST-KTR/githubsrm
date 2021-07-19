@@ -194,9 +194,17 @@ class ProjectsAdmin(APIView):
                             }, status=200)
                     else:
                         entry.reset_status_project(project=project)
+
+                        blame = None
+                        try:
+                            if decoded := jwt_keys.verify_key(request.headers.get("Authorization").split()[1]):
+                                blame = decoded.get("user")
+                        except Exception as e:
+                            blame = None
+
                         Thread(service.sns(payload={
                             "message": "Trying to approve project without approving maintainers",
-                            "subject": "[ADMIN-ERROR]"
+                            "subject": f"[ADMIN-ERROR] this person messed up -> {blame}"
                         })).start()
 
                         return JsonResponse(data={
