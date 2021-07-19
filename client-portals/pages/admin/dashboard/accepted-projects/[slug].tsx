@@ -73,7 +73,7 @@ const ContributorsPage = () => {
 
   return loading2 ? (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-      <Loading />
+      <CSSLoader />
     </div>
   ) : (
     <Layout type="admin">
@@ -168,7 +168,7 @@ const ContributorsPage = () => {
                         }
                         className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                       >
-                        {loading ? <CSSLoader /> : "Approve Contributor"}
+                        {loading ? <Loading /> : "Approve Contributor"}
                       </button>
                     )}
                   </td>
