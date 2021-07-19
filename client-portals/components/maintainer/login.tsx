@@ -9,7 +9,7 @@ import {
 } from "../../utils/constants";
 import { Input } from "../shared";
 import Router from "next/router";
-import { successToast } from "../../utils/functions/toast";
+import { errToast, successToast } from "../../utils/functions/toast";
 import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
 import Link from "next/link";
@@ -38,6 +38,9 @@ const MaintainerLogin = () => {
       successToast("Logged In successfully!");
       Router.push("maintainer/dashboard");
       resetForm({ values: { ...initialValues } });
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
   };
 

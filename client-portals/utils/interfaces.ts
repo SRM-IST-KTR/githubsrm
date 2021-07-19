@@ -1,5 +1,4 @@
 import * as Yup from "yup";
-
 import {
   maintainerLoginValidation,
   adminRegisterValidation,
@@ -82,7 +81,7 @@ export interface OtherMaintainersProps {
   github: string;
   name: string;
 }
-export interface ContributorProps {
+export interface AcceptedProjectsAdminProps {
   contributor: [
     _id: string,
     name: string,
@@ -94,9 +93,20 @@ export interface ContributorProps {
     poa: string,
     is_maintainer_approved: boolean
   ];
-  project_name: string;
+  project: [project_name: string];
   maintainer: [];
+}
+
+export interface ContributorProps {
   _id: string;
+  name: string;
+  email: string;
+  srm_email: string;
+  github_id: string;
+  reg_number: string;
+  branch: string;
+  poa: string;
+  is_maintainer_approved: boolean;
 }
 
 export interface AcceptedProjectsProps {
