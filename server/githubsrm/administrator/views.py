@@ -1,4 +1,5 @@
 
+from threading import Thread
 from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
 from rest_framework import status
@@ -178,19 +179,29 @@ class ProjectsAdmin(APIView):
                     project, maintainer = details
                     email_document = entry.get_all_maintainer_emails(
                         project=project)
+                    if email_document:
+                        email_document["email"].append(maintainer.pop("email"))
+                        if service.wrapper_email(
+                                role="project_approval", data={**{
+                                    "name": "Maintainer{s)",
+                                    "project_name": project["project_name"],
+                                    "project_url": validate["project_url"],
+                                    "project_id": project["_id"]
 
-                    email_document["email"].append(maintainer.pop("email"))
-                    if service.wrapper_email(
-                            role="project_approval", data={**{
-                                "name": "Maintainer{s)",
-                                "project_name": project["project_name"],
-                                "project_url": validate["project_url"],
-                                "project_id": project["_id"]
+                                }, **email_document}, send_all=True):
+                            return JsonResponse(data={
+                                "Approved Project": validate.get("project_id")
+                            }, status=200)
+                    else:
+                        entry.reset_status_project(project=project)
+                        Thread(service.sns(payload={
+                            "message": "Trying to approve project without approving maintainers",
+                            "subject": "[ADMIN-ERROR]"
+                        })).start()
 
-                            }, **email_document}, send_all=True):
                         return JsonResponse(data={
-                            "Approved Project": validate.get("project_id")
-                        }, status=200)
+                            "error": "Approve maintainer before approving project"
+                        }, status=400)
 
                     entry.reset_status_project(project=project)
                     return JsonResponse(data={

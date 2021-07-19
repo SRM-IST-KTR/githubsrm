@@ -293,11 +293,14 @@ class AdminEntry:
         Returns:
             Dict[str, Any]: list of all maintainer emails
         """
+        try:
+            maintainer_ids = project["maintainer_id"]
+            maintainers = list(self.db.maintainer.find({
+                "_id": {"$in": maintainer_ids}
+            }))
 
-        maintainer_ids = project["maintainer_id"]
-        maintainers = list(self.db.maintainer.find({
-            "_id": {"$in": maintainer_ids}
-        }))
+        except Exception as e:
+            return 
 
         doc = {}
 
