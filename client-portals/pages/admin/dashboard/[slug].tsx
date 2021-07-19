@@ -121,7 +121,13 @@ const MaintainerPage = () => {
                   }
                   className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                 >
-                  {loading ? <Loading /> : "Approve Maintainer"}
+                  {loading ? (
+                    <span className="flex w-6 mx-auto">
+                      <Loading />
+                    </span>
+                  ) : (
+                    "Approve Maintainer"
+                  )}
                 </button>
               )}
             </div>
