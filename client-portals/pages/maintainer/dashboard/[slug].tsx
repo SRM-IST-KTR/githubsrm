@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import OtherMaintainers from "../../../components/maintainer/dashboard/othermaintainers";
+import OtherMaintainers from "../../../components/maintainer/dashboard/other-maintainers";
 import { Layout } from "../../../components/shared";
 import { successToast } from "../../../utils/functions/toast";
 import { AuthContext } from "../../../context/authContext";
