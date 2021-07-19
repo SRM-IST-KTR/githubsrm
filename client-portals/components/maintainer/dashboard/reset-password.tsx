@@ -38,7 +38,6 @@ const ResetPassword = ({ action, queryToken }) => {
         setJwtExpired(true);
       }
     }
-    console.log(queryToken);
   }, []);
 
   const submitValuesReset = async (
