@@ -7,6 +7,7 @@ export const AuthContext = React.createContext({
   isAuth: false,
   isAdmin: false,
   username: "",
+  authReady: false,
   setIsAuth: (_auth) => {},
   logoutHandler: () => {},
   decode: () => {},
@@ -16,6 +17,8 @@ const AuthContextProvider: React.FC = (props) => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [username, setUserName] = useState<string>("");
+  const [authReady, setAuthReady] = useState<boolean>(false);
+
   const router = useRouter();
 
   const decode = () => {
@@ -46,6 +49,7 @@ const AuthContextProvider: React.FC = (props) => {
     if (mounted) {
       decode();
     }
+    setAuthReady(true);
     return () => {
       mounted = false;
     };
@@ -66,6 +70,7 @@ const AuthContextProvider: React.FC = (props) => {
         setIsAuth,
         isAdmin,
         username,
+        authReady,
         logoutHandler,
         decode,
       }}
