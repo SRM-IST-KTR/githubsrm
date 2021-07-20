@@ -75,21 +75,6 @@ class Contributor(APIView):
             "error": "Invalid reCaptcha"
         }, status=status.HTTP_401_UNAUTHORIZED)
 
-    def get(self, request, **kwargs) -> response.Response:
-        """Return all Contributors
-
-        Args:
-            request
-
-        Returns:
-            response.Response
-        """
-
-        result = json.loads(json_util.dumps(open_entry.get_contributors()))
-        return response.Response({
-            "contributors": result
-        }, status=status.HTTP_200_OK)
-
 
 class Maintainer(APIView):
     '''
@@ -128,7 +113,7 @@ class Maintainer(APIView):
                     if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
                         if id := open_entry.enter_beta_maintainer(doc=request.data):
-            
+
                             if service.wrapper_email(role='maintainer_received', data={
                                 "name": validate["name"],
                                 "project_name": details["project_name"],
@@ -143,7 +128,8 @@ class Maintainer(APIView):
                                 }}).start()
                                 return response.Response(status=status.HTTP_201_CREATED)
                             else:
-                                open_entry.beta_maintainer_reset_status(maintainer_id=id)
+                                open_entry.beta_maintainer_reset_status(
+                                    maintainer_id=id)
 
                             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -163,7 +149,7 @@ class Maintainer(APIView):
                     validate['project_id'] = value[0]
                     validate['project_name'] = value[2]
                     validate['description'] = value[3]
-    
+
                     if service.wrapper_email(role='project_submission_confirmation', data={
                         "project_name": validate["project_name"],
                         "name": validate["name"],
