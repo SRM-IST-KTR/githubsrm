@@ -179,23 +179,16 @@ class Entry:
             print(e)
             return
 
-    def delete_beta_maintainer(self, maintainer_id: str, project_id: str) -> None:
-        """Delete beta maintainer and beta maintainer from project
+    def beta_maintainer_reset_status(self, maintainer_id: str) -> None:
+        """Delete beta maintainer
 
         Args:
-            maintainer_id (str): [description]
-            project_id (str): [description]
+            maintainer_id (str): maintainer id
+
         """
         self.db.maintainer.delete_one({"_id": maintainer_id})
-        self.db.project.update({
-            "_id": project_id
-        }, {
-            "$pull":
-                {"maintainer_id": maintainer_id}
-
-        })
-
-    def delete_alpha_maintainer(self, project_id: str, maintainer_id: str) -> None:
+        
+    def alpha_maintainer_reset_status(self, project_id: str, maintainer_id: str) -> None:
         """Delete alpha maintainer and added project
 
         Args:
