@@ -5,8 +5,6 @@ from threading import Thread
 
 import psutil
 from bson import json_util
-from django.shortcuts import render
-from django.template.exceptions import TemplateDoesNotExist
 from rest_framework import response, status
 from rest_framework.views import APIView
 
@@ -14,14 +12,11 @@ from apis import (PostThrottle, check_token, open_entry, open_entry_checks,
                   service)
 
 from .definitions import *
-from .utils import conditional_render
+from django.shortcuts import redirect
 
 
-def home(request, path=None):
-    try:
-        return render(request, f'{conditional_render(path)}')
-    except TemplateDoesNotExist as e:
-        return render(request, '404.html')
+def catch_all(request, path=None):
+    return redirect("https://githubsrm.tech")
 
 
 class Contributor(APIView):
