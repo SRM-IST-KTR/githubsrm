@@ -224,6 +224,17 @@ class ProjectsAdmin(APIView):
                 if details := entry.approve_contributor(project_id=validate.get("project_id"),
                                                         contributor_id=validate.get("contributor_id")):
 
+                    contributor, project = details
+
+                    Thread(target=service.wrapper_email, kwargs={
+                        "role": "contributor_application_to_maintainer",
+                        "data": {
+                            "name": "Maintainer(s)",
+                            "project_name": project["project_name"],
+                            "contributor_name": contributor["name"],
+                            "contributor_email": contributor["email"]
+                        }}).start()
+
                     return JsonResponse(data={
                         "admin_approved": True
                     }, status=200)

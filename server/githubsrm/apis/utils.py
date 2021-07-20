@@ -150,6 +150,17 @@ class BotoService:
                                     project_data={"project_name": data["project_name"]})
             )
 
+        elif role == "contributor_application_to_maintainer":
+            return email_template(
+                subject="New Contributor Notification | GitHub Community SRM",
+                bodyText=f"New contributor notification to {data['name']}",
+                emailHTML=emailbody(file='12.html', name=data['name'], role=role,
+                                    project_data={"name": data["name"], "project_name": data["project_name"],
+                                                  "contributor_name": data["contributor_name"],
+                                                  "contributor_email": data["contributor_email"]}, role=role)
+
+            )
+
         elif role == 'welcome_maintainer_w_password_link':
             return email_template(
                 subject="Welcome Maintainer | GitHub Community SRM",
@@ -244,6 +255,11 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
             return template.render(name=name, project_name=project_data["project_name"], project_url=project_data["project_url"])
         elif role == "forgot_password":
             return template.render(name=name, reset_token=project_data["reset_token"])
+        elif role == "contributor_application_to_maintainer":
+            return template.render(name=name, project_name=project_data["project_name"], name=project_data["name"],
+                                   project_name=project_data["project_name"],
+                                   contributor_name=project_data["contributor_name"],
+                                   contributor_email=project_data["contributor_email"])
 
 
 def email_template(subject: str, bodyText: str, emailHTML: Template) -> Dict[str, Dict[str, Any]]:
