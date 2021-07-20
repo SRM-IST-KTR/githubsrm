@@ -13,6 +13,6 @@
     "dev:landing": "cd client-landing && yarn dev",
     "dev:portal": "cd client-portals && yarn dev",
     "start:landing": "cd client-landing && yarn start",
-    "start:portal": "cd client-portals && yarn start",
+    "start:portal": "cd client-portals && yarn start"
   }
 }
