@@ -2,7 +2,7 @@
 name = "server"
 version = "0.1.0"
 description = ""
-authors = ["saxenabhishek <as7122000@gmail.com>"]
+authors = ["saxenabhishek <as7122000@gmail.com> Aradhya-Tripathi <aradhyatripathi51@gmail.com> Riju <>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
