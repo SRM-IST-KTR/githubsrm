@@ -1,25 +1,20 @@
-from django.template.exceptions import TemplateDoesNotExist
-from .utils import check_token, BotoService
-from rest_framework.views import APIView
-from .definitions import *
-from rest_framework import response, status
-from .models import Entry
-from .checks_models import EntryCheck
-from bson import json_util
 import json
-import psutil
-import time
 import os
-from django.shortcuts import render
-from .utils import conditional_render
+import time
 from threading import Thread
 
-from .throttle import PostThrottle
+import psutil
+from bson import json_util
+from django.shortcuts import render
+from django.template.exceptions import TemplateDoesNotExist
+from rest_framework import response, status
+from rest_framework.views import APIView
 
+from apis import (PostThrottle, check_token, open_entry, open_entry_checks,
+                  service)
 
-entry = Entry()
-entry_checks = EntryCheck()
-service = BotoService()
+from .definitions import *
+from .utils import conditional_render
 
 
 def home(request, path=None):
@@ -44,7 +39,15 @@ class Contributor(APIView):
         Returns:
             response.Response
         """
-        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+
+        try:
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
+        except KeyError as e:
+            return response.Response({
+                "error": "reCaptcha token not provided"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        if check_token(reCaptcha):
 
             try:
                 validate = CommonSchema(
@@ -53,14 +56,16 @@ class Contributor(APIView):
                 return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
             if 'error' not in validate:
-                if entry_checks.check_contributor(validate['interested_project'],
-                                                  validate['reg_number']):
+                if open_entry_checks.check_contributor(validate['interested_project'],
+                                                       validate['reg_number'], validate["github_id"],
+                                                       validate["srm_email"]):
                     return response.Response({
                         "invalid data": "Contributor for project exists / Project not approved"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                if entry.enter_contributor(validate):
-                    if service.wrapper_email(role='contributor', data=validate):
+                if doc := open_entry.enter_contributor(validate):
+                    if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
+                                                                                "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
                         return response.Response({
                             "valid": validate
                         }, status=status.HTTP_201_CREATED)
@@ -85,7 +90,7 @@ class Contributor(APIView):
             response.Response
         """
 
-        result = json.loads(json_util.dumps(entry.get_contributors()))
+        result = json.loads(json_util.dumps(open_entry.get_contributors()))
         return response.Response({
             "contributors": result
         }, status=status.HTTP_200_OK)
@@ -106,7 +111,14 @@ class Maintainer(APIView):
         Returns:
             Response
         """
-        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
+        try:
+            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
+        except KeyError as e:
+            return response.Response({
+                "error": "reCaptcha token not provided"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        if check_token(reCaptcha):
 
             try:
                 validate = CommonSchema(
@@ -117,11 +129,16 @@ class Maintainer(APIView):
             if 'error' not in validate:
 
                 if 'project_id' in validate:
-                    # BETA MAINTAINER
-                    if entry_checks.validate_beta_maintainer(doc=validate):
-                        if id := entry.enter_beta_maintainer(doc=request.data):
 
-                            if service.wrapper_email(role='beta', data=validate):
+                    if details := open_entry_checks.validate_beta_maintainer(doc=validate):
+
+                        if id := open_entry.enter_beta_maintainer(doc=request.data):
+                            # TODO ROLL BACK
+                            if service.wrapper_email(role='maintainer_received', data={
+                                "name": validate["name"],
+                                "project_name": details["project_name"],
+                                "email": validate["email"]
+                            }):
                                 Thread(target=service.sns, kwargs={'payload': {
                                     'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
                                         Details: \n \
@@ -131,28 +148,35 @@ class Maintainer(APIView):
                                 }}).start()
                                 return response.Response(status=status.HTTP_201_CREATED)
                             else:
-                                entry.delete_beta_maintainer(maintainer_id=id,
-                                                             project_id=validate.get('project_id'))
+                                open_entry.delete_beta_maintainer(maintainer_id=id,
+                                                                  project_id=validate.get('project_id'))
 
                             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                     return response.Response(data={
                         "error": "Approved / Already Exists / Invalid"
-                    }, status=status.HTTP_409_CONFLICT)
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
-                if entry_checks.check_existing(description=validate['description'],
-                                               project_name=validate['project_name']):
-                    # Enter alpha maintainer
+                if open_entry_checks.check_existing(description=validate['description'],
+                                                    project_name=validate['project_name'],
+                                                    project_url=validate['project_url']):
 
                     return response.Response({
                         "error": "Project Exists"
                     }, status=status.HTTP_409_CONFLICT)
 
-                if value := entry.enter_maintainer(validate):
+                if value := open_entry.enter_maintainer(validate):
                     validate['project_id'] = value[0]
                     validate['project_name'] = value[2]
                     validate['description'] = value[3]
-                    if service.wrapper_email(role='alpha', data=validate):
+                    # TODO ROLL BACK HERE IF FAILS
+                    if service.wrapper_email(role='project_submission_confirmation', data={
+                        "project_name": validate["project_name"],
+                        "name": validate["name"],
+                        "project_description": validate["description"],
+                        "email": validate["email"]
+
+                    }):
                         Thread(target=service.sns, kwargs={'payload': {
                             'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
                                         Details: \n \
@@ -165,7 +189,7 @@ class Maintainer(APIView):
                         }}).start()
                         return response.Response(status=status.HTTP_201_CREATED)
                     else:
-                        entry.delete_alpha_maintainer(
+                        open_entry.delete_alpha_maintainer(
                             project_id=validate.get('project_id'),
                             maintainer_id=value[1])
                     return response.Response({
@@ -185,7 +209,7 @@ class Maintainer(APIView):
             request ([type])
         """
 
-        result = json.loads(json_util.dumps(entry.get_projects()))
+        result = json.loads(json_util.dumps(open_entry.get_projects()))
 
         return response.Response(data=result, status=status.HTTP_200_OK)
 
@@ -207,7 +231,7 @@ class Team(APIView):
             request
         """
 
-        result = json.loads(json_util.dumps(entry.get_team_data()))
+        result = json.loads(json_util.dumps(open_entry.get_team_data()))
         return response.Response(result, status=status.HTTP_200_OK)
 
 
@@ -237,7 +261,7 @@ class ContactUs(APIView):
                     "error": validate.get('error')
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            result = entry.enter_contact_us(doc=request.data)
+            result = open_entry.enter_contact_us(doc=request.data)
             if result:
                 Thread(target=service.sns, kwargs={'payload': {
                     'message': f'New Query Received! \n Name:{validate.get("name")} \n \

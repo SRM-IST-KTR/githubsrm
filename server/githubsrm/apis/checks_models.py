@@ -8,26 +8,26 @@ class EntryCheck:
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
 
-    def check_existing(self, description: str, project_name: str) -> bool:
+    def check_existing(self, description: str, project_name: str, project_url: str) -> bool:
         """Checks existing project proposals
 
         Args:
             description (str)
             project_name (str)
+            project_url (str)
 
         Returns:
-            bool: 
+            bool:
         """
 
-        result = list(self.db.project.find({"$or": [
-            {"project_name": project_name},
-            {"description": description}
-        ]}))
+        Checks = [{"project_name": project_name}, {"description": description}]
+        if project_url != "":
+            Checks.append({"project_url": project_url})
 
-        if len(result) > 0:
+        result = self.db.project.find_one({"$or": Checks})
+
+        if result:
             return True
-
-        return
 
     def check_approved_project(self, identifier: str) -> bool:
         """Checks if given identifier is valid and approved status
@@ -41,11 +41,12 @@ class EntryCheck:
         result = self.db.project.find_one({"_id": identifier})
 
         if result:
-            return result['approved']
+            return result
         return
 
     def check_contributor(self, interested_project: str,
-                          reg_number: str) -> bool:
+                          reg_number: str, github_id: str,
+                          srm_email: str) -> bool:
         """Existing contributor to same project
 
         Args:
@@ -55,28 +56,33 @@ class EntryCheck:
         Returns:
             bool
         """
-        project_id = interested_project
-        
-        result = self.db.project.find_one({"_id": project_id})
-        if not result['approved']:
+
+        result = self.db.project.find_one({"_id": interested_project})
+
+        try:
+            if not result['is_admin_approved']:
+                return True
+        except Exception as e:
             return True
 
-        result = list(self.db.contributor.find({"$and": [
+        result = self.db.contributor.find_one({"$and": [
             {"interested_project": interested_project},
-            {"reg_number": reg_number}
-        ]}))
+            {"$or": [{"reg_number": reg_number},
+                     {"github_id": github_id}, {"srm_email": srm_email}]
+             }]})
 
-        results = list(self.db.maintainer.find({
+        results = self.db.maintainer.find_one({
             "$and": [
-                {"reg_number": reg_number},
-                {"project_id": interested_project}
+                {"project_id": interested_project},
+                {"$or": [{"reg_number": reg_number},
+                         {"github_id": github_id}, {"srm_email": srm_email}]}
             ]
-        }))
+        })
 
-        if len(results) > 0:
+        if results:
             return True
 
-        if len(result) > 0:
+        if result:
             return True
 
         return
@@ -86,18 +92,22 @@ class EntryCheck:
 
         Args:
             github_id (str): beta github ID
-            project_id (str): project ID 
+            project_id (str): project ID
         Returns:
             bool
         """
 
-        result = list(self.db.maintainer.find(
-            {"github_id": github_id, "project_id": project_id, "srm_email": srm_email}))
+        result = self.db.maintainer.count_documents({
+            "project_id": project_id,
+            "$or": [
+                {"github_id": github_id}, {"srm_email": srm_email}
+            ]
+        })
 
-        if len(result) >= 1:
+        if result >= 1:
             return True
 
-        return
+        return False
 
     def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
         """Checks for valid beta entry
@@ -113,16 +123,17 @@ class EntryCheck:
         if self.check_existing_beta(github_id=doc.get('github_id'),
                                     project_id=doc.get('project_id'),
                                     srm_email=doc.get('srm_email')):
-            return
+            return None
 
         if self.check_approved_project(
                 identifier=doc.get('project_id')
         ) is None:
             return None
 
-        if self.check_approved_project(
+        if details := self.check_approved_project(
                 identifier=doc.get('project_id')
-        ) is False:
-            return True
+        ):
+            if details["is_admin_approved"] is False:
+                return details
 
         return None

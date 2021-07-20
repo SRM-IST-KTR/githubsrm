@@ -1,9 +1,11 @@
-from typing import Any, Dict
 import random
 import string
-from dotenv import load_dotenv
+from datetime import datetime
+from typing import Any, Dict
+
 import pymongo
 from django.conf import settings
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -27,22 +29,21 @@ class Entry:
 
         gen_id = random.choices(string.ascii_uppercase + string.digits, k=8)
 
-        if len(list(self.db.collection.find({"_id": gen_id}))) > 0:
+        if self.db.collection.find_one({"_id": gen_id}):
             return self.get_uid(length=8)
 
         return ''.join(gen_id)
 
-    def _enter_project(self, doc: Dict[str, str], maintainer_id: str,
+    def _enter_project(self, doc: Dict[str, str],
                        visibility: Dict[str, str], project_id: str) -> None:
         """Project Entry (only accessed by maintainer)
 
         Args:
             doc (Dict[str, str]): post to be entred
-            maintainer_id (str): maintainer id 
             project_id (str): project id
         """
 
-        doc = {**doc, **maintainer_id, **{"_id": project_id}, **visibility}
+        doc = {**doc, **{"_id": project_id}, **visibility}
         self.db.project.insert_one(doc)
 
     def _update_project(self, identifier: str,
@@ -88,9 +89,21 @@ class Entry:
 
         project_id = self.get_uid()
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}, **{"project_id": project_id}}
+        doc = {**doc, **{"_id": _id}, **{"project_id": project_id},
+               **{"is_admin_approved": False}}
         try:
-            self.db.maintainer.insert_one(doc)
+            existing_maintainer = self.db.maintainer.find_one(
+                {"srm_email": doc.get("srm_email"),
+                 "reg_number": doc.get("reg_number")}
+            )
+
+            if existing_maintainer and 'password' in existing_maintainer:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"password": existing_maintainer.get("password")}})
+
+            else:
+                self.db.maintainer.insert_one(doc)
+
             if project_url:
                 visibility = {"private": False}
             else:
@@ -100,10 +113,8 @@ class Entry:
                 "project_url": project_url,
                 "description": description,
                 "tags": tags,
-                "approved": False,
+                "is_admin_approved": False,
                 "project_name": project_name
-            }, maintainer_id={
-                "maintainer_id": [_id]
             }, visibility=visibility, project_id=project_id)
 
             return project_id, _id, project_name, description
@@ -124,18 +135,27 @@ class Entry:
         """
         try:
             _id = self.get_uid()
-            self.db.project.update_one({"_id": doc.get("project_id")}, {
-                "$push": {"maintainer_id": _id}}, upsert=True)
 
-            self.db.maintainer.insert_one(
-                {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')}})
-            return _id
+            existing_maintainer = self.db.maintainer.find_one(
+                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")})
+
+            if existing_maintainer and 'password' in existing_maintainer:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
+                        **{"is_admin_approved": False}, **{"password": existing_maintainer.get("password")}})
+                return _id
+
+            else:
+                self.db.maintainer.insert_one(
+                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
+                        **{"is_admin_approved": False}})
+                return _id
 
         except Exception as e:
             print(e)
             return
 
-    def enter_contributor(self, doc: Dict[str, Any]) -> None:
+    def enter_contributor(self, doc: Dict[str, Any]) -> Dict[str, str]:
         """Addition of contributors for avaliable Projects
 
         Args:
@@ -143,17 +163,21 @@ class Entry:
         """
 
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}, **{"approved": False}}
+        doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False},
+               **{"is_maintainer_approved": False}, **{"is_added_to_repo": False}}
 
-        if len(list(self.db.project.find({"_id": doc.get('interested_project')}))) == 0:
+        project_doc = self.db.project.find_one(
+            {"_id": doc.get('interested_project')})
+        if not project_doc:
             return
 
         try:
             self.db.contributor.insert_one(doc)
-            return True
+            return {**doc, **project_doc}
 
         except Exception as e:
             print(e)
+            return
 
     def delete_beta_maintainer(self, maintainer_id: str, project_id: str) -> None:
         """Delete beta maintainer and beta maintainer from project
@@ -203,39 +227,6 @@ class Entry:
         except Exception as e:
             return
 
-    def approve_project(self, identifier: str) -> bool:
-        """Approve project
-
-        Args:
-            identifier (str): Project ID
-
-        Returns:
-            bool
-        """
-
-        project = self.db.project.find({"_id": identifier})
-
-        if project:
-            self.db.project.update_one({"_id": identifier}, {
-                "$set": {"approved": True}})
-            return True
-        return
-
-    def approve_contributor(self, identifier: str, project_id: str) -> bool:
-        """Approve contributors to projects
-
-        Returns:
-            bool
-            identifier: Contributor ID
-            project_id: Project ID
-        """
-        if len(list(self.db.contributor.find({"_id": identifier}))) > 0:
-            if self._update_project(identifier=identifier, project_id=project_id):
-                self.db.contributor.update({"_id": identifier}, {
-                    "$set": {"approved": True}})
-                return True
-        return
-
     def get_projects(self, admin: bool = False) -> object:
         """Get all public projects / all project for admin
 
@@ -245,7 +236,7 @@ class Entry:
         """
         if admin:
             self.db.project.find({})
-        return self.db.project.find({"private": False, "approved": True})
+        return self.db.project.find({"private": False, "is_admin_approved": True})
 
     def get_contributors(self) -> object:
         """Get all existing contributors
@@ -281,11 +272,11 @@ class Entry:
             bool
         """
 
-        details = list(self.db.contactUs.find({
+        details = self.db.contactUs.find_one({
             "message": doc.get("message")
-        }))
+        })
 
-        if len(details) > 0:
+        if details:
             return
         try:
             self.db.contactUs.insert_one(doc)
@@ -300,3 +291,19 @@ class Entry:
             type: MongoDB cursor
         """
         return self.db.contactus.find({})
+
+    def get_project_from_id(self, identifier: str) -> Dict[str, Any]:
+        """Get project documents from project ids
+
+        Args:
+            identifier (str): project id
+
+        Returns:
+            Dict[str, Any]: project document
+        """
+
+        project = self.db.project.find_one({"_id": identifier})
+        if project:
+            return project
+
+        return None

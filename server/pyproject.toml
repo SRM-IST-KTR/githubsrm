@@ -2,11 +2,10 @@
 name = "server"
 version = "0.1.0"
 description = ""
-authors = ["saxenabhishek <as7122000@gmail.com>"]
+authors = ["saxenabhishek <as7122000@gmail.com> Aradhya-Tripathi <aradhyatripathi51@gmail.com> Riju <>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Django = "^3.2.4"
 djangorestframework = "^3.12.4"
 python-dotenv = "^0.18.0"
 autopep8 = "^1.5.7"
@@ -21,6 +20,8 @@ Jinja2 = "^3.0.1"
 sentry-sdk = "^1.1.0"
 whitenoise = "^5.2.0"
 pymongo = "^3.11.4"
+PyJWT = "^2.1.0"
+Django = "^3.2.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
