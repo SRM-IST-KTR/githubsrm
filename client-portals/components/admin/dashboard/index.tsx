@@ -161,9 +161,9 @@ const ProjectApplications = () => {
       </div>
     </>
   ) : (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
+    <Layout type="admin">
       <CSSLoader />
-    </div>
+    </Layout>
   );
 };
 

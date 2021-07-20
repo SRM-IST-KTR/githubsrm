@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAcceptedProjects } from "services/api";
-import { Card, PaginationButtons, CSSLoader } from "@/shared/index";
+import { Card, PaginationButtons, CSSLoader, Layout } from "@/shared/index";
 
 const AcceptedProjectsCards = () => {
   const [acceptedProjects, setAcceptedProjects] = useState([]);
@@ -44,9 +44,9 @@ const AcceptedProjectsCards = () => {
       />
     </>
   ) : (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
+    <Layout type="admin">
       <CSSLoader />
-    </div>
+    </Layout>
   );
 };
 

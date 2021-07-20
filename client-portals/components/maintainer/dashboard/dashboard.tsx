@@ -33,14 +33,12 @@ const index = () => {
   }, [accepted, pageNo]);
 
   return loading ? (
-    <>
-      <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-        <CSSLoader />
-      </div>
+    <Layout type="maintainer">
+      <CSSLoader />
       <div className="fixed bottom-0 w-full">
         <Footer />
       </div>
-    </>
+    </Layout>
   ) : (
     <>
       <Layout type="maintainer">
