@@ -4,8 +4,6 @@ import OtherMaintainers from "../../../components/maintainer/dashboard/other-mai
 import { Layout } from "../../../components/shared";
 import { successToast } from "../../../utils/functions/toast";
 import { AuthContext } from "../../../context/authContext";
-import { GrNext, GrPrevious } from "react-icons/gr";
-import { TiTick } from "react-icons/ti";
 import {
   ContributorProps,
   OtherMaintainersProps,
@@ -18,6 +16,9 @@ import {
 } from "../../../services/api";
 import Footer from "../../../components/shared/footer";
 import Loading from "../../../utils/icons/loading";
+import Next from "../../../utils/icons/next";
+import Previous from "../../../utils/icons/previous";
+import Tick from "../../../utils/icons/tick";
 
 const headings = [
   "Name",
@@ -166,7 +167,9 @@ const ProjectDetail = () => {
 
                       <td className="p-3 ">
                         {person.is_maintainer_approved ? (
-                          <TiTick className="text-green-500 text-center text-3xl" />
+                          <span className="text-green-500 text-center text-3xl">
+                            <Tick />
+                          </span>
                         ) : (
                           <button
                             onClick={() =>
@@ -197,7 +200,9 @@ const ProjectDetail = () => {
                     } p-3 rounded-full`}
                     onClick={() => setPageNo(pageNo - 1)}
                   >
-                    <GrPrevious className="text-2xl font-extrabold" />
+                    <span className="text-2xl font-extrabold">
+                      <Previous />
+                    </span>
                   </button>
                   <h2 className="text-gray-50 text-4xl  font-medium mx-3">
                     {pageNo}
@@ -211,7 +216,9 @@ const ProjectDetail = () => {
                     } p-3 rounded-full`}
                     onClick={() => setPageNo(pageNo + 1)}
                   >
-                    <GrNext className="text-2xl font-extrabold" />
+                    <span className="text-2xl font-extrabold">
+                      <Next />
+                    </span>
                   </button>
                 </div>
               </div>

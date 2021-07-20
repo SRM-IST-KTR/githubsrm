@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import instance from "../../../services/api";
-import { TiTick } from "react-icons/ti";
-import { GrNext, GrPrevious } from "react-icons/gr";
 import Link from "next/link";
 import { Layout } from "../../shared";
 import { TableProjectsProps } from "../../../utils/interfaces";
 import CSSLoader from "../../shared/loader";
 import ProjectVisibility from "./project-visibility-popup";
-import { errorHandler } from "../../../services/api";
 import Footer from "../../shared/footer";
+import Tick from "../../../utils/icons/tick";
+import Next from "../../../utils/icons/next";
+import Previous from "../../../utils/icons/previous";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
@@ -125,7 +125,9 @@ const ProjectApplications = () => {
 
                   <td className="p-3">
                     {data.is_admin_approved ? (
-                      <TiTick className="text-green-500 text-4xl" />
+                      <span className="text-green-500 text-4xl">
+                        <Tick />
+                      </span>
                     ) : (
                       <button
                         onClick={() => {
@@ -154,7 +156,9 @@ const ProjectApplications = () => {
             } p-3 rounded-full`}
             onClick={() => setPageNo(pageNo - 1)}
           >
-            <GrPrevious className="text-2xl font-extrabold" />
+            <span className="text-2xl font-extrabold">
+              <Previous />
+            </span>
           </button>
           <h2 className="text-gray-50 text-4xl  font-medium mx-3">{pageNo}</h2>
           <button
@@ -166,7 +170,9 @@ const ProjectApplications = () => {
             } p-3 rounded-full`}
             onClick={() => setPageNo(pageNo + 1)}
           >
-            <GrNext className="text-2xl font-extrabold" />
+            <span className="text-2xl font-extrabold">
+              <Next />
+            </span>
           </button>
         </div>
         <ProjectVisibility

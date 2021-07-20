@@ -6,14 +6,14 @@ import {
   postAcceptMaintainer,
 } from "../../../services/api";
 import { successToast } from "../../../utils/functions/toast";
-import { TiTick } from "react-icons/ti";
-import { FiGithub } from "react-icons/fi";
 import { Layout } from "../../../components/shared";
 import Link from "next/link";
 import { MaintainersProps } from "../../../utils/interfaces";
 import CSSLoader from "../../../components/shared/loader";
 import Footer from "../../../components/shared/footer";
 import Loading from "../../../utils/icons/loading";
+import Tick from "../../../utils/icons/tick";
+import CardGithub from "../../../utils/icons/card-github";
 
 const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState<MaintainersProps[]>([]);
@@ -95,7 +95,7 @@ const MaintainerPage = () => {
                   <span className="font-bold">Github ID: </span>
                   <span className="ml-1 flex items-center">
                     <span className="mx-2">
-                      <FiGithub />
+                      <CardGithub />
                     </span>
                     {person.github_id}
                   </span>
@@ -111,7 +111,9 @@ const MaintainerPage = () => {
               </h2>
               {person.is_admin_approved ? (
                 <div className="flex flex-col justify-center items-center text-4xl font-medium text-base-green mt-5">
-                  <TiTick className="text-green-500 text-5xl" />
+                  <span className="text-green-500 text-5xl">
+                    <Tick />
+                  </span>
                   <p>Approved</p>
                 </div>
               ) : (
