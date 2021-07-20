@@ -34,10 +34,12 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
   };
 
   const submitValues = async (values) => {
-    values.private = isPrivate;
-    values.project_id = projectId;
+    const _values = Object.assign({}, values, {
+      private: isPrivate,
+      project_id: projectId,
+    });
     setLoading(true);
-    const res = await postAcceptProjectHandler(values);
+    const res = await postAcceptProjectHandler(_values);
     if (res) {
       successToast("Project Approved successfully!");
       setLoading(false);
