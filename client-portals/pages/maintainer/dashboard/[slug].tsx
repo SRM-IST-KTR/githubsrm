@@ -204,9 +204,16 @@ const ProjectDetail = () => {
       </div>
     </>
   ) : (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-      <CSSLoader />
-    </div>
+    <>
+      <Layout type="maintainer">
+        <div className="flex flex-col items-center justify-center">
+          <CSSLoader />
+        </div>
+      </Layout>
+      <div className="fixed bottom-0 w-full">
+        <Footer />
+      </div>
+    </>
   );
 };
 

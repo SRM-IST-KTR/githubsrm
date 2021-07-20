@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { AuthContext } from "context/authContext";
 import { getProject, postAcceptProject } from "services/api";
 import { successToast } from "utils/functions/toast";
-import { Layout } from "components/shared";
+import { Layout, Footer } from "components/shared";
 import Link from "next/link";
 import { ContributorsProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
@@ -72,9 +72,16 @@ const ContributorsPage = () => {
   }, [router.query, accepted]);
 
   return loading2 ? (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-      <CSSLoader />
-    </div>
+    <>
+      <Layout type="admin">
+        <div className="flex flex-col items-center justify-center">
+          <CSSLoader />
+        </div>
+      </Layout>
+      <div className="fixed bottom-0 w-full">
+        <Footer />
+      </div>
+    </>
   ) : (
     <Layout type="admin">
       <h1 className="text-5xl font-extrabold underline text-white mb-7">

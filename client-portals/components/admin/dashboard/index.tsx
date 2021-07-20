@@ -58,21 +58,28 @@ const ProjectApplications = () => {
     <>
       <Layout type="admin">
         <div className="overflow-auto flex flex-col items-center justify-center">
-          <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
+          {tableDataProjects?.length > 0 ? (
+            <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
+          ) : (
+            <h2 className="text-gray-50 my-10 font-bold text-4xl">
+              No Project Applications!
+            </h2>
+          )}
 
           <div className="text-white border-separate space-y-6 text-sm overflow-auto">
             <thead className="bg-base-teal text-white text-xl">
               <tr>
-                {headings.map((head) => (
-                  <th key={head} className="px-3 text-left">
-                    {head}
-                  </th>
-                ))}
+                {tableDataProjects.length > 0 &&
+                  headings.map((head) => (
+                    <th key={head} className="px-3 text-left">
+                      {head}
+                    </th>
+                  ))}
               </tr>
             </thead>
 
             <tbody>
-              {tableDataProjects.map((data) => (
+              {tableDataProjects?.map((data) => (
                 <tr key={data._id} className="bg-gray-800">
                   <td className="p-3">
                     <div className="flex align-items-center">
@@ -142,14 +149,14 @@ const ProjectApplications = () => {
             </tbody>
           </div>
         </div>
-
-        <PaginationButtons
-          hasNextPage={hasNextPage}
-          hasPrevPage={hasPrevPage}
-          pageNo={pageNo}
-          setPageNo={setPageNo}
-        />
-
+        {tableDataProjects.length > 0 && (
+          <PaginationButtons
+            hasNextPage={hasNextPage}
+            hasPrevPage={hasPrevPage}
+            pageNo={pageNo}
+            setPageNo={setPageNo}
+          />
+        )}
         <ProjectVisibility
           projectId={projId}
           close={() => setOpen(false)}
@@ -161,9 +168,16 @@ const ProjectApplications = () => {
       </div>
     </>
   ) : (
-    <Layout type="admin">
-      <CSSLoader />
-    </Layout>
+    <>
+      <Layout type="admin">
+        <div className="flex flex-col items-center justify-center">
+          <CSSLoader />
+        </div>
+      </Layout>
+      <div className="fixed bottom-0 w-full">
+        <Footer />
+      </div>
+    </>
   );
 };
 
