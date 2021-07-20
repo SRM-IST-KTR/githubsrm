@@ -57,7 +57,7 @@ const ProjectApplications = () => {
   return !loading ? (
     <>
       <Layout type="admin">
-        <div className="overflow-auto flex flex-col justify-center">
+        <div className="overflow-auto flex flex-col items-center justify-center">
           <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
 
           <div className="text-white border-separate space-y-6 text-sm overflow-auto">
