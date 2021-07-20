@@ -2,14 +2,14 @@ import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../../../context/authContext";
 import { getProject, postAcceptProject } from "../../../../services/api";
-import { successToast, errToast } from "../../../../utils/functions/toast";
-import { TiTick } from "react-icons/ti";
-import { ImCross } from "react-icons/im";
+import { successToast } from "../../../../utils/functions/toast";
 import { Layout } from "../../../../components/shared";
 import Link from "next/link";
 import { ContributorsProps } from "../../../../utils/interfaces";
 import CSSLoader from "../../../../components/shared/loader";
 import Loading from "../../../../utils/icons/loading";
+import Tick from "../../../../utils/icons/tick";
+import Cross from "../../../../utils/icons/cross";
 
 const headings = [
   "Name",
@@ -139,9 +139,13 @@ const ContributorsPage = () => {
                       <div>
                         {" "}
                         {person.is_maintainer_approved ? (
-                          <TiTick className="text-green-500 text-2xl" />
+                          <span className="text-green-500 text-2xl">
+                            <Tick />
+                          </span>
                         ) : (
-                          <ImCross className="text-red-500 text-lg" />
+                          <span className="text-red-500 text-lg">
+                            <Cross />
+                          </span>
                         )}
                       </div>
                     </div>
@@ -151,16 +155,22 @@ const ContributorsPage = () => {
                       <div>
                         {" "}
                         {person.is_added_to_repo ? (
-                          <TiTick className="text-green-500 text-2xl" />
+                          <span className="text-green-500 text-2xl">
+                            <Tick />
+                          </span>
                         ) : (
-                          <ImCross className="text-red-500 text-lg" />
+                          <span className="text-red-500 text-lg">
+                            <Cross />
+                          </span>
                         )}
                       </div>
                     </div>
                   </td>
                   <td className="p-3 ">
                     {person.is_admin_approved ? (
-                      <TiTick className="text-green-500 text-center text-3xl" />
+                      <span className="text-green-500 text-center text-3xl">
+                        <Tick />
+                      </span>
                     ) : (
                       <button
                         onClick={() =>

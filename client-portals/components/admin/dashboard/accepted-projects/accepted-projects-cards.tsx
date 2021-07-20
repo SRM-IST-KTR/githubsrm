@@ -1,9 +1,9 @@
 import Card from "../../../shared/card";
 import React, { useState, useEffect } from "react";
-import { GrNext, GrPrevious } from "react-icons/gr";
-import { AcceptedProjectProps } from "../../../../utils/interfaces";
 import { getAcceptedProjects } from "../../../../services/api";
 import CSSLoader from "../../../shared/loader";
+import Next from "../../../../utils/icons/next";
+import Previous from "../../../../utils/icons/previous";
 
 const AcceptedProjectsCards = () => {
   const [acceptedProjects, setAcceptedProjects] = useState([]);
@@ -50,7 +50,9 @@ const AcceptedProjectsCards = () => {
           } p-3 rounded-full`}
           onClick={() => setPageNo(pageNo - 1)}
         >
-          <GrPrevious className="text-2xl font-extrabold" />
+          <span className="text-2xl font-extrabold">
+            <Previous />
+          </span>
         </button>
         <h2 className="text-gray-50 text-4xl  font-medium mx-3">{pageNo}</h2>
         <button
@@ -62,7 +64,9 @@ const AcceptedProjectsCards = () => {
           } p-3 rounded-full`}
           onClick={() => setPageNo(pageNo + 1)}
         >
-          <GrNext className="text-2xl font-extrabold" />
+          <span className="text-2xl font-extrabold">
+            <Next />
+          </span>
         </button>
       </div>
     </>
