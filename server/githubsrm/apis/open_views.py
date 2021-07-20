@@ -128,7 +128,7 @@ class Maintainer(APIView):
                     if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
                         if id := open_entry.enter_beta_maintainer(doc=request.data):
-                            # TODO ROLL BACK
+            
                             if service.wrapper_email(role='maintainer_received', data={
                                 "name": validate["name"],
                                 "project_name": details["project_name"],
@@ -143,8 +143,7 @@ class Maintainer(APIView):
                                 }}).start()
                                 return response.Response(status=status.HTTP_201_CREATED)
                             else:
-                                open_entry.delete_beta_maintainer(maintainer_id=id,
-                                                                  project_id=validate.get('project_id'))
+                                open_entry.beta_maintainer_reset_status(maintainer_id=id)
 
                             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -164,7 +163,7 @@ class Maintainer(APIView):
                     validate['project_id'] = value[0]
                     validate['project_name'] = value[2]
                     validate['description'] = value[3]
-                    # TODO ROLL BACK HERE IF FAILS
+    
                     if service.wrapper_email(role='project_submission_confirmation', data={
                         "project_name": validate["project_name"],
                         "name": validate["name"],
@@ -184,7 +183,7 @@ class Maintainer(APIView):
                         }}).start()
                         return response.Response(status=status.HTTP_201_CREATED)
                     else:
-                        open_entry.delete_alpha_maintainer(
+                        open_entry.alpha_maintainer_reset_status(
                             project_id=validate.get('project_id'),
                             maintainer_id=value[1])
                     return response.Response({
