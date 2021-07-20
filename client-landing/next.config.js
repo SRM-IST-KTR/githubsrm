@@ -1,4 +1,4 @@
-const { HOST_NAME } = process.env;
+const { API_HOSTNAME } = process.env;
 module.exports = {
   async rewrites() {
     return [
@@ -7,12 +7,12 @@ module.exports = {
         destination: "/:path*",
       },
       {
-        source: "/portal",
-        destination: `${HOST_NAME}/portal`,
+        source: "/api",
+        destination: `${API_HOSTNAME}/api`,
       },
       {
-        source: "/portal/:path*",
-        destination: `${HOST_NAME}/portal/:path*`,
+        source: "/api/:path*",
+        destination: `${API_HOSTNAME}/api/:path*`,
       },
     ];
   },

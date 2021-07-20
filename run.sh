@@ -10,6 +10,8 @@ exit 1
 fi
 
 # run the django server
-cd server/githubsrm/
+cd server/
+source ./env/bin/activate
+cd githubsrm/
 echo -e "$INFO_TEXT Server starting on Port $1 [...]"
 gunicorn core.wsgi:application --bind 0.0.0.0:$1 --access-logfile - --error-logfile - --reload
