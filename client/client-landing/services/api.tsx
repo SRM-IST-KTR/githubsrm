@@ -12,11 +12,7 @@ import { getRecaptchaToken } from "./recaptcha";
 import { errToast } from "../utils/functions/toast";
 
 const instance: AxiosInstance = axios.create({
-  baseURL: `${
-    process.env.NODE_ENV !== "production"
-      ? process.env.NEXT_PUBLIC_API_BASE_URL
-      : ""
-  }/api`,
+  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`,
 });
 
 export const getTeam = async (): Promise<MemberProps[] | false> => {
