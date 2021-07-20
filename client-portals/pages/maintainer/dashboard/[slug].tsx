@@ -1,24 +1,20 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import OtherMaintainers from "../../../components/maintainer/dashboard/other-maintainers";
-import { Layout } from "../../../components/shared";
-import { successToast } from "../../../utils/functions/toast";
-import { AuthContext } from "../../../context/authContext";
-import {
-  ContributorProps,
-  OtherMaintainersProps,
-} from "../../../utils/interfaces";
-import Link from "next/link";
-import CSSLoader from "../../../components/shared/loader";
+import OtherMaintainers from "components/maintainer/dashboard/other-maintainers";
+import { Layout } from "components/shared";
+import { successToast } from "utils/functions/toast";
+import { AuthContext } from "context/authContext";
+import { ContributorProps, OtherMaintainersProps } from "utils/interfaces";
+import CSSLoader from "components/shared/loader";
 import {
   postAcceptContributor,
   getContributorsApplications,
-} from "../../../services/api";
-import Footer from "../../../components/shared/footer";
-import Loading from "../../../utils/icons/loading";
-import Next from "../../../utils/icons/next";
-import Previous from "../../../utils/icons/previous";
-import Tick from "../../../utils/icons/tick";
+} from "services/api";
+import Footer from "components/shared/footer";
+import Loading from "utils/icons/loading";
+import Next from "utils/icons/next";
+import Previous from "utils/icons/previous";
+import Tick from "utils/icons/tick";
 
 const headings = [
   "Name",

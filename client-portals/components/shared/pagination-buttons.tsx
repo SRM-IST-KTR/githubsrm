@@ -1,5 +1,5 @@
-import Next from "../../utils/icons/next";
-import Previous from "../../utils/icons/previous";
+import Next from "utils/icons/next";
+import Previous from "utils/icons/previous";
 
 const PaginationButtons = ({ hasNextPage, hasPrevPage, pageNo, setPageNo }) => {
   return (

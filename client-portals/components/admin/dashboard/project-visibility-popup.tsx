@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { Formik, Form, FormikState } from "formik";
+import { Formik, Form } from "formik";
 import {
   projectVisibilityInputs,
   projectVisibiltyValidation,
-} from "../../../utils/constants";
-import { ProjectVisibilityData } from "../../../utils/interfaces";
-import Loading from "../../../utils/icons/loading";
-import { Input } from "../../shared";
+} from "utils/constants";
+import { ProjectVisibilityData } from "utils/interfaces";
+import Loading from "utils/icons/loading";
+import { Input } from "@/shared/index";
 import Markdown from "react-markdown";
 import Modal from "react-modal";
-import { postAcceptProjectHandler } from "../../../services/api";
-import { successToast } from "../../../utils/functions/toast";
+import { postAcceptProjectHandler } from "services/api";
+import { successToast } from "utils/functions/toast";
 
 const customStyles = {
   content: {

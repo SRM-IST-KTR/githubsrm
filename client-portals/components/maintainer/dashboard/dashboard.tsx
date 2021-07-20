@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card } from ".";
-import { Layout } from "../../shared";
-import instance from "../../../services/api";
-import { MaintainerProjectsProps } from "../../../utils/interfaces";
-import CSSLoader from "../../shared/loader";
-import Footer from "../../shared/footer";
-import Next from "../../../utils/icons/next";
-import Previous from "../../../utils/icons/previous";
+import { Layout, Footer, CSSLoader } from "@/shared/index";
+import instance from "services/api";
+import { MaintainerProjectsProps } from "utils/interfaces";
+import Next from "utils/icons/next";
+import Previous from "utils/icons/previous";
 
 const index = () => {
   const [projects, setProjects] = useState<MaintainerProjectsProps[]>([]);

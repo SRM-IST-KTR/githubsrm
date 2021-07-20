@@ -1,7 +1,6 @@
 import AcceptedProjectsCards from "./accepted-projects-cards";
 import React from "react";
-import { Layout } from "../../../shared";
-import Footer from "../../../shared/footer";
+import { Layout, Footer } from "@/shared/index";
 
 const AcceptedProjectDashboard = () => {
   return (

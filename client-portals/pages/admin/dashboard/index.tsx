@@ -1,7 +1,7 @@
-import ProjectApplications from "../../../components/admin/dashboard";
+import ProjectApplications from "components/admin/dashboard";
 import { useRouter } from "next/router";
 import React, { useEffect, useContext } from "react";
-import { AuthContext } from "../../../context/authContext";
+import { AuthContext } from "context/authContext";
 
 const AdminDashPage = () => {
   const router = useRouter();

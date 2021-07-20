@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import instance from "../../../services/api";
+import instance from "services/api";
 import Link from "next/link";
-import { Layout } from "../../shared";
-import { TableProjectsProps } from "../../../utils/interfaces";
-import CSSLoader from "../../shared/loader";
+import { Layout, Footer, CSSLoader } from "@/shared/index";
+import { TableProjectsProps } from "utils/interfaces";
 import ProjectVisibility from "./project-visibility-popup";
-import Footer from "../../shared/footer";
-import Tick from "../../../utils/icons/tick";
-import Next from "../../../utils/icons/next";
-import Previous from "../../../utils/icons/previous";
+import Tick from "utils/icons/tick";
+import Next from "utils/icons/next";
+import Previous from "utils/icons/previous";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<

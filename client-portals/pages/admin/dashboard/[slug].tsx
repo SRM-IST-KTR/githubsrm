@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import { AuthContext } from "../../../context/authContext";
-import {
-  getMaintainerApplications,
-  postAcceptMaintainer,
-} from "../../../services/api";
-import { successToast } from "../../../utils/functions/toast";
-import { Layout } from "../../../components/shared";
+import { AuthContext } from "context/authContext";
+import { getMaintainerApplications, postAcceptMaintainer } from "services/api";
+import { successToast } from "utils/functions/toast";
+import { Layout } from "components/shared";
 import Link from "next/link";
-import { MaintainersProps } from "../../../utils/interfaces";
-import CSSLoader from "../../../components/shared/loader";
-import Footer from "../../../components/shared/footer";
-import Loading from "../../../utils/icons/loading";
-import Tick from "../../../utils/icons/tick";
-import CardGithub from "../../../utils/icons/card-github";
+import { MaintainersProps } from "utils/interfaces";
+import CSSLoader from "components/shared/loader";
+import Footer from "components/shared/footer";
+import Loading from "utils/icons/loading";
+import Tick from "utils/icons/tick";
+import CardGithub from "utils/icons/card-github";
 
 const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState<MaintainersProps[]>([]);

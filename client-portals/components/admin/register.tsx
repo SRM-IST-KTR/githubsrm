@@ -1,17 +1,16 @@
 import { Formik, Form, FormikState, Field } from "formik";
 import React, { useState } from "react";
-import { AdminRegisterData } from "../../utils/interfaces";
+import { AdminRegisterData } from "utils/interfaces";
 import Markdown from "react-markdown";
 import {
   adminRegisterValidation,
   adminRegisterInputs,
   customInputClasses,
-} from "../../utils/constants";
-import { Input } from "../shared";
-import { postAdminRegister } from "../../services/api";
-import { successToast } from "../../utils/functions/toast";
-import Loading from "../../utils/icons/loading";
-import Footer from "../shared/footer";
+} from "utils/constants";
+import { Input, Footer } from "@/shared/index";
+import { postAdminRegister } from "services/api";
+import { successToast } from "utils/functions/toast";
+import Loading from "utils/icons/loading";
 
 const AdminRegister = () => {
   const [authToken, setAuthToken] = useState<string>("");

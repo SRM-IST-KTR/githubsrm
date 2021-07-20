@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import { AuthContext } from "../../../../context/authContext";
-import { getProject, postAcceptProject } from "../../../../services/api";
-import { successToast } from "../../../../utils/functions/toast";
-import { Layout } from "../../../../components/shared";
+import { AuthContext } from "context/authContext";
+import { getProject, postAcceptProject } from "services/api";
+import { successToast } from "utils/functions/toast";
+import { Layout } from "components/shared";
 import Link from "next/link";
-import { ContributorsProps } from "../../../../utils/interfaces";
-import CSSLoader from "../../../../components/shared/loader";
-import Loading from "../../../../utils/icons/loading";
-import Tick from "../../../../utils/icons/tick";
-import Cross from "../../../../utils/icons/cross";
+import { ContributorsProps } from "utils/interfaces";
+import CSSLoader from "components/shared/loader";
+import Loading from "utils/icons/loading";
+import Tick from "utils/icons/tick";
+import Cross from "utils/icons/cross";
 
 const headings = [
   "Name",

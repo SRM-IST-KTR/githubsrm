@@ -1,8 +1,6 @@
-import Card from "../../../shared/card";
 import React, { useState, useEffect } from "react";
-import { getAcceptedProjects } from "../../../../services/api";
-import CSSLoader from "../../../shared/loader";
-import PaginationButtons from "../../../shared/pagination-buttons";
+import { getAcceptedProjects } from "services/api";
+import { Card, PaginationButtons, CSSLoader } from "@/shared/index";
 
 const AcceptedProjectsCards = () => {
   const [acceptedProjects, setAcceptedProjects] = useState([]);

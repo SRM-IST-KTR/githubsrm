@@ -1,4 +1,4 @@
-import { OtherMaintainersProps } from "../../../utils/interfaces";
+import { OtherMaintainersProps } from "utils/interfaces";
 
 interface otherMaintainersProps {
   otherMaintainers: OtherMaintainersProps[];
