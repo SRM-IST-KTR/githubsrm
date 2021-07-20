@@ -61,6 +61,14 @@ class Contributor(APIView):
                 if doc := open_entry.enter_contributor(validate):
                     if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
                                                                                 "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
+
+                        Thread(target=service.sns, kwargs={
+                            "payload": {
+                                "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
+                                "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
+                            }
+                        }).start()
+
                         return response.Response({
                             "valid": validate
                         }, status=status.HTTP_201_CREATED)
