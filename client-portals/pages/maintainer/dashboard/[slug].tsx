@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import OtherMaintainers from "components/maintainer/dashboard/other-maintainers";
-import { Layout } from "components/shared";
+import { Layout, Footer } from "@/shared/index";
 import { successToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
 import { ContributorProps, OtherMaintainersProps } from "utils/interfaces";
@@ -10,10 +10,8 @@ import {
   postAcceptContributor,
   getContributorsApplications,
 } from "services/api";
-import Footer from "components/shared/footer";
 import Loading from "utils/icons/loading";
-import Next from "utils/icons/next";
-import Previous from "utils/icons/previous";
+import { PaginationButtons } from "@/shared/index";
 import Tick from "utils/icons/tick";
 
 const headings = [
@@ -186,37 +184,12 @@ const ProjectDetail = () => {
                     </tr>
                   ))}
                 </tbody>
-                <div className="fixed flex justify-center w-full bottom-40 mb-44">
-                  <button
-                    disabled={!hasPrevPage}
-                    className={`${
-                      !hasPrevPage
-                        ? "opacity-10 cursor-not-allowed"
-                        : "hover:bg-base-green focus:bg-base-green"
-                    } p-3 rounded-full`}
-                    onClick={() => setPageNo(pageNo - 1)}
-                  >
-                    <span className="text-2xl font-extrabold">
-                      <Previous />
-                    </span>
-                  </button>
-                  <h2 className="text-gray-50 text-4xl  font-medium mx-3">
-                    {pageNo}
-                  </h2>
-                  <button
-                    disabled={!hasNextPage}
-                    className={`${
-                      !hasNextPage
-                        ? "opacity-10 cursor-not-allowed"
-                        : "hover:bg-base-green focus:bg-base-green"
-                    } p-3 rounded-full`}
-                    onClick={() => setPageNo(pageNo + 1)}
-                  >
-                    <span className="text-2xl font-extrabold">
-                      <Next />
-                    </span>
-                  </button>
-                </div>
+                <PaginationButtons
+                  hasNextPage={hasNextPage}
+                  hasPrevPage={hasPrevPage}
+                  pageNo={pageNo}
+                  setPageNo={setPageNo}
+                />
               </div>
             ) : (
               <h2 className="text-5xl text-center font-extrabold text-white mb-5 no-scrollbar">

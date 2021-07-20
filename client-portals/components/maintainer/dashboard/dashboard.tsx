@@ -3,8 +3,7 @@ import { Card } from ".";
 import { Layout, Footer, CSSLoader } from "@/shared/index";
 import instance from "services/api";
 import { MaintainerProjectsProps } from "utils/interfaces";
-import Next from "utils/icons/next";
-import Previous from "utils/icons/previous";
+import { PaginationButtons } from "@/shared/index";
 
 const index = () => {
   const [projects, setProjects] = useState<MaintainerProjectsProps[]>([]);
@@ -58,35 +57,12 @@ const index = () => {
             />
           ))}
         </div>
-        <div className="fixed inline-flex bottom-0 left-1/2 w-full mb-5 ">
-          <button
-            disabled={!hasPrevPage}
-            className={`${
-              !hasPrevPage
-                ? "opacity-10 cursor-not-allowed"
-                : "hover:bg-base-green focus:bg-base-green"
-            } p-3 rounded-full`}
-            onClick={() => setPageNo(pageNo - 1)}
-          >
-            <span className="text-2xl font-extrabold">
-              <Previous />
-            </span>
-          </button>
-          <h2 className="text-gray-50 text-4xl  font-medium mx-3">{pageNo}</h2>
-          <button
-            disabled={!hasNextPage}
-            className={`${
-              !hasNextPage
-                ? "opacity-10 cursor-not-allowed"
-                : "hover:bg-base-green focus:bg-base-green"
-            } p-3 rounded-full`}
-            onClick={() => setPageNo(pageNo + 1)}
-          >
-            <span className="text-2xl font-extrabold">
-              <Next />
-            </span>
-          </button>
-        </div>
+        <PaginationButtons
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+        />
       </Layout>
       <div className="fixed bottom-0 w-full">
         <Footer />
