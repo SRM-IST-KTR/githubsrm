@@ -204,7 +204,7 @@ class ProjectsAdmin(APIView):
 
                         Thread(service.sns(payload={
                             "message": "Trying to approve project without approving maintainers",
-                            "subject": f"[ADMIN-ERROR] this person messed up -> {blame}"
+                            "subject": f"[ADMIN-ERROR] This person messed up -> {blame}"
                         })).start()
 
                         return JsonResponse(data={
@@ -225,14 +225,16 @@ class ProjectsAdmin(APIView):
                                                         contributor_id=validate.get("contributor_id")):
 
                     contributor, project = details
-
+                    emails = entry.get_all_maintainer_emails(project=project)
                     Thread(target=service.wrapper_email, kwargs={
                         "role": "contributor_application_to_maintainer",
+                        "send_all": True,
                         "data": {
                             "name": "Maintainer(s)",
                             "project_name": project["project_name"],
                             "contributor_name": contributor["name"],
-                            "contributor_email": contributor["email"]
+                            "contributor_email": contributor["email"],
+                            "email": emails
                         }}).start()
 
                     return JsonResponse(data={
