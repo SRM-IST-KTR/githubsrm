@@ -284,6 +284,56 @@ class AdminEntry:
 
         return True
 
+    def remove_maintainer(self, identifier: str) -> bool:
+        """Remove maintainers on rejection
+
+        Args:
+            identifier (str): maintainer id
+
+        Returns:
+            bool
+        """
+        maintainer = self.db.maintainer.find_one({
+            "_id": identifier
+        })
+        self.db.maintainer.remove({"_id": identifier})
+        if maintainer["is_admin_approved"]:
+            self.db.project.find_one_and_update({
+                "_id": maintainer["project_id"],
+            }, update={
+                "$pull": {
+                    "maintainer_id": identifier
+                }
+            })
+
+        return True
+
+    def remove_contributor(self, identifier: str) -> bool:
+        """Remove contirbutor on rejection
+
+        Args:
+            identifier (str): contributor id 
+        Returns:
+            bool 
+        """
+        contributor = self.db.contributor.find_one_and_update({
+            "_id": identifier
+        })
+
+        if contributor:
+            self.db.contributor.remove({"_id": identifier})
+        else:
+            return False
+
+        if contributor["is_maintainer_approved"]:
+            self.db.project.find_one_and_update({
+                "_id": contributor["interested_project"]
+            }, update={
+                "$pull": {
+                    "contributor_id": identifier
+                }
+            })
+
     def get_all_maintainer_emails(self, project: Dict[str, Any]) -> Dict[str, Any]:
         """Get all maintainer emails from projects
 
@@ -300,7 +350,7 @@ class AdminEntry:
             }))
 
         except Exception as e:
-            return 
+            return
 
         doc = {}
 

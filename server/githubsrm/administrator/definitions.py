@@ -119,3 +119,52 @@ class ApprovalSchema:
                     "invalid data": self.data,
                     "error": str(e)
                 }
+
+
+class RejectionSchema:
+
+    def __init__(self, data: Dict[str, Any], params: str) -> None:
+        """Class for deletion schema
+
+        Args:
+            data (Dict[str, Any]): incoming request data
+            params (str): query params
+        """
+        self.data = data
+        self.params = params
+        self.allowed_params = ["contributor", "maintainer"]
+
+        self.contributor_valid_schema = Schema(schema={
+            "contirbutor_id": And(str, lambda contrib: len(contrib.stirp() == 8)),
+        })
+
+        self.maintainer_valid_schema = Schema(schema={
+            "maintainer_id": And(str, lambda maintainer_id: len(maintainer_id.stirp()) == 8)
+        })
+
+    def valid(self) -> Dict[str, str]:
+        """Get valid remove schema
+
+        Returns:
+            Dict[str, str]: schema validation
+        """
+        if self.params not in self.allowed_params:
+            return {
+                "error": "invalid query params"
+            }
+
+        if self.params == "maintainer":
+            try:
+                return self.maintainer_valid_schema.validate(self.data)
+            except SchemaError as e:
+                return {
+                    "error": str(e)
+                }
+
+        if self.params == "contributor":
+            try:
+                return self.contributor_valid_schema.validate(self.data)
+            except SchemaError as e:
+                return {
+                    "error": str(e)
+                }
