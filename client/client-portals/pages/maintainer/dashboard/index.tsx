@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
-import { Dashboard } from "../../../components/maintainer/dashboard";
-import { AuthContext } from "../../../context/authContext";
+import { Dashboard } from "components/maintainer/dashboard";
+import { AuthContext } from "context/authContext";
 import { useRouter } from "next/router";
 
 const Index = () => {

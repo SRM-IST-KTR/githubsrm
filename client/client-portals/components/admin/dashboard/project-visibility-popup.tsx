@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { Formik, Form, FormikState } from "formik";
+import { Formik, Form } from "formik";
 import {
   projectVisibilityInputs,
   projectVisibiltyValidation,
-} from "../../../utils/constants";
-import { ProjectVisibilityData } from "../../../utils/interfaces";
-import Loading from "../../../utils/icons/loading";
-import { Input } from "../../shared";
+} from "utils/constants";
+import { ProjectVisibilityData } from "utils/interfaces";
+import Loading from "utils/icons/loading";
+import { Input } from "@/shared/index";
 import Markdown from "react-markdown";
 import Modal from "react-modal";
-import { postAcceptProjectHandler } from "../../../services/api";
-import { successToast } from "../../../utils/functions/toast";
+import { postAcceptProjectHandler } from "services/api";
+import { successToast } from "utils/functions/toast";
 
 const customStyles = {
   content: {
@@ -34,10 +34,12 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
   };
 
   const submitValues = async (values) => {
-    values.private = isPrivate;
-    values.project_id = projectId;
+    const _values = Object.assign({}, values, {
+      private: isPrivate,
+      project_id: projectId,
+    });
     setLoading(true);
-    const res = await postAcceptProjectHandler(values);
+    const res = await postAcceptProjectHandler(_values);
     if (res) {
       successToast("Project Approved successfully!");
       setLoading(false);

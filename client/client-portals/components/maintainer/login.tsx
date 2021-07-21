@@ -6,16 +6,15 @@ import {
   maintainerLoginValidation,
   maintainerLoginInputs,
   customInputClasses,
-} from "../../utils/constants";
-import { Input } from "../shared";
+} from "utils/constants";
+import { Input, Footer } from "@/shared/index";
 import Router from "next/router";
-import { errToast, successToast } from "../../utils/functions/toast";
-import { AuthContext } from "../../context/authContext";
+import { successToast } from "utils/functions/toast";
+import { AuthContext } from "context/authContext";
 import { useContext } from "react";
 import Link from "next/link";
-import { postMaintainerLogin } from "../../services/api";
-import Footer from "../shared/footer";
-import Loading from "../../utils/icons/loading";
+import { postMaintainerLogin } from "services/api";
+import Loading from "utils/icons/loading";
 
 const MaintainerLogin = () => {
   const [loading, setLoading] = useState<boolean>(false);

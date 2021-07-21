@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import { AuthContext } from "../../../../context/authContext";
-import { getProject, postAcceptProject } from "../../../../services/api";
-import { successToast } from "../../../../utils/functions/toast";
-import { Layout } from "../../../../components/shared";
+import { AuthContext } from "context/authContext";
+import { getProject, postAcceptProject } from "services/api";
+import { successToast } from "utils/functions/toast";
+import { Layout, Footer } from "components/shared";
 import Link from "next/link";
-import { ContributorsProps } from "../../../../utils/interfaces";
-import CSSLoader from "../../../../components/shared/loader";
-import Loading from "../../../../utils/icons/loading";
-import Tick from "../../../../utils/icons/tick";
-import Cross from "../../../../utils/icons/cross";
+import { ContributorsProps } from "utils/interfaces";
+import CSSLoader from "components/shared/loader";
+import Loading from "utils/icons/loading";
+import Tick from "utils/icons/tick";
+import Cross from "utils/icons/cross";
 
 const headings = [
   "Name",
@@ -72,9 +72,16 @@ const ContributorsPage = () => {
   }, [router.query, accepted]);
 
   return loading2 ? (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-      <CSSLoader />
-    </div>
+    <>
+      <Layout type="admin">
+        <div className="flex flex-col items-center justify-center">
+          <CSSLoader />
+        </div>
+      </Layout>
+      <div className="fixed bottom-0 w-full">
+        <Footer />
+      </div>
+    </>
   ) : (
     <Layout type="admin">
       <h1 className="text-5xl font-extrabold underline text-white mb-7">
@@ -113,9 +120,14 @@ const ContributorsPage = () => {
                   </td>
                   <td className="p-3">
                     <div className="flex align-items-center">
-                      <Link href={person.github_id}>
+                      <a
+                        className="hover:text-base-teal"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`https://github.com/${person.github_id}`}
+                      >
                         <div> {person.github_id}</div>
-                      </Link>
+                      </a>
                     </div>
                   </td>
 

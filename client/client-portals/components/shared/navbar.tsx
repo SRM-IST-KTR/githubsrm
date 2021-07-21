@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
-import { AuthContext } from "../../context/authContext";
-import LogoutIcon from "../../utils/icons/logout";
-import Burger from "../../utils/icons/navbarBurger";
+import { AuthContext } from "context/authContext";
+import LogoutIcon from "utils/icons/logout";
+import Burger from "utils/icons/navbarBurger";
 
 const Navbar = ({ links }) => {
   const [navbarOpen, setNavbarOpen] = useState<boolean>(false);

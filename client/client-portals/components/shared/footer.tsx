@@ -1,7 +1,7 @@
-import GitHubIcon from "../../utils/icons/github";
-import TwitterIcon from "../../utils/icons/twitter";
-import InstagramIcon from "../../utils/icons/instagram";
-import LinkedinIcon from "../../utils/icons/linkedin";
+import GitHubIcon from "utils/icons/github";
+import TwitterIcon from "utils/icons/twitter";
+import InstagramIcon from "utils/icons/instagram";
+import LinkedinIcon from "utils/icons/linkedin";
 
 const Footer = () => {
   const socials: {

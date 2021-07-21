@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import { AuthContext } from "../../../context/authContext";
-import {
-  getMaintainerApplications,
-  postAcceptMaintainer,
-} from "../../../services/api";
-import { successToast } from "../../../utils/functions/toast";
-import { Layout } from "../../../components/shared";
+import { AuthContext } from "context/authContext";
+import { getMaintainerApplications, postAcceptMaintainer } from "services/api";
+import { successToast } from "utils/functions/toast";
+import { Layout } from "components/shared";
 import Link from "next/link";
-import { MaintainersProps } from "../../../utils/interfaces";
-import CSSLoader from "../../../components/shared/loader";
-import Footer from "../../../components/shared/footer";
-import Loading from "../../../utils/icons/loading";
-import Tick from "../../../utils/icons/tick";
-import CardGithub from "../../../utils/icons/card-github";
+import { MaintainersProps } from "utils/interfaces";
+import CSSLoader from "components/shared/loader";
+import Footer from "components/shared/footer";
+import Loading from "utils/icons/loading";
+import Tick from "utils/icons/tick";
+import CardGithub from "utils/icons/card-github";
 
 const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState<MaintainersProps[]>([]);
@@ -65,9 +62,16 @@ const MaintainerPage = () => {
   }, [router.query, accepted]);
 
   return loading2 ? (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-      <CSSLoader />
-    </div>
+    <>
+      <Layout type="admin">
+        <div className="flex flex-col items-center justify-center">
+          <CSSLoader />
+        </div>
+      </Layout>
+      <div className="fixed bottom-0 w-full">
+        <Footer />
+      </div>
+    </>
   ) : (
     <>
       <Layout type="admin">

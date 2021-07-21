@@ -1,8 +1,8 @@
 import router from "next/router";
 import React, { useEffect, useContext, useState } from "react";
-import AdminLogin from "../../components/admin/login";
-import AdminRegister from "../../components/admin/register";
-import { AuthContext } from "../../context/authContext";
+import AdminLogin from "components/admin/login";
+import AdminRegister from "components/admin/register";
+import { AuthContext } from "context/authContext";
 
 const IndexPage = () => {
   const [register, setRegister] = useState(false);

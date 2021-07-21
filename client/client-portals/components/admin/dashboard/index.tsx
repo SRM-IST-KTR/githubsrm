@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import instance from "../../../services/api";
+import instance from "services/api";
 import Link from "next/link";
-import { Layout } from "../../shared";
-import { TableProjectsProps } from "../../../utils/interfaces";
-import CSSLoader from "../../shared/loader";
+import { Layout, Footer, CSSLoader } from "@/shared/index";
+import { TableProjectsProps } from "utils/interfaces";
 import ProjectVisibility from "./project-visibility-popup";
-import Footer from "../../shared/footer";
-import Tick from "../../../utils/icons/tick";
-import Next from "../../../utils/icons/next";
-import Previous from "../../../utils/icons/previous";
+import Tick from "utils/icons/tick";
+import { PaginationButtons } from "@/shared/index";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
@@ -60,22 +57,29 @@ const ProjectApplications = () => {
   return !loading ? (
     <>
       <Layout type="admin">
-        <div className="overflow-auto flex flex-col justify-center">
-          <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
+        <div className="overflow-auto flex flex-col items-center justify-center">
+          {tableDataProjects?.length > 0 ? (
+            <h2 className="text-gray-50 m-2 font-medium">Page- {pageNo}</h2>
+          ) : (
+            <h2 className="text-gray-50 my-10 font-bold text-4xl">
+              No Project Applications!
+            </h2>
+          )}
 
           <div className="text-white border-separate space-y-6 text-sm overflow-auto">
             <thead className="bg-base-teal text-white text-xl">
               <tr>
-                {headings.map((head) => (
-                  <th key={head} className="px-3 text-left">
-                    {head}
-                  </th>
-                ))}
+                {tableDataProjects.length > 0 &&
+                  headings.map((head) => (
+                    <th key={head} className="px-3 text-left">
+                      {head}
+                    </th>
+                  ))}
               </tr>
             </thead>
 
             <tbody>
-              {tableDataProjects.map((data) => (
+              {tableDataProjects?.map((data) => (
                 <tr key={data._id} className="bg-gray-800">
                   <td className="p-3">
                     <div className="flex align-items-center">
@@ -145,36 +149,14 @@ const ProjectApplications = () => {
             </tbody>
           </div>
         </div>
-
-        <div className="fixed inline-flex w-full bottom-0 left-1/2 mb-32">
-          <button
-            disabled={!hasPrevPage}
-            className={`${
-              !hasPrevPage
-                ? "opacity-10 cursor-not-allowed"
-                : "hover:bg-base-green focus:bg-base-green"
-            } p-3 rounded-full`}
-            onClick={() => setPageNo(pageNo - 1)}
-          >
-            <span className="text-2xl font-extrabold">
-              <Previous />
-            </span>
-          </button>
-          <h2 className="text-gray-50 text-4xl  font-medium mx-3">{pageNo}</h2>
-          <button
-            disabled={!hasNextPage}
-            className={`${
-              !hasNextPage
-                ? "opacity-10 cursor-not-allowed"
-                : "hover:bg-base-green focus:bg-base-green"
-            } p-3 rounded-full`}
-            onClick={() => setPageNo(pageNo + 1)}
-          >
-            <span className="text-2xl font-extrabold">
-              <Next />
-            </span>
-          </button>
-        </div>
+        {tableDataProjects.length > 0 && (
+          <PaginationButtons
+            hasNextPage={hasNextPage}
+            hasPrevPage={hasPrevPage}
+            pageNo={pageNo}
+            setPageNo={setPageNo}
+          />
+        )}
         <ProjectVisibility
           projectId={projId}
           close={() => setOpen(false)}
@@ -186,9 +168,16 @@ const ProjectApplications = () => {
       </div>
     </>
   ) : (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-base-blue">
-      <CSSLoader />
-    </div>
+    <>
+      <Layout type="admin">
+        <div className="flex flex-col items-center justify-center">
+          <CSSLoader />
+        </div>
+      </Layout>
+      <div className="fixed bottom-0 w-full">
+        <Footer />
+      </div>
+    </>
   );
 };
 

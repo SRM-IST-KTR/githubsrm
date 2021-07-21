@@ -2,18 +2,17 @@ import React, { useContext, useState } from "react";
 import { Formik, Form, FormikState } from "formik";
 import Router from "next/router";
 import Markdown from "react-markdown";
-import { AdminLoginData } from "../../utils/interfaces";
+import { AdminLoginData } from "utils/interfaces";
 import {
   adminLoginValidation,
   adminLoginInputs,
   customInputClasses,
-} from "../../utils/constants";
-import { Input } from "../shared";
-import { successToast } from "../../utils/functions/toast";
-import { AuthContext } from "../../context/authContext";
-import { postAdminLogin } from "../../services/api";
-import Loading from "../../utils/icons/loading";
-import Footer from "../shared/footer";
+} from "utils/constants";
+import { Input, Footer } from "@/shared/index";
+import { successToast } from "utils/functions/toast";
+import { AuthContext } from "context/authContext";
+import { postAdminLogin } from "services/api";
+import Loading from "utils/icons/loading";
 
 const AdminLogin = () => {
   const authContext = useContext(AuthContext);

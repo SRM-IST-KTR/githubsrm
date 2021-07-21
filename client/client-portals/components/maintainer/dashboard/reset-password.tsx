@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Formik, Form, FormikState, Field } from "formik";
-import { ResetPasswordData, SetPasswordData } from "../../../utils/interfaces";
+import { ResetPasswordData, SetPasswordData } from "utils/interfaces";
 import {
   resetPasswordValidation,
   resetPasswordInputs,
   setPasswordValidation,
   setPasswordInputs,
   customInputClasses,
-} from "../../../utils/constants";
-import { Input, Layout } from "../../shared";
+} from "utils/constants";
+import { Input, Layout, Footer } from "@/shared/index";
 import Markdown from "react-markdown";
-import { postResetPassword, postSetPassword } from "../../../services/api";
-import { successToast, errToast } from "../../../utils/functions/toast";
+import { postResetPassword, postSetPassword } from "services/api";
+import { successToast, errToast } from "utils/functions/toast";
 import jwt from "jsonwebtoken";
-import Loading from "../../../utils/icons/loading";
-import Footer from "../../shared/footer";
+import Loading from "utils/icons/loading";
 import Router from "next/router";
 
 const ResetPassword = ({ action, queryToken }) => {
