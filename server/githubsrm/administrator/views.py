@@ -264,6 +264,18 @@ class ProjectsAdmin(APIView):
         else:
             return JsonResponse({"error": "Query Params are different from expected"}, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, **kwargs) -> JsonResponse:
+        """Delete route for admin rejections
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+
+        pass        
+
 
 class AdminAccepted(APIView):
     def get(self, request, **kwargs) -> JsonResponse:
