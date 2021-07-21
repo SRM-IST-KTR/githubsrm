@@ -183,7 +183,7 @@ class ProjectsAdmin(APIView):
                         email_document["email"].append(maintainer.pop("email"))
                         if service.wrapper_email(
                                 role="project_approval", data={**{
-                                    "name": "Maintainer{s)",
+                                    "name": "Maintainer(s)",
                                     "project_name": project["project_name"],
                                     "project_url": validate["project_url"],
                                     "project_id": project["_id"]
@@ -234,7 +234,7 @@ class ProjectsAdmin(APIView):
                             "project_name": project["project_name"],
                             "contributor_name": contributor["name"],
                             "contributor_email": contributor["email"],
-                            "email": emails
+                            "email": emails["email"]
                         }}).start()
 
                     return JsonResponse(data={
