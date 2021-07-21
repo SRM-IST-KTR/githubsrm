@@ -14,44 +14,6 @@ open_entry = Entry()
 load_dotenv()
 
 
-def conditional_render(path: str) -> str:
-    """Conditional rendering
-
-    Args:
-        path (str): path sent in
-
-    Returns:
-        str: rendred file
-    """
-    fe_routes = [
-        "projects",
-        "team",
-        "join-us",
-        "join-us/contributor",
-        "join-us/maintainer",
-        "join-us/maintainer/new-project",
-        "join-us/maintainer/existing-project",
-        "contact-us",
-        "404",
-        "500",
-    ]
-
-    if path is None:
-        return "index.html"
-
-    if path.endswith('/'):
-        path = path[:-1]
-
-    for route in fe_routes:
-        if path.endswith(route):
-            return f"{path}.html"
-
-    if len(path) > 0:
-        return path
-    else:
-        return "index.html"
-
-
 def check_token(token) -> bool:
     """Check ReCaptcha token
 
@@ -188,6 +150,17 @@ class BotoService:
                                     project_data={"project_name": data["project_name"]})
             )
 
+        elif role == "contributor_application_to_maintainer":
+            return email_template(
+                subject="New Contributor Notification | GitHub Community SRM",
+                bodyText=f"New contributor notification to {data['name']}",
+                emailHTML=emailbody(file='12.html', name=data['name'], role=role,
+                                    project_data={"project_name": data["project_name"],
+                                                  "contributor_name": data["contributor_name"],
+                                                  "contributor_email": data["contributor_email"]})
+
+            )
+
         elif role == 'welcome_maintainer_w_password_link':
             return email_template(
                 subject="Welcome Maintainer | GitHub Community SRM",
@@ -282,6 +255,10 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
             return template.render(name=name, project_name=project_data["project_name"], project_url=project_data["project_url"])
         elif role == "forgot_password":
             return template.render(name=name, reset_token=project_data["reset_token"])
+        elif role == "contributor_application_to_maintainer":
+            return template.render(name=name, project_name=project_data["project_name"],
+                                   contributor_name=project_data["contributor_name"],
+                                   contributor_email=project_data["contributor_email"])
 
 
 def email_template(subject: str, bodyText: str, emailHTML: Template) -> Dict[str, Dict[str, Any]]:

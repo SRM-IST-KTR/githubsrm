@@ -5,8 +5,6 @@ from threading import Thread
 
 import psutil
 from bson import json_util
-from django.shortcuts import render
-from django.template.exceptions import TemplateDoesNotExist
 from rest_framework import response, status
 from rest_framework.views import APIView
 
@@ -14,14 +12,11 @@ from apis import (PostThrottle, check_token, open_entry, open_entry_checks,
                   service)
 
 from .definitions import *
-from .utils import conditional_render
+from django.shortcuts import redirect
 
 
-def home(request, path=None):
-    try:
-        return render(request, f'{conditional_render(path)}')
-    except TemplateDoesNotExist as e:
-        return render(request, '404.html')
+def catch_all(request, path=None):
+    return redirect("https://githubsrm.tech")
 
 
 class Contributor(APIView):
@@ -66,6 +61,14 @@ class Contributor(APIView):
                 if doc := open_entry.enter_contributor(validate):
                     if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
                                                                                 "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
+
+                        Thread(target=service.sns, kwargs={
+                            "payload": {
+                                "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
+                                "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
+                            }
+                        }).start()
+
                         return response.Response({
                             "valid": validate
                         }, status=status.HTTP_201_CREATED)
@@ -79,21 +82,6 @@ class Contributor(APIView):
         return response.Response({
             "error": "Invalid reCaptcha"
         }, status=status.HTTP_401_UNAUTHORIZED)
-
-    def get(self, request, **kwargs) -> response.Response:
-        """Return all Contributors
-
-        Args:
-            request
-
-        Returns:
-            response.Response
-        """
-
-        result = json.loads(json_util.dumps(open_entry.get_contributors()))
-        return response.Response({
-            "contributors": result
-        }, status=status.HTTP_200_OK)
 
 
 class Maintainer(APIView):
@@ -133,7 +121,7 @@ class Maintainer(APIView):
                     if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
                         if id := open_entry.enter_beta_maintainer(doc=request.data):
-                            # TODO ROLL BACK
+
                             if service.wrapper_email(role='maintainer_received', data={
                                 "name": validate["name"],
                                 "project_name": details["project_name"],
@@ -148,8 +136,8 @@ class Maintainer(APIView):
                                 }}).start()
                                 return response.Response(status=status.HTTP_201_CREATED)
                             else:
-                                open_entry.delete_beta_maintainer(maintainer_id=id,
-                                                                  project_id=validate.get('project_id'))
+                                open_entry.beta_maintainer_reset_status(
+                                    maintainer_id=id)
 
                             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -169,7 +157,7 @@ class Maintainer(APIView):
                     validate['project_id'] = value[0]
                     validate['project_name'] = value[2]
                     validate['description'] = value[3]
-                    # TODO ROLL BACK HERE IF FAILS
+
                     if service.wrapper_email(role='project_submission_confirmation', data={
                         "project_name": validate["project_name"],
                         "name": validate["name"],
@@ -189,7 +177,7 @@ class Maintainer(APIView):
                         }}).start()
                         return response.Response(status=status.HTTP_201_CREATED)
                     else:
-                        open_entry.delete_alpha_maintainer(
+                        open_entry.alpha_maintainer_reset_status(
                             project_id=validate.get('project_id'),
                             maintainer_id=value[1])
                     return response.Response({
