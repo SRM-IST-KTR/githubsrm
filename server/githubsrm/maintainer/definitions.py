@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Any
 from schema import And, Schema, SchemaError
 
 
@@ -78,3 +78,19 @@ class MaintainerSchema:
                 return self.set_valid_schema().validate(self.data)
         except SchemaError as e:
             return {"invalid data": self.data, "error": str(e)}
+
+
+class RejectionSchema:
+    def __init__(self, data: Dict[str, Any]) -> None:
+        self.data = data
+        self.valid_contributor_schema = {
+            "contributor_id": And(str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8)
+        }    
+
+    def valid(self) -> Dict[str, str]:
+        try:
+            return Schema(schema=self.valid_contributor_schema).validate()
+        except SchemaError as e:
+            return {
+                "error": str(e)
+            }
