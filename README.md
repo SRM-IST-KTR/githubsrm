@@ -34,6 +34,9 @@ Homepage of the foremost student-led community spearheading the Open Source Revo
   <video width="700" alt="website" loop src="https://user-images.githubusercontent.com/66865329/126658818-859d999a-6b34-40ba-9f46-2f41c00fc773.mov" autoplay/>
 </div>
 
+<div align="center">
+  <video width="700" alt="portal" loop src="https://user-images.githubusercontent.com/66865329/126668560-34c80479-7516-4198-97f5-6b02783d08d7.mov" autoplay/>
+</div>
 
 ## 📌 Prerequisites
 
