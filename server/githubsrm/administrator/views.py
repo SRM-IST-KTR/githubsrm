@@ -1,4 +1,6 @@
 
+from json.encoder import JSONEncoder
+import re
 from threading import Thread
 from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
@@ -7,11 +9,15 @@ from rest_framework.views import APIView
 
 from administrator import entry, jwt_keys
 
-from .definitions import AdminSchema, ApprovalSchema
+from .definitions import (
+    AdminSchema, ApprovalSchema, RejectionSchema
+)
 from .perms import AuthAdminPerms
-from .utils import (accepted_project_pagination, alpha_maintainer_support,
-                    beta_maintainer_support, project_pagination,
-                    project_single_project)
+from .utils import (
+    accepted_project_pagination, alpha_maintainer_support,
+    beta_maintainer_support, get_token, project_pagination,
+    project_single_project
+)
 
 
 class RegisterAdmin(APIView):
@@ -264,6 +270,113 @@ class ProjectsAdmin(APIView):
         else:
             return JsonResponse({"error": "Query Params are different from expected"}, status=status.HTTP_400_BAD_REQUEST)
 
+    @staticmethod
+    def _remove_contributor(request) -> JsonResponse:
+        """Send sns of contributor removal with blame
+
+        Returns:
+            JsonResponse
+        """
+
+        key = jwt_keys.verify_key(get_token(request.META))
+
+        Thread(target=service.sns, kwargs={
+            "payload": {
+                "message": f"Contributor -> {request.data.get('contributor_id')} removed by -> {key.get('user')}",
+                "subject": "[CONTRIBUTOR-REMOVE]"
+            }
+        }).start()
+        return JsonResponse(data={
+            "removed": str(request.data.get("contributor_id"))
+        }, status=200)
+
+    @staticmethod
+    def _remove_maintainer(request) -> JsonResponse:
+        """Send sns of maintianer removal with blame
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+        key = jwt_keys.verify_key(get_token(request.META))
+        Thread(target=service.sns, kwargs={
+            "payload": {
+                "message": f"Maintainer -> {request.data.get('maintainer_id')} removed by -> {key.get('user')}",
+                "subject": "[MAINTAINER-REMOVAL]"
+            }
+        }).start()
+
+        return JsonResponse(data={
+            "removed": str(request.data.get("maintainer_id"))
+        }, status=200)
+
+    @staticmethod
+    def _error_maintainer(request) -> JsonResponse:
+        """Warning sns
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+        key = jwt_keys.verify_key(get_token(request.META))
+        Thread(target=service.sns, kwargs={
+            "payload": {
+                "message": f"This admin messed up -> {key.get('user')} \
+                trying to remove admin approved maintainer({request.data.get('maintainer_id')})",
+                "subject": "[WARNING-ADMIN-MESSED-UP]"
+            }
+        }).start()
+
+        return JsonResponse(data={
+            "error": "Invalid request"
+        }, status=400)
+
+    @staticmethod
+    def _error_contributor(request) -> JsonResponse:
+        """Warning sns
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+        key = jwt_keys.verify_key(get_token(request.META))
+        Thread(target=service.sns, kwargs={
+            "payload": {
+                "message": f"Tring to remove maintainer / admin or the contributor id is wrong\
+                     approved contributor ({request.data.get('contributor_id')}), {key.get('user')} messed up.",
+                "subject": "[WARNING-ADMIN-MESSED-UP]"
+            }
+        }).start()
+
+        return JsonResponse(data={
+            "error": "invalid request"
+        }, status=400)
+
+    def action_to_status(self, status: str, request) -> None:
+        """Take action according to the response from remove functions
+
+        Args:
+            status (str): response
+            request:  blame
+        """
+
+        if request.GET.get("role") == "contributor":
+            if status:
+                return self._remove_contributor(reqeust=request)
+            else:
+                return self._error_contributor(request=request)
+        else:
+            if status:
+                return self._remove_maintainer(request=request)
+            else:
+                return self._error_maintainer(request=request)
+
     def delete(self, request, **kwargs) -> JsonResponse:
         """Delete route for admin rejections
 
@@ -273,8 +386,36 @@ class ProjectsAdmin(APIView):
         Returns:
             JsonResponse
         """
+        try:
+            recaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
+        except KeyError as e:
+            return JsonResponse(data={
+                "error": "token not provided"
+            }, status=401)
 
-        pass        
+        if check_token(recaptcha):
+            validate = RejectionSchema(
+                data=request.data, params=request.GET.get("role")).valid()
+            if "error" in validate:
+                return JsonResponse(data={
+                    "error": validate.get("error")
+                }, status=400)
+
+            else:
+                if request.GET.get("role") == "contributor":
+                    remove_status = entry.admin_remove_contributor(
+                        validate.get("contributor_id"))
+                    return self.action_to_status(
+                        status=remove_status, request=request)
+                else:
+                    remove_status = entry.admin_remove_maintainer(
+                        validate.get("maintainer_id"))
+                    return self.action_to_status(
+                        status=remove_status, request=request)
+        else:
+            return JsonResponse(data={
+                "error": "invalid recaptcha token"
+            }, status=401)
 
 
 class AdminAccepted(APIView):
