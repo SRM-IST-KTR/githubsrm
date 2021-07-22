@@ -1,7 +1,9 @@
-import GitHubIcon from "utils/icons/github";
-import TwitterIcon from "utils/icons/twitter";
-import InstagramIcon from "utils/icons/instagram";
-import LinkedinIcon from "utils/icons/linkedin";
+import {
+  GithubIcon,
+  TwitterIcon,
+  InstagramIcon,
+  LinkedinIcon,
+} from "@/icons/index";
 
 const Footer = () => {
   const socials: {
@@ -11,7 +13,7 @@ const Footer = () => {
   }[] = [
     {
       name: "Github",
-      icon: <GitHubIcon />,
+      icon: <GithubIcon />,
       href: "https://github.com/srm-ist-ktr",
     },
     {

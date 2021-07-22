@@ -1,4 +1,4 @@
-const Next = () => {
+export default function Next() {
   return (
     <svg
       stroke="currentColor"
@@ -17,6 +17,4 @@ const Next = () => {
       ></polyline>
     </svg>
   );
-};
-
-export default Next;
+}

@@ -13,7 +13,7 @@ import Markdown from "react-markdown";
 import { postResetPassword, postSetPassword } from "services/api";
 import { successToast, errToast } from "utils/functions/toast";
 import jwt from "jsonwebtoken";
-import Loading from "utils/icons/loading";
+import { Loading } from "@/icons/index";
 import Router from "next/router";
 
 const ResetPassword = ({ action, queryToken }) => {

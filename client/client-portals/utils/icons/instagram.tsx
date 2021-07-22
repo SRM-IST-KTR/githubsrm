@@ -1,4 +1,4 @@
-function InstagramIcon() {
+export default function InstagramIcon() {
   return (
     <svg
       className="w-full h-full"
@@ -12,5 +12,3 @@ function InstagramIcon() {
     </svg>
   );
 }
-
-export default InstagramIcon;

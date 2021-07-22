@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "@/shared/*": ["components/shared/*"],
+      "@/icons/*" : ["utils/icons"]
     },
     "target": "es5",
     "lib": [

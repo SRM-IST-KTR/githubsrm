@@ -1,4 +1,4 @@
-const FiLinkedinIcon = () => {
+export default function LinkedinIcon() {
   return (
     <svg
       className="w-full h-full"
@@ -15,6 +15,4 @@ const FiLinkedinIcon = () => {
       <circle cx="4" cy="4" r="2"></circle>
     </svg>
   );
-};
-
-export default FiLinkedinIcon;
+}

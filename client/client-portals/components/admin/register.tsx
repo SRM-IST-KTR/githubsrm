@@ -10,7 +10,7 @@ import {
 import { Input, Footer } from "@/shared/index";
 import { postAdminRegister } from "services/api";
 import { successToast } from "utils/functions/toast";
-import Loading from "utils/icons/loading";
+import { Loading } from "@/icons/index";
 
 const AdminRegister = () => {
   const [authToken, setAuthToken] = useState<string>("");

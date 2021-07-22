@@ -1,4 +1,4 @@
-const Previous = () => {
+export default function Previous() {
   return (
     <svg
       stroke="currentColor"
@@ -18,6 +18,4 @@ const Previous = () => {
       ></polyline>
     </svg>
   );
-};
-
-export default Previous;
+}

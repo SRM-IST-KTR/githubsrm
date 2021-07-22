@@ -10,9 +10,8 @@ import {
   postAcceptContributor,
   getContributorsApplications,
 } from "services/api";
-import Loading from "utils/icons/loading";
+import { Loading, Tick } from "@/icons/index";
 import { PaginationButtons } from "@/shared/index";
-import Tick from "utils/icons/tick";
 
 const headings = [
   "Name",

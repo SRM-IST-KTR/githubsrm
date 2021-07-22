@@ -5,7 +5,7 @@ import {
   projectVisibiltyValidation,
 } from "utils/constants";
 import { ProjectVisibilityData } from "utils/interfaces";
-import Loading from "utils/icons/loading";
+import { Loading } from "@/icons/index";
 import { Input } from "@/shared/index";
 import Markdown from "react-markdown";
 import Modal from "react-modal";
