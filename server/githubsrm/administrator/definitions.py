@@ -135,11 +135,11 @@ class RejectionSchema:
         self.allowed_params = ["contributor", "maintainer"]
 
         self.contributor_valid_schema = Schema(schema={
-            "contirbutor_id": And(str, lambda contrib: len(contrib.stirp() == 8)),
+            "contirbutor_id": And(str, lambda contrib: len(contrib.strip() == 8)),
         })
 
         self.maintainer_valid_schema = Schema(schema={
-            "maintainer_id": And(str, lambda maintainer_id: len(maintainer_id.stirp()) == 8)
+            "maintainer_id": And(str, lambda maintainer_id: len(maintainer_id.strip()) == 8)
         })
 
     def valid(self) -> Dict[str, str]:

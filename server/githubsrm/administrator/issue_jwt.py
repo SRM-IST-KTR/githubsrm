@@ -12,7 +12,7 @@ class IssueKey:
     def __init__(self):
         self.signature = os.getenv("SIGNATURE")
 
-    def issue_key(self, payload: Dict[str, Any], expiry:float=24) -> Dict[str, str]:
+    def issue_key(self, payload: Dict[str, Any], expiry: float = 24) -> Dict[str, str]:
         """Issue jwt keys with desired payload 
            Jwt Expiry time is set to 24 hours.
 
@@ -22,7 +22,8 @@ class IssueKey:
         Returns:
             Dict[str, str]: Jwt token
         """
-        payload = {**payload, **{"exp": datetime.utcnow()+timedelta(hours=expiry)}}
+        payload = {**payload, **
+                   {"exp": datetime.utcnow()+timedelta(hours=expiry)}}
         try:
             return jwt.encode(
                 payload=payload, key=self.signature
@@ -39,10 +40,20 @@ class IssueKey:
         Returns:
             bool
         """
+        
+        try:
+            if isinstance(key, (tuple, list)):
+                token_type, token = key
+                decoded = jwt.decode(jwt=token, key=self.signature,
+                                     options={"require": ["exp"], "verify_signature": True}, algorithms=['HS256'])
+                return decoded
+        except Exception as e:
+            print(e)
+            return False
 
         try:
             decoded = jwt.decode(jwt=key, key=self.signature,
-                       options={"require": ["exp"], "verify_signature": True}, algorithms=['HS256'])
+                                 options={"require": ["exp"], "verify_signature": True}, algorithms=['HS256'])
 
             return decoded
         except Exception as e:

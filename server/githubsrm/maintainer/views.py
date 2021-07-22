@@ -79,7 +79,7 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        key = jwt_keys.verify_key(get_token(request.META))
+        key = jwt_keys.verify_key(get_token(request_header=request.headers))
         contributor = entry.find_contributor_for_removal(
             request.data.get("contributor_id"))
         if contributor:
@@ -202,7 +202,7 @@ class Login(APIView):
             payload["name"] = doc_list[0]["name"]
             payload["project_id"] = [i["project_id"] for i in doc_list]
 
-            if jwt := key.issue_key(payload):
+            if jwt := jwt_keys.issue_key(payload):
                 return JsonResponse(data={"key": jwt}, status=status.HTTP_200_OK)
             else:
                 return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
