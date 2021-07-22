@@ -284,55 +284,46 @@ class AdminEntry:
 
         return True
 
-    def remove_maintainer(self, identifier: str) -> bool:
-        """Remove maintainers on rejection
+    def admin_remove_maintainer(self, identifier: str) -> bool:
+        """Admin remove maintainer
 
         Args:
             identifier (str): maintainer id
 
         Returns:
-            bool
+            bool: 
         """
-        maintainer = self.db.maintainer.find_one({
-            "_id": identifier
-        })
-        self.db.maintainer.remove({"_id": identifier})
-        if maintainer["is_admin_approved"]:
-            self.db.project.find_one_and_update({
-                "_id": maintainer["project_id"],
-            }, update={
-                "$pull": {
-                    "maintainer_id": identifier
-                }
-            })
 
-        return True
-
-    def remove_contributor(self, identifier: str) -> bool:
-        """Remove contirbutor on rejection
-
-        Args:
-            identifier (str): contributor id 
-        Returns:
-            bool 
-        """
-        contributor = self.db.contributor.find_one_and_update({
-            "_id": identifier
+        maintainer = self.db.maintainer.find_one_and_delete({
+            "_id": identifier,
+            "is_admin_approved": False
         })
 
-        if contributor:
-            self.db.contributor.remove({"_id": identifier})
+        if maintainer:
+            return True
         else:
             return False
 
-        if contributor["is_maintainer_approved"]:
-            self.db.project.find_one_and_update({
-                "_id": contributor["interested_project"]
-            }, update={
-                "$pull": {
-                    "contributor_id": identifier
-                }
-            })
+    def admin_remove_contributor(self, identifier: str) -> str:
+        """Admin remove contributor
+
+        Args:
+            identifier (str): contirbutor id
+
+        Returns:
+            str: Removal status
+        """
+
+        contributor = self.db.contributor.find_one_and_delete({
+            "_id": identifier,
+            "is_maintainer_approved": False,
+            "is_admin_approved": False
+        })
+
+        if contributor:
+            return True
+        else:
+            return False
 
     def get_all_maintainer_emails(self, project: Dict[str, Any]) -> Dict[str, Any]:
         """Get all maintainer emails from projects
