@@ -98,6 +98,7 @@ def get_token(request_header: Dict[str, str]):
 
         return token[0], token[1]
     except Exception as e:
+        print(e)
         return False
 
 
