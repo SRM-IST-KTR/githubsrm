@@ -1,3 +1,4 @@
+
 <div align="center">
   <img alt="GitHub Community SRM Logo" src="docs/githubsrm.jpg" height="56" />
 </div>
@@ -16,11 +17,7 @@
 <p align="center">
 
   <!-- replace 'githubsrm' with your repository name -->
-  <img src="https://img.shields.io/github/issues/srm-ist-ktr/githubsrm"/>  <img src="https://img.shields.io/github/forks/srm-ist-ktr/githubsrm"/> |<img src="https://img.shields.io/github/stars/srm-ist-ktr/githubs
-
-
-
-rm?style=social"/>  <img src="https://img.shields.io/badge/version-2.0.0-yellow" alt="version 2.0.0"/> <img src="https://img.shields.io/badge/license-MIT-blue" alt="license MIT"/>  <img src="https://img.shields.io/badge/author-GitHub%20Community%20SRM-green" alt="author githubsrm"/> 
+  <img src="https://img.shields.io/github/issues/srm-ist-ktr/githubsrm"/>  <img src="https://img.shields.io/github/forks/srm-ist-ktr/githubsrm"/> |<img src="https://img.shields.io/github/stars/srm-ist-ktr/githubsrm?style=social"/>  <img src="https://img.shields.io/badge/version-2.0.0-yellow" alt="version 2.0.0"/> <img src="https://img.shields.io/badge/license-MIT-blue" alt="license MIT"/>  <img src="https://img.shields.io/badge/author-GitHub%20Community%20SRM-green" alt="author githubsrm"/> 
 
 </p>
 
@@ -31,8 +28,7 @@ Homepage of the foremost student-led community spearheading the Open Source Revo
 ## 📺 Preview
 
 <div align="center">
-  <video width="500" alt="website" loop src="https://user-images.githubusercontent.com/66865329/126657087-0c49bc93-d3a2-4979-9464-aa218d3ad9d6.mov" autoplay/>
-
+  <video width="700" alt="website" loop src="https://user-images.githubusercontent.com/66865329/126658818-859d999a-6b34-40ba-9f46-2f41c00fc773.mov" autoplay/>
 </div>
 
 
