@@ -78,6 +78,35 @@ class Entry:
         """
         return self.db.maintainer.find({"email": email})
 
+    def find_contributor_for_removal(self, identifier: str) -> Dict[str, Any]:
+        """FInd contributors from contributor id
+
+        Args:
+            identifier (str): identifier
+
+        Returns:
+            Dict[str, Any]
+        """
+        contributor = self.db.contributor.find_one({"_id": identifier,
+                                                    "is_maintainer_approved": True})
+        if contributor:
+            return contributor
+
+        else:
+            return False
+
+    def remove_contributor(self, identifier: str) -> bool:
+        """Remove contributor
+
+        Args:
+            identifier (str): contributor id
+
+        Returns:
+            bool
+        """
+        self.db.contributor.find_one_and_delete({"_id": identifier})
+        return True
+
     def set_password(self, key: str, password: str) -> bool:
         """Set maintainer password
 

@@ -1,20 +1,22 @@
 from hashlib import sha256
 from threading import Thread
 
-from administrator.issue_jwt import IssueKey
 from apis import PostThrottle, check_token, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
 
 from maintainer import entry
-
+from administrator import jwt_keys
+from administrator.utils import get_token
 from . import entry
 from .definitions import MaintainerSchema
-from .utils import (RequestSetPassword, project_pagination,
-                    project_single_project)
+from .utils import (
+    RequestSetPassword, project_pagination,
+    project_single_project
+)
 
-key = IssueKey()
+
 db = entry.db
 
 
@@ -66,6 +68,70 @@ class Projects(APIView):
         return JsonResponse(data={
             "error": "Invalid reCaptcha token"
         }, status=401)
+
+    @staticmethod
+    def _remove_contributor(request) -> JsonResponse:
+        """Send sns for contributor removal
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+        key = jwt_keys.verify_key(get_token(request.META))
+        contributor = entry.find_contributor_for_removal(
+            request.data.get("contributor_id"))
+        if contributor:
+
+            if contributor["interested_project"] in key.get("project_id"):
+
+                entry.remove_contributor(
+                    identifier=contributor["_id"])
+
+                Thread(target=service.sns, kwargs={
+                    "payload": {
+                        "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
+                            removed by -> {key.get('email')}",
+                        "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
+                    }
+                }).start()
+
+                return JsonResponse(data={
+                    "removed": request.data.get("contributor_id")
+                }, status=200)
+
+            else:
+                return JsonResponse(data={
+                    "error": "Invalid request"
+                }, status=400)
+        else:
+            return JsonResponse(data={
+                "error": "invalid request"
+            }, status=400)
+
+    def delete(self, request, **kwargs) -> JsonResponse:
+        """Remove contributors
+
+        Args:
+            request
+
+        Returns:
+            JsonResponse
+        """
+        try:
+            recaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
+        except KeyError as e:
+            return JsonResponse(data={
+                "error": "token not provided"
+            }, status=401)
+
+        if check_token(recaptcha):
+            return self._remove_contributor(request=request)
+        else:
+            return JsonResponse(data={
+                "error": "Invaid token"
+            }, status=401)
 
     def get(self, request, **kwargs) -> JsonResponse:
         """Projects get view for maintainer portal.
@@ -183,7 +249,7 @@ class SetPassword(APIView):
 
             password = request.data.get("password")
 
-            if not key.verify_key(key=jwt):
+            if not jwt_keys.verify_key(key=jwt):
                 return JsonResponse(data={"error": "Invalid jwt"}, status=400)
 
             if not entry.set_password(key=jwt, password=password):
