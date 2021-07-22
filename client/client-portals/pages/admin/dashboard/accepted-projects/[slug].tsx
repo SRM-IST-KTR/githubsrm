@@ -7,10 +7,7 @@ import { Layout, Footer } from "components/shared";
 import Link from "next/link";
 import { ContributorsProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
-import Loading from "utils/icons/loading";
-import Tick from "utils/icons/tick";
-import Cross from "utils/icons/cross";
-
+import { Loading, Tick, Cross } from "@/icons/index";
 const headings = [
   "Name",
   "Email",

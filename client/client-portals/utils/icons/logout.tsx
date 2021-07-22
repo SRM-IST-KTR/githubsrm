@@ -1,4 +1,4 @@
-const LogoutIcon = () => {
+export default function LogoutIcon() {
   return (
     <svg
       stroke="currentColor"
@@ -15,6 +15,4 @@ const LogoutIcon = () => {
       </g>
     </svg>
   );
-};
-
-export default LogoutIcon;
+}

@@ -14,7 +14,7 @@ import { AuthContext } from "context/authContext";
 import { useContext } from "react";
 import Link from "next/link";
 import { postMaintainerLogin } from "services/api";
-import Loading from "utils/icons/loading";
+import { Loading } from "@/icons/index";
 
 const MaintainerLogin = () => {
   const [loading, setLoading] = useState<boolean>(false);

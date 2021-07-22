@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Layout, Footer, CSSLoader } from "@/shared/index";
 import { TableProjectsProps } from "utils/interfaces";
 import ProjectVisibility from "./project-visibility-popup";
-import Tick from "utils/icons/tick";
+import { Tick } from "@/icons/index";
 import { PaginationButtons } from "@/shared/index";
 
 const ProjectApplications = () => {

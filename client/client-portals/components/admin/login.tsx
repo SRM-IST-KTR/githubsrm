@@ -12,7 +12,7 @@ import { Input, Footer } from "@/shared/index";
 import { successToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
 import { postAdminLogin } from "services/api";
-import Loading from "utils/icons/loading";
+import { Loading } from "@/icons/index";
 
 const AdminLogin = () => {
   const authContext = useContext(AuthContext);
