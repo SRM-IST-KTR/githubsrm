@@ -208,10 +208,10 @@ class ProjectsAdmin(APIView):
                         except Exception as e:
                             blame = None
 
-                        Thread(service.sns(payload={
+                        Thread(target=service.sns,kwargs={"payload": {
                             "message": "Trying to approve project without approving maintainers",
                             "subject": f"[ADMIN-ERROR] This person messed up -> {blame}"
-                        })).start()
+                        }}).start()
 
                         return JsonResponse(data={
                             "error": "Approve maintainer before approving project"
