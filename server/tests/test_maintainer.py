@@ -1,4 +1,3 @@
-import time
 from dotenv import load_dotenv
 import secrets
 from hashlib import sha256
@@ -7,11 +6,9 @@ import pymongo
 import unittest
 import json
 from githubsrm.core.settings import DATABASE
-from django.conf import settings
+from . import Base
 
-settings.configure(USE_DATABASE='TESTMONGO')
-
-
+entry=Base()
 class TestClient(unittest.TestCase):
     '''
     Integration tests
@@ -32,39 +29,24 @@ class TestClient(unittest.TestCase):
         """
         login maintainer
         """
-        data = {
-            "email": "rmukh561@gmail.com",
-            "password": "test"
-        }
+        self.clean()
         response = self.client.post(
-            url=self.base_url+'admin/register', data=json.dumps(data), headers={
+            url=self.base_url+'admin/register', data=json.dumps(entry.admin_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {self.webhook}"
             })
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(
-            url=self.base_url+'admin/login', data=json.dumps(data), headers={
+            url=self.base_url+'admin/login', data=json.dumps(entry.admin_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {self.webhook}"
             })
         admin_jwt = response.json()["keys"]
         self.assertEqual(response.status_code, 200)
 
-        data = {
-            "name": "Riju",
-            "email": "rmukh561@gmail.com",
-            "github_id": "riju561",
-            "srm_email": "rm8211@srmist.edu.in",
-            "reg_number": "RA1911003010056",
-            "branch": "CSE",
-            "project_name": "Qwerty",
-            "project_url": "",
-            "tags": ["a", "b", "c", "d"],
-            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkaw"
-        }
         response = self.client.post(
-            url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
+            url=self.base_url+'api/maintainer', data=json.dumps(entry.alpha_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             }, params={"role": "alpha"})
         self.assertEqual(response.status_code, 201)
@@ -97,12 +79,8 @@ class TestClient(unittest.TestCase):
         }, update={
             "$set": {"password": sha256(password.encode()).hexdigest(), "reset": False}
         })
-        data = {
-            "email": "rmukh561@gmail.com",
-            "password": "test1234"
-        }
         response = self.client.post(
-            url=self.base_url+'maintainer/login', data=json.dumps(data), headers={
+            url=self.base_url+'maintainer/login', data=json.dumps(entry.maintainer_login_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             })
         self.assertEqual(response.status_code, 200)
@@ -112,39 +90,24 @@ class TestClient(unittest.TestCase):
         """
         approve contributor from maintainer
         """
-        data = {
-            "email": "rmukh561@gmail.com",
-            "password": "test"
-        }
+        self.clean()
         response = self.client.post(
-            url=self.base_url+'admin/register', data=json.dumps(data), headers={
+            url=self.base_url+'admin/register', data=json.dumps(entry.admin_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {self.webhook}"
             })
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(
-            url=self.base_url+'admin/login', data=json.dumps(data), headers={
+            url=self.base_url+'admin/login', data=json.dumps(entry.admin_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {self.webhook}"
             })
         admin_jwt = response.json()["keys"]
         self.assertEqual(response.status_code, 200)
 
-        data = {
-            "name": "Riju",
-            "email": "rmukh561@gmail.com",
-            "github_id": "riju561",
-            "srm_email": "rm8211@srmist.edu.in",
-            "reg_number": "RA1911003010056",
-            "branch": "CSE",
-            "project_name": "Qwerty",
-            "project_url": "",
-            "tags": ["a", "b", "c", "d"],
-            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkaw"
-        }
         response = self.client.post(
-            url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
+            url=self.base_url+'api/maintainer', data=json.dumps(entry.alpha_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             }, params={"role": "alpha"})
         self.assertEqual(response.status_code, 201)
@@ -162,30 +125,15 @@ class TestClient(unittest.TestCase):
             }, params={"role": "maintainer"})
         self.assertEqual(response.status_code, 200)
 
-        data = {
-            "project_id": alpha["project_id"],
-            "project_url": "https://github.com/SRM-IST-KTR/githubsrm",
-            "private": True
-        }
         response = self.client.post(
-            url=self.base_url+'admin/projects', data=json.dumps(data), headers={
+            url=self.base_url+'admin/projects', data=json.dumps({**entry.project_details, **{"project_id": alpha["project_id"]}}), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {admin_jwt}"
             }, params={"role": "project"})
         self.assertEqual(response.status_code, 200)
 
-        data = {
-            "name": "Abhishek Saxena",
-            "email": "as7122000@gmail.com",
-            "srm_email": "as2345@srmist.edu.in",
-            "reg_number": "RA1911027010102",
-            "branch": "CSE-BD",
-            "github_id": "xyz",
-            "interested_project": alpha["project_id"],
-            "poa": "HelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelp"
-        }
         response = self.client.post(
-            url=self.base_url+'api/contributor', data=json.dumps(data), headers={
+            url=self.base_url+'api/contributor', data=json.dumps({**entry.contributor_data, **{"interested_project": alpha["project_id"] }}), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             }, params={"role": "contributor"})
         self.assertEqual(response.status_code, 201)
@@ -219,12 +167,8 @@ class TestClient(unittest.TestCase):
         }, update={
             "$set": {"password": sha256(password.encode()).hexdigest(), "reset": False}
         })
-        data = {
-            "email": "rmukh561@gmail.com",
-            "password": "test1234"
-        }
         response = self.client.post(
-            url=self.base_url+'maintainer/login', data=json.dumps(data), headers={
+            url=self.base_url+'maintainer/login', data=json.dumps(entry.maintainer_login_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             })
         maintainer_jwt = response.json()["key"]
@@ -246,23 +190,39 @@ class TestClient(unittest.TestCase):
         """
         set alpha maintainer password
         """
-        data = {
-            "name": "Riju",
-            "email": "rmukh561@gmail.com",
-            "github_id": "riju561",
-            "srm_email": "rm8211@srmist.edu.in",
-            "reg_number": "RA1911003010056",
-            "branch": "CSE",
-            "project_name": "Qwerty",
-            "project_url": "",
-            "tags": ["a", "b", "c", "d"],
-            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkaw"
-        }
+        self.clean()
         response = self.client.post(
-            url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
+            url=self.base_url+'admin/register', data=json.dumps(entry.admin_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {self.webhook}"
+            })
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            url=self.base_url+'admin/login', data=json.dumps(entry.admin_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {self.webhook}"
+            })
+        admin_jwt = response.json()["keys"]
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps(entry.alpha_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             }, params={"role": "alpha"})
         self.assertEqual(response.status_code, 201)
+
+        alpha = dict(self.db.maintainer.find_one({"github_id": "riju561"}))
+        data = {
+            "maintainer_id": alpha["_id"],
+            "project_id": alpha["project_id"],
+            "email": alpha["email"]
+        }
+        response = self.client.post(
+            url=self.base_url+'admin/projects', data=json.dumps(data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {admin_jwt}"
+            }, params={"role": "maintainer"})
+        self.assertEqual(response.status_code, 200)
 
         password = str(secrets.token_hex(8))
 
@@ -280,45 +240,70 @@ class TestClient(unittest.TestCase):
         }, update={
             "$set": {"password": sha256(password.encode()).hexdigest(), "reset": False}
         })
+        response = self.client.post(
+            url=self.base_url+'maintainer/login', data=json.dumps(entry.maintainer_login_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            })
+        self.assertEqual(response.status_code, 200)
         self.clean()
 
     def test_set_beta_password(self):
         """
         set beta password
         """
-        data = {
-            "name": "Riju",
-            "email": "rmukh561@gmail.com",
-            "github_id": "riju561",
-            "srm_email": "rm8211@srmist.edu.in",
-            "reg_number": "RA1911003010056",
-            "branch": "CSE",
-            "project_name": "Qwerty",
-            "project_url": "",
-            "tags": ["a", "b", "c", "d"],
-            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkaw"
-        }
+        self.clean()
         response = self.client.post(
-            url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
+            url=self.base_url+'admin/register', data=json.dumps(entry.admin_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {self.webhook}"
+            })
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            url=self.base_url+'admin/login', data=json.dumps(entry.admin_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {self.webhook}"
+            })
+        admin_jwt = response.json()["keys"]
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps(entry.alpha_data), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             }, params={"role": "alpha"})
         self.assertEqual(response.status_code, 201)
-        id = dict(self.db.maintainer.find_one(
-            {"github_id": "riju561"}))["project_id"]
+        alpha = dict(self.db.maintainer.find_one({"github_id": "riju561"}))
         data = {
-            "name": "Riju",
-            "email": "rijumukh50601@gmail.com",
-            "github_id": "riju",
-            "srm_email": "as1234@srmist.edu.in",
-            "reg_number": "RA1911003010042",
-            "branch": "CSE",
-            "project_id": id
+            "maintainer_id": alpha["_id"],
+            "project_id": alpha["project_id"],
+            "email": alpha["email"]
         }
         response = self.client.post(
-            url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
+            url=self.base_url+'admin/projects', data=json.dumps(data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {admin_jwt}"
+            }, params={"role": "maintainer"})
+        self.assertEqual(response.status_code, 200)
+
+        id = dict(self.db.maintainer.find_one(
+            {"github_id": "riju561"}))["project_id"]
+
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps({**entry.beta_data, **{"project_id": id}}), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             }, params={"role": "beta"})
         self.assertEqual(response.status_code, 201)
+        beta = dict(self.db.maintainer.find_one({"github_id": "riju"}))
+        data = {
+            "maintainer_id": beta["_id"],
+            "project_id": beta["project_id"],
+            "email": beta["email"]
+        }
+        response = self.client.post(
+            url=self.base_url+'admin/projects', data=json.dumps(data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {admin_jwt}"
+            }, params={"role": "maintainer"})
+        self.assertEqual(response.status_code, 200)
 
         password = str(secrets.token_hex(8))
 
@@ -336,6 +321,11 @@ class TestClient(unittest.TestCase):
         }, update={
             "$set": {"password": sha256(password.encode()).hexdigest(), "reset": False}
         })
+        response = self.client.post(
+            url=self.base_url+'maintainer/login', data=json.dumps(entry.beta_maintainer_login_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            })
+        self.assertEqual(response.status_code, 200)
         self.clean()
 
     @classmethod
