@@ -149,7 +149,7 @@ class ProjectsAdmin(APIView):
             if params == 'maintainer':
 
                 if details := entry.find_maintainer_for_approval(validate.get(
-                        'maintainer_id'), validate.get('project_id')):
+                        'maintainer_id'), validate.get('project_id'), validate.get("email")):
 
                     project, maintainer = details
 
