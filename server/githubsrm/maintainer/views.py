@@ -10,7 +10,7 @@ from maintainer import entry
 from administrator import jwt_keys
 from administrator.utils import get_token
 from . import entry
-from .definitions import MaintainerSchema
+from .definitions import MaintainerSchema, RejectionSchema
 from .utils import (
     RequestSetPassword, project_pagination,
     project_single_project
@@ -82,6 +82,7 @@ class Projects(APIView):
         key = jwt_keys.verify_key(get_token(request_header=request.headers))
         contributor = entry.find_contributor_for_removal(
             request.data.get("contributor_id"))
+
         if contributor:
 
             if contributor["interested_project"] in key.get("project_id"):
@@ -127,6 +128,11 @@ class Projects(APIView):
             }, status=401)
 
         if check_token(recaptcha):
+            validate = RejectionSchema(data=request.data).valid()
+            if "error" in validate:
+                return JsonResponse(data={
+                    "error": "Invalid data"
+                }, status=400)
             return self._remove_contributor(request=request)
         else:
             return JsonResponse(data={
@@ -148,7 +154,11 @@ class Projects(APIView):
         RequestQueryKeys = list(request.GET.keys())
 
         if len(set(Pagination) & set(RequestQueryKeys)) == 1:
-            return JsonResponse(project_pagination(request, **kwargs), status=status.HTTP_200_OK)
+            response = project_pagination(request, **kwargs)
+            if "error" in response:
+                return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                return JsonResponse(response, status=status.HTTP_200_OK)
 
         elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
             return JsonResponse(project_single_project(request, **kwargs), status=status.HTTP_200_OK, safe=False)
@@ -291,8 +301,6 @@ class ResetPassword(APIView):
         maintainer = entry.find_Maintainer_with_email(email)
 
         jwt_link = RequestSetPassword(email)
-        print(jwt_link)
-
         service.wrapper_email(role="forgot_password", data={
                               "name": maintainer["name"], "email": email, "reset_token": jwt_link})
 

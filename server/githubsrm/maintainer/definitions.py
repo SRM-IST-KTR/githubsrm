@@ -89,7 +89,7 @@ class RejectionSchema:
 
     def valid(self) -> Dict[str, str]:
         try:
-            return Schema(schema=self.valid_contributor_schema).validate()
+            return Schema(schema=self.valid_contributor_schema).validate(self.data)
         except SchemaError as e:
             return {
                 "error": str(e)

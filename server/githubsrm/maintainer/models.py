@@ -88,7 +88,7 @@ class Entry:
             Dict[str, Any]
         """
         contributor = self.db.contributor.find_one({"_id": identifier,
-                                                    "is_maintainer_approved": True})
+                                                    "is_admin_approved": True})
         if contributor:
             return contributor
 
