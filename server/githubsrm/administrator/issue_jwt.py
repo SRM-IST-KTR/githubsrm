@@ -1,3 +1,4 @@
+from hashlib import new
 import os
 from datetime import datetime, timedelta
 from typing import Any, Dict
@@ -40,10 +41,10 @@ class IssueKey:
         Returns:
             bool
         """
-        
+
         try:
             if isinstance(key, (tuple, list)):
-                token_type, token = key
+                _, token = key
                 decoded = jwt.decode(jwt=token, key=self.signature,
                                      options={"require": ["exp"], "verify_signature": True}, algorithms=['HS256'])
                 return decoded
@@ -73,17 +74,24 @@ class IssueKey:
                              options={"verify_signature": True}, algorithms=["HS256"])
         if 'admin' in path:
             return decoded.get("admin") == True
-        return True
+        if "maintainer" in path:
+            return decoded.get("admin") == None
 
+    def update_key(self, payload: Dict[str, Any], old_token: str) -> str:
+        """update jwt with new payload
 
-if __name__ == '__main__':
-    # from administrator import entry, issue_key
-    # print(issue_key.issue_key())
+        Args:
+            payload (Dict[str, Any]): payload to be added to jwt
+            old_token (str): old jwt token
 
-    issue = IssueKey()
-    key = issue.issue_key(payload={
-        "name": "someone",
-        "is_admin": True
-    })
-
-    print(issue.verify_key(key=key))
+        Returns:
+            str: jwt
+        """
+        old_jwt = self.verify_key(old_token)
+        if old_jwt:
+            payload = {**old_jwt, **payload}
+            new_key = self.issue_key(payload=payload)
+            if new_key:
+                return new_key
+        else:
+            return False
