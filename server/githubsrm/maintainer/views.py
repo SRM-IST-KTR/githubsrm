@@ -10,11 +10,7 @@ from maintainer import entry
 from administrator import jwt_keys
 from administrator.utils import get_token
 from . import entry
-<<<<<<< HEAD
-from .definitions import MaintainerSchema
-=======
 from .definitions import MaintainerSchema, RejectionSchema
->>>>>>> cf39e2296b919beb6791c0c2803b0472ecee4aec
 from .utils import (
     RequestSetPassword, project_pagination,
     project_single_project
@@ -86,10 +82,7 @@ class Projects(APIView):
         key = jwt_keys.verify_key(get_token(request_header=request.headers))
         contributor = entry.find_contributor_for_removal(
             request.data.get("contributor_id"))
-<<<<<<< HEAD
-=======
 
->>>>>>> cf39e2296b919beb6791c0c2803b0472ecee4aec
         if contributor:
 
             if contributor["interested_project"] in key.get("project_id"):
@@ -135,14 +128,11 @@ class Projects(APIView):
             }, status=401)
 
         if check_token(recaptcha):
-<<<<<<< HEAD
-=======
             validate = RejectionSchema(data=request.data).valid()
             if "error" in validate:
                 return JsonResponse(data={
                     "error": "Invalid data"
                 }, status=400)
->>>>>>> cf39e2296b919beb6791c0c2803b0472ecee4aec
             return self._remove_contributor(request=request)
         else:
             return JsonResponse(data={
