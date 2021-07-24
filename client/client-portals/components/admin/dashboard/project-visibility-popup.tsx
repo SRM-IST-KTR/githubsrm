@@ -99,10 +99,7 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
                   </div>
                 ))}
                 <div className="flex justify-center">
-                  <Button
-                    disabled={Object.keys(errors).length < 0}
-                    btnStyle="secondary"
-                  >
+                  <Button disabled={Object.keys(errors).length < 0}>
                     {loading ? (
                       <span className="flex w-6 mx-auto">
                         <Loading />

@@ -137,7 +137,6 @@ const ProjectApplications = () => {
                         setOpen(true);
                         setProjId(data._id);
                       }}
-                      btnStyle="secondary"
                     >
                       Approve project
                     </Button>

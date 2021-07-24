@@ -83,7 +83,7 @@ const ContributorsPage = () => {
 
       <div className="overflow-auto w-full">
         {contributorsData[0] ? (
-          <table className="table text-white border-separate space-y-6 text-sm">
+          <table className="table text-white border-separate md:space-y-6 space-y-6 text-sm">
             <thead className="bg-base-teal text-white">
               <tr>
                 {headings.map((head) => (
@@ -181,7 +181,6 @@ const ContributorsPage = () => {
                         onClick={() =>
                           acceptMaintainerHandler(projectId, person._id)
                         }
-                        btnStyle="secondary"
                       >
                         {loading ? (
                           <span className="flex w-6 mx-auto">

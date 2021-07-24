@@ -117,7 +117,6 @@ const MaintainerPage = () => {
                 onClick={() =>
                   acceptMaintainerHandler(projectId, person._id, person.email)
                 }
-                btnStyle="secondary"
               >
                 {loading ? (
                   <span className="flex w-6 mx-auto">

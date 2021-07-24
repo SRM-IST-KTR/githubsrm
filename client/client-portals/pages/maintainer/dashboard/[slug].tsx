@@ -95,102 +95,103 @@ const ProjectDetail = () => {
         />
         <div className="overflow-auto w-full">
           {contributorsData?.length <= 0 && (
-            <h2 className="mr-5 mb-3 font-bold text-white text-2xl">
+            <h2 className="mr-5 mb-3 font-bold text-white text-3xl text-center">
               Contributors' Applications
             </h2>
           )}
           {contributorsData?.length > 0 ? (
-            <div className="text-white border-separate space-y-6 text-sm">
-              <thead className="bg-base-teal text-white text-xl font-extrabold">
-                <tr>
-                  {headings.map((head) => (
-                    <th key={head} className="px-3 text-left">
-                      {head}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {contributorsData?.map((person) => (
-                  <tr key={person._id} className="bg-gray-800">
-                    <td className="p-3">
-                      <div className="flex align-items-center">
-                        <div> {person.name}</div>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex align-items-center">
-                        <div> {person.email}</div>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex align-items-center">
-                        <div> {person.srm_email}</div>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex align-items-center">
-                        <a
-                          className="hover:text-base-teal"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={`https://github.com/${person.github_id}`}
-                        >
-                          <div> {person.github_id}</div>
-                        </a>
-                      </div>
-                    </td>
-
-                    <td className="p-3">
-                      <div className="flex align-items-center">
-                        <div> {person.reg_number}</div>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex align-items-center">
-                        <div> {person.branch}</div>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex align-items-center">
-                        <div> {person.poa}</div>
-                      </div>
-                    </td>
-
-                    <td className="p-3 ">
-                      {person.is_maintainer_approved ? (
-                        <span className="text-green-500 text-center text-3xl">
-                          <Tick />
-                        </span>
-                      ) : (
-                        <Button
-                          onClick={() =>
-                            acceptContributorHandler(projectId, person._id)
-                          }
-                          btnStyle="secondary"
-                        >
-                          {loading ? (
-                            <span className="flex w-6 mx-auto">
-                              <Loading />
-                            </span>
-                          ) : (
-                            "Approve Contributor"
-                          )}
-                        </Button>
-                      )}
-                    </td>
+            <>
+              <div className="text-white border-separate md:space-y-6 space-y-2 text-sm overflow-auto">
+                <thead className="bg-base-teal text-white text-xl font-extrabold">
+                  <tr>
+                    {headings.map((head) => (
+                      <th key={head} className="px-3 text-left">
+                        {head}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
+                </thead>
+                <tbody>
+                  {contributorsData?.map((person) => (
+                    <tr key={person._id} className="bg-gray-800">
+                      <td className="p-3">
+                        <div className="flex align-items-center">
+                          <div> {person.name}</div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex align-items-center">
+                          <div> {person.email}</div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex align-items-center">
+                          <div> {person.srm_email}</div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex align-items-center">
+                          <a
+                            className="hover:text-base-teal"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={`https://github.com/${person.github_id}`}
+                          >
+                            <div> {person.github_id}</div>
+                          </a>
+                        </div>
+                      </td>
+
+                      <td className="p-3">
+                        <div className="flex align-items-center">
+                          <div> {person.reg_number}</div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex align-items-center">
+                          <div> {person.branch}</div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex align-items-center">
+                          <div> {person.poa}</div>
+                        </div>
+                      </td>
+
+                      <td className="p-3 ">
+                        {person.is_maintainer_approved ? (
+                          <span className="text-green-500 text-center text-3xl">
+                            <Tick />
+                          </span>
+                        ) : (
+                          <Button
+                            onClick={() =>
+                              acceptContributorHandler(projectId, person._id)
+                            }
+                          >
+                            {loading ? (
+                              <span className="flex w-6 mx-auto">
+                                <Loading />
+                              </span>
+                            ) : (
+                              "Approve Contributor"
+                            )}
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </div>
               <PaginationButtons
                 hasNextPage={hasNextPage}
                 hasPrevPage={hasPrevPage}
                 pageNo={pageNo}
                 setPageNo={setPageNo}
               />
-            </div>
+            </>
           ) : (
-            <h2 className="text-5xl text-center font-extrabold text-white mb-5 no-scrollbar">
+            <h2 className="text-4xl text-center  text-white mb-5 no-scrollbar">
               No contributor applications yet!!
             </h2>
           )}
