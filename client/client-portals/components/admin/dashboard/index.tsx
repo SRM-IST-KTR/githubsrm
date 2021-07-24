@@ -138,7 +138,6 @@ const ProjectApplications = () => {
                         setProjId(data._id);
                       }}
                       btnStyle="secondary"
-                      // className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                     >
                       Approve project
                     </Button>
@@ -165,7 +164,7 @@ const ProjectApplications = () => {
     </Layout>
   ) : (
     <Layout type="admin">
-      <div className="flex flex-col items-center justify-center items-center mt-52">
+      <div className="flex flex-col justify-center items-center mt-52">
         <CSSLoader />
       </div>
     </Layout>
