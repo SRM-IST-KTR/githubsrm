@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import OtherMaintainers from "components/maintainer/dashboard/other-maintainers";
-import { Layout, Footer } from "@/shared/index";
+import { Layout, Button } from "@/shared/index";
 import { successToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
 import { ContributorProps, OtherMaintainersProps } from "utils/interfaces";
@@ -163,11 +163,11 @@ const ProjectDetail = () => {
                           <Tick />
                         </span>
                       ) : (
-                        <button
+                        <Button
                           onClick={() =>
                             acceptContributorHandler(projectId, person._id)
                           }
-                          className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+                          btnStyle="secondary"
                         >
                           {loading ? (
                             <span className="flex w-6 mx-auto">
@@ -176,7 +176,7 @@ const ProjectDetail = () => {
                           ) : (
                             "Approve Contributor"
                           )}
-                        </button>
+                        </Button>
                       )}
                     </td>
                   </tr>

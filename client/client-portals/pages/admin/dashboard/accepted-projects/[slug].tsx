@@ -7,6 +7,8 @@ import { Layout } from "components/shared";
 import { ContributorsProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
 import { Loading, Tick, Cross } from "@/icons/index";
+import { Button } from "@/shared/index";
+
 const headings = [
   "Name",
   "Email",
@@ -175,11 +177,11 @@ const ContributorsPage = () => {
                         <Tick />
                       </span>
                     ) : (
-                      <button
+                      <Button
                         onClick={() =>
                           acceptMaintainerHandler(projectId, person._id)
                         }
-                        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+                        btnStyle="secondary"
                       >
                         {loading ? (
                           <span className="flex w-6 mx-auto">
@@ -188,7 +190,7 @@ const ContributorsPage = () => {
                         ) : (
                           "Approve Contributor"
                         )}
-                      </button>
+                      </Button>
                     )}
                   </td>
                 </tr>

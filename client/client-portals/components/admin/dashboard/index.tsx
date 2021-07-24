@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import instance from "services/api";
 import Link from "next/link";
-import { Layout, Footer, CSSLoader } from "@/shared/index";
+import { Layout, Button, CSSLoader } from "@/shared/index";
 import { TableProjectsProps } from "utils/interfaces";
 import ProjectVisibility from "./project-visibility-popup";
 import { Tick } from "@/icons/index";
@@ -132,15 +132,16 @@ const ProjectApplications = () => {
                       <Tick />
                     </span>
                   ) : (
-                    <button
+                    <Button
                       onClick={() => {
                         setOpen(true);
                         setProjId(data._id);
                       }}
-                      className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+                      btnStyle="secondary"
+                      // className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                     >
                       Approve project
-                    </button>
+                    </Button>
                   )}
                 </td>
               </tr>

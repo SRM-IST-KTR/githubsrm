@@ -8,6 +8,7 @@ import Link from "next/link";
 import { MaintainersProps } from "utils/interfaces";
 import { CSSLoader } from "@/shared/index";
 import { CardGithub, Tick, Loading } from "@/icons/index";
+import { Button } from "@/shared/index";
 
 const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState<MaintainersProps[]>([]);
@@ -112,11 +113,11 @@ const MaintainerPage = () => {
                 <p>Approved</p>
               </div>
             ) : (
-              <button
+              <Button
                 onClick={() =>
                   acceptMaintainerHandler(projectId, person._id, person.email)
                 }
-                className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+                btnStyle="secondary"
               >
                 {loading ? (
                   <span className="flex w-6 mx-auto">
@@ -125,7 +126,7 @@ const MaintainerPage = () => {
                 ) : (
                   "Approve Maintainer"
                 )}
-              </button>
+              </Button>
             )}
           </div>
         ))}

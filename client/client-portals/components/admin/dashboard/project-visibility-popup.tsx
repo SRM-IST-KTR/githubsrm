@@ -11,6 +11,7 @@ import Markdown from "react-markdown";
 import Modal from "react-modal";
 import { postAcceptProjectHandler } from "services/api";
 import { successToast } from "utils/functions/toast";
+import { Button } from "@/shared/index";
 
 const customStyles = {
   content: {
@@ -98,14 +99,9 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
                   </div>
                 ))}
                 <div className="flex justify-center">
-                  <button
+                  <Button
                     disabled={Object.keys(errors).length < 0}
-                    type="submit"
-                    className={`${
-                      Object.keys(errors).length > 0
-                        ? "cursor-not-allowed bg-opacity-70"
-                        : "cursor-pointer"
-                    } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                    btnStyle="secondary"
                   >
                     {loading ? (
                       <span className="flex w-6 mx-auto">
@@ -114,7 +110,7 @@ const ProjectVisibility = ({ isOpen, close, projectId }) => {
                     ) : (
                       "Approve"
                     )}
-                  </button>
+                  </Button>
                 </div>
                 {Object.keys(errors).map((error) => {
                   if (touched[error]) {

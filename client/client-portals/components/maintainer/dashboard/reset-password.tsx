@@ -8,7 +8,7 @@ import {
   setPasswordInputs,
   customInputClasses,
 } from "utils/constants";
-import { Input, Layout } from "@/shared/index";
+import { Input, Layout, Button } from "@/shared/index";
 import Markdown from "react-markdown";
 import { postResetPassword, postSetPassword } from "services/api";
 import { successToast, errToast } from "utils/functions/toast";
@@ -122,14 +122,9 @@ const ResetPassword = ({ action, queryToken }) => {
                     ))}
 
                     <div className="flex justify-center">
-                      <button
+                      <Button
                         disabled={Object.keys(errors).length > 0}
-                        type="submit"
-                        className={`${
-                          Object.keys(errors).length > 0
-                            ? "cursor-not-allowed bg-opacity-70"
-                            : "cursor-pointer"
-                        } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                        btnStyle="primary"
                       >
                         {loading ? (
                           <span className="flex w-6 mx-auto">
@@ -138,7 +133,7 @@ const ResetPassword = ({ action, queryToken }) => {
                         ) : (
                           "Submit"
                         )}
-                      </button>
+                      </Button>
                     </div>
                     {Object.keys(errors).map((error) => {
                       if (touched[error]) {
@@ -176,14 +171,9 @@ const ResetPassword = ({ action, queryToken }) => {
               ))}
 
               <div className="flex justify-center">
-                <button
+                <Button
                   disabled={Object.keys(errors).length > 0}
-                  type="submit"
-                  className={`${
-                    Object.keys(errors).length > 0
-                      ? "cursor-not-allowed bg-opacity-70"
-                      : "cursor-pointer"
-                  } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                  btnStyle="primary"
                 >
                   {loading ? (
                     <span className="flex w-6 mx-auto">
@@ -192,7 +182,7 @@ const ResetPassword = ({ action, queryToken }) => {
                   ) : (
                     "Submit"
                   )}
-                </button>
+                </Button>
               </div>
               {Object.keys(errors).map((error) => {
                 if (touched[error]) {
