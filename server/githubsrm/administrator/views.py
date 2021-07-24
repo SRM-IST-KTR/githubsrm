@@ -1,8 +1,6 @@
 
-from json.encoder import JSONEncoder
-import re
 from threading import Thread
-from apis import PostThrottle, check_token, service
+from apis import PostThrottle, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -65,38 +63,24 @@ class AdminLogin(APIView):
         Returns:
             JsonResponse
         """
-
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except Exception as e:
+        validate = AdminSchema(request.data).valid()
+        if 'error' in validate:
             return JsonResponse(data={
-                "error": "reCaptcha token not provided"
-            }, status=401)
-
-        if check_token(reCaptcha):
-
-            validate = AdminSchema(request.data).valid()
-            if 'error' in validate:
+                "error": "Invalid data"
+            }, status=400)
+        password = validate.get('password')
+        if entry.verify_admin(email=validate.get('email'), password=password):
+            keys = jwt_keys.issue_key(payload={
+                "admin": True,
+                "user": validate.get('email')
+            })
+            if keys:
                 return JsonResponse(data={
-                    "error": "Invalid data"
-                }, status=400)
-            password = validate.get('password')
-            if entry.verify_admin(email=validate.get('email'), password=password):
-                keys = jwt_keys.issue_key(payload={
-                    "admin": True,
-                    "user": validate.get('email')
-                })
-                if keys:
-                    return JsonResponse(data={
-                        "keys": keys
-                    }, status=200)
-                return JsonResponse({"error": "ISR?"}, status=500)
-            return JsonResponse(data={
-                "error": "invalid password"
-            }, status=401)
-
+                    "keys": keys
+                }, status=200)
+            return JsonResponse({"error": "ISR?"}, status=500)
         return JsonResponse(data={
-            "error": "Invalid recaptcha token"
+            "error": "invalid password"
         }, status=401)
 
 
@@ -113,135 +97,122 @@ class ProjectsAdmin(APIView):
         Returns:
             JsonResponse
         """
-
         try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
+            params = request.GET['role']
         except Exception as e:
             return JsonResponse(data={
-                "error": "recaptcha token not found"
-            }, status=401)
+                "error": "invalid query parameters"
+            }, status=400)
 
-        if check_token(reCaptcha):
-            try:
-                params = request.GET['role']
-            except Exception as e:
-                return JsonResponse(data={
-                    "error": "invalid query parameters"
-                }, status=400)
+        validate = ApprovalSchema(request.data, params=params).valid()
+        if 'error' in validate:
+            return JsonResponse(data={
+                "error": str(validate.get('error'))
+            }, status=400)
+        if params == 'maintainer':
 
-            validate = ApprovalSchema(request.data, params=params).valid()
-            if 'error' in validate:
-                return JsonResponse(data={
-                    "error": str(validate.get('error'))
-                }, status=400)
-            if params == 'maintainer':
+            if details := entry.find_maintainer_for_approval(validate.get(
+                    'maintainer_id'), validate.get('project_id'), validate.get("email")):
 
-                if details := entry.find_maintainer_for_approval(validate.get(
-                        'maintainer_id'), validate.get('project_id'), validate.get("email")):
+                project, maintainer = details
 
-                    project, maintainer = details
+                existing = entry.check_existing_maintainer(
+                    email=validate.get('email')
+                )
 
-                    existing = entry.check_existing_maintainer(
-                        email=validate.get('email')
-                    )
+                if len(project['maintainer_id']) == 1:
+                    response = alpha_maintainer_support(existing=existing, project=project,
+                                                        maintainer=maintainer, request=request)
+                    return JsonResponse(data=response.get("message"),
+                                        status=response.get("status"))
 
-                    if len(project['maintainer_id']) == 1:
-                        response = alpha_maintainer_support(existing=existing, project=project,
-                                                            maintainer=maintainer, request=request)
-                        return JsonResponse(data=response.get("message"),
-                                            status=response.get("status"))
+                if len(project['maintainer_id']) > 1:
+                    alpha_email = entry.get_maintainer_email(
+                        identifier=project["maintainer_id"][0])
+                    response = beta_maintainer_support(existing=existing, project=project,
+                                                       maintainer=maintainer, alpha_email=alpha_email,
+                                                       request=request)
 
-                    if len(project['maintainer_id']) > 1:
-                        alpha_email = entry.get_maintainer_email(
-                            identifier=project["maintainer_id"][0])
-                        response = beta_maintainer_support(existing=existing, project=project,
-                                                           maintainer=maintainer, alpha_email=alpha_email,
-                                                           request=request)
+                    return JsonResponse(data=response.get("message"), status=response.get("status"))
 
-                        return JsonResponse(data=response.get("message"), status=response.get("status"))
+            return JsonResponse(data={
+                "error": "Invalid data / Maintainer already approved"
+            }, status=400)
 
-                return JsonResponse(data={
-                    "error": "Invalid data / Maintainer already approved"
-                }, status=400)
+        elif params == 'project':
+            if details := entry.approve_project(identifier=validate.get("project_id"),
+                                                project_url=validate.get(
+                                                    "project_url"),
+                                                private=validate.get("private")):
 
-            elif params == 'project':
-                if details := entry.approve_project(identifier=validate.get("project_id"),
-                                                    project_url=validate.get(
-                                                        "project_url"),
-                                                    private=validate.get("private")):
+                project, maintainer = details
+                email_document = entry.get_all_maintainer_emails(
+                    project=project)
+                if email_document:
+                    email_document["email"].append(maintainer.pop("email"))
+                    if service.wrapper_email(
+                            role="project_approval", data={**{
+                                "name": "Maintainer(s)",
+                                "project_name": project["project_name"],
+                                "project_url": validate["project_url"],
+                                "project_id": project["_id"]
 
-                    project, maintainer = details
-                    email_document = entry.get_all_maintainer_emails(
-                        project=project)
-                    if email_document:
-                        email_document["email"].append(maintainer.pop("email"))
-                        if service.wrapper_email(
-                                role="project_approval", data={**{
-                                    "name": "Maintainer(s)",
-                                    "project_name": project["project_name"],
-                                    "project_url": validate["project_url"],
-                                    "project_id": project["_id"]
-
-                                }, **email_document}, send_all=True):
-                            return JsonResponse(data={
-                                "Approved Project": validate.get("project_id")
-                            }, status=200)
-                    else:
-                        entry.reset_status_project(project=project)
-
-                        blame = None
-                        try:
-                            if decoded := jwt_keys.verify_key(request.headers.get("Authorization").split()[1]):
-                                blame = decoded.get("user")
-                        except Exception as e:
-                            blame = None
-
-                        Thread(target=service.sns, kwargs={"payload": {
-                            "message": "Trying to approve project without approving maintainers",
-                            "subject": f"[ADMIN-ERROR] This person messed up -> {blame}"
-                        }}).start()
-
+                            }, **email_document}, send_all=True):
                         return JsonResponse(data={
-                            "error": "Approve maintainer before approving project"
-                        }, status=400)
-
+                            "Approved Project": validate.get("project_id")
+                        }, status=200)
+                else:
                     entry.reset_status_project(project=project)
-                    return JsonResponse(data={
-                        "error": "email failed"
-                    }, status=500)
 
-                return JsonResponse(data={
-                    "error": "Inconsistant data"
-                }, status=400)
+                    blame = None
+                    try:
+                        if decoded := jwt_keys.verify_key(request.headers.get("Authorization").split()[1]):
+                            blame = decoded.get("user")
+                    except Exception as e:
+                        blame = None
 
-            else:
-                if details := entry.approve_contributor(project_id=validate.get("project_id"),
-                                                        contributor_id=validate.get("contributor_id")):
-
-                    contributor, project = details
-                    emails = entry.get_all_maintainer_emails(project=project)
-                    Thread(target=service.wrapper_email, kwargs={
-                        "role": "contributor_application_to_maintainer",
-                        "send_all": True,
-                        "data": {
-                            "name": "Maintainer(s)",
-                            "project_name": project["project_name"],
-                            "contributor_name": contributor["name"],
-                            "contributor_email": contributor["email"],
-                            "email": emails["email"]
-                        }}).start()
+                    Thread(target=service.sns, kwargs={"payload": {
+                        "message": "Trying to approve project without approving maintainers",
+                        "subject": f"[ADMIN-ERROR] This person messed up -> {blame}"
+                    }}).start()
 
                     return JsonResponse(data={
-                        "admin_approved": True
-                    }, status=200)
+                        "error": "Approve maintainer before approving project"
+                    }, status=400)
+
+                entry.reset_status_project(project=project)
+                return JsonResponse(data={
+                    "error": "email failed"
+                }, status=500)
+
+            return JsonResponse(data={
+                "error": "Inconsistant data"
+            }, status=400)
+
+        else:
+            if details := entry.approve_contributor(project_id=validate.get("project_id"),
+                                                    contributor_id=validate.get("contributor_id")):
+
+                contributor, project = details
+                emails = entry.get_all_maintainer_emails(project=project)
+                Thread(target=service.wrapper_email, kwargs={
+                    "role": "contributor_application_to_maintainer",
+                    "send_all": True,
+                    "data": {
+                        "name": "Maintainer(s)",
+                        "project_name": project["project_name"],
+                        "contributor_name": contributor["name"],
+                        "contributor_email": contributor["email"],
+                        "email": emails["email"]
+                    }}).start()
 
                 return JsonResponse(data={
-                    "error": "contributor/project does not exist / contributor already approved"
-                }, status=400)
+                    "admin_approved": True
+                }, status=200)
 
-        return JsonResponse(data={
-            "error": "Invalid reCaptcha token"
-        }, status=401)
+            return JsonResponse(data={
+                "error": "contributor/project does not exist / contributor already approved"
+            }, status=400)
 
     def get(self, request, **kwargs):
 
@@ -374,36 +345,25 @@ class ProjectsAdmin(APIView):
         Returns:
             JsonResponse
         """
-        try:
-            recaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
+
+        validate = RejectionSchema(
+            data=request.data, params=request.GET.get("role")).valid()
+        if "error" in validate:
             return JsonResponse(data={
-                "error": "token not provided"
-            }, status=401)
+                "error": validate.get("error")
+            }, status=400)
 
-        if check_token(recaptcha):
-            validate = RejectionSchema(
-                data=request.data, params=request.GET.get("role")).valid()
-            if "error" in validate:
-                return JsonResponse(data={
-                    "error": validate.get("error")
-                }, status=400)
-
-            else:
-                if request.GET.get("role") == "contributor":
-                    remove_status = entry.admin_remove_contributor(
-                        validate.get("contributor_id"))
-                    return self.action_to_status(
-                        status=remove_status, request=request)
-                else:
-                    remove_status = entry.admin_remove_maintainer(
-                        validate.get("maintainer_id"))
-                    return self.action_to_status(
-                        status=remove_status, request=request)
         else:
-            return JsonResponse(data={
-                "error": "invalid recaptcha token"
-            }, status=401)
+            if request.GET.get("role") == "contributor":
+                remove_status = entry.admin_remove_contributor(
+                    validate.get("contributor_id"))
+                return self.action_to_status(
+                    status=remove_status, request=request)
+            else:
+                remove_status = entry.admin_remove_maintainer(
+                    validate.get("maintainer_id"))
+                return self.action_to_status(
+                    status=remove_status, request=request)
 
 
 class AdminAccepted(APIView):

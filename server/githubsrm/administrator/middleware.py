@@ -11,18 +11,51 @@ class Authorize:
         """
 
         self.protected = ['/admin/projects',
-                          '/admin/projects/accepted', '/maintainer/projects']
+                          '/admin/projects/accepted',
+                          '/maintainer/projects']
         self.view = view
+
+    @staticmethod
+    def _refresh_route(request, view):
+        if token := get_token(request_headers=request.headers):
+            token_type, token = token
+        else:
+            return JsonResponse(data={
+                "error": "token not provided"
+            }, status=401)
+
+        try:
+            assert token_type == "Bearer"
+        except AssertionError as e:
+            return JsonResponse(data={
+                "error": "Invalid token type"
+            }, status=401)
+
+        decoded = jwt_keys.verify_key(key=token)
+        if decoded:
+            if decoded.get("refresh"):
+                return view(request)
+            else:
+                return JsonResponse(data={
+                    "error": "Invalid token"
+                }, status=401)
+        else:
+            return JsonResponse(data={
+                "error": "Invalid token"
+            }, status=401)
 
     def __call__(self, request) -> JsonResponse:
         """Middleware to check valid protection
 
         Args:
-            request ([type])
+            request 
 
         Returns:
             response.Response
         """
+
+        if request.path == "/maintainer/refresh-token":
+            self._refresh_route(request, self.view)
 
         if request.path in self.protected:
             if value := get_token(request_header=request.headers):
@@ -62,7 +95,7 @@ class ReCaptcha:
         Returns:
             JsonResponse
         """
-        if request.method == 'POST':
+        if request.method == 'POST' or request.method == "DELETE":
             try:
                 recaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
             except KeyError as e:
