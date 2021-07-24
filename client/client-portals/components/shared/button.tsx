@@ -10,7 +10,7 @@ const Button = ({
   onClick,
 }: ButtonWrapperProps) => {
   const primary =
-    "text-white bg-base-teal w-32 py-4 font-semibold rounded-lg my-3";
+    "text-white bg-base-teal p-3 min-w-32 font-semibold rounded-lg my-3";
   const secondary =
     "flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl";
 

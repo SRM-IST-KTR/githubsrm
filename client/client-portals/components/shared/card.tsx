@@ -12,7 +12,7 @@ const Card = ({ name, desc, url }) => {
         </p>
       </div>
       <Link href={url}>
-        <Button>Open Contributors' Applications</Button>
+        <Button btnStyle="primary">Open Contributors' Applications</Button>
       </Link>
     </div>
   );
