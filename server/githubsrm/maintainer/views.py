@@ -1,7 +1,7 @@
 from hashlib import sha256
 from threading import Thread
 
-from apis import PostThrottle, check_token, service
+from apis import PostThrottle, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -107,24 +107,13 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        try:
-            recaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
+        validate = RejectionSchema(data=request.data).valid()
+        if "error" in validate:
             return JsonResponse(data={
-                "error": "token not provided"
-            }, status=401)
+                "error": "Invalid data"
+            }, status=400)
+        return self._remove_contributor(request=request)
 
-        if check_token(recaptcha):
-            validate = RejectionSchema(data=request.data).valid()
-            if "error" in validate:
-                return JsonResponse(data={
-                    "error": "Invalid data"
-                }, status=400)
-            return self._remove_contributor(request=request)
-        else:
-            return JsonResponse(data={
-                "error": "Invaid token"
-            }, status=401)
 
     def get(self, request, **kwargs) -> JsonResponse:
         """Projects get view for maintainer portal.
@@ -164,14 +153,6 @@ class Login(APIView):
         """
         Login route get email and password make jwt and send.
         """
-
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
-
-        if not check_token(reCaptcha):
-            return JsonResponse(data={"error": "Invalid recaptcha token"}, status=401)
 
         validate = MaintainerSchema(request.data, path=request.path).valid()
         if 'error' in validate:
@@ -222,41 +203,31 @@ class SetPassword(APIView):
         Returns:
             JsonResponse
         """
+        validate = MaintainerSchema(
+            data=request.data, path=request.path).valid()
+        if 'error' in validate:
+            return JsonResponse(data={"error": validate.get("error")}, status=400)
+
         try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
+            token = request.headers.get("Authorization").split()
+            token_type, token = token[0], token[1]
+            assert token_type == 'Bearer'
+        except Exception as e:
+            return JsonResponse(data={
+                "error": "Invalid token"
+            }, status=400)
 
-        if check_token(reCaptcha):
-            validate = MaintainerSchema(
-                data=request.data, path=request.path).valid()
-            if 'error' in validate:
-                return JsonResponse(data={"error": validate.get("error")}, status=400)
+        jwt = token
 
-            try:
-                token = request.headers.get("Authorization").split()
-                token_type, token = token[0], token[1]
-                assert token_type == 'Bearer'
-            except Exception as e:
-                return JsonResponse(data={
-                    "error": "Invalid token"
-                }, status=400)
+        password = request.data.get("password")
 
-            jwt = token
+        if not jwt_keys.verify_key(key=jwt):
+            return JsonResponse(data={"error": "Invalid jwt"}, status=400)
 
-            password = request.data.get("password")
+        if not entry.set_password(key=jwt, password=password):
+            return JsonResponse(data={"error": "Already changed"}, status=400)
 
-            if not jwt_keys.verify_key(key=jwt):
-                return JsonResponse(data={"error": "Invalid jwt"}, status=400)
-
-            if not entry.set_password(key=jwt, password=password):
-                return JsonResponse(data={"error": "Already changed"}, status=400)
-
-            return JsonResponse(data={}, status=200)
-
-        return JsonResponse(data={
-            "error": "Invalid recaptcha"
-        }, status=401)
+        return JsonResponse(data={}, status=200)
 
 
 class ResetPassword(APIView):
@@ -264,16 +235,14 @@ class ResetPassword(APIView):
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
+        """Handle reset password
 
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            print(e)
-            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
+        Args:
+            request 
 
-        if not check_token(reCaptcha):
-            return JsonResponse(data={"error": "Invalid recaptcha"}, status=401)
-
+        Returns:
+            JsonResponse
+        """
         validate = MaintainerSchema(
             data=request.data, path=request.path).valid()
         if 'error' in validate:
@@ -293,3 +262,37 @@ class ResetPassword(APIView):
 
         # send 200 in all cases
         return JsonResponse({}, status=status.HTTP_200_OK)
+
+
+class RefreshRoute(APIView):
+    def post(self, request, **kwargs) -> JsonResponse:
+        """Get new tokens from refresh token
+
+        Args:
+            request 
+
+        Returns:
+            JsonResponse
+        """
+        refresh_token = get_token(
+            request_header=request.headers
+        )
+        user = jwt_keys.verify_key(refresh_token)
+
+        email = user.get("email") if user.get("email") else user.get("user")
+        name = user.get("name") if user.get("name") else None
+
+        project_ids = entry.projects_from_email(email=email)
+        if project_ids:
+            if name:
+                payload = {"email": email,
+                           "project_id": project_ids, "name": name}
+
+            key = jwt_keys.refresh_to_access(refresh_token, payload=payload)
+            return JsonResponse(data={
+                "key": key
+            }, status=200)
+        else:
+            return JsonResponse(data={
+                "error": "invalid user"
+            }, status=404)

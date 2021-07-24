@@ -13,10 +13,8 @@ ITEMS_PER_PAGE = 10
 
 def decode_payload(token: str) -> Dict[str, Any]:
     """Helper for jwt decode
-
     Args:
         token (str): jwt 
-
     Returns:
         Dict[str, Any]
     """
@@ -27,15 +25,20 @@ def project_pagination(request, **kwargs):
 
     try:
         page = int(request.GET["page"])
-        key = renew_projects(request=request)
-        if key is False:
+        decoded = decode_payload(
+            get_token(request_header=request.headers))
+
+        projects_ids = decoded["project_id"]
+        email = decoded["email"]
+        totalItems = entry.maintainer.count_documents({
+            "email": email, "is_admin_approved": True
+        })
+
+        if totalItems > len(projects_ids):
             return {
                 "error": "Key expired"
             }
-        projects_ids = decode_payload(key)["project_id"]
 
-        totalItems = entry.project.count_documents(
-            {"_id": {"$in": projects_ids}})
         record = list(entry.project.aggregate([
             {"$match": {"_id": {"$in": projects_ids}}},
             {"$skip": (page - 1) * ITEMS_PER_PAGE},
@@ -63,17 +66,15 @@ def project_pagination(request, **kwargs):
 
 def project_single_project(request, **kwargs) -> Dict[str, Any]:
     """Get a specific project with all maintainer details and contributor details if they are approved
-
     Args:
         request
-
     Returns:
         doc: project/maintainer/contributor
     """
     try:
 
         projects_ids = decode_payload(
-            request.headers["Authorization"].split()[1])["project_id"]
+            get_token(request_header=request.headers))["project_id"]
         project_id = request.GET["projectId"]
 
     except Exception as e:
@@ -120,35 +121,6 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         }
 
     return docs
-
-
-def renew_projects(request) -> Dict[str, Any]:
-    """Update projects in jwt
-
-    Args:
-        request  
-
-    Returns:
-        Dict[str, Any]
-    """
-
-    token = get_token(request_header=request.headers)
-    maintainer_details = decode_payload(
-        token=token)
-
-    if not maintainer_details:
-        return False
-
-    maintainer = list(open_entry.find_all_Maintainer_with_email(
-        maintainer_details["email"]))
-
-    new_payload = dict()
-    new_payload["project_id"] = [x["project_id"] for x in maintainer]
-    new_key = jwt_keys.update_key(new_payload, old_token=token)
-    if new_key:
-        return new_key
-    else:
-        return False
 
 
 def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contributor_docs=None,
