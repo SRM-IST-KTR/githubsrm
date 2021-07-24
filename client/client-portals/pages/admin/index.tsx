@@ -21,21 +21,26 @@ const IndexPage = () => {
 
   return (
     <Layout type="admin">
-      <div className="bg-base-blue flex justify-center items-center flex-col lg:flex-row ">
+      <div className="bg-base-blue flex justify-center ">
         <button
           onClick={() => setRegister(true)}
-          className="py-7 cursor-pointer hover:opacity-50 px-16 lg:mt-6 mr-5 rounded-xl shadow-xl bg-base-green font-bold text-white text-xl transform hover:scale-110 hover:opacity-80"
+          className={`${
+            !register ? "" : "border-b-4 border-base-green"
+          } py-4 cursor-pointer px-7 mt-1 mr-5  shadow-lg font-bold text-white text-xl hover:opacity-80`}
         >
           Register
         </button>
         <button
           onClick={() => setRegister(false)}
-          className="py-7 cursor-pointer hover:opacity-50 px-20 mt-6 mr-5 rounded-xl shadow-xl bg-base-green font-bold text-white text-xl transform hover:scale-110 hover:opacity-80"
+          s
+          className={`${
+            register ? "" : "border-b-4 border-base-green"
+          } py-4 cursor-pointer  px-10 mt-1 mr-5  shadow-lg  font-bold text-white text-xl hover:opacity-80`}
         >
           Login
         </button>
       </div>
-      {register ? <AdminRegister /> : <AdminLogin />}
+      <div>{register ? <AdminRegister /> : <AdminLogin />}</div>
     </Layout>
   );
 };

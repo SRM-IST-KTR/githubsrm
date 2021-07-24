@@ -80,126 +80,128 @@ const ResetPassword = ({ action, queryToken }) => {
 
   return (
     <Layout type="maintainer">
-      {!jwtExpired && (
-        <h1 className="flex justify-center text-4xl font-extrabold text-white">
-          {action === "set" ? "Set" : "Reset"} Your Password
-        </h1>
-      )}
-      {action === "set" ? (
-        <Formik
-          initialValues={initialValuesSet}
-          onSubmit={(values, { resetForm }) => {
-            submitValuesSet(values, resetForm);
-          }}
-          validationSchema={setPasswordValidation}
-          enableReinitialize
-        >
-          {({ errors, touched }) => (
-            <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-              {queryToken === undefined && (
-                <h1 className="text-center text-4xl text-red-500 font-bold">
-                  You cannot access this!
-                </h1>
-              )}
-              {jwtExpired ? (
-                <h1 className="text-center text-4xl text-red-500 font-bold">
-                  Link Expired!
-                </h1>
-              ) : (
-                queryToken !== undefined && (
-                  <div>
-                    {setPasswordInputs.map((input, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-50 rounded my-4 px-2 py-1"
-                      >
-                        <Input
-                          key={input.id}
-                          {...input}
-                          {...customInputClasses}
-                        />
+      <div className="flex flex-col justify-center items-center">
+        {!jwtExpired && (
+          <h1 className="text-4xl font-extrabold text-white">
+            {action === "set" ? "Set" : "Reset"} Your Password
+          </h1>
+        )}
+        {action === "set" ? (
+          <Formik
+            initialValues={initialValuesSet}
+            onSubmit={(values, { resetForm }) => {
+              submitValuesSet(values, resetForm);
+            }}
+            validationSchema={setPasswordValidation}
+            enableReinitialize
+          >
+            {({ errors, touched }) => (
+              <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+                {queryToken === undefined && (
+                  <h1 className="text-center text-4xl text-red-500 font-bold">
+                    You cannot access this!
+                  </h1>
+                )}
+                {jwtExpired ? (
+                  <h1 className="text-center text-4xl text-red-500 font-bold">
+                    Link Expired!
+                  </h1>
+                ) : (
+                  queryToken !== undefined && (
+                    <div>
+                      {setPasswordInputs.map((input, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-50 rounded my-4 px-2 py-1"
+                        >
+                          <Input
+                            key={input.id}
+                            {...input}
+                            {...customInputClasses}
+                          />
+                        </div>
+                      ))}
+
+                      <div className="flex justify-center">
+                        <Button
+                          disabled={Object.keys(errors).length > 0}
+                          btnStyle="primary"
+                        >
+                          {loading ? (
+                            <span className="flex w-6 mx-auto">
+                              <Loading />
+                            </span>
+                          ) : (
+                            "Submit"
+                          )}
+                        </Button>
                       </div>
-                    ))}
-
-                    <div className="flex justify-center">
-                      <Button
-                        disabled={Object.keys(errors).length > 0}
-                        btnStyle="primary"
-                      >
-                        {loading ? (
-                          <span className="flex w-6 mx-auto">
-                            <Loading />
-                          </span>
-                        ) : (
-                          "Submit"
-                        )}
-                      </Button>
+                      {Object.keys(errors).map((error) => {
+                        if (touched[error]) {
+                          return (
+                            <Markdown
+                              key={error.trim()}
+                              className="text-red-500 my-2 lg:my-1"
+                            >
+                              {errors[error] as string}
+                            </Markdown>
+                          );
+                        }
+                      })}
                     </div>
-                    {Object.keys(errors).map((error) => {
-                      if (touched[error]) {
-                        return (
-                          <Markdown
-                            key={error.trim()}
-                            className="text-red-500 my-2 lg:my-1"
-                          >
-                            {errors[error] as string}
-                          </Markdown>
-                        );
-                      }
-                    })}
+                  )
+                )}
+              </Form>
+            )}
+          </Formik>
+        ) : (
+          <Formik
+            initialValues={initialValuesReset}
+            onSubmit={(values, { resetForm }) => {
+              submitValuesReset(values, resetForm);
+            }}
+            validationSchema={resetPasswordValidation}
+            enableReinitialize
+          >
+            {({ errors, touched }) => (
+              <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
+                {resetPasswordInputs.map((input) => (
+                  <div className="bg-gray-50 rounded my-4 px-2 py-1">
+                    <Input key={input.id} {...input} {...customInputClasses} />
                   </div>
-                )
-              )}
-            </Form>
-          )}
-        </Formik>
-      ) : (
-        <Formik
-          initialValues={initialValuesReset}
-          onSubmit={(values, { resetForm }) => {
-            submitValuesReset(values, resetForm);
-          }}
-          validationSchema={resetPasswordValidation}
-          enableReinitialize
-        >
-          {({ errors, touched }) => (
-            <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
-              {resetPasswordInputs.map((input) => (
-                <div className="bg-gray-50 rounded my-4 px-2 py-1">
-                  <Input key={input.id} {...input} {...customInputClasses} />
-                </div>
-              ))}
+                ))}
 
-              <div className="flex justify-center">
-                <Button
-                  disabled={Object.keys(errors).length > 0}
-                  btnStyle="primary"
-                >
-                  {loading ? (
-                    <span className="flex w-6 mx-auto">
-                      <Loading />
-                    </span>
-                  ) : (
-                    "Submit"
-                  )}
-                </Button>
-              </div>
-              {Object.keys(errors).map((error) => {
-                if (touched[error]) {
-                  return (
-                    <Markdown
-                      key={error.trim()}
-                      className="text-red-500 my-2 lg:my-1"
-                    >
-                      {errors[error] as string}
-                    </Markdown>
-                  );
-                }
-              })}
-            </Form>
-          )}
-        </Formik>
-      )}
+                <div className="flex justify-center">
+                  <Button
+                    disabled={Object.keys(errors).length > 0}
+                    btnStyle="primary"
+                  >
+                    {loading ? (
+                      <span className="flex w-6 mx-auto">
+                        <Loading />
+                      </span>
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
+                </div>
+                {Object.keys(errors).map((error) => {
+                  if (touched[error]) {
+                    return (
+                      <Markdown
+                        key={error.trim()}
+                        className="text-red-500 my-2 lg:my-1"
+                      >
+                        {errors[error] as string}
+                      </Markdown>
+                    );
+                  }
+                })}
+              </Form>
+            )}
+          </Formik>
+        )}
+      </div>
     </Layout>
   );
 };
