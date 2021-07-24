@@ -39,11 +39,7 @@
   }
 
   .custom-input-wrapper {
-    @apply flex;
-  }
-
-  .custom-label {
-    @apply flex;
+    @apply flex flex-col my-1;
   }
 
   .no-scrollbar::-webkit-scrollbar {

@@ -13,12 +13,14 @@ const IndexPage = () => {
       } else {
         Router.push("/maintainer/dashboard");
       }
+    } else {
+      Router.push("/maintainer");
     }
   }, [authContext]);
 
   return (
-    <div className="min-h-screen bg-base-blue flex flex-col justify-center items-center">
-      <Link href="/maintainer">
+    <div>
+      {/* <Link href="/maintainer">
         <span className="py-7 cursor-pointer px-16 rounded-xl shadow-xl bg-base-green font-bold text-white transform hover:scale-110 hover:opacity-80">
           {" "}
           Maintainer
@@ -28,7 +30,7 @@ const IndexPage = () => {
         <span className="py-7 cursor-pointer px-20 mt-6 rounded-xl shadow-xl bg-base-green font-bold text-white transform hover:scale-110 hover:opacity-80">
           Admin
         </span>
-      </Link>
+      </Link> */}
     </div>
   );
 };

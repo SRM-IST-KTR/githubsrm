@@ -6,7 +6,7 @@ import { successToast } from "utils/functions/toast";
 import { Layout } from "components/shared";
 import Link from "next/link";
 import { MaintainersProps } from "utils/interfaces";
-import { Footer, CSSLoader } from "@/shared/index";
+import { CSSLoader } from "@/shared/index";
 import { CardGithub, Tick, Loading } from "@/icons/index";
 
 const MaintainerPage = () => {
@@ -59,88 +59,78 @@ const MaintainerPage = () => {
   }, [router.query, accepted]);
 
   return loading2 ? (
-    <>
-      <Layout type="admin">
-        <div className="flex flex-col items-center justify-center">
-          <CSSLoader />
-        </div>
-      </Layout>
-      <div className="fixed bottom-0 w-full">
-        <Footer />
+    <Layout type="admin">
+      <div className="flex flex-col items-center justify-center">
+        <CSSLoader />
       </div>
-    </>
+    </Layout>
   ) : (
-    <>
-      <Layout type="admin">
-        <h1 className="text-4xl text-center font-extrabold text-white mb-7">
-          Maintainer Applications of "{projectName}"
-        </h1>
+    <Layout type="admin">
+      <h1 className="text-4xl text-center font-extrabold text-white mb-7">
+        Maintainer Applications of "{projectName}"
+      </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {maintainerData.map((person) => (
-            <div
-              key={person._id}
-              className="p-5 rounded-xl shadow-2xl bg-white text-base-black"
-            >
-              <h2 className="text-xl font-medium mb-5">
-                <span className="font-bold">Name: </span>
-                {person.name}
-              </h2>
-              <h2 className="text-xl font-medium mb-5">
-                <span className="font-bold">Email: </span>
-                {person.email.split("@")[0]}
-                <br className="sm:hidden" />@{person.email.split("@")[1]}
-              </h2>
-              <Link href={person.github_id}>
-                <div className="cursor-pointer hover:text-gray-800 flex text-xl font-medium mb-5">
-                  <span className="font-bold">Github ID: </span>
-                  <span className="ml-1 flex items-center">
-                    <span className="mx-2">
-                      <CardGithub />
-                    </span>
-                    {person.github_id}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {maintainerData.map((person) => (
+          <div
+            key={person._id}
+            className="p-4 rounded-xl shadow-2xl bg-white text-base-black"
+          >
+            <h2 className="text-xl font-medium mb-3">
+              <span className="font-bold">Name: </span>
+              {person.name}
+            </h2>
+            <h2 className="text-xl font-medium mb-3">
+              <span className="font-bold">Email: </span>
+              {person.email.split("@")[0]}
+              <br className="sm:hidden" />@{person.email.split("@")[1]}
+            </h2>
+            <Link href={person.github_id}>
+              <div className="cursor-pointer hover:text-gray-800 flex text-xl font-medium mb-3">
+                <span className="font-bold">Github ID: </span>
+                <span className="flex items-center">
+                  <span className="mx-2">
+                    <CardGithub />
                   </span>
-                </div>
-              </Link>
-              <h2 className="text-xl font-medium mb-5">
-                <span className="font-bold">Registration Number: </span>
-                {person.reg_number}
-              </h2>
-              <h2 className="text-xl font-medium mb-5">
-                <span className="font-bold">Branch: </span>
-                {person.branch}
-              </h2>
-              {person.is_admin_approved ? (
-                <div className="flex flex-col justify-center items-center text-4xl font-medium text-base-green mt-5">
-                  <span className="text-green-500 text-5xl">
-                    <Tick />
+                  {person.github_id}
+                </span>
+              </div>
+            </Link>
+            <h2 className="text-xl font-medium mb-3">
+              <span className="font-bold">Registration Number: </span>
+              {person.reg_number}
+            </h2>
+            <h2 className="text-xl font-medium mb-3">
+              <span className="font-bold">Branch: </span>
+              {person.branch}
+            </h2>
+            {person.is_admin_approved ? (
+              <div className="flex flex-col items-center text-2xl font-medium text-base-green mt-2">
+                <span className="text-green-500 text-5xl">
+                  <Tick />
+                </span>
+                <p>Approved</p>
+              </div>
+            ) : (
+              <button
+                onClick={() =>
+                  acceptMaintainerHandler(projectId, person._id, person.email)
+                }
+                className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
+              >
+                {loading ? (
+                  <span className="flex w-6 mx-auto">
+                    <Loading />
                   </span>
-                  <p>Approved</p>
-                </div>
-              ) : (
-                <button
-                  onClick={() =>
-                    acceptMaintainerHandler(projectId, person._id, person.email)
-                  }
-                  className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
-                >
-                  {loading ? (
-                    <span className="flex w-6 mx-auto">
-                      <Loading />
-                    </span>
-                  ) : (
-                    "Approve Maintainer"
-                  )}
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </Layout>
-      <div className="fixed bottom-0 w-full">
-        <Footer />
+                ) : (
+                  "Approve Maintainer"
+                )}
+              </button>
+            )}
+          </div>
+        ))}
       </div>
-    </>
+    </Layout>
   );
 };
 

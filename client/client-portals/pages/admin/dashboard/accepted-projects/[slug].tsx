@@ -3,8 +3,7 @@ import { useRouter } from "next/router";
 import { AuthContext } from "context/authContext";
 import { getProject, postAcceptProject } from "services/api";
 import { successToast } from "utils/functions/toast";
-import { Layout, Footer } from "components/shared";
-import Link from "next/link";
+import { Layout } from "components/shared";
 import { ContributorsProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
 import { Loading, Tick, Cross } from "@/icons/index";
@@ -69,19 +68,14 @@ const ContributorsPage = () => {
   }, [router.query, accepted]);
 
   return loading2 ? (
-    <>
-      <Layout type="admin">
-        <div className="flex flex-col items-center justify-center">
-          <CSSLoader />
-        </div>
-      </Layout>
-      <div className="fixed bottom-0 w-full">
-        <Footer />
+    <Layout type="admin">
+      <div className="flex flex-col items-center justify-center">
+        <CSSLoader />
       </div>
-    </>
+    </Layout>
   ) : (
     <Layout type="admin">
-      <h1 className="text-5xl font-extrabold underline text-white mb-7">
+      <h1 className="text-5xl font-semibold text-white mb-5 text-center">
         {projectName}
       </h1>
 
@@ -202,8 +196,8 @@ const ContributorsPage = () => {
             </tbody>
           </table>
         ) : (
-          <h1 className="text-5xl text-gray-200 mt-10 overflow-auto no-scrollbar">
-            No Contributors Yet!!
+          <h1 className="text-4xl text-gray-200 mt-10 overflow-auto no-scrollbar text-center">
+            No Contributors Yet!
           </h1>
         )}
       </div>

@@ -7,7 +7,7 @@ import {
   maintainerLoginInputs,
   customInputClasses,
 } from "utils/constants";
-import { Input, Footer } from "@/shared/index";
+import { Input, Layout } from "@/shared/index";
 import Router from "next/router";
 import { successToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
@@ -44,8 +44,8 @@ const MaintainerLogin = () => {
   };
 
   return (
-    <>
-      <div className="min-h-screen p-14 bg-base-blue">
+    <Layout type="maintainer">
+      <div className="md:p-14 bg-base-blue">
         <h1 className="flex justify-center text-4xl font-extrabold text-white">
           Maintainer Login
         </h1>
@@ -92,7 +92,7 @@ const MaintainerLogin = () => {
                       <Loading />
                     </span>
                   ) : (
-                    "Submit"
+                    "Login"
                   )}
                 </button>
                 <div className="text-md mt-5 hover:underline">
@@ -105,10 +105,7 @@ const MaintainerLogin = () => {
           )}
         </Formik>
       </div>
-      <div className="fixed bottom-0 w-full">
-        <Footer />
-      </div>
-    </>
+    </Layout>
   );
 };
 
