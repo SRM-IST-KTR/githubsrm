@@ -18,21 +18,7 @@ const IndexPage = () => {
     }
   }, [authContext]);
 
-  return (
-    <div>
-      {/* <Link href="/maintainer">
-        <span className="py-7 cursor-pointer px-16 rounded-xl shadow-xl bg-base-green font-bold text-white transform hover:scale-110 hover:opacity-80">
-          {" "}
-          Maintainer
-        </span>
-      </Link>
-      <Link href="/admin">
-        <span className="py-7 cursor-pointer px-20 mt-6 rounded-xl shadow-xl bg-base-green font-bold text-white transform hover:scale-110 hover:opacity-80">
-          Admin
-        </span>
-      </Link> */}
-    </div>
-  );
+  return <div></div>;
 };
 
 export default IndexPage;

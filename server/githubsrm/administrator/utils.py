@@ -7,7 +7,6 @@ from django.http import response
 from rest_framework import status
 
 from administrator import entry
-from maintainer.utils import RequestSetPassword
 from .models import AdminEntry
 
 ITEMS_PER_PAGE = 10
@@ -158,6 +157,7 @@ def alpha_maintainer_support(existing: bool, project: Dict[str, str],
     Returns:
         Dict[str, str]: response
     """
+    from maintainer.utils import RequestSetPassword
     if existing:
         if service.wrapper_email(
                 role="project_submission_approval", data={
@@ -220,6 +220,7 @@ def beta_maintainer_support(existing: bool, project: Dict[str, str],
     Returns:
         Dict[str, str]: response
     """
+    from maintainer.utils import RequestSetPassword
     if existing:
         if service.wrapper_email(
                 role="welcome_maintainer", data={
