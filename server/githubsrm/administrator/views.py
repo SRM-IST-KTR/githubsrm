@@ -34,32 +34,20 @@ class RegisterAdmin(APIView):
             JsonResponse
         """
 
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
+        valid = AdminSchema(request.data).valid()
+
+        if 'error' in valid:
             return JsonResponse(data={
-                "error": "reCaptcha token not provided"
-            }, status=401)
+                "error": valid
+            }, status=400)
 
-        if check_token(reCaptcha):
-
-            valid = AdminSchema(request.data).valid()
-
-            if 'error' in valid:
-                return JsonResponse(data={
-                    "error": valid
-                }, status=400)
-
-            if entry.insert_admin(request.data):
-                return JsonResponse(data={
-                    "registered": True
-                }, status=200)
+        if entry.insert_admin(request.data):
             return JsonResponse(data={
-                "error": "invalid data / user exists"
-            }, status=status.HTTP_400_BAD_REQUEST)
+                "registered": True
+            }, status=200)
         return JsonResponse(data={
-            "error": "Invalid recaptcha token"
-        }, status=401)
+            "error": "invalid data / user exists"
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AdminLogin(APIView):
@@ -208,7 +196,7 @@ class ProjectsAdmin(APIView):
                         except Exception as e:
                             blame = None
 
-                        Thread(target=service.sns,kwargs={"payload": {
+                        Thread(target=service.sns, kwargs={"payload": {
                             "message": "Trying to approve project without approving maintainers",
                             "subject": f"[ADMIN-ERROR] This person messed up -> {blame}"
                         }}).start()

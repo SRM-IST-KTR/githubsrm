@@ -36,52 +36,40 @@ class Contributor(APIView):
         """
 
         try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return response.Response({
-                "error": "reCaptcha token not provided"
-            }, status=status.HTTP_401_UNAUTHORIZED)
+            validate = CommonSchema(
+                request.data, query_param=request.GET.get('role')).valid()
+        except Exception as e:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if check_token(reCaptcha):
-
-            try:
-                validate = CommonSchema(
-                    request.data, query_param=request.GET.get('role')).valid()
-            except Exception as e:
-                return response.Response(status=status.HTTP_400_BAD_REQUEST)
-
-            if 'error' not in validate:
-                if open_entry_checks.check_contributor(validate['interested_project'],
-                                                       validate['reg_number'], validate["github_id"],
-                                                       validate["srm_email"]):
-                    return response.Response({
-                        "invalid data": "Contributor for project exists / Project not approved"
-                    }, status=status.HTTP_400_BAD_REQUEST)
-
-                if doc := open_entry.enter_contributor(validate):
-                    if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
-                                                                                "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
-
-                        Thread(target=service.sns, kwargs={
-                            "payload": {
-                                "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
-                                "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
-                            }
-                        }).start()
-
-                        return response.Response({
-                            "valid": validate
-                        }, status=status.HTTP_201_CREATED)
-                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        if 'error' not in validate:
+            if open_entry_checks.check_contributor(validate['interested_project'],
+                                                   validate['reg_number'], validate["github_id"],
+                                                   validate["srm_email"]):
                 return response.Response({
-                    "error": "project not approved or project does not exist"
+                    "invalid data": "Contributor for project exists / Project not approved"
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
-        return response.Response({
-            "error": "Invalid reCaptcha"
-        }, status=status.HTTP_401_UNAUTHORIZED)
+            if doc := open_entry.enter_contributor(validate):
+                if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
+                                                                            "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
+
+                    Thread(target=service.sns, kwargs={
+                        "payload": {
+                            "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
+                            "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
+                        }
+                    }).start()
+
+                    return response.Response({
+                        "valid": validate
+                    }, status=status.HTTP_201_CREATED)
+                return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return response.Response({
+                "error": "project not approved or project does not exist"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
 
 
 class Maintainer(APIView):
