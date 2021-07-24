@@ -82,7 +82,7 @@ const ResetPassword = ({ action, queryToken }) => {
     <Layout type="maintainer">
       <div className="flex flex-col justify-center items-center">
         {!jwtExpired && (
-          <h1 className="text-4xl font-extrabold text-white">
+          <h1 className="text-5xl mt-8 font-extrabold text-white">
             {action === "set" ? "Set" : "Reset"} Your Password
           </h1>
         )}

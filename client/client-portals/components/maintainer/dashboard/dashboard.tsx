@@ -40,9 +40,14 @@ const index = () => {
     </Layout>
   ) : (
     <Layout type="maintainer">
-      <div className="flex justify-center font-extrabold mb-10 text-white text-5xl">
+      <div className="flex justify-center font-extrabold my-10 text-white text-5xl">
         My Projects
       </div>
+      {projects.length === 0 && (
+        <h1 className="mt-20 text-3xl text-white text-center">
+          None of your projects has been accepted yet!
+        </h1>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
         {projects?.map((item) => (
           <Card
@@ -53,12 +58,14 @@ const index = () => {
           />
         ))}
       </div>
-      <PaginationButtons
-        hasNextPage={hasNextPage}
-        hasPrevPage={hasPrevPage}
-        pageNo={pageNo}
-        setPageNo={setPageNo}
-      />
+      {projects.length > 0 && (
+        <PaginationButtons
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+        />
+      )}
     </Layout>
   );
 };

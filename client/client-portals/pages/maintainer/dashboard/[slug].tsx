@@ -85,7 +85,7 @@ const ProjectDetail = () => {
   return !loading2 ? (
     <Layout type="maintainer">
       <div className="flex flex-col justify-center items-center">
-        <h2 className="text-4xl font-extrabold text-gray-50 mb-1">
+        <h2 className="text-4xl font-extrabold text-gray-50 my-1">
           {projectName}
         </h2>
         <OtherMaintainers
