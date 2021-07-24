@@ -1,28 +1,39 @@
 import random
 from math import ceil
 from typing import Any, Dict
-
-import jwt
 from administrator import jwt_keys
-
+from administrator.utils import get_token
 from . import entry
 
+open_entry = entry
 entry = entry.db
-
 
 ITEMS_PER_PAGE = 10
 
 
-def decode_payload(token):
-    return jwt.decode(token, options={"require": ["exp"], "verify_signature": False}, algorithms=["HS256"])
+def decode_payload(token: str) -> Dict[str, Any]:
+    """Helper for jwt decode
+
+    Args:
+        token (str): jwt 
+
+    Returns:
+        Dict[str, Any]
+    """
+    return jwt_keys.verify_key(key=token)
 
 
 def project_pagination(request, **kwargs):
 
     try:
         page = int(request.GET["page"])
-        projects_ids = decode_payload(
-            request.headers["Authorization"].split()[1])["project_id"]
+        key = renew_projects(request=request)
+        if key is False:
+            return {
+                "error": "Key expired"
+            }
+        projects_ids = decode_payload(key)["project_id"]
+
         totalItems = entry.project.count_documents(
             {"_id": {"$in": projects_ids}})
         record = list(entry.project.aggregate([
@@ -42,6 +53,7 @@ def project_pagination(request, **kwargs):
             }
         raise Exception()
     except Exception as e:
+        print(e)
         return {
             "hasNextPage": False,
             "hasPreviousPage": False,
@@ -94,9 +106,11 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
                                                                     maintainer_page=maintainer_page, contributor_page=contributor_page,
 
                                                                     maintainer_docs=maintainer_count, contributor_docs=contributor_count)))
-        docs =docs[0]
-        docs["maintainerHasNextPage"] = (ITEMS_PER_PAGE * int(maintainer_page)) < int(maintainer_count)
-        docs["contributorHasNextPage"] = (ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
+        docs = docs[0]
+        docs["maintainerHasNextPage"] = (
+            ITEMS_PER_PAGE * int(maintainer_page)) < int(maintainer_count)
+        docs["contributorHasNextPage"] = (
+            ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
 
     except Exception as e:
         return {
@@ -106,6 +120,35 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
         }
 
     return docs
+
+
+def renew_projects(request) -> Dict[str, Any]:
+    """Update projects in jwt
+
+    Args:
+        request  
+
+    Returns:
+        Dict[str, Any]
+    """
+
+    token = get_token(request_header=request.headers)
+    maintainer_details = decode_payload(
+        token=token)
+
+    if not maintainer_details:
+        return False
+
+    maintainer = list(open_entry.find_all_Maintainer_with_email(
+        maintainer_details["email"]))
+
+    new_payload = dict()
+    new_payload["project_id"] = [x["project_id"] for x in maintainer]
+    new_key = jwt_keys.update_key(new_payload, old_token=token)
+    if new_key:
+        return new_key
+    else:
+        return False
 
 
 def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contributor_docs=None,
