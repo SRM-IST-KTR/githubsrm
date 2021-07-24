@@ -35,7 +35,7 @@
   }
 
   .custom-input {
-    @apply w-full;
+    @apply w-full bg-gray-50;
   }
 
   .custom-input-wrapper {

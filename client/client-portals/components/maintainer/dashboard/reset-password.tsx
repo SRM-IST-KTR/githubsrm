@@ -111,7 +111,7 @@ const ResetPassword = ({ action, queryToken }) => {
                     {setPasswordInputs.map((input, index) => (
                       <div
                         key={index}
-                        className="border-2 border-gray-700 rounded my-4 p-4"
+                        className="bg-gray-50 rounded my-4 px-2 py-1"
                       >
                         <Input
                           key={input.id}
@@ -165,7 +165,7 @@ const ResetPassword = ({ action, queryToken }) => {
           {({ errors, touched }) => (
             <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
               {resetPasswordInputs.map((input) => (
-                <div className="border-2 border-gray-700 rounded my-4 p-4">
+                <div className="bg-gray-50 rounded my-4 px-2 py-1">
                   <Input key={input.id} {...input} {...customInputClasses} />
                 </div>
               ))}
