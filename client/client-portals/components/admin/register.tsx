@@ -57,7 +57,7 @@ const AdminRegister = () => {
             ))}
             <Field
               onChange={(e) => setAuthToken(e.target.value)}
-              className="border-2 border-gray-800 rounded-md p-3 mt-3"
+              className="bg-gray-50 rounded my-2 px-2 py-2"
               type="password"
               name="token"
               label="Secret Key"
