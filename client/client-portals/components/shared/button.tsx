@@ -1,14 +1,14 @@
+import { ButtonWrapperProps } from "../../utils/interfaces";
+
 const STYLE = ["primary", "secondary"];
 
-interface props {
-  type?: "button" | "submit" | "reset";
-  btnStyle?: "primary" | "secondary";
-  disabled?: boolean;
-  children?: JSX.Element | string;
-  onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}
-
-const Button = ({ type, btnStyle, disabled, children, onClick }: props) => {
+const Button = ({
+  type,
+  btnStyle,
+  disabled,
+  children,
+  onClick,
+}: ButtonWrapperProps) => {
   const primary =
     "text-white bg-base-teal w-32 py-4 font-semibold rounded-lg my-3";
   const secondary =
