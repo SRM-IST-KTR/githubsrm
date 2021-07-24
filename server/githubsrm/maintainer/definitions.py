@@ -85,7 +85,7 @@ class RejectionSchema:
         self.data = data
         self.valid_contributor_schema = {
             "contributor_id": And(str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8)
-        }    
+        }
 
     def valid(self) -> Dict[str, str]:
         try:

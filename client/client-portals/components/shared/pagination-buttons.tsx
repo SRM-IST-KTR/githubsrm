@@ -1,9 +1,8 @@
-import Next from "utils/icons/next";
-import Previous from "utils/icons/previous";
+import { Next, Previous } from "@/icons/index";
 
 const PaginationButtons = ({ hasNextPage, hasPrevPage, pageNo, setPageNo }) => {
   return (
-    <div className="fixed inline-flex w-full bottom-0 left-1/2 mb-32">
+    <div className="flex justify-center items-center">
       <button
         disabled={!hasPrevPage}
         className={`${

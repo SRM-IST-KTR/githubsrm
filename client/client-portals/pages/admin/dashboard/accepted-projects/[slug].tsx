@@ -3,13 +3,11 @@ import { useRouter } from "next/router";
 import { AuthContext } from "context/authContext";
 import { getProject, postAcceptProject } from "services/api";
 import { successToast } from "utils/functions/toast";
-import { Layout, Footer } from "components/shared";
-import Link from "next/link";
+import { Layout } from "components/shared";
 import { ContributorsProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
-import Loading from "utils/icons/loading";
-import Tick from "utils/icons/tick";
-import Cross from "utils/icons/cross";
+import { Loading, Tick, Cross } from "@/icons/index";
+import { Button } from "@/shared/index";
 
 const headings = [
   "Name",
@@ -72,25 +70,20 @@ const ContributorsPage = () => {
   }, [router.query, accepted]);
 
   return loading2 ? (
-    <>
-      <Layout type="admin">
-        <div className="flex flex-col items-center justify-center">
-          <CSSLoader />
-        </div>
-      </Layout>
-      <div className="fixed bottom-0 w-full">
-        <Footer />
+    <Layout type="admin">
+      <div className="flex flex-col items-center justify-center">
+        <CSSLoader />
       </div>
-    </>
+    </Layout>
   ) : (
     <Layout type="admin">
-      <h1 className="text-5xl font-extrabold underline text-white mb-7">
+      <h1 className="text-5xl font-semibold text-white mb-5 text-center">
         {projectName}
       </h1>
 
       <div className="overflow-auto w-full">
         {contributorsData[0] ? (
-          <table className="table text-white border-separate space-y-6 text-sm">
+          <table className="table text-white border-separate md:space-y-6 space-y-6 text-sm">
             <thead className="bg-base-teal text-white">
               <tr>
                 {headings.map((head) => (
@@ -184,11 +177,10 @@ const ContributorsPage = () => {
                         <Tick />
                       </span>
                     ) : (
-                      <button
+                      <Button
                         onClick={() =>
                           acceptMaintainerHandler(projectId, person._id)
                         }
-                        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                       >
                         {loading ? (
                           <span className="flex w-6 mx-auto">
@@ -197,7 +189,7 @@ const ContributorsPage = () => {
                         ) : (
                           "Approve Contributor"
                         )}
-                      </button>
+                      </Button>
                     )}
                   </td>
                 </tr>
@@ -205,8 +197,8 @@ const ContributorsPage = () => {
             </tbody>
           </table>
         ) : (
-          <h1 className="text-5xl text-gray-200 mt-10 overflow-auto no-scrollbar">
-            No Contributors Yet!!
+          <h1 className="text-4xl text-gray-200 mt-10 overflow-auto no-scrollbar text-center">
+            No Contributors Yet!
           </h1>
         )}
       </div>

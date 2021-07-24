@@ -1,4 +1,4 @@
-const Burger = () => {
+export default function Burger() {
   return (
     <svg
       stroke="currentColor"
@@ -12,6 +12,4 @@ const Burger = () => {
       <path d="M32 96v64h448V96H32zm0 128v64h448v-64H32zm0 128v64h448v-64H32z"></path>
     </svg>
   );
-};
-
-export default Burger;
+}

@@ -1,18 +1,17 @@
 import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { AuthContext } from "context/authContext";
-import LogoutIcon from "utils/icons/logout";
-import Burger from "utils/icons/navbarBurger";
+import { LogoutIcon, Burger } from "@/icons/index";
 
 const Navbar = ({ links }) => {
   const [navbarOpen, setNavbarOpen] = useState<boolean>(false);
   const authContext = useContext(AuthContext);
 
   return (
-    <div className="absolute shadow-xl top-0 left-0 right-0 flex flex-wrap items-center justify-between px-2 py-3 bg-gray-800 mb-3 text-white">
+    <div className="absolute shadow-xl top-0 left-0 right-0 flex flex-wrap items-center justify-between px-2 py-3 bg-gray-800 mb-3 text-white w-full overflow-x-auto">
       <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
-        <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
-          <h2 className="mr-5 font-bold text-2xl">
+        <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start w-screen">
+          <h2 className="mr-3 font-bold text-xl md:text-2xl">
             <span className="font-normal"> Hi,</span> {authContext.username}
           </h2>
           <button
@@ -43,7 +42,7 @@ const Navbar = ({ links }) => {
               onClick={authContext.logoutHandler}
               className="bg-base-green p-2 mx-2 rounded text-xl"
             >
-              <div className="flex ">
+              <div className="flex">
                 <span className="flex items-center text-3xl mx-1">
                   <LogoutIcon />
                 </span>

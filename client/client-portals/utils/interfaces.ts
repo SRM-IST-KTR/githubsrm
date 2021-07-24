@@ -115,6 +115,14 @@ export interface AcceptedProjectsProps {
   records: [];
 }
 
+export interface ButtonWrapperProps {
+  type?: "button" | "submit" | "reset";
+  btnStyle?: "primary" | "secondary";
+  disabled?: boolean;
+  children?: JSX.Element | string;
+  onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
+
 export interface MaintainerLoginData
   extends Yup.InferType<typeof maintainerLoginValidation> {}
 
