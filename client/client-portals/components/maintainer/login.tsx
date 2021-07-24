@@ -7,7 +7,7 @@ import {
   maintainerLoginInputs,
   customInputClasses,
 } from "utils/constants";
-import { Input, Layout } from "@/shared/index";
+import { Input, Layout, Button } from "@/shared/index";
 import Router from "next/router";
 import { successToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
@@ -78,14 +78,10 @@ const MaintainerLogin = () => {
                 }
               })}
               <div className="flex flex-col items-center justify-center">
-                <button
+                <Button
                   disabled={Object.keys(errors).length > 0}
                   type="submit"
-                  className={`${
-                    Object.keys(errors).length > 0
-                      ? "cursor-not-allowed bg-opacity-70"
-                      : "cursor-pointer"
-                  } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                  btnStyle="primary"
                 >
                   {loading ? (
                     <span className="flex w-6 mx-auto">
@@ -94,7 +90,7 @@ const MaintainerLogin = () => {
                   ) : (
                     "Login"
                   )}
-                </button>
+                </Button>
                 <div className="text-md mt-5 hover:underline">
                   <Link href="/maintainer/reset-password/reset">
                     Forgot Password?

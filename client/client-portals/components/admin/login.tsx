@@ -8,7 +8,7 @@ import {
   adminLoginInputs,
   customInputClasses,
 } from "utils/constants";
-import { Input } from "@/shared/index";
+import { Input, Button } from "@/shared/index";
 import { successToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
 import { postAdminLogin } from "services/api";
@@ -75,14 +75,10 @@ const AdminLogin = () => {
               }
             })}
             <div className="flex justify-center">
-              <button
+              <Button
                 disabled={Object.keys(errors).length > 0}
                 type="submit"
-                className={`${
-                  Object.keys(errors).length > 0
-                    ? "cursor-not-allowed bg-opacity-70"
-                    : "cursor-pointer"
-                } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                btnStyle="primary"
               >
                 {loading ? (
                   <span className="flex w-6 mx-auto">
@@ -91,7 +87,7 @@ const AdminLogin = () => {
                 ) : (
                   "Login"
                 )}
-              </button>
+              </Button>
             </div>
           </Form>
         )}
