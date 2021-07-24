@@ -23,7 +23,7 @@ def check_github_id(github_id: str):
     Args:
         github_id (str) user entred value
     """
-    _url = f"https://api.github.com/users/{github_id}"
+    _url = f"https://github.com/{github_id}"
 
     with httpx.Client() as client:
         response = client.get(_url)
@@ -94,7 +94,7 @@ class CommonSchema:
     def __init__(self, data: Dict[Any, Any], query_param: str) -> None:
         self.data = data
         self.email_re = re.compile(
-            '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
+            '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$')
         self.url_re = re.compile(
             '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
