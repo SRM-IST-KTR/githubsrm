@@ -96,17 +96,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+if DEBUG:
+    REST_FRAMEWORK = {
 
-REST_FRAMEWORK = {
+        'DEFAULT_THROTTLE_RATES': {
+            'post_throttle': '100/min',
+        },
 
-    'DEFAULT_THROTTLE_RATES': {
-        'post_throttle': '10/min',
-    },
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        )
+    }
 
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
-}
+else:
+    REST_FRAMEWORK = {
+
+        'DEFAULT_THROTTLE_RATES': {
+            'post_throttle': '10/min',
+        },
+
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        )
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
