@@ -43,7 +43,7 @@ const AdminLogin = () => {
 
   return (
     <div className="md:p-14 bg-base-blue">
-      <h1 className="flex justify-center text-4xl font-extrabold text-white mt-5">
+      <h1 className="flex justify-center text-5xl font-extrabold text-white mt-5">
         Admin Login
       </h1>
 

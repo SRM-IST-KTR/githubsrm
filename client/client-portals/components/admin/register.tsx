@@ -39,10 +39,9 @@ const AdminRegister = () => {
 
   return (
     <div className="md:p-14 bg-base-blue">
-      <h1 className="flex justify-center text-2xl md:text-4xl font-extrabold text-white mt-5 md:mt-0">
+      <h1 className="flex justify-center text-2xl md:text-5xl font-extrabold text-white mt-5 md:mt-0">
         Admin Registration
       </h1>
-
       <Formik
         initialValues={initialValues}
         onSubmit={(values, { resetForm }) => submitValues(values, resetForm)}

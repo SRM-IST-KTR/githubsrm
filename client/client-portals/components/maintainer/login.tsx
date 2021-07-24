@@ -46,7 +46,7 @@ const MaintainerLogin = () => {
   return (
     <Layout type="maintainer">
       <div className="md:p-14 bg-base-blue">
-        <h1 className="flex justify-center text-4xl font-extrabold text-white">
+        <h1 className="flex justify-center text-5xl font-extrabold text-white">
           Maintainer Login
         </h1>
 
