@@ -34,40 +34,27 @@ class Projects(APIView):
             JsonResponse
         """
 
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return JsonResponse(data={
-                "error": "recaptcha not provided"
-            }, status=401)
+        validate = MaintainerSchema(
+            request.data, path=request.path).valid()
 
-        if check_token(reCaptcha):
+        if 'error' in validate:
+            return JsonResponse(data=validate, status=400)
 
-            validate = MaintainerSchema(
-                request.data, path=request.path).valid()
-
-            if 'error' in validate:
-                return JsonResponse(data=validate, status=400)
-
-            if doc := entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
-                service.wrapper_email(role="contributor_approval", data={
-                    "email": doc["email"],
-                    "name": doc["name"],
-                    "project_name": doc["project_name"],
-                    "project_url": doc["project_url"]
-                })
-
-                return JsonResponse(data={
-                    "approved contributor": True
-                }, status=200)
+        if doc := entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
+            service.wrapper_email(role="contributor_approval", data={
+                "email": doc["email"],
+                "name": doc["name"],
+                "project_name": doc["project_name"],
+                "project_url": doc["project_url"]
+            })
 
             return JsonResponse(data={
-                "error": "invalid ids or contributor already approved"
-            }, status=400)
+                "approved contributor": True
+            }, status=200)
 
         return JsonResponse(data={
-            "error": "Invalid reCaptcha token"
-        }, status=401)
+            "error": "invalid ids or contributor already approved"
+        }, status=400)
 
     @staticmethod
     def _remove_contributor(request) -> JsonResponse:
