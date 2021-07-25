@@ -53,6 +53,9 @@ class BotoService:
         Args:
             payload (SNSpayload): SNSpayload
         """
+        if os.getenv("SENDEMAIL"):
+            return True
+
         client = boto3.client('sns', region_name='ap-south-1')
 
         try:
@@ -74,6 +77,9 @@ class BotoService:
         Returns:
             bool
         """
+        if os.getenv("SENDEMAIL"):
+            return True
+            
         client = boto3.client('sesv2', region_name='ap-south-1')
 
         try:

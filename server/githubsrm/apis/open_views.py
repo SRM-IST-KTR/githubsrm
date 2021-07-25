@@ -36,52 +36,40 @@ class Contributor(APIView):
         """
 
         try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return response.Response({
-                "error": "reCaptcha token not provided"
-            }, status=status.HTTP_401_UNAUTHORIZED)
+            validate = CommonSchema(
+                request.data, query_param=request.GET.get('role')).valid()
+        except Exception as e:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if check_token(reCaptcha):
-
-            try:
-                validate = CommonSchema(
-                    request.data, query_param=request.GET.get('role')).valid()
-            except Exception as e:
-                return response.Response(status=status.HTTP_400_BAD_REQUEST)
-
-            if 'error' not in validate:
-                if open_entry_checks.check_contributor(validate['interested_project'],
-                                                       validate['reg_number'], validate["github_id"],
-                                                       validate["srm_email"]):
-                    return response.Response({
-                        "invalid data": "Contributor for project exists / Project not approved"
-                    }, status=status.HTTP_400_BAD_REQUEST)
-
-                if doc := open_entry.enter_contributor(validate):
-                    if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
-                                                                                "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
-
-                        Thread(target=service.sns, kwargs={
-                            "payload": {
-                                "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
-                                "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
-                            }
-                        }).start()
-
-                        return response.Response({
-                            "valid": validate
-                        }, status=status.HTTP_201_CREATED)
-                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        if 'error' not in validate:
+            if open_entry_checks.check_contributor(validate['interested_project'],
+                                                   validate['reg_number'], validate["github_id"],
+                                                   validate["srm_email"]):
                 return response.Response({
-                    "error": "project not approved or project does not exist"
+                    "invalid data": "Contributor for project exists / Project not approved"
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
-        return response.Response({
-            "error": "Invalid reCaptcha"
-        }, status=status.HTTP_401_UNAUTHORIZED)
+            if doc := open_entry.enter_contributor(validate):
+                if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
+                                                                            "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
+
+                    Thread(target=service.sns, kwargs={
+                        "payload": {
+                            "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
+                            "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
+                        }
+                    }).start()
+
+                    return response.Response({
+                        "valid": validate
+                    }, status=status.HTTP_201_CREATED)
+                return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return response.Response({
+                "error": "project not approved or project does not exist"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
 
 
 class Maintainer(APIView):
@@ -100,95 +88,82 @@ class Maintainer(APIView):
             Response
         """
         try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return response.Response({
-                "error": "reCaptcha token not provided"
-            }, status=status.HTTP_401_UNAUTHORIZED)
+            validate = CommonSchema(
+                request.data, query_param=request.GET.get('role')).valid()
+        except Exception as e:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if check_token(reCaptcha):
+        if 'error' not in validate:
 
-            try:
-                validate = CommonSchema(
-                    request.data, query_param=request.GET.get('role')).valid()
-            except Exception as e:
-                return response.Response(status=status.HTTP_400_BAD_REQUEST)
+            if 'project_id' in validate:
 
-            if 'error' not in validate:
+                if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
-                if 'project_id' in validate:
+                    if id := open_entry.enter_beta_maintainer(doc=request.data):
 
-                    if details := open_entry_checks.validate_beta_maintainer(doc=validate):
+                        if service.wrapper_email(role='maintainer_received', data={
+                            "name": validate["name"],
+                            "project_name": details["project_name"],
+                            "email": validate["email"]
+                        }):
+                            Thread(target=service.sns, kwargs={'payload': {
+                                'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
+                                    Details: \n \
+                                    Name: {validate.get("name")} \n \
+                                    Email Personal: {validate.get("email")}',
+                                'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
+                            }}).start()
+                            return response.Response(status=status.HTTP_201_CREATED)
+                        else:
+                            open_entry.beta_maintainer_reset_status(
+                                maintainer_id=id)
 
-                        if id := open_entry.enter_beta_maintainer(doc=request.data):
+                        return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                            if service.wrapper_email(role='maintainer_received', data={
-                                "name": validate["name"],
-                                "project_name": details["project_name"],
-                                "email": validate["email"]
-                            }):
-                                Thread(target=service.sns, kwargs={'payload': {
-                                    'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
-                                        Details: \n \
-                                        Name: {validate.get("name")} \n \
-                                        Email Personal: {validate.get("email")}',
-                                    'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
-                                }}).start()
-                                return response.Response(status=status.HTTP_201_CREATED)
-                            else:
-                                open_entry.beta_maintainer_reset_status(
-                                    maintainer_id=id)
+                return response.Response(data={
+                    "error": "Approved / Already Exists / Invalid"
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            if open_entry_checks.check_existing(description=validate['description'],
+                                                project_name=validate['project_name'],
+                                                project_url=validate['project_url']):
 
-                    return response.Response(data={
-                        "error": "Approved / Already Exists / Invalid"
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                return response.Response({
+                    "error": "Project Exists"
+                }, status=status.HTTP_409_CONFLICT)
 
-                if open_entry_checks.check_existing(description=validate['description'],
-                                                    project_name=validate['project_name'],
-                                                    project_url=validate['project_url']):
+            if value := open_entry.enter_maintainer(validate):
+                validate['project_id'] = value[0]
+                validate['project_name'] = value[2]
+                validate['description'] = value[3]
 
-                    return response.Response({
-                        "error": "Project Exists"
-                    }, status=status.HTTP_409_CONFLICT)
+                if service.wrapper_email(role='project_submission_confirmation', data={
+                    "project_name": validate["project_name"],
+                    "name": validate["name"],
+                    "project_description": validate["description"],
+                    "email": validate["email"]
 
-                if value := open_entry.enter_maintainer(validate):
-                    validate['project_id'] = value[0]
-                    validate['project_name'] = value[2]
-                    validate['description'] = value[3]
+                }):
+                    Thread(target=service.sns, kwargs={'payload': {
+                        'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
+                                    Details: \n \
+                                    Name: {validate.get("name")} \n \
+                                    Email Personal: {validate.get("email")} \n \
+                                    Project Details: \n \
+                                    Name: {validate.get("project_name")} \n \
+                                    Description: {validate.get("description")}',
+                        'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
+                    }}).start()
+                    return response.Response(status=status.HTTP_201_CREATED)
+                else:
+                    open_entry.alpha_maintainer_reset_status(
+                        project_id=validate.get('project_id'),
+                        maintainer_id=value[1])
+                return response.Response({
+                    "deleted record"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                    if service.wrapper_email(role='project_submission_confirmation', data={
-                        "project_name": validate["project_name"],
-                        "name": validate["name"],
-                        "project_description": validate["description"],
-                        "email": validate["email"]
-
-                    }):
-                        Thread(target=service.sns, kwargs={'payload': {
-                            'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
-                                        Details: \n \
-                                        Name: {validate.get("name")} \n \
-                                        Email Personal: {validate.get("email")} \n \
-                                        Project Details: \n \
-                                        Name: {validate.get("project_name")} \n \
-                                        Description: {validate.get("description")}',
-                            'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
-                        }}).start()
-                        return response.Response(status=status.HTTP_201_CREATED)
-                    else:
-                        open_entry.alpha_maintainer_reset_status(
-                            project_id=validate.get('project_id'),
-                            maintainer_id=value[1])
-                    return response.Response({
-                        "deleted record"
-                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
-
-        return response.Response({
-            "error": "Invalid reCaptcha"
-        }, status=status.HTTP_401_UNAUTHORIZED)
+        return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, **kwargs) -> response.Response:
         """Get all projects
@@ -242,30 +217,26 @@ class ContactUs(APIView):
         Returns:
             response.Response
         """
-        if check_token(request.META.get('HTTP_X_RECAPTCHA_TOKEN')):
-            validate = ContactUsSchema(data=request.data).valid()
-            if 'error' in validate:
-                return response.Response(data={
-                    "error": validate.get('error')
-                }, status=status.HTTP_400_BAD_REQUEST)
 
-            result = open_entry.enter_contact_us(doc=request.data)
-            if result:
-                Thread(target=service.sns, kwargs={'payload': {
-                    'message': f'New Query Received! \n Name:{validate.get("name")} \n \
-                        Email: {validate.get("email")} \n \
-                        Message: {validate.get("message")} \n \
-                        Phone Number: {validate.get("phone_number")}',
-                    'subject': '[QUERY]: https://githubsrm.tech'
-                }}).start()
-
-                return response.Response(status=status.HTTP_201_CREATED)
+        validate = ContactUsSchema(data=request.data).valid()
+        if 'error' in validate:
             return response.Response(data={
-                "entry exists"
+                "error": validate.get('error')
             }, status=status.HTTP_400_BAD_REQUEST)
 
+        result = open_entry.enter_contact_us(doc=request.data)
+        if result:
+            Thread(target=service.sns, kwargs={'payload': {
+                'message': f'New Query Received! \n Name:{validate.get("name")} \n \
+                    Email: {validate.get("email")} \n \
+                    Message: {validate.get("message")} \n \
+                    Phone Number: {validate.get("phone_number")}',
+                'subject': '[QUERY]: https://githubsrm.tech'
+            }}).start()
+
+            return response.Response(status=status.HTTP_201_CREATED)
         return response.Response(data={
-            "invalid reCaptcha"
+            "entry exists"
         }, status=status.HTTP_400_BAD_REQUEST)
 
 

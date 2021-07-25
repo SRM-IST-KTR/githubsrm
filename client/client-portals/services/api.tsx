@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import { getRecaptchaToken } from "./recaptcha";
 import {
   AdminLoginData,
@@ -6,27 +6,76 @@ import {
   MaintainerLoginData,
   ResetPasswordData,
   SetPasswordData,
-  ContributorProps,
-  MaintainersProps,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
+import router from "next/router";
 
-const instance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
-});
+const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
+  const api = axios.create({
+    baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
+  });
+  api.defaults.headers.common["X-RECAPTCHA-TOKEN"] = await getRecaptchaToken(
+    "post"
+  );
+  if (!auth) {
+    return api;
+  }
+  const authToken = sessionStorage.getItem("token");
+  const refreshToken = sessionStorage.getItem("refreshToken");
+  const recaptchaToken = await getRecaptchaToken("post");
+  try {
+    try {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (data.success) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
+        return api;
+      }
+    } catch (err) {
+      const { data } = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/refresh-token`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+            "X-RECAPTCHA-TOKEN": recaptchaToken,
+          },
+        }
+      );
+      sessionStorage.setItem("token", data.access_token);
+      sessionStorage.setItem("refreshToken", data.refresh_token);
+      window.location.reload();
+      api.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${data.access_token}`;
+      return api;
+    }
+  } catch (err) {
+    sessionStorage.clear();
+    router.replace("/");
+  }
+};
 
 export const postAcceptProjectHandler = async (values): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.post(`admin/projects?role=project`, values, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-    });
-    return true;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.post(`admin/projects?role=project`, values);
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
@@ -37,33 +86,43 @@ export const postAdminLogin = async (
   values: AdminLoginData
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("/admin/login", values, {
-      headers: {
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-    });
-    sessionStorage.setItem("token", res.data.keys);
-    return true;
+    let API;
+    try {
+      API = await instance(false);
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      const res = await API?.post("/admin/login", values);
+      sessionStorage.setItem("token", res.data.access_token);
+      sessionStorage.setItem("refreshToken", res.data.refresh_token);
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
+    console.dir(error);
     return false;
   }
 };
 
 export const postAdminRegister = async (
   values: AdminRegisterData,
-  authToken
+  token: string
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("/admin/register", values, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-    });
-    return true;
+    let API;
+    try {
+      API = await instance(false);
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      const res = await API?.post("/admin/register", values);
+      return true;
+    }
   } catch (error) {
     if (error.response?.status === 400) {
       errToast("User already exists");
@@ -74,38 +133,61 @@ export const postAdminRegister = async (
   }
 };
 
-export const getAcceptedProjects = async (
-  pageNo,
-  token
-): Promise<any | false> => {
+export const getAcceptedProjects = async (pageNo): Promise<any | false> => {
   try {
-    return await (
-      await instance.get(`admin/projects/accepted?page=${pageNo}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-    ).data;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      return await (await API?.get(`admin/projects/accepted?page=${pageNo}`))
+        .data;
+    }
   } catch (error) {
     return false;
   }
 };
 
 export const getContributorsApplications = async (
-  token,
   slug
 ): Promise<any | false> => {
   try {
-    return await (
-      await instance.get(
-        `maintainer/projects?projectId=${slug}&contributor=1&maintainer=1`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-    ).data;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      return await (
+        await API?.get(
+          `maintainer/projects?projectId=${slug}&contributor=1&maintainer=1`
+        )
+      ).data;
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
+export const getAdminProjectApplications = async (
+  pageNo
+): Promise<any | false> => {
+  try {
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      return await (await API?.get(`admin/projects?page=${pageNo}`)).data;
+    }
   } catch (error) {
     return false;
   }
@@ -115,14 +197,19 @@ export const postMaintainerLogin = async (
   values: MaintainerLoginData
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("maintainer/login", values, {
-      headers: {
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-    });
-    sessionStorage.setItem("token", res.data.key);
-    return true;
+    let API;
+    try {
+      API = await instance(false);
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      const res = await API?.post("maintainer/login", values);
+      sessionStorage.setItem("token", res.data.access_token);
+      sessionStorage.setItem("refreshToken", res.data.refresh_token);
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
@@ -133,13 +220,17 @@ export const postResetPassword = async (
   values: ResetPasswordData
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("maintainer/reset-password/reset", values, {
-      headers: {
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-    });
-    return true;
+    let API;
+    try {
+      API = await instance(false);
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      const res = await API?.post("maintainer/reset-password/reset", values);
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
@@ -151,14 +242,18 @@ export const postSetPassword = async (
   queryToken
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const res = await instance.post("maintainer/reset-password/set", values, {
-      headers: {
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-        Authorization: `Bearer ${queryToken}`,
-      },
-    });
-    return true;
+    let API;
+    try {
+      API = await instance(false);
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      API.defaults.headers.common["Authorization"] = `Bearer ${queryToken}`;
+      const res = await API?.post("maintainer/reset-password/set", values);
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
@@ -170,19 +265,45 @@ export const postAcceptContributor = async (
   contributor_id
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.post(
-      "maintainer/projects?role=contributor",
-      { project_id: project_id, contributor_id: contributor_id },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.post("maintainer/projects?role=contributor", {
+        project_id: project_id,
+        contributor_id: contributor_id,
+      });
+      return true;
+    }
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const deletefromMaintainerContributor = async (
+  contributor_id
+): Promise<boolean> => {
+  try {
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.delete("maintainer/projects?role=contributor", {
+        data: {
+          contributor_id: contributor_id,
         },
-      }
-    );
-    return true;
+      });
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
@@ -195,40 +316,89 @@ export const postAcceptMaintainer = async (
   email
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.post(
-      "admin/projects?role=maintainer",
-      { project_id: project_id, maintainer_id: maintainer_id, email },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      }
-    );
-    return true;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.post("admin/projects?role=maintainer", {
+        project_id: project_id,
+        maintainer_id: maintainer_id,
+        email,
+      });
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
   }
 };
 
-export const getMaintainerApplications = async (
-  slug,
-  token
-): Promise<any | false> => {
+export const deleteMaintainer = async (maintainer_id) => {
   try {
-    return await (
-      await instance.get(
-        `admin/projects?projectId=${slug}&contributor=false&maintainer=true`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-    ).data;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.delete("admin/projects?role=maintainer", {
+        data: {
+          maintainer_id: maintainer_id,
+        },
+      });
+      return true;
+    }
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const deleteContributor = async (contributor_id): Promise<boolean> => {
+  try {
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.delete("admin/projects?role=contributor", {
+        data: {
+          contributor_id: contributor_id,
+        },
+      });
+      return true;
+    }
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const getMaintainerApplications = async (slug): Promise<any | false> => {
+  try {
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      return await (
+        await API?.get(
+          `admin/projects?projectId=${slug}&contributor=false&maintainer=true`
+        )
+      ).data;
+    }
   } catch (error) {
     return false;
   }
@@ -239,37 +409,42 @@ export const postAcceptProject = async (
   contributor_id
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.post(
-      "admin/projects?role=contributor",
-      { contributor_id: contributor_id, project_id: project_id },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-RECAPTCHA-TOKEN": recaptchaToken,
-        },
-      }
-    );
-    return true;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.post("admin/projects?role=contributor", {
+        contributor_id: contributor_id,
+        project_id: project_id,
+      });
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
   }
 };
 
-export const getProject = async (slug, token): Promise<any> => {
+export const getProject = async (slug): Promise<any> => {
   try {
-    return await (
-      await instance.get(
-        `admin/projects?projectId=${slug}&contributor=true&maintainer=true`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-    ).data;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      return await (
+        await API?.get(
+          `admin/projects?projectId=${slug}&contributor=true&maintainer=true`
+        )
+      ).data;
+    }
   } catch (error) {
     return false;
   }

@@ -50,6 +50,7 @@ export interface TableProjectsProps {
 export interface ContributorsProps {
   _id: string;
   is_admin_approved: boolean;
+  is_admin_rejected: boolean;
   branch: string;
   email: string;
   name: string;
@@ -64,6 +65,7 @@ export interface ContributorsProps {
 export interface MaintainersProps {
   _id: string;
   is_admin_approved: boolean;
+  is_admin_rejected: boolean;
   branch: string;
   email: string;
   name: string;
@@ -107,12 +109,21 @@ export interface ContributorProps {
   branch: string;
   poa: string;
   is_maintainer_approved: boolean;
+  is_maintainer_rejected: boolean;
 }
 
 export interface AcceptedProjectsProps {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   records: [];
+}
+
+export interface ButtonWrapperProps {
+  type?: "button" | "submit" | "reset";
+  btnStyle?: "primary" | "secondary";
+  disabled?: boolean;
+  children?: JSX.Element | string;
+  onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export interface MaintainerLoginData

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Formik, Form, FormikState, Field } from "formik";
+import { Formik, Form, FormikState } from "formik";
 import { ResetPasswordData, SetPasswordData } from "utils/interfaces";
 import {
   resetPasswordValidation,
@@ -8,7 +8,7 @@ import {
   setPasswordInputs,
   customInputClasses,
 } from "utils/constants";
-import { Input, Layout, Footer } from "@/shared/index";
+import { Input, Layout, Button } from "@/shared/index";
 import Markdown from "react-markdown";
 import { postResetPassword, postSetPassword } from "services/api";
 import { successToast, errToast } from "utils/functions/toast";
@@ -76,13 +76,14 @@ const ResetPassword = ({ action, queryToken }) => {
     } else {
       errToast("You do not have access to set password!");
     }
+    setLoading(false);
   };
 
   return (
-    <>
-      <Layout type="maintainer">
+    <Layout type="maintainer">
+      <div className="flex flex-col justify-center items-center">
         {!jwtExpired && (
-          <h1 className="flex justify-center text-4xl font-extrabold text-white">
+          <h1 className="text-5xl mt-8 font-extrabold text-white">
             {action === "set" ? "Set" : "Reset"} Your Password
           </h1>
         )}
@@ -112,7 +113,7 @@ const ResetPassword = ({ action, queryToken }) => {
                       {setPasswordInputs.map((input, index) => (
                         <div
                           key={index}
-                          className="border-2 border-gray-700 rounded my-4 p-4"
+                          className="bg-gray-50 rounded my-4 px-2 py-1"
                         >
                           <Input
                             key={input.id}
@@ -123,14 +124,9 @@ const ResetPassword = ({ action, queryToken }) => {
                       ))}
 
                       <div className="flex justify-center">
-                        <button
+                        <Button
                           disabled={Object.keys(errors).length > 0}
-                          type="submit"
-                          className={`${
-                            Object.keys(errors).length > 0
-                              ? "cursor-not-allowed bg-opacity-70"
-                              : "cursor-pointer"
-                          } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                          btnStyle="primary"
                         >
                           {loading ? (
                             <span className="flex w-6 mx-auto">
@@ -139,7 +135,7 @@ const ResetPassword = ({ action, queryToken }) => {
                           ) : (
                             "Submit"
                           )}
-                        </button>
+                        </Button>
                       </div>
                       {Object.keys(errors).map((error) => {
                         if (touched[error]) {
@@ -171,20 +167,15 @@ const ResetPassword = ({ action, queryToken }) => {
             {({ errors, touched }) => (
               <Form className="flex flex-col px-6 lg:w-1/4 max-w-6xl mt-10 py-6 mx-auto bg-white rounded-lg">
                 {resetPasswordInputs.map((input) => (
-                  <div className="border-2 border-gray-700 rounded my-4 p-4">
+                  <div className="bg-gray-50 rounded my-4 px-2 py-1">
                     <Input key={input.id} {...input} {...customInputClasses} />
                   </div>
                 ))}
 
                 <div className="flex justify-center">
-                  <button
+                  <Button
                     disabled={Object.keys(errors).length > 0}
-                    type="submit"
-                    className={`${
-                      Object.keys(errors).length > 0
-                        ? "cursor-not-allowed bg-opacity-70"
-                        : "cursor-pointer"
-                    } text-white bg-base-teal w-32 py-4 font-semibold rounded-lg`}
+                    btnStyle="primary"
                   >
                     {loading ? (
                       <span className="flex w-6 mx-auto">
@@ -193,7 +184,7 @@ const ResetPassword = ({ action, queryToken }) => {
                     ) : (
                       "Submit"
                     )}
-                  </button>
+                  </Button>
                 </div>
                 {Object.keys(errors).map((error) => {
                   if (touched[error]) {
@@ -211,11 +202,8 @@ const ResetPassword = ({ action, queryToken }) => {
             )}
           </Formik>
         )}
-      </Layout>
-      <div className="fixed bottom-0 w-full">
-        <Footer />
       </div>
-    </>
+    </Layout>
   );
 };
 

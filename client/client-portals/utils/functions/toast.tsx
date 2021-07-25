@@ -25,3 +25,16 @@ export const errToast = (message: string) => {
     className: "font-medium bg-red-600",
   });
 };
+
+export const alertToast = (message: string) => {
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    className: "font-medium bg-yellow-400",
+  });
+};

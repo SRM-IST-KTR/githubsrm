@@ -31,7 +31,7 @@ else:
     print(f'\033[93mServer in DEBUG Mode. Disabling Sentry.\033[0m')
 
 ALLOWED_HOSTS = ['*']
-USE_DATABASE = 'MONGO'
+USE_DATABASE = 'MONGO' if DEBUG is False else "TEST"
 
 
 INSTALLED_APPS = [
@@ -59,7 +59,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'administrator.middleware.Authorize'
+    'administrator.middleware.ReCaptcha',
+    'administrator.middleware.Authorize',
+    'administrator.middleware.MeVerification'    
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -95,17 +97,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+if DEBUG:
+    REST_FRAMEWORK = {
 
-REST_FRAMEWORK = {
+        'DEFAULT_THROTTLE_RATES': {
+            'post_throttle': '100/min',
+        },
 
-    'DEFAULT_THROTTLE_RATES': {
-        'post_throttle': '10/min',
-    },
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        )
+    }
 
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
-}
+else:
+    REST_FRAMEWORK = {
+
+        'DEFAULT_THROTTLE_RATES': {
+            'post_throttle': '10/min',
+        },
+
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        )
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [

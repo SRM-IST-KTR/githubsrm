@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "context/authContext";
-import { getProject, postAcceptProject } from "services/api";
-import { successToast } from "utils/functions/toast";
-import { Layout, Footer } from "components/shared";
-import Link from "next/link";
+import { deleteContributor, getProject, postAcceptProject } from "services/api";
+import { successToast, alertToast } from "utils/functions/toast";
+import { Layout } from "components/shared";
 import { ContributorsProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
 import { Loading, Tick, Cross } from "@/icons/index";
+import { Button } from "@/shared/index";
+
 const headings = [
   "Name",
   "Email",
@@ -18,6 +19,8 @@ const headings = [
   "Proposal",
   "Maintainer approved?",
   "Added to repo?",
+  "Approve Contributor",
+  "Reject Contributor",
 ];
 
 const ContributorsPage = () => {
@@ -27,8 +30,10 @@ const ContributorsPage = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
+  const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
+  const [rejectLoading, setRejectLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -51,9 +56,19 @@ const ContributorsPage = () => {
     }
   };
 
-  const _getProject = async (slug, token) => {
+  const rejectMaintainerHandler = async (contributor_id) => {
+    setRejectLoading(true);
+    const res = deleteContributor(contributor_id);
+    if (res) {
+      setRejected(true);
+      alertToast("Contributor Rejected successfully!");
+      setRejectLoading(false);
+    }
+  };
+
+  const _getProject = async (slug) => {
     setLoading2(true);
-    const res = await getProject(slug, token);
+    const res = await getProject(slug);
     if (res) {
       setContributorsData(res.contributor.contributor);
       setProjectName(res.project.project_name);
@@ -64,30 +79,24 @@ const ContributorsPage = () => {
 
   useEffect(() => {
     const { slug } = router.query;
-    const token = sessionStorage.getItem("token");
-    _getProject(slug, token);
-  }, [router.query, accepted]);
+    _getProject(slug);
+  }, [router.query, accepted, rejected]);
 
   return loading2 ? (
-    <>
-      <Layout type="admin">
-        <div className="flex flex-col items-center justify-center">
-          <CSSLoader />
-        </div>
-      </Layout>
-      <div className="fixed bottom-0 w-full">
-        <Footer />
+    <Layout type="admin">
+      <div className="flex flex-col items-center justify-center">
+        <CSSLoader />
       </div>
-    </>
+    </Layout>
   ) : (
     <Layout type="admin">
-      <h1 className="text-5xl font-extrabold underline text-white mb-7">
+      <h1 className="text-5xl font-semibold text-white mb-5 text-center">
         {projectName}
       </h1>
 
       <div className="overflow-auto w-full">
         {contributorsData[0] ? (
-          <table className="table text-white border-separate space-y-6 text-sm">
+          <table className="table text-white border-separate md:space-y-6 space-y-6 text-sm">
             <thead className="bg-base-teal text-white">
               <tr>
                 {headings.map((head) => (
@@ -176,16 +185,19 @@ const ContributorsPage = () => {
                     </div>
                   </td>
                   <td className="p-3 ">
-                    {person.is_admin_approved ? (
+                    {person.is_admin_approved && !person.is_admin_rejected ? (
                       <span className="text-green-500 text-center text-3xl">
                         <Tick />
                       </span>
+                    ) : person.is_admin_rejected ? (
+                      <span className="text-red-500 text-center text-3xl">
+                        <Cross />
+                      </span>
                     ) : (
-                      <button
+                      <Button
                         onClick={() =>
                           acceptMaintainerHandler(projectId, person._id)
                         }
-                        className="flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl"
                       >
                         {loading ? (
                           <span className="flex w-6 mx-auto">
@@ -193,6 +205,30 @@ const ContributorsPage = () => {
                           </span>
                         ) : (
                           "Approve Contributor"
+                        )}
+                      </Button>
+                    )}
+                  </td>
+                  <td className="p-3 ">
+                    {person.is_admin_rejected && !person.is_admin_approved ? (
+                      <span className="text-green-500 text-center text-3xl">
+                        <Tick />
+                      </span>
+                    ) : person.is_admin_approved ? (
+                      <span className="text-red-500 text-center text-xl">
+                        <Cross />
+                      </span>
+                    ) : (
+                      <button
+                        className="flex justify-center w-1/8 mx-auto mt-4 bg-red-400 p-2 font-bold text-white rounded-xl"
+                        onClick={() => rejectMaintainerHandler(person._id)}
+                      >
+                        {rejectLoading ? (
+                          <span className="flex w-6 mx-auto">
+                            <Loading />
+                          </span>
+                        ) : (
+                          "Reject Contributor"
                         )}
                       </button>
                     )}
@@ -202,8 +238,8 @@ const ContributorsPage = () => {
             </tbody>
           </table>
         ) : (
-          <h1 className="text-5xl text-gray-200 mt-10 overflow-auto no-scrollbar">
-            No Contributors Yet!!
+          <h1 className="text-4xl text-gray-200 mt-10 overflow-auto no-scrollbar text-center">
+            No Contributors Yet!
           </h1>
         )}
       </div>

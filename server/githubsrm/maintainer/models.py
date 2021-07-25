@@ -3,7 +3,6 @@ from hashlib import sha256
 from typing import Iterable, Dict, Any
 import pymongo
 from django.conf import settings
-from apis import service
 from administrator import jwt_keys
 
 
@@ -78,19 +77,23 @@ class Entry:
         """
         return self.db.maintainer.find({"email": email})
 
-    def find_contributor_for_removal(self, identifier: str) -> Dict[str, Any]:
+    def find_contributor_for_removal(self, identifier: str, project_ids: list) -> Dict[str, Any]:
         """FInd contributors from contributor id
 
         Args:
             identifier (str): identifier
+            project_ids (list): maintainer project ids
 
         Returns:
             Dict[str, Any]
         """
-        contributor = self.db.contributor.find_one({"_id": identifier,
-                                                    "is_maintainer_approved": True})
-        if contributor:
-            return contributor
+        if len(project_ids):
+            contributor = self.db.contributor.find_one_and_delete({"_id": identifier,
+                                                                   "is_admin_approved": True,
+                                                                   "is_maintainer_approved": False,
+                                                                   "interested_project": {"$in": project_ids}})
+            if contributor:
+                return contributor
 
         else:
             return False
@@ -135,4 +138,25 @@ class Entry:
             if maintainer:
                 return True
             return False
+        return False
+
+    def projects_from_email(self, email: str) -> list:
+        """Get all projects from email
+
+        Args:
+            email (str): maintainer emails
+
+        Returns:
+            list: list of all projects
+        """
+        projects = self.db.maintainer.find({
+            "email": email,
+            "is_admin_approved": True
+        }, {"name": 0, "email": 0, "srm_email": 0,
+            "reg_number": 0, "branch": 0, "is_admin_approved": 0,
+            "time_stamp": 0, "github_id": 0, "_id": 0})
+
+        projects = list(projects)
+        if len(projects):
+            return [project["project_id"] for project in projects]
         return False

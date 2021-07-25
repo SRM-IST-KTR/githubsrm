@@ -6,7 +6,7 @@ interface otherMaintainersProps {
 
 const OtherMaintainers = ({ otherMaintainers }: otherMaintainersProps) => {
   return (
-    <div className="my-10 flex">
+    <div className="md:my-7 my-10 flex">
       <h1 className="text-gray-200 font-medium text-xl flex mr-3">
         {otherMaintainers?.length > 0
           ? "Other Maintainers :"

@@ -1,7 +1,7 @@
 from hashlib import sha256
 from threading import Thread
 
-from apis import PostThrottle, check_token, service
+from apis import PostThrottle, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -10,7 +10,7 @@ from maintainer import entry
 from administrator import jwt_keys
 from administrator.utils import get_token
 from . import entry
-from .definitions import MaintainerSchema
+from .definitions import MaintainerSchema, RejectionSchema
 from .utils import (
     RequestSetPassword, project_pagination,
     project_single_project
@@ -34,40 +34,27 @@ class Projects(APIView):
             JsonResponse
         """
 
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return JsonResponse(data={
-                "error": "recaptcha not provided"
-            }, status=401)
+        validate = MaintainerSchema(
+            request.data, path=request.path).valid()
 
-        if check_token(reCaptcha):
+        if 'error' in validate:
+            return JsonResponse(data=validate, status=400)
 
-            validate = MaintainerSchema(
-                request.data, path=request.path).valid()
-
-            if 'error' in validate:
-                return JsonResponse(data=validate, status=400)
-
-            if doc := entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
-                service.wrapper_email(role="contributor_approval", data={
-                    "email": doc["email"],
-                    "name": doc["name"],
-                    "project_name": doc["project_name"],
-                    "project_url": doc["project_url"]
-                })
-
-                return JsonResponse(data={
-                    "approved contributor": True
-                }, status=200)
+        if doc := entry.approve_contributor(validate.get("project_id"), validate.get("contributor_id")):
+            service.wrapper_email(role="contributor_approval", data={
+                "email": doc["email"],
+                "name": doc["name"],
+                "project_name": doc["project_name"],
+                "project_url": doc["project_url"]
+            })
 
             return JsonResponse(data={
-                "error": "invalid ids or contributor already approved"
-            }, status=400)
+                "approved contributor": True
+            }, status=200)
 
         return JsonResponse(data={
-            "error": "Invalid reCaptcha token"
-        }, status=401)
+            "error": "invalid ids or contributor already approved"
+        }, status=400)
 
     @staticmethod
     def _remove_contributor(request) -> JsonResponse:
@@ -79,35 +66,24 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        key = jwt_keys.verify_key(get_token(request_header=request.headers))
         contributor = entry.find_contributor_for_removal(
-            request.data.get("contributor_id"))
+            request.data.get("contributor_id"), request.decoded.get("project_id"))
         if contributor:
+            Thread(target=service.sns, kwargs={
+                "payload": {
+                    "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
+                        removed by -> {request.decoded.get('email')}",
+                    "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
+                }
+            }).start()
 
-            if contributor["interested_project"] in key.get("project_id"):
+            return JsonResponse(data={
+                "removed": request.data.get("contributor_id")
+            }, status=200)
 
-                entry.remove_contributor(
-                    identifier=contributor["_id"])
-
-                Thread(target=service.sns, kwargs={
-                    "payload": {
-                        "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
-                            removed by -> {key.get('email')}",
-                        "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
-                    }
-                }).start()
-
-                return JsonResponse(data={
-                    "removed": request.data.get("contributor_id")
-                }, status=200)
-
-            else:
-                return JsonResponse(data={
-                    "error": "Invalid request"
-                }, status=400)
         else:
             return JsonResponse(data={
-                "error": "invalid request"
+                "error": "Invalid request"
             }, status=400)
 
     def delete(self, request, **kwargs) -> JsonResponse:
@@ -119,19 +95,21 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        try:
-            recaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
+        validate = RejectionSchema(data=request.data).valid()
+        if "error" in validate:
             return JsonResponse(data={
-                "error": "token not provided"
-            }, status=401)
+                "error": "Invalid data"
+            }, status=400)
 
-        if check_token(recaptcha):
-            return self._remove_contributor(request=request)
+        _, token = get_token(request_header=request.headers)
+        decoded = jwt_keys.verify_key(token)
+        if decoded:
+            request.decoded = decoded
         else:
             return JsonResponse(data={
-                "error": "Invaid token"
+                "error": "Invalid key"
             }, status=401)
+        return self._remove_contributor(request=request)
 
     def get(self, request, **kwargs) -> JsonResponse:
         """Projects get view for maintainer portal.
@@ -146,9 +124,12 @@ class Projects(APIView):
         SingleProject = ['projectId', 'maintainer', 'contributor']
 
         RequestQueryKeys = list(request.GET.keys())
-
         if len(set(Pagination) & set(RequestQueryKeys)) == 1:
-            return JsonResponse(project_pagination(request, **kwargs), status=status.HTTP_200_OK)
+            response = project_pagination(request, **kwargs)
+            if "error" in response:
+                return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                return JsonResponse(response, status=status.HTTP_200_OK)
 
         elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
             return JsonResponse(project_single_project(request, **kwargs), status=status.HTTP_200_OK, safe=False)
@@ -167,14 +148,6 @@ class Login(APIView):
         """
         Login route get email and password make jwt and send.
         """
-
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
-
-        if not check_token(reCaptcha):
-            return JsonResponse(data={"error": "Invalid recaptcha token"}, status=401)
 
         validate = MaintainerSchema(request.data, path=request.path).valid()
         if 'error' in validate:
@@ -202,8 +175,8 @@ class Login(APIView):
             payload["name"] = doc_list[0]["name"]
             payload["project_id"] = [i["project_id"] for i in doc_list]
 
-            if jwt := jwt_keys.issue_key(payload):
-                return JsonResponse(data={"key": jwt}, status=status.HTTP_200_OK)
+            if jwt := jwt_keys.issue_key(payload, get_refresh_token=True):
+                return JsonResponse(data=jwt, status=status.HTTP_200_OK)
             else:
                 return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
 
@@ -225,41 +198,30 @@ class SetPassword(APIView):
         Returns:
             JsonResponse
         """
+        validate = MaintainerSchema(
+            data=request.data, path=request.path).valid()
+        if 'error' in validate:
+            return JsonResponse(data={"error": validate.get("error")}, status=400)
+
         try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
+            token = request.headers.get("Authorization").split()
+            token_type, token = token[0], token[1]
+            assert token_type == 'Bearer'
+        except Exception as e:
+            return JsonResponse(data={
+                "error": "Invalid token"
+            }, status=400)
 
-        if check_token(reCaptcha):
-            validate = MaintainerSchema(
-                data=request.data, path=request.path).valid()
-            if 'error' in validate:
-                return JsonResponse(data={"error": validate.get("error")}, status=400)
 
-            try:
-                token = request.headers.get("Authorization").split()
-                token_type, token = token[0], token[1]
-                assert token_type == 'Bearer'
-            except Exception as e:
-                return JsonResponse(data={
-                    "error": "Invalid token"
-                }, status=400)
+        password = request.data.get("password")
 
-            jwt = token
+        if not jwt_keys.verify_key(key=token):
+            return JsonResponse(data={"error": "Invalid jwt"}, status=400)
 
-            password = request.data.get("password")
+        if not entry.set_password(key=token, password=password):
+            return JsonResponse(data={"error": "Already changed"}, status=400)
 
-            if not jwt_keys.verify_key(key=jwt):
-                return JsonResponse(data={"error": "Invalid jwt"}, status=400)
-
-            if not entry.set_password(key=jwt, password=password):
-                return JsonResponse(data={"error": "Already changed"}, status=400)
-
-            return JsonResponse(data={}, status=200)
-
-        return JsonResponse(data={
-            "error": "Invalid recaptcha"
-        }, status=401)
+        return JsonResponse(data={}, status=200)
 
 
 class ResetPassword(APIView):
@@ -267,16 +229,14 @@ class ResetPassword(APIView):
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
+        """Handle reset password
 
-        try:
-            reCaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
-        except KeyError as e:
-            print(e)
-            return JsonResponse(data={"error": "recaptcha not provided"}, status=401)
+        Args:
+            request 
 
-        if not check_token(reCaptcha):
-            return JsonResponse(data={"error": "Invalid recaptcha"}, status=401)
-
+        Returns:
+            JsonResponse
+        """
         validate = MaintainerSchema(
             data=request.data, path=request.path).valid()
         if 'error' in validate:
@@ -291,8 +251,6 @@ class ResetPassword(APIView):
         maintainer = entry.find_Maintainer_with_email(email)
 
         jwt_link = RequestSetPassword(email)
-        print(jwt_link)
-
         service.wrapper_email(role="forgot_password", data={
                               "name": maintainer["name"], "email": email, "reset_token": jwt_link})
 

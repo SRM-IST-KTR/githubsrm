@@ -1,3 +1,4 @@
+from json.tool import main
 import secrets
 from datetime import datetime
 from hashlib import sha256
@@ -73,19 +74,22 @@ class AdminEntry:
             return value
         return False
 
-    def find_maintainer_for_approval(self, maintainer_id: str, project_id: str) -> bool:
+    def find_maintainer_for_approval(self, maintainer_id: str, project_id: str,
+                                     maintainer_email: str) -> bool:
         """find and approve maintainer
 
         Args:
             maintainer_id (str): maintainer identifier
             project_id (str): project identifier
+            maintainer_email (str): maintainer_email 
 
         Returns:
             bool
         """
 
         maintainer = self.db.maintainer.find_one_and_update(
-            {"_id": maintainer_id, "project_id": project_id},
+            {"_id": maintainer_id, "project_id": project_id,
+                "email": maintainer_email},
             update={
                 "$set": {"is_admin_approved": True, "time_stamp": str(datetime.strftime(datetime.now(), format="%Y-%m-%d"))}
             }, return_document=ReturnDocument.BEFORE)
@@ -291,12 +295,21 @@ class AdminEntry:
             identifier (str): maintainer id
 
         Returns:
-            bool: 
+            bool:
         """
 
         maintainer = self.db.maintainer.find_one_and_delete({
             "_id": identifier,
             "is_admin_approved": False
+        })
+
+        if not maintainer:
+            return False
+
+        project_id = maintainer["project_id"]
+        project = self.db.project.find_one_and_delete({
+            "_id":project_id,
+            "maintainer_id":{"$exists":False}
         })
 
         if maintainer:
