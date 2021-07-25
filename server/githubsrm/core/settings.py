@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'administrator.middleware.ReCaptcha',
     'administrator.middleware.Authorize',
-    'maintainer.middleware.VerifyMaintainer'
+    'administrator.middleware.MeVerification'    
 ]
 
 CORS_ALLOWED_ORIGINS = [
