@@ -19,35 +19,6 @@ class Authorize:
                           '/maintainer/projects']
         self.view = view
 
-    @staticmethod
-    def _refresh_route(request, view):
-        if token := get_token(request_headers=request.headers):
-            token_type, token = token
-        else:
-            return JsonResponse(data={
-                "error": "token not provided"
-            }, status=401)
-
-        try:
-            assert token_type == "Bearer"
-        except AssertionError as e:
-            return JsonResponse(data={
-                "error": "Invalid token type"
-            }, status=401)
-
-        decoded = jwt_keys.verify_key(key=token)
-        if decoded:
-            if decoded.get("refresh"):
-                return view(request)
-            else:
-                return JsonResponse(data={
-                    "error": "Invalid token"
-                }, status=401)
-        else:
-            return JsonResponse(data={
-                "error": "Invalid token"
-            }, status=401)
-
     def __call__(self, request) -> JsonResponse:
         """Middleware to check valid protection
 
@@ -57,10 +28,6 @@ class Authorize:
         Returns:
             response.Response
         """
-
-        if request.path == "/admin/refresh-token":
-            self._refresh_route(request, self.view)
-
         if request.path in self.protected:
             if value := get_token(request_header=request.headers):
                 token_type, token = value
@@ -94,8 +61,7 @@ class MeVerification:
                           '/maintainer/projects', "/me"]
 
     def __call__(self, request, **kwargs) -> JsonResponse:
-
-        """Me verification
+        """Me verification 
 
         Args:
             request 
@@ -109,6 +75,10 @@ class MeVerification:
                 if token:
                     token_type, token = token
                     assert token_type == "Bearer"
+                else:
+                    return JsonResponse(data={
+                        "error": "No token provided"
+                    }, status=401)
             except AssertionError as e:
                 return JsonResponse(data={
                     "error": "Invalid token type"
@@ -140,6 +110,7 @@ class MeVerification:
                 }, status=401)
         else:
             return self.view(request)
+
 
 class ReCaptcha:
     def __init__(self, view):
