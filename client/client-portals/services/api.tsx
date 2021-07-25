@@ -23,7 +23,7 @@ const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
   }
   const authToken = sessionStorage.getItem("token");
   const refreshToken = sessionStorage.getItem("refreshToken");
-  const recaptchaToken = getRecaptchaToken("post");
+  const recaptchaToken = await getRecaptchaToken("post");
   try {
     try {
       const { data } = await axios.get(
@@ -107,7 +107,8 @@ export const postAdminLogin = async (
 };
 
 export const postAdminRegister = async (
-  values: AdminRegisterData
+  values: AdminRegisterData,
+  token: string
 ): Promise<boolean> => {
   try {
     let API;
@@ -118,6 +119,7 @@ export const postAdminRegister = async (
       sessionStorage.clear();
       router.replace("/");
     } finally {
+      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       const res = await API?.post("/admin/register", values);
       return true;
     }
