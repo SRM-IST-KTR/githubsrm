@@ -37,7 +37,7 @@ class VerifyMaintainer:
                     "email": email, "is_admin_approved": True
                 })
 
-                if total_items > len(project_ids):
+                if total_items != len(project_ids):
                     return JsonResponse(data={
                         "error": "Key expired"
                     }, status=401)

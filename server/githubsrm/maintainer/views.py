@@ -68,34 +68,24 @@ class Projects(APIView):
         """
         key = jwt_keys.verify_key(get_token(request_header=request.headers))
         contributor = entry.find_contributor_for_removal(
-            request.data.get("contributor_id"))
+            request.data.get("contributor_id"), key.get("project_id"))
 
         if contributor:
+            Thread(target=service.sns, kwargs={
+                "payload": {
+                    "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
+                        removed by -> {key.get('email')}",
+                    "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
+                }
+            }).start()
 
-            if contributor["interested_project"] in key.get("project_id"):
+            return JsonResponse(data={
+                "removed": request.data.get("contributor_id")
+            }, status=200)
 
-                entry.remove_contributor(
-                    identifier=contributor["_id"])
-
-                Thread(target=service.sns, kwargs={
-                    "payload": {
-                        "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
-                            removed by -> {key.get('email')}",
-                        "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
-                    }
-                }).start()
-
-                return JsonResponse(data={
-                    "removed": request.data.get("contributor_id")
-                }, status=200)
-
-            else:
-                return JsonResponse(data={
-                    "error": "Invalid request"
-                }, status=400)
         else:
             return JsonResponse(data={
-                "error": "invalid request"
+                "error": "Invalid request"
             }, status=400)
 
     def delete(self, request, **kwargs) -> JsonResponse:
