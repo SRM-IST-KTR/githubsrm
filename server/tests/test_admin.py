@@ -1,3 +1,4 @@
+import os
 from . import Base
 from dotenv import load_dotenv
 import requests
@@ -19,7 +20,7 @@ class TestClient(unittest.TestCase):
 
         cls.client = requests.Session()
         cls.pymongo_client = pymongo.MongoClient(DATABASE['mongo_uri'])
-        cls.db = cls.pymongo_client[DATABASE['db']]
+        cls.db = cls.pymongo_client[os.getenv("TestDB")]
 
         cls.base_url = "http://localhost:8000/"
         cls.webhook = list(cls.db.webHook.find({}))[0]["token"]
@@ -380,7 +381,7 @@ class TestClient(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.clean()
     
-    
+
 
     @classmethod
     def tearDownClass(cls) -> None:

@@ -1,3 +1,4 @@
+import os
 from dotenv import load_dotenv
 import secrets
 from hashlib import sha256
@@ -20,7 +21,7 @@ class TestClient(unittest.TestCase):
 
         cls.client = requests.Session()
         cls.pymongo_client = pymongo.MongoClient(DATABASE['mongo_uri'])
-        cls.db = cls.pymongo_client[DATABASE['db']]
+        cls.db = cls.pymongo_client[os.getenv("TestDB")]
 
         cls.base_url = "http://localhost:8000/"
         cls.webhook = list(cls.db.webHook.find({}))[0]["token"]
@@ -501,13 +502,6 @@ class TestClient(unittest.TestCase):
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {admin_jwt}"
             }, params={"role": "maintainer"})
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(
-            url=self.base_url+'admin/projects', data=json.dumps({**entry.another_project_details, **{"project_id": another_alpha["project_id"]}}), headers={
-                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
-                "Authorization": f"Bearer {admin_jwt}"
-            }, params={"role": "project"})
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(
