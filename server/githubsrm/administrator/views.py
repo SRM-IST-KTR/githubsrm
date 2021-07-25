@@ -327,7 +327,7 @@ class ProjectsAdmin(APIView):
 
         if request.GET.get("role") == "contributor":
             if status:
-                return self._remove_contributor(reqeust=request)
+                return self._remove_contributor(request=request)
             else:
                 return self._error_contributor(request=request)
         else:
