@@ -54,6 +54,7 @@ const MaintainerPage = () => {
       setRejected(true);
       alertToast("Maintainer Rejected successfully");
       setRejectLoading(false);
+      router.replace("/admin/dashboard");
     } else {
       setRejectLoading(false);
     }
@@ -73,7 +74,9 @@ const MaintainerPage = () => {
 
   useEffect(() => {
     const { slug } = router.query;
-    _getMaintainerApplications(slug);
+    if (slug) {
+      _getMaintainerApplications(slug);
+    }
   }, [router.query, accepted, rejected]);
 
   return loading2 ? (
