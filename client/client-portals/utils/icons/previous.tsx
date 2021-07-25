@@ -3,7 +3,7 @@ export default function Previous() {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      stroke-width="0"
+      strokeWidth="0"
       viewBox="0 0 24 24"
       height="1em"
       width="1em"
@@ -12,7 +12,7 @@ export default function Previous() {
       <polyline
         fill="none"
         stroke="#000"
-        stroke-width="2"
+        strokeWidth="2"
         points="9 6 15 12 9 18"
         transform="matrix(-1 0 0 1 24 0)"
       ></polyline>

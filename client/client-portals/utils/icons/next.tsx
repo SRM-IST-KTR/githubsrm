@@ -3,7 +3,7 @@ export default function Next() {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      stroke-width="0"
+      strokeWidth="0"
       viewBox="0 0 24 24"
       height="1em"
       width="1em"
@@ -12,7 +12,7 @@ export default function Next() {
       <polyline
         fill="none"
         stroke="#000"
-        stroke-width="2"
+        strokeWidth="2"
         points="9 6 15 12 9 18"
       ></polyline>
     </svg>
