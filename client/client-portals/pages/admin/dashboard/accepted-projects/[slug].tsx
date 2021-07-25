@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "context/authContext";
 import { deleteContributor, getProject, postAcceptProject } from "services/api";
-import { successToast } from "utils/functions/toast";
+import { successToast, alertToast } from "utils/functions/toast";
 import { Layout } from "components/shared";
 import { ContributorsProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
@@ -33,6 +33,7 @@ const ContributorsPage = () => {
   const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
+  const [rejectLoading, setRejectLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -50,20 +51,18 @@ const ContributorsPage = () => {
     const res = await postAcceptProject(project_id, contributor_id);
     if (res) {
       setAccepted(true);
-      setRejected(false);
       successToast("Contributor Approved sucessfully!");
       setLoading(false);
     }
   };
 
   const rejectMaintainerHandler = async (contributor_id) => {
-    setLoading(true);
+    setRejectLoading(true);
     const res = deleteContributor(contributor_id);
     if (res) {
       setRejected(true);
-      setAccepted(false);
-      successToast("Contributor Rejected successfully!");
-      setLoading(false);
+      alertToast("Contributor Rejected successfully!");
+      setRejectLoading(false);
     }
   };
 
@@ -187,7 +186,7 @@ const ContributorsPage = () => {
                     </div>
                   </td>
                   <td className="p-3 ">
-                    {person.is_admin_approved ? (
+                    {person.is_admin_approved && !person.is_admin_rejected ? (
                       <span className="text-green-500 text-center text-3xl">
                         <Tick />
                       </span>
@@ -212,7 +211,7 @@ const ContributorsPage = () => {
                     )}
                   </td>
                   <td className="p-3 ">
-                    {person.is_admin_rejected ? (
+                    {person.is_admin_rejected && !person.is_admin_approved ? (
                       <span className="text-green-500 text-center text-3xl">
                         <Tick />
                       </span>
@@ -221,18 +220,17 @@ const ContributorsPage = () => {
                         <Cross />
                       </span>
                     ) : (
-                      <button
-                        className="bg-red-500"
+                      <Button
                         onClick={() => rejectMaintainerHandler(person._id)}
                       >
-                        {loading ? (
+                        {rejectLoading ? (
                           <span className="flex w-6 mx-auto">
                             <Loading />
                           </span>
                         ) : (
                           "Reject Contributor"
                         )}
-                      </button>
+                      </Button>
                     )}
                   </td>
                 </tr>

@@ -6,7 +6,7 @@ import {
   postAcceptMaintainer,
   deleteMaintainer,
 } from "services/api";
-import { successToast } from "utils/functions/toast";
+import { successToast, alertToast } from "utils/functions/toast";
 import { Layout } from "components/shared";
 import Link from "next/link";
 import { MaintainersProps } from "utils/interfaces";
@@ -22,6 +22,7 @@ const MaintainerPage = () => {
   const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
+  const [rejectLoading, setRejectLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -47,14 +48,14 @@ const MaintainerPage = () => {
   };
 
   const rejectMaintainerHandler = async (maintainer_id) => {
-    setLoading(true);
+    setRejectLoading(true);
     const res = await deleteMaintainer(maintainer_id);
     if (res) {
       setRejected(true);
-      successToast("Maintainer Rejected successfully");
-      setLoading(false);
+      alertToast("Maintainer Rejected successfully");
+      setRejectLoading(false);
     } else {
-      setLoading(false);
+      setRejectLoading(false);
     }
   };
 
@@ -157,7 +158,7 @@ const MaintainerPage = () => {
               <div></div>
             ) : (
               <Button onClick={() => rejectMaintainerHandler(person._id)}>
-                {loading ? (
+                {rejectLoading ? (
                   <span className="flex w-6 mx-auto">
                     <Loading />
                   </span>
