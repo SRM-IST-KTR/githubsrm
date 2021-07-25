@@ -94,7 +94,7 @@ const ProjectDetail = () => {
     const { slug } = router.query;
     const token = sessionStorage.getItem("token");
     _getContributorsApplications(token, slug);
-  }, [router.query, accepted]);
+  }, [router.query, accepted, rejected]);
 
   return !loading2 ? (
     <Layout type="maintainer">
@@ -209,7 +209,8 @@ const ProjectDetail = () => {
                             <Cross />
                           </span>
                         ) : (
-                          <Button
+                          <button
+                            className="flex justify-center w-1/8 mx-auto mt-4 bg-red-400 p-2 font-bold text-white rounded-xl"
                             onClick={() => deleteContributorHandler(person._id)}
                           >
                             {rejectLoading ? (
@@ -219,7 +220,7 @@ const ProjectDetail = () => {
                             ) : (
                               "Reject Contributor"
                             )}
-                          </Button>
+                          </button>
                         )}
                       </td>
                     </tr>
