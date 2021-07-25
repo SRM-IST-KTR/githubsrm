@@ -14,7 +14,7 @@ class IssueKey:
         self.signature = os.getenv("SIGNATURE")
 
     def issue_key(self, payload: Dict[str, Any],
-                  expiry: float = 24, get_refresh_token: bool = False) -> Dict[str, str]:
+                  expiry: float = 10, get_refresh_token: bool = False) -> Dict[str, str]:
         """Issue jwt keys with desired payload 
            Jwt Expiry time is set to 24 hours.
 
@@ -28,14 +28,17 @@ class IssueKey:
 
         generation_time = datetime.utcnow()
         payload = {**payload, **
-                   {"exp": (generation_time + timedelta(hours=expiry)).timestamp()}}
+                   {"exp": (generation_time + timedelta(minutes=expiry)).timestamp()}}
 
         if get_refresh_token:
             email = payload.get("email") if payload.get(
                 "email") else payload.get("user")
             name = payload.get("name")
+            if name:
+                refresh_payload = {**{"exp": (generation_time + timedelta(hours=expiry)).timestamp(),
+                                      "refresh": True}, **{"email": email, "name": name}}
             refresh_payload = {**{"exp": (generation_time + timedelta(hours=expiry)).timestamp(),
-                                  "refresh": True}, **{"email": email, "name": name}}
+                                  "refresh": True}, **{"email": email}}
             try:
                 return {
                     "access_token": jwt.encode(payload, key=self.signature),
@@ -118,7 +121,7 @@ class IssueKey:
             return False
 
     def refresh_to_access(self, refresh_token: str,
-                          payload: Dict[str, Any], expiry: int = 24) -> str:
+                          payload: Dict[str, Any], expiry: int = 1) -> str:
         """Get new access token from refresh token
 
         Args:
@@ -133,7 +136,7 @@ class IssueKey:
                 payload["exp"] = (datetime.utcnow() +
                                   timedelta(hours=expiry)).timestamp()
                 return self.issue_key(payload=payload,
-                                      get_refresh_token=False)
+                                      get_refresh_token=True)
             else:
                 return False
         else:

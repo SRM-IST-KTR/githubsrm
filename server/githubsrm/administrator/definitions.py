@@ -135,7 +135,7 @@ class RejectionSchema:
         self.allowed_params = ["contributor", "maintainer"]
 
         self.contributor_valid_schema = Schema(schema={
-            "contirbutor_id": And(str, lambda contrib: len(contrib.strip() == 8)),
+            "contributor_id": And(str, lambda contrib: len(contrib.strip()) == 8),
         })
 
         self.maintainer_valid_schema = Schema(schema={

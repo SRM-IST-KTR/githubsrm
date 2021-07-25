@@ -68,34 +68,24 @@ class Projects(APIView):
         """
         key = jwt_keys.verify_key(get_token(request_header=request.headers))
         contributor = entry.find_contributor_for_removal(
-            request.data.get("contributor_id"))
+            request.data.get("contributor_id"), key.get("project_id"))
 
         if contributor:
+            Thread(target=service.sns, kwargs={
+                "payload": {
+                    "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
+                        removed by -> {key.get('email')}",
+                    "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
+                }
+            }).start()
 
-            if contributor["interested_project"] in key.get("project_id"):
+            return JsonResponse(data={
+                "removed": request.data.get("contributor_id")
+            }, status=200)
 
-                entry.remove_contributor(
-                    identifier=contributor["_id"])
-
-                Thread(target=service.sns, kwargs={
-                    "payload": {
-                        "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
-                            removed by -> {key.get('email')}",
-                        "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
-                    }
-                }).start()
-
-                return JsonResponse(data={
-                    "removed": request.data.get("contributor_id")
-                }, status=200)
-
-            else:
-                return JsonResponse(data={
-                    "error": "Invalid request"
-                }, status=400)
         else:
             return JsonResponse(data={
-                "error": "invalid request"
+                "error": "Invalid request"
             }, status=400)
 
     def delete(self, request, **kwargs) -> JsonResponse:
@@ -260,53 +250,3 @@ class ResetPassword(APIView):
 
         # send 200 in all cases
         return JsonResponse({}, status=status.HTTP_200_OK)
-
-
-class RefreshRoute(APIView):
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Get new tokens from refresh token
-
-        Args:
-            request 
-
-        Returns:
-            JsonResponse
-        """
-        refresh_token = get_token(
-            request_header=request.headers
-        )
-        user = jwt_keys.verify_key(refresh_token)
-
-        email = user.get("email") if user.get("email") else user.get("user")
-        name = user.get("name") if user.get("name") else None
-        
-        project_ids = entry.projects_from_email(email=email)
-        if project_ids:
-            if name:
-                payload = {"email": email,
-                           "project_id": project_ids,
-                           "name": name}
-
-            key = jwt_keys.refresh_to_access(refresh_token, payload=payload)
-            return JsonResponse(data={
-                "key": key
-            }, status=200)
-        else:
-            return JsonResponse(data={
-                "error": "invalid user"
-            }, status=404)
-
-
-class Verification(APIView):
-    def get(self, request, **kwargs) -> JsonResponse:
-        """Verify maintianer jwt
-
-        Args:
-            request 
-
-        Returns:
-            JsonResponse
-        """
-        return JsonResponse(data={
-            "success": True
-        }, status=200)

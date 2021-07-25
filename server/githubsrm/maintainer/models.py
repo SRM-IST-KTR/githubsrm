@@ -77,19 +77,23 @@ class Entry:
         """
         return self.db.maintainer.find({"email": email})
 
-    def find_contributor_for_removal(self, identifier: str) -> Dict[str, Any]:
+    def find_contributor_for_removal(self, identifier: str, project_ids: list) -> Dict[str, Any]:
         """FInd contributors from contributor id
 
         Args:
             identifier (str): identifier
+            project_ids (list): maintainer project ids
 
         Returns:
             Dict[str, Any]
         """
-        contributor = self.db.contributor.find_one({"_id": identifier,
-                                                    "is_admin_approved": True})
-        if contributor:
-            return contributor
+        if len(project_ids):
+            contributor = self.db.contributor.find_one_and_delete({"_id": identifier,
+                                                                   "is_admin_approved": True,
+                                                                   "is_maintainer_approved": False,
+                                                                   "interested_project": {"$in": project_ids}})
+            if contributor:
+                return contributor
 
         else:
             return False
