@@ -175,7 +175,7 @@ class Login(APIView):
             payload["name"] = doc_list[0]["name"]
             payload["project_id"] = [i["project_id"] for i in doc_list]
 
-            if jwt := jwt_keys.issue_key(payload, get_refresh_token=True, expiry=1):
+            if jwt := jwt_keys.issue_key(payload, get_refresh_token=True):
                 return JsonResponse(data=jwt, status=status.HTTP_200_OK)
             else:
                 return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
