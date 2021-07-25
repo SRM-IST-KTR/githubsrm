@@ -356,14 +356,27 @@ class ProjectsAdmin(APIView):
             if request.GET.get("role") == "contributor":
                 remove_status = entry.admin_remove_contributor(
                     validate.get("contributor_id"))
-                return self.action_to_status(
-                    status=remove_status, request=request)
+                _, token = get_token(request_header=request.headers)
+                if decoded := jwt_keys.verify_key(token):
+                    request.decoded = decoded                    
+                    return self.action_to_status(
+                        status=remove_status, request=request)
+                else:
+                    return JsonResponse(data={
+                        "error": "Invalid key"
+                    }, status=401)
             else:
                 remove_status = entry.admin_remove_maintainer(
                     validate.get("maintainer_id"))
-                return self.action_to_status(
-                    status=remove_status, request=request)
-
+                _, token = get_token(request_header=request.headers)
+                if decoded := jwt_keys.verify_key(token):
+                    request.decoded = decoded
+                    return self.action_to_status(
+                        status=remove_status, request=request)
+                else:
+                    return JsonResponse(data={
+                        "error": "Invalid key"
+                    }, status=401)
 
 class AdminAccepted(APIView):
     def get(self, request, **kwargs) -> JsonResponse:
@@ -398,48 +411,53 @@ class RefreshRoute(APIView):
         )
         if refresh_token:
             user = jwt_keys.verify_key(refresh_token)
+            if user:
+                email = user.get("email") if user.get(
+                    "email") else user.get("user")
+                name = user.get("name")
 
-            email = user.get("email") if user.get(
-                "email") else user.get("user")
-            name = user.get("name")
+                admin = user.get("admin")
+                if admin:
+                    payload = {
+                        "user": email,
+                        "admin": True
+                    }
+                    key = jwt_keys.refresh_to_access(refresh_token=refresh_token,
+                                                     payload=payload)
+                    if key:
+                        return JsonResponse(data=key, status=200)
+                    else:
+                        return JsonResponse(data={
+                            "error": "Invalid refresh token"
+                        }, status=401)
 
-            admin = user.get("admin")
-            if admin:
-                payload = {
-                    "user": email,
-                    "admin": True
-                }
-                key = jwt_keys.refresh_to_access(refresh_token=refresh_token,
-                                                 payload=payload)
-                if key:
-                    return JsonResponse(data=key, status=200)
+                project_ids = maintainer_entry.projects_from_email(email=email)
+                if project_ids:
+                    payload = {
+                        "email": email,
+                        "name": name,
+                        "project_id": project_ids
+                    }
+                    key = jwt_keys.refresh_to_access(
+                        refresh_token, payload=payload)
+                    if key:
+                        return JsonResponse(data=key, status=200)
+                    else:
+                        return JsonResponse(data={
+                            "error": "Invalid refresh token"
+                        }, status=401)
                 else:
                     return JsonResponse(data={
-                        "error": "Invalid refresh token"
-                    }, status=401)
-
-            project_ids = maintainer_entry.projects_from_email(email=email)
-            if project_ids:
-                payload = {
-                    "email": email,
-                    "name": name,
-                    "project_id": project_ids
-                }
-                key = jwt_keys.refresh_to_access(
-                    refresh_token, payload=payload)
-                if key:
-                    return JsonResponse(data=key, status=200)
-                else:
-                    return JsonResponse(data={
-                        "error": "Invalid refresh token"
-                    }, status=401)
+                        "error": "invalid user"
+                    }, status=400)
             else:
                 return JsonResponse(data={
-                    "error": "invalid user"
-                }, status=400)
+                    "error": "invalid token"
+                }, status=401)
+
         else:
             return JsonResponse(data={
-                "error": "invalid token"
+                "error": "Token not provided"
             }, status=401)
 
 

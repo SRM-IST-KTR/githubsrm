@@ -66,15 +66,13 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        key = request.decoded
         contributor = entry.find_contributor_for_removal(
-            request.data.get("contributor_id"), key.get("project_id"))
-
+            request.data.get("contributor_id"), request.decoded.get("project_id"))
         if contributor:
             Thread(target=service.sns, kwargs={
                 "payload": {
                     "message": f"Maintainer removed contributor ({request.data.get('contributor_id')}) \
-                        removed by -> {key.get('email')}",
+                        removed by -> {request.decoded.get('email')}",
                     "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
                 }
             }).start()
@@ -102,6 +100,15 @@ class Projects(APIView):
             return JsonResponse(data={
                 "error": "Invalid data"
             }, status=400)
+
+        _, token = get_token(request_header=request.headers)
+        decoded = jwt_keys.verify_key(token)
+        if decoded:
+            request.decoded = decoded
+        else:
+            return JsonResponse(data={
+                "error": "Invalid key"
+            }, status=401)
         return self._remove_contributor(request=request)
 
     def get(self, request, **kwargs) -> JsonResponse:
@@ -168,7 +175,7 @@ class Login(APIView):
             payload["name"] = doc_list[0]["name"]
             payload["project_id"] = [i["project_id"] for i in doc_list]
 
-            if jwt := jwt_keys.issue_key(payload, get_refresh_token=True):
+            if jwt := jwt_keys.issue_key(payload, get_refresh_token=True, expiry=1):
                 return JsonResponse(data=jwt, status=status.HTTP_200_OK)
             else:
                 return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)

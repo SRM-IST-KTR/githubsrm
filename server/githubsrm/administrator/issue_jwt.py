@@ -14,7 +14,8 @@ class IssueKey:
         self.signature = os.getenv("SIGNATURE")
 
     def issue_key(self, payload: Dict[str, Any],
-                  expiry: float = 10, get_refresh_token: bool = False) -> Dict[str, str]:
+                  expiry: float = 10, get_refresh_token: bool = False,
+                  refresh_expiry: int = 1) -> Dict[str, str]:
         """Issue jwt keys with desired payload 
            Jwt Expiry time is set to 24 hours.
 
@@ -28,17 +29,18 @@ class IssueKey:
 
         generation_time = datetime.utcnow()
         payload = {**payload, **
-                   {"exp": (generation_time + timedelta(minutes=expiry)).timestamp()}}
+                   {"exp": generation_time+timedelta(minutes=expiry)}}
 
         if get_refresh_token:
             email = payload.get("email") if payload.get(
                 "email") else payload.get("user")
             name = payload.get("name")
             if name:
-                refresh_payload = {**{"exp": (generation_time + timedelta(hours=expiry)).timestamp(),
+                refresh_payload = {**{"exp": generation_time+timedelta(days=refresh_expiry),
                                       "refresh": True}, **{"email": email, "name": name}}
-            refresh_payload = {**{"exp": (generation_time + timedelta(hours=expiry)).timestamp(),
-                                  "refresh": True}, **{"email": email}}
+            else:
+                refresh_payload = {**{"exp": generation_time+timedelta(days=refresh_expiry),
+                                      "refresh": True}, **{"email": email}}
             try:
                 return {
                     "access_token": jwt.encode(payload, key=self.signature),
