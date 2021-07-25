@@ -4,7 +4,7 @@ from apis import PostThrottle, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
-
+from maintainer.models import Entry
 from administrator import entry, jwt_keys
 
 from .definitions import (
@@ -16,6 +16,8 @@ from .utils import (
     beta_maintainer_support, get_token, project_pagination,
     project_single_project
 )
+
+maintainer_entry = Entry()
 
 
 class RegisterAdmin(APIView):
@@ -73,11 +75,9 @@ class AdminLogin(APIView):
             keys = jwt_keys.issue_key(payload={
                 "admin": True,
                 "user": validate.get('email')
-            })
+            }, get_refresh_token=True)
             if keys:
-                return JsonResponse(data={
-                    "keys": keys
-                }, status=200)
+                return JsonResponse(data=keys, status=200)
             return JsonResponse({"error": "ISR?"}, status=500)
         return JsonResponse(data={
             "error": "invalid password"
@@ -360,7 +360,8 @@ class ProjectsAdmin(APIView):
                 return self.action_to_status(
                     status=remove_status, request=request)
             else:
-                remove_status = entry.admin_remove_maintainer(
+                remove_status = entry.admin_remove_ma
+                intainer(
                     validate.get("maintainer_id"))
                 return self.action_to_status(
                     status=remove_status, request=request)
@@ -382,3 +383,78 @@ class AdminAccepted(APIView):
             }, status=400)
 
         return accepted_project_pagination(request=request)
+
+
+class RefreshRoute(APIView):
+    def post(self, request, **kwargs) -> JsonResponse:
+        """Get new tokens from refresh token
+
+        Args:
+            request 
+
+        Returns:
+            JsonResponse
+        """
+        refresh_token = get_token(
+            request_header=request.headers
+        )
+        if refresh_token:
+            user = jwt_keys.verify_key(refresh_token)
+
+            email = user.get("email") if user.get(
+                "email") else user.get("user")
+            name = user.get("name")
+
+            admin = user.get("admin")
+            if admin:
+                payload = {
+                    "user": email,
+                    "admin": True
+                }
+                key = jwt_keys.refresh_to_access(refresh_token=refresh_token,
+                                                 payload=payload)
+                if key:
+                    return JsonResponse(data=key, status=200)
+                else:
+                    return JsonResponse(data={
+                        "error": "Invalid refresh token"
+                    }, status=401)
+
+            project_ids = maintainer_entry.projects_from_email(email=email)
+            if project_ids:
+                payload = {
+                    "email": email,
+                    "name": name,
+                    "project_id": project_ids
+                }
+                key = jwt_keys.refresh_to_access(
+                    refresh_token, payload=payload)
+                if key:
+                    return JsonResponse(data=key, status=200)
+                else:
+                    return JsonResponse(data={
+                        "error": "Invalid refresh token"
+                    }, status=401)
+            else:
+                return JsonResponse(data={
+                    "error": "invalid user"
+                }, status=400)
+        else:
+            return JsonResponse(data={
+                "error": "invalid token"
+            }, status=401)
+
+
+class Verification(APIView):
+    def get(self, request, **kwargs) -> JsonResponse:
+        """Verify jwt
+
+        Args:
+            request 
+
+        Returns:
+            JsonResponse
+        """
+        return JsonResponse(data={
+            "success": True
+        }, status=200)

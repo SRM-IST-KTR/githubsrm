@@ -1,4 +1,6 @@
-from .views import ProjectsAdmin, RegisterAdmin, AdminLogin, AdminAccepted
+from .views import (
+    ProjectsAdmin, RegisterAdmin, AdminLogin, AdminAccepted
+)
 from django.urls import path
 
 urlpatterns = [

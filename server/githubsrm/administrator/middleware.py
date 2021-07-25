@@ -2,6 +2,10 @@ from administrator import jwt_keys
 from django.http.response import JsonResponse
 from .utils import get_token
 from apis.utils import check_token
+from maintainer.models import Entry
+
+maintainer_entry = Entry()
+maintainer_entry = maintainer_entry.db
 
 
 class Authorize:
@@ -54,7 +58,7 @@ class Authorize:
             response.Response
         """
 
-        if request.path == "/maintainer/refresh-token":
+        if request.path == "/admin/refresh-token":
             self._refresh_route(request, self.view)
 
         if request.path in self.protected:
@@ -81,6 +85,61 @@ class Authorize:
         else:
             return self.view(request)
 
+
+class MeVerification:
+    def __init__(self, view):
+        self.view = view
+        self.protected = ['/admin/projects',
+                          '/admin/projects/accepted',
+                          '/maintainer/projects', "/me"]
+
+    def __call__(self, request, **kwargs) -> JsonResponse:
+
+        """Me verification
+
+        Args:
+            request 
+
+        Returns:
+            JsonResponse
+        """
+        if request.path in self.protected:
+            token = get_token(request_header=request.headers)
+            try:
+                if token:
+                    token_type, token = token
+                    assert token_type == "Bearer"
+            except AssertionError as e:
+                return JsonResponse(data={
+                    "error": "Invalid token type"
+                }, status=401)
+
+            decoded = jwt_keys.verify_key(key=token)
+            if decoded:
+                admin = decoded.get("admin")
+                if admin:
+                    return self.view(request)
+                else:
+                    email = decoded.get("email")
+                    project_ids = decoded.get("project_id")
+                    total_items = maintainer_entry.maintainer.count_documents({
+                        "email": email, "is_admin_approved": True
+                    })
+
+                if len(project_ids) != total_items:
+                    return JsonResponse(data={
+                        "error": "Key expired"
+                    }, status=401)
+                else:
+                    request.project_ids = project_ids
+                    request.total_items = total_items
+                    return self.view(request)
+            else:
+                return JsonResponse(data={
+                    "error": "Invalid Key"
+                }, status=401)
+        else:
+            return self.view(request)
 
 class ReCaptcha:
     def __init__(self, view):
