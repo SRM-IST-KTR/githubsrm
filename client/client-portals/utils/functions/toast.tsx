@@ -35,6 +35,6 @@ export const alertToast = (message: string) => {
     pauseOnHover: true,
     draggable: true,
     progress: undefined,
-    className: "font-medium bg-yellow-300",
+    className: "font-medium bg-yellow-400",
   });
 };

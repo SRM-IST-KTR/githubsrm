@@ -70,11 +70,13 @@ const ProjectDetail = () => {
       setRejected(true);
       alertToast("Contributor Rejected sucessfully!");
       setRejectLoading(false);
+    } else {
+      setRejectLoading(false);
     }
   };
 
-  const _getContributorsApplications = async (token, slug) => {
-    const res = await getContributorsApplications(token, slug);
+  const _getContributorsApplications = async (slug) => {
+    const res = await getContributorsApplications(slug);
     if (res) {
       setContributorsData(res.contributor);
       setProjectName(res.project_name);
@@ -92,8 +94,9 @@ const ProjectDetail = () => {
 
   useEffect(() => {
     const { slug } = router.query;
-    const token = sessionStorage.getItem("token");
-    _getContributorsApplications(token, slug);
+    if (slug) {
+      _getContributorsApplications(slug);
+    }
   }, [router.query, accepted, rejected]);
 
   return !loading2 ? (
