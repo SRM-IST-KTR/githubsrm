@@ -1,1 +1,1 @@
-web: cd server/githubsrm && gunicorn -b :$PORT -w 3 core.wsgi --access-logfile - --error-logfile - --reload 
+web: cd server/githubsrm && gunicorn -b :$PORT -w 1 core.wsgi --access-logfile - --error-logfile - --reload 
