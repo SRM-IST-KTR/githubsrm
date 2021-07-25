@@ -37,7 +37,6 @@ const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
         }
       );
       if (data.success) {
-        successToast("/me sucess");
         api.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
         return api;
       }
@@ -52,7 +51,6 @@ const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
           },
         }
       );
-      successToast("/refresh sucess");
       sessionStorage.setItem("token", data.access_token);
       sessionStorage.setItem("refreshToken", data.refresh_token);
       window.location.reload();
@@ -62,7 +60,6 @@ const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
       return api;
     }
   } catch (err) {
-    errToast(`${err} - /refresh error`);
     sessionStorage.clear();
     router.replace("/");
   }
