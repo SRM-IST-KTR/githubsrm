@@ -33,8 +33,9 @@ class IssueKey:
         if get_refresh_token:
             email = payload.get("email") if payload.get(
                 "email") else payload.get("user")
+            name = payload.get("name")
             refresh_payload = {**{"exp": (generation_time + timedelta(hours=expiry)).timestamp(),
-                                  "refresh": True}, **{"email": email}}
+                                  "refresh": True}, **{"email": email, "name": name}}
             try:
                 return {
                     "access_token": jwt.encode(payload, key=self.signature),
