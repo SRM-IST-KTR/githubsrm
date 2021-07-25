@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import OtherMaintainers from "components/maintainer/dashboard/other-maintainers";
 import { Layout, Button } from "@/shared/index";
-import { successToast } from "utils/functions/toast";
+import { successToast, alertToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
 import { ContributorProps, OtherMaintainersProps } from "utils/interfaces";
 import CSSLoader from "components/shared/loader";
@@ -23,6 +23,7 @@ const headings = [
   "Branch",
   "Proposal",
   "Maintainer Approval",
+  "Maintainer Rejection",
 ];
 
 const ProjectDetail = () => {
@@ -39,6 +40,7 @@ const ProjectDetail = () => {
   const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
+  const [rejectLoading, setRejectLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -62,12 +64,12 @@ const ProjectDetail = () => {
   };
 
   const deleteContributorHandler = async (contributor_id) => {
-    setLoading(true);
+    setRejectLoading(true);
     const res = await deletefromMaintainerContributor(contributor_id);
     if (res) {
       setRejected(true);
-      successToast("Contributor Rejected sucessfully!");
-      setLoading(false);
+      alertToast("Contributor Rejected sucessfully!");
+      setRejectLoading(false);
     }
   };
 
@@ -171,9 +173,14 @@ const ProjectDetail = () => {
                       </td>
 
                       <td className="p-3 ">
-                        {person.is_maintainer_approved ? (
+                        {person.is_maintainer_approved &&
+                        !person.is_maintainer_rejected ? (
                           <span className="text-green-500 text-center text-3xl">
                             <Tick />
+                          </span>
+                        ) : person.is_maintainer_rejected ? (
+                          <span className="text-red-500 text-center text-xl">
+                            <Cross />
                           </span>
                         ) : (
                           <Button
@@ -191,17 +198,21 @@ const ProjectDetail = () => {
                           </Button>
                         )}
                       </td>
-
                       <td className="p-3 ">
-                        {person.is_maintainer_approved ? (
-                          <span className="text-red-500 text-center text-3xl">
+                        {person.is_maintainer_rejected &&
+                        !person.is_maintainer_approved ? (
+                          <span className="text-green-500 text-center text-3xl">
+                            <Tick />
+                          </span>
+                        ) : person.is_maintainer_approved ? (
+                          <span className="text-red-500 text-center text-xl">
                             <Cross />
                           </span>
                         ) : (
                           <Button
                             onClick={() => deleteContributorHandler(person._id)}
                           >
-                            {loading ? (
+                            {rejectLoading ? (
                               <span className="flex w-6 mx-auto">
                                 <Loading />
                               </span>
