@@ -16,28 +16,25 @@ const index = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    let API;
-    try {
-      API = instance();
-    } catch (error) {
-      errToast("Session Expired! Please Login again!");
-    } finally {
-      const token = sessionStorage.getItem("token");
-      API?.get(`maintainer/projects?page=${pageNo}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => {
-          setProjects(res.data.records);
-          sethasNextPage(res.data.hasNextPage);
-          sethasPrevPage(res.data.hasPreviousPage);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setLoading(false);
-        });
-    }
+    (async () => {
+      let API;
+      try {
+        API = await instance();
+      } catch (error) {
+        errToast("Session Expired! Please Login again!");
+      } finally {
+        API?.get(`maintainer/projects?page=${pageNo}`)
+          .then((res) => {
+            setProjects(res.data.records);
+            sethasNextPage(res.data.hasNextPage);
+            sethasPrevPage(res.data.hasPreviousPage);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setLoading(false);
+          });
+      }
+    })();
   }, [accepted, pageNo]);
 
   return loading ? (
