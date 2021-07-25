@@ -6,8 +6,6 @@ import {
   MaintainerLoginData,
   ResetPasswordData,
   SetPasswordData,
-  ContributorProps,
-  MaintainersProps,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
@@ -189,6 +187,26 @@ export const postAcceptContributor = async (
   }
 };
 
+export const deletefromMaintainerContributor = async (
+  contributor_id
+): Promise<boolean> => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.delete("maintainer/projects?role=contributor", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
+      },
+      data: { contributor_id: contributor_id },
+    });
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
 export const postAcceptMaintainer = async (
   project_id,
   maintainer_id,
@@ -207,6 +225,42 @@ export const postAcceptMaintainer = async (
         },
       }
     );
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const deleteMaintainer = async (maintainer_id) => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.delete("admin/projects?role=maintainer", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
+      },
+      data: { maintainer_id: maintainer_id },
+    });
+    return true;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
+};
+
+export const deleteContributor = async (contributor_id) => {
+  try {
+    const recaptchaToken = await getRecaptchaToken("post");
+    const token = sessionStorage.getItem("token");
+    await instance.delete("admin/projects?role=contributor", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-RECAPTCHA-TOKEN": recaptchaToken,
+      },
+      data: { contributor_id: contributor_id },
+    });
     return true;
   } catch (error) {
     errorHandler(error);

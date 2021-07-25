@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "context/authContext";
-import { getMaintainerApplications, postAcceptMaintainer } from "services/api";
+import {
+  getMaintainerApplications,
+  postAcceptMaintainer,
+  deleteMaintainer,
+} from "services/api";
 import { successToast } from "utils/functions/toast";
 import { Layout } from "components/shared";
 import Link from "next/link";
 import { MaintainersProps } from "utils/interfaces";
 import { CSSLoader } from "@/shared/index";
-import { CardGithub, Tick, Loading } from "@/icons/index";
+import { CardGithub, Tick, Loading, Cross } from "@/icons/index";
 import { Button } from "@/shared/index";
 
 const MaintainerPage = () => {
@@ -15,6 +19,7 @@ const MaintainerPage = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
+  const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
 
@@ -35,6 +40,18 @@ const MaintainerPage = () => {
     if (res) {
       setAccepted(true);
       successToast("Maintainer Approved sucessfully!");
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  };
+
+  const rejectMaintainerHandler = async (maintainer_id) => {
+    setLoading(true);
+    const res = await deleteMaintainer(maintainer_id);
+    if (res) {
+      setRejected(true);
+      successToast("Maintainer Rejected successfully");
       setLoading(false);
     } else {
       setLoading(false);
@@ -75,7 +92,7 @@ const MaintainerPage = () => {
         {maintainerData.map((person) => (
           <div
             key={person._id}
-            className="p-4 rounded-xl shadow-2xl bg-white text-base-black"
+            className="p-4 rounded-xl shadow-2xl bg-white text-base-black "
           >
             <h2 className="text-xl font-medium mb-3">
               <span className="font-bold">Name: </span>
@@ -105,13 +122,15 @@ const MaintainerPage = () => {
               <span className="font-bold">Branch: </span>
               {person.branch}
             </h2>
-            {person.is_admin_approved ? (
+            {person.is_admin_approved && !person.is_admin_rejected ? (
               <div className="flex flex-col items-center text-2xl font-medium text-base-green mt-2">
                 <span className="text-green-500 text-5xl">
                   <Tick />
                 </span>
                 <p>Approved</p>
               </div>
+            ) : person.is_admin_rejected ? (
+              <div></div>
             ) : (
               <Button
                 onClick={() =>
@@ -124,6 +143,26 @@ const MaintainerPage = () => {
                   </span>
                 ) : (
                   "Approve Maintainer"
+                )}
+              </Button>
+            )}
+            {person.is_admin_rejected && !person.is_admin_approved ? (
+              <div className="flex flex-col items-center text-2xl font-medium text-red-500 mt-2">
+                <span className="text-red-500 text-3xl">
+                  <Cross />
+                </span>
+                <p>Rejected</p>
+              </div>
+            ) : person.is_admin_approved ? (
+              <div></div>
+            ) : (
+              <Button onClick={() => rejectMaintainerHandler(person._id)}>
+                {loading ? (
+                  <span className="flex w-6 mx-auto">
+                    <Loading />
+                  </span>
+                ) : (
+                  "Reject Maintainer"
                 )}
               </Button>
             )}
