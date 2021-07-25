@@ -32,7 +32,6 @@ const IndexPage = () => {
         </button>
         <button
           onClick={() => setRegister(false)}
-          s
           className={`${
             register ? "" : "border-b-4 border-base-green"
           } py-4 cursor-pointer  px-10 mt-1 mr-5  shadow-lg  font-bold text-white text-xl hover:opacity-80`}
