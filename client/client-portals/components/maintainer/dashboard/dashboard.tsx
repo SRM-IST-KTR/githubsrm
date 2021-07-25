@@ -4,6 +4,8 @@ import { Layout, CSSLoader } from "@/shared/index";
 import instance from "services/api";
 import { MaintainerProjectsProps } from "utils/interfaces";
 import { PaginationButtons } from "@/shared/index";
+import { errToast } from "utils/functions/toast";
+import router from "next/router";
 
 const index = () => {
   const [projects, setProjects] = useState<MaintainerProjectsProps[]>([]);
@@ -14,22 +16,28 @@ const index = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    instance
-      .get(`maintainer/projects?page=${pageNo}`, {
+    let API;
+    try {
+      API = instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+    } finally {
+      const token = sessionStorage.getItem("token");
+      API?.get(`maintainer/projects?page=${pageNo}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {
-        setProjects(res.data.records);
-        sethasNextPage(res.data.hasNextPage);
-        sethasPrevPage(res.data.hasPreviousPage);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
+        .then((res) => {
+          setProjects(res.data.records);
+          sethasNextPage(res.data.hasNextPage);
+          sethasPrevPage(res.data.hasPreviousPage);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+        });
+    }
   }, [accepted, pageNo]);
 
   return loading ? (

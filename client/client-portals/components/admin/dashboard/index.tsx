@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import instance from "services/api";
+import { getAdminProjectApplications } from "services/api";
 import Link from "next/link";
 import { Layout, Button, CSSLoader } from "@/shared/index";
 import { TableProjectsProps } from "utils/interfaces";
@@ -28,30 +28,21 @@ const ProjectApplications = () => {
     "Project Approval",
   ];
 
-  useEffect(() => {
-    let mounted = true;
-    const token = sessionStorage.getItem("token");
-    instance
-      .get(`admin/projects?page=${pageNo}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (mounted) {
-          setTableDataProjects(res.data.records);
-          sethasNextPage(res.data.hasNextPage);
-          sethasPrevPage(res.data.hasPreviousPage);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
+  const _getProjectApplications = async (token) => {
+    const res = await getAdminProjectApplications(token, pageNo);
+    if (res) {
+      setTableDataProjects(res.records);
+      sethasNextPage(res.hasNextPage);
+      sethasPrevPage(res.hasPreviousPage);
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  };
 
-    return () => {
-      mounted = false;
-    };
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    _getProjectApplications(token);
   }, [pageNo]);
 
   return !loading ? (
