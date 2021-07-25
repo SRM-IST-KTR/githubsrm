@@ -75,7 +75,7 @@ const MaintainerPage = () => {
     const { slug } = router.query;
     const token = sessionStorage.getItem("token");
     _getMaintainerApplications(slug, token);
-  }, [router.query, accepted]);
+  }, [router.query, accepted, rejected]);
 
   return loading2 ? (
     <Layout type="admin">
@@ -157,7 +157,10 @@ const MaintainerPage = () => {
             ) : person.is_admin_approved ? (
               <div></div>
             ) : (
-              <Button onClick={() => rejectMaintainerHandler(person._id)}>
+              <button
+                className="flex justify-center w-1/8 mx-auto mt-4 bg-red-400 p-2 font-bold text-white rounded-xl"
+                onClick={() => rejectMaintainerHandler(person._id)}
+              >
                 {rejectLoading ? (
                   <span className="flex w-6 mx-auto">
                     <Loading />
@@ -165,7 +168,7 @@ const MaintainerPage = () => {
                 ) : (
                   "Reject Maintainer"
                 )}
-              </Button>
+              </button>
             )}
           </div>
         ))}

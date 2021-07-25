@@ -81,7 +81,7 @@ const ContributorsPage = () => {
     const { slug } = router.query;
     const token = sessionStorage.getItem("token");
     _getProject(slug, token);
-  }, [router.query, accepted]);
+  }, [router.query, accepted, rejected]);
 
   return loading2 ? (
     <Layout type="admin">
@@ -220,7 +220,8 @@ const ContributorsPage = () => {
                         <Cross />
                       </span>
                     ) : (
-                      <Button
+                      <button
+                        className="flex justify-center w-1/8 mx-auto mt-4 bg-red-400 p-2 font-bold text-white rounded-xl"
                         onClick={() => rejectMaintainerHandler(person._id)}
                       >
                         {rejectLoading ? (
@@ -230,7 +231,7 @@ const ContributorsPage = () => {
                         ) : (
                           "Reject Contributor"
                         )}
-                      </Button>
+                      </button>
                     )}
                   </td>
                 </tr>
