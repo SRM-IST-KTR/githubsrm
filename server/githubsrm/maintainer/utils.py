@@ -189,7 +189,7 @@ def RequestSetPassword(email):
     }, update={
         "$set": {"reset": True}
     })
-    expiry = 0.5
+    expiry = 10
     if not document:
         doc = {
             "email": email,
@@ -197,6 +197,6 @@ def RequestSetPassword(email):
             "reset": True
         }
         entry.maintainer_credentials.insert_one(doc)
-        expiry = 168
+        expiry = 168*60
 
     return jwt_keys.issue_key({"email": email}, expiry=expiry)

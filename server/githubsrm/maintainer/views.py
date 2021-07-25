@@ -212,14 +212,13 @@ class SetPassword(APIView):
                 "error": "Invalid token"
             }, status=400)
 
-        jwt = token
 
         password = request.data.get("password")
 
-        if not jwt_keys.verify_key(key=jwt):
+        if not jwt_keys.verify_key(key=token):
             return JsonResponse(data={"error": "Invalid jwt"}, status=400)
 
-        if not entry.set_password(key=jwt, password=password):
+        if not entry.set_password(key=token, password=password):
             return JsonResponse(data={"error": "Already changed"}, status=400)
 
         return JsonResponse(data={}, status=200)

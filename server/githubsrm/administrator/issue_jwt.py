@@ -84,6 +84,7 @@ class IssueKey:
                                      options={"require": ["exp"], "verify_signature": True}, algorithms=['HS256'])
                 return decoded
         except Exception as e:
+            print(e)
             return False
 
     def verify_role(self, key: str, path: str) -> bool:
