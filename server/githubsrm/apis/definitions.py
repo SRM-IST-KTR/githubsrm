@@ -71,7 +71,7 @@ def check_poa(poa: str) -> bool:
     Returns:
         bool
     """
-    return len(poa.strip()) > 30
+    return len(poa.strip()) >= 30
 
 
 def check_phone(ph: str) -> bool:
@@ -111,7 +111,7 @@ class CommonSchema:
         self.alpha_maintainer = {
             "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
             "project_url": And(str, lambda url: check_repo(url)),
-            "description": And(str, lambda description: len(description.strip()) > 30),
+            "description": And(str, lambda description: len(description.strip()) >= 30),
             "tags": And(list, lambda tags: check_tags(tags=tags))
         }
 
