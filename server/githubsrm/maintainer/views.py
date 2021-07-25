@@ -114,7 +114,6 @@ class Projects(APIView):
             }, status=400)
         return self._remove_contributor(request=request)
 
-
     def get(self, request, **kwargs) -> JsonResponse:
         """Projects get view for maintainer portal.
 
@@ -128,7 +127,6 @@ class Projects(APIView):
         SingleProject = ['projectId', 'maintainer', 'contributor']
 
         RequestQueryKeys = list(request.GET.keys())
-
         if len(set(Pagination) & set(RequestQueryKeys)) == 1:
             response = project_pagination(request, **kwargs)
             if "error" in response:
@@ -180,8 +178,8 @@ class Login(APIView):
             payload["name"] = doc_list[0]["name"]
             payload["project_id"] = [i["project_id"] for i in doc_list]
 
-            if jwt := jwt_keys.issue_key(payload):
-                return JsonResponse(data={"key": jwt}, status=status.HTTP_200_OK)
+            if jwt := jwt_keys.issue_key(payload, get_refresh_token=True):
+                return JsonResponse(data=jwt, status=status.HTTP_200_OK)
             else:
                 return JsonResponse(data={"message": "Does not exist"},  status=status.HTTP_401_UNAUTHORIZED)
 
@@ -281,12 +279,13 @@ class RefreshRoute(APIView):
 
         email = user.get("email") if user.get("email") else user.get("user")
         name = user.get("name") if user.get("name") else None
-
+        
         project_ids = entry.projects_from_email(email=email)
         if project_ids:
             if name:
                 payload = {"email": email,
-                           "project_id": project_ids, "name": name}
+                           "project_id": project_ids,
+                           "name": name}
 
             key = jwt_keys.refresh_to_access(refresh_token, payload=payload)
             return JsonResponse(data={
@@ -296,3 +295,18 @@ class RefreshRoute(APIView):
             return JsonResponse(data={
                 "error": "invalid user"
             }, status=404)
+
+
+class Verification(APIView):
+    def get(self, request, **kwargs) -> JsonResponse:
+        """Verify maintianer jwt
+
+        Args:
+            request 
+
+        Returns:
+            JsonResponse
+        """
+        return JsonResponse(data={
+            "success": True
+        }, status=200)

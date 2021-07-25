@@ -25,19 +25,8 @@ def project_pagination(request, **kwargs):
 
     try:
         page = int(request.GET["page"])
-        decoded = decode_payload(
-            get_token(request_header=request.headers))
-
-        projects_ids = decoded["project_id"]
-        email = decoded["email"]
-        totalItems = entry.maintainer.count_documents({
-            "email": email, "is_admin_approved": True
-        })
-
-        if totalItems > len(projects_ids):
-            return {
-                "error": "Key expired"
-            }
+        projects_ids = request.project_ids
+        totalItems = request.total_items
 
         record = list(entry.project.aggregate([
             {"$match": {"_id": {"$in": projects_ids}}},
