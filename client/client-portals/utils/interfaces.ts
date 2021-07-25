@@ -109,6 +109,7 @@ export interface ContributorProps {
   branch: string;
   poa: string;
   is_maintainer_approved: boolean;
+  is_maintainer_rejected: boolean;
 }
 
 export interface AcceptedProjectsProps {
