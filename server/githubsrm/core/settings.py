@@ -31,7 +31,7 @@ else:
     print(f'\033[93mServer in DEBUG Mode. Disabling Sentry.\033[0m')
 
 ALLOWED_HOSTS = ['*']
-USE_DATABASE = 'MONGO'
+USE_DATABASE = 'MONGO' if DEBUG is False else "TEST"
 
 
 INSTALLED_APPS = [
