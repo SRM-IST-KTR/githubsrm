@@ -278,15 +278,15 @@ class RefreshRoute(APIView):
         user = jwt_keys.verify_key(refresh_token)
 
         email = user.get("email") if user.get("email") else user.get("user")
-        name = user.get("name") if user.get("name") else None
-        
+        name = user.get("name")
+
         project_ids = entry.projects_from_email(email=email)
         if project_ids:
-            if name:
-                payload = {"email": email,
-                           "project_id": project_ids,
-                           "name": name}
-
+            payload = {
+                "email": email,
+                "name": name,
+                "project_id": project_ids
+            }
             key = jwt_keys.refresh_to_access(refresh_token, payload=payload)
             return JsonResponse(data={
                 "key": key
