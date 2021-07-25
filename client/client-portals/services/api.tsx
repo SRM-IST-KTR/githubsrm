@@ -296,7 +296,9 @@ export const deletefromMaintainerContributor = async (
       router.replace("/");
     } finally {
       await API?.delete("maintainer/projects?role=contributor", {
-        contributor_id: contributor_id,
+        data: {
+          contributor_id: contributor_id,
+        },
       });
       return true;
     }
@@ -344,7 +346,9 @@ export const deleteMaintainer = async (maintainer_id) => {
       router.replace("/");
     } finally {
       await API?.delete("admin/projects?role=maintainer", {
-        maintainer_id: maintainer_id,
+        data: {
+          maintainer_id: maintainer_id,
+        },
       });
       return true;
     }
@@ -365,7 +369,9 @@ export const deleteContributor = async (contributor_id): Promise<boolean> => {
       router.replace("/");
     } finally {
       await API?.delete("admin/projects?role=contributor", {
-        contributor_id: contributor_id,
+        data: {
+          contributor_id: contributor_id,
+        },
       });
       return true;
     }
