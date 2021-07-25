@@ -360,8 +360,7 @@ class ProjectsAdmin(APIView):
                 return self.action_to_status(
                     status=remove_status, request=request)
             else:
-                remove_status = entry.admin_remove_ma
-                intainer(
+                remove_status = entry.admin_remove_maintainer(
                     validate.get("maintainer_id"))
                 return self.action_to_status(
                     status=remove_status, request=request)

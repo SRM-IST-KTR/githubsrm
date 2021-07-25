@@ -48,3 +48,15 @@ class Base:
             "project_url": "https://github.com/SRM-IST-KTR/githubsrm",
             "private": True
         }
+        self.another_alpha={
+            "name": "Riju",
+            "email": "rmukh561@gmail.com",
+            "github_id": "riju561",
+            "srm_email": "rm8211@srmist.edu.in",
+            "reg_number": "RA1911003010056",
+            "branch": "CSE",
+            "project_name": "Qwertz",
+            "project_url": "",
+            "tags": ["e", "f", "g", "h"],
+            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkawdsfsdf asdfafd"
+        }
