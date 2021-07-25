@@ -58,7 +58,7 @@ const AuthContextProvider: React.FC = (props) => {
   const logoutHandler = () => {
     setIsAuth(false);
     setIsAdmin(false);
-    sessionStorage.removeItem("token");
+    sessionStorage.clear();
     router.replace("/");
     successToast("Logged out!");
   };

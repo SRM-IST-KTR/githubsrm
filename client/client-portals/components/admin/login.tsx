@@ -39,6 +39,7 @@ const AdminLogin = () => {
     } else {
       setLoading(false);
     }
+    setLoading(false);
   };
 
   return (
