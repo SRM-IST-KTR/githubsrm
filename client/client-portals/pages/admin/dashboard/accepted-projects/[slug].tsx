@@ -66,9 +66,9 @@ const ContributorsPage = () => {
     }
   };
 
-  const _getProject = async (slug, token) => {
+  const _getProject = async (slug) => {
     setLoading2(true);
-    const res = await getProject(slug, token);
+    const res = await getProject(slug);
     if (res) {
       setContributorsData(res.contributor.contributor);
       setProjectName(res.project.project_name);
@@ -79,8 +79,7 @@ const ContributorsPage = () => {
 
   useEffect(() => {
     const { slug } = router.query;
-    const token = sessionStorage.getItem("token");
-    _getProject(slug, token);
+    _getProject(slug);
   }, [router.query, accepted, rejected]);
 
   return loading2 ? (

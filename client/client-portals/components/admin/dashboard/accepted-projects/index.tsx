@@ -16,8 +16,7 @@ const AcceptedProjectDashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const _getAcceptedProjects = async () => {
-    const token = sessionStorage.getItem("token");
-    const res = await getAcceptedProjects(pageNo, token);
+    const res = await getAcceptedProjects(pageNo);
     if (res) {
       setAcceptedProjects(res.records);
       sethasNextPage(res.hasNextPage);

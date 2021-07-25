@@ -59,8 +59,8 @@ const MaintainerPage = () => {
     }
   };
 
-  const _getMaintainerApplications = async (slug, token) => {
-    const res = await getMaintainerApplications(slug, token);
+  const _getMaintainerApplications = async (slug) => {
+    const res = await getMaintainerApplications(slug);
     if (res) {
       setMaintainerData(res.maintainer.maintainer);
       setProjectName(res.project.project_name);
@@ -73,8 +73,7 @@ const MaintainerPage = () => {
 
   useEffect(() => {
     const { slug } = router.query;
-    const token = sessionStorage.getItem("token");
-    _getMaintainerApplications(slug, token);
+    _getMaintainerApplications(slug);
   }, [router.query, accepted, rejected]);
 
   return loading2 ? (
