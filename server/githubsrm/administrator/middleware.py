@@ -37,7 +37,8 @@ class Authorize:
                     return JsonResponse(data={
                         "error": "invalid token type"
                     }, status=401)
-                if jwt_keys.verify_key(key=token) and jwt_keys.verify_role(key=token, path=request.path):
+                if decoded := jwt_keys.verify_key(key=token) and jwt_keys.verify_role(key=token, path=request.path):
+                    request.decoded = decoded
                     return self.view(request)
 
                 else:

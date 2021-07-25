@@ -66,7 +66,7 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        key = jwt_keys.verify_key(get_token(request_header=request.headers))
+        key = request.decoded
         contributor = entry.find_contributor_for_removal(
             request.data.get("contributor_id"), key.get("project_id"))
 

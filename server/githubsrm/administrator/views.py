@@ -166,8 +166,7 @@ class ProjectsAdmin(APIView):
 
                     blame = None
                     try:
-                        if decoded := jwt_keys.verify_key(request.headers.get("Authorization").split()[1]):
-                            blame = decoded.get("user")
+                        blame = request.decoded.get("user")
                     except Exception as e:
                         blame = None
 
@@ -237,7 +236,7 @@ class ProjectsAdmin(APIView):
             JsonResponse
         """
 
-        key = jwt_keys.verify_key(get_token(request.headers))
+        key = request.decoded
 
         Thread(target=service.sns, kwargs={
             "payload": {
@@ -259,7 +258,7 @@ class ProjectsAdmin(APIView):
         Returns:
             JsonResponse
         """
-        key = jwt_keys.verify_key(get_token(request.headers))
+        key = request.decoded
         Thread(target=service.sns, kwargs={
             "payload": {
                 "message": f"Maintainer -> {request.data.get('maintainer_id')} removed by -> {key.get('user')}",
@@ -281,7 +280,7 @@ class ProjectsAdmin(APIView):
         Returns:
             JsonResponse
         """
-        key = jwt_keys.verify_key(get_token(request.headers))
+        key = request.decoded
         Thread(target=service.sns, kwargs={
             "payload": {
                 "message": f"This admin messed up -> {key.get('user')} \
@@ -304,7 +303,7 @@ class ProjectsAdmin(APIView):
         Returns:
             JsonResponse
         """
-        key = jwt_keys.verify_key(get_token(request.headers))
+        key = request.decoded
         Thread(target=service.sns, kwargs={
             "payload": {
                 "message": f"Tring to remove maintainer / admin or the contributor id is wrong\
