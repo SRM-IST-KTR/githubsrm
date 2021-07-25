@@ -85,7 +85,7 @@ const ProjectDetail = () => {
   return !loading2 ? (
     <Layout type="maintainer">
       <div className="flex flex-col justify-center items-center">
-        <h2 className="text-4xl font-extrabold text-gray-50 my-1">
+        <h2 className="text-5xl font-extrabold text-gray-50 my-1">
           {projectName}
         </h2>
         <OtherMaintainers
@@ -94,7 +94,7 @@ const ProjectDetail = () => {
           )}
         />
         <div className="overflow-auto w-full">
-          {contributorsData?.length <= 0 && (
+          {contributorsData?.length > 0 && (
             <h2 className="mr-5 mb-3 font-bold text-white text-3xl text-center">
               Contributors' Applications
             </h2>
@@ -191,7 +191,7 @@ const ProjectDetail = () => {
               />
             </>
           ) : (
-            <h2 className="text-4xl text-center  text-white mb-5 no-scrollbar">
+            <h2 className="text-4xl text-center mt-10  text-white mb-5 no-scrollbar">
               No contributor applications yet!!
             </h2>
           )}

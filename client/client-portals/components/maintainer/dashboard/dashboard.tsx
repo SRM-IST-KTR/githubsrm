@@ -58,14 +58,16 @@ const index = () => {
           />
         ))}
       </div>
-      {projects.length > 0 && (
-        <PaginationButtons
-          hasNextPage={hasNextPage}
-          hasPrevPage={hasPrevPage}
-          pageNo={pageNo}
-          setPageNo={setPageNo}
-        />
-      )}
+      <div className="mt-7">
+        {projects.length > 0 && (
+          <PaginationButtons
+            hasNextPage={hasNextPage}
+            hasPrevPage={hasPrevPage}
+            pageNo={pageNo}
+            setPageNo={setPageNo}
+          />
+        )}
+      </div>
     </Layout>
   );
 };

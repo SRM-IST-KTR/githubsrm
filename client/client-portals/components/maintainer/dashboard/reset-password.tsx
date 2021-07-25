@@ -76,6 +76,7 @@ const ResetPassword = ({ action, queryToken }) => {
     } else {
       errToast("You do not have access to set password!");
     }
+    setLoading(false);
   };
 
   return (
