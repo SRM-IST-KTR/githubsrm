@@ -28,8 +28,8 @@ const ProjectApplications = () => {
     "Project Approval",
   ];
 
-  const _getProjectApplications = async (token) => {
-    const res = await getAdminProjectApplications(token, pageNo);
+  const _getProjectApplications = async () => {
+    const res = await getAdminProjectApplications(pageNo);
     if (res) {
       setTableDataProjects(res.records);
       sethasNextPage(res.hasNextPage);
@@ -41,8 +41,7 @@ const ProjectApplications = () => {
   };
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    _getProjectApplications(token);
+    _getProjectApplications();
   }, [pageNo]);
 
   return !loading ? (

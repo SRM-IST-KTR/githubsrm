@@ -8,7 +8,7 @@ import {
   SetPasswordData,
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
-import { errToast, successToast } from "../utils/functions/toast";
+import { errToast } from "../utils/functions/toast";
 import router from "next/router";
 
 const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
@@ -21,11 +21,9 @@ const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
   if (!auth) {
     return api;
   }
-
   const authToken = sessionStorage.getItem("token");
   const refreshToken = sessionStorage.getItem("refreshToken");
   const recaptchaToken = getRecaptchaToken("post");
-
   try {
     try {
       const { data } = await axios.get(
@@ -109,8 +107,7 @@ export const postAdminLogin = async (
 };
 
 export const postAdminRegister = async (
-  values: AdminRegisterData,
-  authToken
+  values: AdminRegisterData
 ): Promise<boolean> => {
   try {
     let API;
@@ -134,10 +131,7 @@ export const postAdminRegister = async (
   }
 };
 
-export const getAcceptedProjects = async (
-  pageNo,
-  token
-): Promise<any | false> => {
+export const getAcceptedProjects = async (pageNo): Promise<any | false> => {
   try {
     let API;
     try {
@@ -156,7 +150,6 @@ export const getAcceptedProjects = async (
 };
 
 export const getContributorsApplications = async (
-  token,
   slug
 ): Promise<any | false> => {
   try {
@@ -180,7 +173,6 @@ export const getContributorsApplications = async (
 };
 
 export const getAdminProjectApplications = async (
-  token,
   pageNo
 ): Promise<any | false> => {
   try {
@@ -256,6 +248,7 @@ export const postSetPassword = async (
       sessionStorage.clear();
       router.replace("/");
     } finally {
+      API.defaults.headers.common["Authorization"] = `Bearer ${queryToken}`;
       const res = await API?.post("maintainer/reset-password/set", values);
       return true;
     }
@@ -294,16 +287,19 @@ export const deletefromMaintainerContributor = async (
   contributor_id
 ): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.delete("maintainer/projects?role=contributor", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-      data: { contributor_id: contributor_id },
-    });
-    return true;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.delete("maintainer/projects?role=contributor", {
+        contributor_id: contributor_id,
+      });
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
@@ -339,44 +335,47 @@ export const postAcceptMaintainer = async (
 
 export const deleteMaintainer = async (maintainer_id) => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.delete("admin/projects?role=maintainer", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-      data: { maintainer_id: maintainer_id },
-    });
-    return true;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.delete("admin/projects?role=maintainer", {
+        maintainer_id: maintainer_id,
+      });
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
   }
 };
 
-export const deleteContributor = async (contributor_id) => {
+export const deleteContributor = async (contributor_id): Promise<boolean> => {
   try {
-    const recaptchaToken = await getRecaptchaToken("post");
-    const token = sessionStorage.getItem("token");
-    await instance.delete("admin/projects?role=contributor", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "X-RECAPTCHA-TOKEN": recaptchaToken,
-      },
-      data: { contributor_id: contributor_id },
-    });
-    return true;
+    let API;
+    try {
+      API = await instance();
+    } catch (error) {
+      errToast("Session Expired! Please Login again!");
+      sessionStorage.clear();
+      router.replace("/");
+    } finally {
+      await API?.delete("admin/projects?role=contributor", {
+        contributor_id: contributor_id,
+      });
+      return true;
+    }
   } catch (error) {
     errorHandler(error);
     return false;
   }
 };
 
-export const getMaintainerApplications = async (
-  slug,
-  token
-): Promise<any | false> => {
+export const getMaintainerApplications = async (slug): Promise<any | false> => {
   try {
     let API;
     try {
@@ -422,7 +421,7 @@ export const postAcceptProject = async (
   }
 };
 
-export const getProject = async (slug, token): Promise<any> => {
+export const getProject = async (slug): Promise<any> => {
   try {
     let API;
     try {
