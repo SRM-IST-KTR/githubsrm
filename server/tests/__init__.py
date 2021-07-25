@@ -1,4 +1,3 @@
-from githubsrm.core.settings import DATABASE
 from django.conf import settings
 
 settings.configure(USE_DATABASE='TESTMONGO')
