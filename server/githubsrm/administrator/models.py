@@ -1,3 +1,4 @@
+from json.tool import main
 import secrets
 from datetime import datetime
 from hashlib import sha256
@@ -294,12 +295,21 @@ class AdminEntry:
             identifier (str): maintainer id
 
         Returns:
-            bool: 
+            bool:
         """
 
         maintainer = self.db.maintainer.find_one_and_delete({
             "_id": identifier,
             "is_admin_approved": False
+        })
+
+        if not maintainer:
+            return False
+
+        project_id = maintainer["project_id"]
+        project = self.db.project.find_one_and_delete({
+            "_id":project_id,
+            "maintainer_id":{"$exists":False}
         })
 
         if maintainer:
