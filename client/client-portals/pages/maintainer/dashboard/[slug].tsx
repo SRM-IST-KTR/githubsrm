@@ -9,8 +9,9 @@ import CSSLoader from "components/shared/loader";
 import {
   postAcceptContributor,
   getContributorsApplications,
+  deletefromMaintainerContributor,
 } from "services/api";
-import { Loading, Tick } from "@/icons/index";
+import { Loading, Tick, Cross } from "@/icons/index";
 import { PaginationButtons } from "@/shared/index";
 
 const headings = [
@@ -35,6 +36,7 @@ const ProjectDetail = () => {
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [accepted, setAccepted] = useState<boolean>(false);
+  const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
 
@@ -55,6 +57,16 @@ const ProjectDetail = () => {
     if (res) {
       setAccepted(true);
       successToast("Contributor Approved sucessfully!");
+      setLoading(false);
+    }
+  };
+
+  const deleteContributorHandler = async (contributor_id) => {
+    setLoading(true);
+    const res = await deletefromMaintainerContributor(contributor_id);
+    if (res) {
+      setRejected(true);
+      successToast("Contributor Rejected sucessfully!");
       setLoading(false);
     }
   };
@@ -175,6 +187,26 @@ const ProjectDetail = () => {
                               </span>
                             ) : (
                               "Approve Contributor"
+                            )}
+                          </Button>
+                        )}
+                      </td>
+
+                      <td className="p-3 ">
+                        {person.is_maintainer_approved ? (
+                          <span className="text-red-500 text-center text-3xl">
+                            <Cross />
+                          </span>
+                        ) : (
+                          <Button
+                            onClick={() => deleteContributorHandler(person._id)}
+                          >
+                            {loading ? (
+                              <span className="flex w-6 mx-auto">
+                                <Loading />
+                              </span>
+                            ) : (
+                              "Reject Contributor"
                             )}
                           </Button>
                         )}

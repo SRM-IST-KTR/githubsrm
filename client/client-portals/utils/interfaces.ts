@@ -50,6 +50,7 @@ export interface TableProjectsProps {
 export interface ContributorsProps {
   _id: string;
   is_admin_approved: boolean;
+  is_admin_rejected: boolean;
   branch: string;
   email: string;
   name: string;
@@ -64,6 +65,7 @@ export interface ContributorsProps {
 export interface MaintainersProps {
   _id: string;
   is_admin_approved: boolean;
+  is_admin_rejected: boolean;
   branch: string;
   email: string;
   name: string;
