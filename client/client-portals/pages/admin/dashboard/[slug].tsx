@@ -97,7 +97,7 @@ const MaintainerPage = () => {
             key={person._id}
             className="p-4 rounded-xl shadow-2xl bg-white text-base-black "
           >
-            <h2 className="text-xl font-medium mb-3">
+            <h2 className="text-xl font-medium mb-3 word-wrap">
               <span className="font-bold">Name: </span>
               {person.name}
             </h2>
