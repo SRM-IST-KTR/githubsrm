@@ -148,6 +148,7 @@ else:
         "db": os.getenv("TEST_MONGO_DB")
     }
 
+print("USING DB: ", DATABASE["db"])
 
 LANGUAGE_CODE = 'en-us'
 
