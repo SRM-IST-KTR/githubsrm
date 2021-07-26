@@ -23,6 +23,7 @@ const index = () => {
         API = await instance();
       } catch (error) {
         errToast("Session Expired! Please Login again!");
+        const authContext = useContext(AuthContext);
         authContext.logoutHandler();
       } finally {
         API?.get(`maintainer/projects?page=${pageNo}`)
