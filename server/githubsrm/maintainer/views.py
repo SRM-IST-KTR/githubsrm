@@ -68,6 +68,7 @@ class Projects(APIView):
         """
         contributor = entry.find_contributor_for_removal(
             request.data.get("contributor_id"), request.decoded.get("project_id"))
+
         if contributor:
             Thread(target=service.sns, kwargs={
                 "payload": {
@@ -75,6 +76,13 @@ class Projects(APIView):
                         removed by -> {request.decoded.get('email')}",
                     "status": "[MAINTAINER-REMOVED-CONTRIBUTOR]"
                 }
+            }).start()
+            Thread(target=service.wrapper_email, kwargs={
+                "role":"maitainer_contributor_rejection",
+                "data":{"name":contributor["name"],
+                        "email":contributor["email"],
+                    "project_name":contributor["project_name"]
+                },
             }).start()
 
             return JsonResponse(data={
@@ -232,7 +240,7 @@ class ResetPassword(APIView):
         """Handle reset password
 
         Args:
-            request 
+            request
 
         Returns:
             JsonResponse

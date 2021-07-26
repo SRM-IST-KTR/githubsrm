@@ -62,10 +62,10 @@ class MeVerification:
                           '/maintainer/projects', "/me"]
 
     def __call__(self, request, **kwargs) -> JsonResponse:
-        """Me verification 
+        """Me verification
 
         Args:
-            request 
+            request
 
         Returns:
             JsonResponse
@@ -87,6 +87,7 @@ class MeVerification:
 
             decoded = jwt_keys.verify_key(key=token)
             if decoded:
+                request.decoded = decoded
                 admin = decoded.get("admin")
                 if admin:
                     return self.view(request)
