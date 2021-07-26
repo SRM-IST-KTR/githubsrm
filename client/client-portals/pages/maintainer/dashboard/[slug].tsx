@@ -41,6 +41,8 @@ const ProjectDetail = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
   const [rejectLoading, setRejectLoading] = useState<boolean>(false);
+  const [cPageNo, setCPageNo] = useState<number>(1);
+  const [mPageNo, setMPageNo] = useState<number>(1);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -76,7 +78,7 @@ const ProjectDetail = () => {
   };
 
   const _getContributorsApplications = async (slug) => {
-    const res = await getContributorsApplications(slug);
+    const res = await getContributorsApplications(slug, cPageNo, mPageNo);
     if (res) {
       setContributorsData(res.contributor);
       setProjectName(res.project_name);
@@ -97,7 +99,7 @@ const ProjectDetail = () => {
     if (slug) {
       _getContributorsApplications(slug);
     }
-  }, [router.query, accepted, rejected]);
+  }, [router.query, accepted, rejected, cPageNo, mPageNo]);
 
   return !loading2 ? (
     <Layout type="maintainer">
