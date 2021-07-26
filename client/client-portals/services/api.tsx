@@ -153,7 +153,9 @@ export const getAcceptedProjects = async (pageNo): Promise<any | false> => {
 };
 
 export const getContributorsApplications = async (
-  slug
+  slug: string,
+  cPageNo: number,
+  mPageNo: number
 ): Promise<any | false> => {
   try {
     let API;
@@ -166,7 +168,7 @@ export const getContributorsApplications = async (
     } finally {
       return await (
         await API?.get(
-          `maintainer/projects?projectId=${slug}&contributor=1&maintainer=1`
+          `maintainer/projects?projectId=${slug}&contributor=${cPageNo}&maintainer=${mPageNo}`
         )
       ).data;
     }

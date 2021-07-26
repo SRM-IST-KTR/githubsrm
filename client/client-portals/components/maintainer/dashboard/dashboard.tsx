@@ -8,6 +8,7 @@ import { errToast } from "utils/functions/toast";
 import { AuthContext } from "context/authContext";
 
 const index = () => {
+  const authContext = useContext(AuthContext);
   const [projects, setProjects] = useState<MaintainerProjectsProps[]>([]);
   const [accepted, setAccepted] = useState<boolean>(false);
   const [pageNo, setPageNo] = useState<number>(1);
