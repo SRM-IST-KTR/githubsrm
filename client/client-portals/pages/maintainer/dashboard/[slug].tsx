@@ -33,7 +33,6 @@ const ProjectDetail = () => {
   const [maintainers, setMaintainers] = useState<OtherMaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
-  const [pageNo, setPageNo] = useState<number>(1);
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -42,7 +41,6 @@ const ProjectDetail = () => {
   const [loading2, setLoading2] = useState<boolean>(true);
   const [rejectLoading, setRejectLoading] = useState<boolean>(false);
   const [cPageNo, setCPageNo] = useState<number>(1);
-  const [mPageNo, setMPageNo] = useState<number>(1);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -78,14 +76,14 @@ const ProjectDetail = () => {
   };
 
   const _getContributorsApplications = async (slug) => {
-    const res = await getContributorsApplications(slug, cPageNo, mPageNo);
+    const res = await getContributorsApplications(slug, cPageNo, 1);
     if (res) {
       setContributorsData(res.contributor);
       setProjectName(res.project_name);
       setProjectId(res._id);
       setMaintainers(res.maintainer);
       sethasNextPage(res.contributorHasNextPage);
-      if (pageNo > 1) {
+      if (cPageNo > 1) {
         sethasPrevPage(true);
       }
       setLoading2(false);
@@ -99,7 +97,7 @@ const ProjectDetail = () => {
     if (slug) {
       _getContributorsApplications(slug);
     }
-  }, [router.query, accepted, rejected, cPageNo, mPageNo]);
+  }, [router.query, accepted, rejected, cPageNo]);
 
   return !loading2 ? (
     <Layout type="maintainer">
@@ -235,8 +233,8 @@ const ProjectDetail = () => {
               <PaginationButtons
                 hasNextPage={hasNextPage}
                 hasPrevPage={hasPrevPage}
-                pageNo={pageNo}
-                setPageNo={setPageNo}
+                pageNo={cPageNo}
+                setPageNo={setCPageNo}
               />
             </>
           ) : (
