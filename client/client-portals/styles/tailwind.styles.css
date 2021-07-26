@@ -41,6 +41,15 @@
   .custom-input-wrapper {
     @apply flex flex-col my-1;
   }
+  .toast-alert {
+    @apply font-medium bg-yellow-400;
+  }
+  .toast-error {
+    @apply font-medium bg-red-600;
+  }
+  .toast-success {
+    @apply bg-base-green font-medium;
+  }
 
   .no-scrollbar::-webkit-scrollbar {
     display: none;
