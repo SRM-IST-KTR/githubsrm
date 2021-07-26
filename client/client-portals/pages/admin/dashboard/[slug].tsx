@@ -18,6 +18,7 @@ const MaintainerPage = () => {
   const [maintainerData, setMaintainerData] = useState<MaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
+  const [clickedAcceptBtn, setClickedAcceptBtn] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
   const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,6 +37,7 @@ const MaintainerPage = () => {
   }, [authContext]);
 
   const acceptMaintainerHandler = async (project_id, maintainer_id, email) => {
+    setClickedAcceptBtn(maintainer_id);
     setLoading(true);
     const res = await postAcceptMaintainer(project_id, maintainer_id, email);
     if (res) {
@@ -140,7 +142,7 @@ const MaintainerPage = () => {
                   acceptMaintainerHandler(projectId, person._id, person.email)
                 }
               >
-                {loading ? (
+                {loading && clickedAcceptBtn === person._id ? (
                   <span className="flex w-6 mx-auto">
                     <Loading />
                   </span>

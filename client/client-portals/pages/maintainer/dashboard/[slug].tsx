@@ -33,6 +33,7 @@ const ProjectDetail = () => {
   const [maintainers, setMaintainers] = useState<OtherMaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
+  const [clickedAcceptBtn, setClickedAcceptBtn] = useState<string>("");
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -54,6 +55,7 @@ const ProjectDetail = () => {
   }, [authContext]);
 
   const acceptContributorHandler = async (project_id, contributor_id) => {
+    setClickedAcceptBtn(contributor_id);
     setLoading(true);
     const res = await postAcceptContributor(project_id, contributor_id);
     if (res) {
@@ -191,7 +193,7 @@ const ProjectDetail = () => {
                               acceptContributorHandler(projectId, person._id)
                             }
                           >
-                            {loading ? (
+                            {loading && clickedAcceptBtn === person._id ? (
                               <span className="flex w-6 mx-auto">
                                 <Loading />
                               </span>
