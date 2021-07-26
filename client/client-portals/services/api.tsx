@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import axios, { AxiosInstance } from "axios";
 import { getRecaptchaToken } from "./recaptcha";
 import {
@@ -9,7 +10,7 @@ import {
 } from "../utils/interfaces";
 import { AxiosError } from "axios";
 import { errToast } from "../utils/functions/toast";
-import router from "next/router";
+import { AuthContext } from "context/authContext";
 
 const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
   const api = axios.create({
@@ -58,8 +59,7 @@ const instance = async (auth: boolean = true): Promise<AxiosInstance> => {
       return api;
     }
   } catch (err) {
-    sessionStorage.clear();
-    router.replace("/");
+    throw "NotAuthenticatedError";
   }
 };
 
@@ -70,8 +70,8 @@ export const postAcceptProjectHandler = async (values): Promise<boolean> => {
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       await API?.post(`admin/projects?role=project`, values);
       return true;
@@ -91,8 +91,8 @@ export const postAdminLogin = async (
       API = await instance(false);
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       const res = await API?.post("/admin/login", values);
       sessionStorage.setItem("token", res.data.access_token);
@@ -116,8 +116,8 @@ export const postAdminRegister = async (
       API = await instance(false);
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       const res = await API?.post("/admin/register", values);
@@ -140,11 +140,12 @@ export const getAcceptedProjects = async (pageNo): Promise<any | false> => {
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
-      return await (await API?.get(`admin/projects/accepted?page=${pageNo}`))
-        .data;
+      return await (
+        await API?.get(`admin/projects/accepted?page=${pageNo}`)
+      ).data;
     }
   } catch (error) {
     return false;
@@ -160,8 +161,8 @@ export const getContributorsApplications = async (
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       return await (
         await API?.get(
@@ -183,10 +184,12 @@ export const getAdminProjectApplications = async (
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
-      return await (await API?.get(`admin/projects?page=${pageNo}`)).data;
+      return await (
+        await API?.get(`admin/projects?page=${pageNo}`)
+      ).data;
     }
   } catch (error) {
     return false;
@@ -202,8 +205,8 @@ export const postMaintainerLogin = async (
       API = await instance(false);
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       const res = await API?.post("maintainer/login", values);
       sessionStorage.setItem("token", res.data.access_token);
@@ -225,8 +228,8 @@ export const postResetPassword = async (
       API = await instance(false);
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       const res = await API?.post("maintainer/reset-password/reset", values);
       return true;
@@ -247,8 +250,8 @@ export const postSetPassword = async (
       API = await instance(false);
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       API.defaults.headers.common["Authorization"] = `Bearer ${queryToken}`;
       const res = await API?.post("maintainer/reset-password/set", values);
@@ -270,8 +273,8 @@ export const postAcceptContributor = async (
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       await API?.post("maintainer/projects?role=contributor", {
         project_id: project_id,
@@ -294,8 +297,8 @@ export const deletefromMaintainerContributor = async (
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       await API?.delete("maintainer/projects?role=contributor", {
         data: {
@@ -321,8 +324,8 @@ export const postAcceptMaintainer = async (
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       await API?.post("admin/projects?role=maintainer", {
         project_id: project_id,
@@ -344,8 +347,8 @@ export const deleteMaintainer = async (maintainer_id) => {
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       await API?.delete("admin/projects?role=maintainer", {
         data: {
@@ -367,8 +370,8 @@ export const deleteContributor = async (contributor_id): Promise<boolean> => {
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       await API?.delete("admin/projects?role=contributor", {
         data: {
@@ -390,8 +393,8 @@ export const getMaintainerApplications = async (slug): Promise<any | false> => {
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       return await (
         await API?.get(
@@ -414,8 +417,8 @@ export const postAcceptProject = async (
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       await API?.post("admin/projects?role=contributor", {
         contributor_id: contributor_id,
@@ -436,8 +439,8 @@ export const getProject = async (slug): Promise<any> => {
       API = await instance();
     } catch (error) {
       errToast("Session Expired! Please Login again!");
-      sessionStorage.clear();
-      router.replace("/");
+      const authContext = useContext(AuthContext);
+      authContext.logoutHandler();
     } finally {
       return await (
         await API?.get(
