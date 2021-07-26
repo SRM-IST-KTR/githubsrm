@@ -1,4 +1,3 @@
-import { Button } from "@/shared/index";
 import router from "next/router";
 export default function ErrorPage() {
   return (

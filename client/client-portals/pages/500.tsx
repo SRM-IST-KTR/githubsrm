@@ -1,4 +1,4 @@
-import { Layout, Button } from "@/shared/index";
+import { Layout } from "@/shared/index";
 import { ServerError } from "@/icons/index";
 import router from "next/router";
 
