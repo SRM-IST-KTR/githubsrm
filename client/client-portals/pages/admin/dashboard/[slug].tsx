@@ -19,6 +19,7 @@ const MaintainerPage = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [clickedAcceptBtn, setClickedAcceptBtn] = useState<string>("");
+  const [clickedRejectBtn, setClickedRejectBtn] = useState<string>("");
   const [accepted, setAccepted] = useState<boolean>(false);
   const [rejected, setRejected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -50,6 +51,7 @@ const MaintainerPage = () => {
   };
 
   const rejectMaintainerHandler = async (maintainer_id) => {
+    setClickedRejectBtn(maintainer_id);
     setRejectLoading(true);
     const res = await deleteMaintainer(maintainer_id);
     if (res) {
@@ -165,7 +167,7 @@ const MaintainerPage = () => {
                 className="flex justify-center w-1/8 mx-auto mt-4 bg-red-400 p-2 font-bold text-white rounded-xl"
                 onClick={() => rejectMaintainerHandler(person._id)}
               >
-                {rejectLoading ? (
+                {rejectLoading && clickedRejectBtn === person._id ? (
                   <span className="flex w-6 mx-auto">
                     <Loading />
                   </span>
