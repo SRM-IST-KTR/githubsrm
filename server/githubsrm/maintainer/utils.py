@@ -84,7 +84,7 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
 
     maintainer_count = 0
     contributor_count = 0
-
+    print(doc)
     try:
         maintainer_count = doc[0]["maintainer"][0]["count"]
         contributor_count = doc[0]["contributor"][0]["count"]
@@ -101,6 +101,7 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
             ITEMS_PER_PAGE * int(maintainer_page)) < int(maintainer_count)
         docs["contributorHasNextPage"] = (
             ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
+        print(docs)
 
     except Exception as e:
         return {
@@ -136,7 +137,7 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
                     {
                         '$match': {
                             'is_admin_approved': True,
-                            'project_id': project_id
+                            'interested_project': project_id
                         }
                     }, {"$count": "count"}
             ],
@@ -157,7 +158,7 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
                     {
                         '$match': {'is_admin_approved': True, 'project_id': project_id}
                     },
-                    {"$skip": (int(maintainer_page)-1) * maintainer_docs}, {"$limit": ITEMS_PER_PAGE}],
+                    {"$skip": (int(maintainer_page)-1) * ITEMS_PER_PAGE}, {"$limit": ITEMS_PER_PAGE}],
                 'as': 'maintainer'
             }
         },
@@ -170,7 +171,7 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
                             'is_admin_approved': True,
                             'interested_project': project_id
                         }
-                    }, {"$skip": (int(contributor_page)-1) * contributor_docs}, {"$limit": ITEMS_PER_PAGE}],
+                    }, {"$skip": (int(contributor_page)-1) * ITEMS_PER_PAGE}, {"$limit": ITEMS_PER_PAGE}],
 
                 'as': 'contributor'
             }
@@ -189,7 +190,7 @@ def RequestSetPassword(email):
     }, update={
         "$set": {"reset": True}
     })
-    expiry = 10
+    expiry = 0.5
     if not document:
         doc = {
             "email": email,
@@ -197,6 +198,6 @@ def RequestSetPassword(email):
             "reset": True
         }
         entry.maintainer_credentials.insert_one(doc)
-        expiry = 168*60
+        expiry = 168
 
     return jwt_keys.issue_key({"email": email}, expiry=expiry)
