@@ -79,7 +79,6 @@ class BotoService:
         """
         if os.getenv("SENDEMAIL"):
             return True
-            
         client = boto3.client('sesv2', region_name='ap-south-1')
 
         try:
@@ -223,6 +222,28 @@ class BotoService:
                                     project_data={"reset_token": data["reset_token"]})
             )
 
+        elif role == 'maintainer_application_rejection':
+            return email_template(
+                subject="Maintainer Application Rejection | GitHub Community SRM",
+                bodyText="Maintainer Application Rejection",
+                emailHTML=emailbody(file="13.html", name=data['name'], role=role, project_data={
+                                    "project_name": data["project_name"]})
+            )
+        elif role == 'admin_contributor_rejection':
+            return email_template(
+                subject="Contributor Application Rejection | GitHub Community SRM",
+                bodyText="Sent to reject contriutor by admin",
+                emailHTML=emailbody(file="14.html", name=data['name'], role=role, project_data={
+                                    "project_name": data["project_name"]})
+            )
+        elif role == 'maitainer_contributor_rejection':
+            return email_template(
+                subject="Contributor Application Rejection | GitHub Community SRM",
+                bodyText="Sent to reject contributor by maintainer",
+                emailHTML=emailbody(file="15.html", name=data['name'], role=role, project_data={
+                                    "project_name": data["project_name"]})
+            )
+
 
 def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> Template:
     """Returns template with appropriate data
@@ -265,6 +286,13 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
             return template.render(name=name, project_name=project_data["project_name"],
                                    contributor_name=project_data["contributor_name"],
                                    contributor_email=project_data["contributor_email"])
+        elif role == "maintainer_application_rejection":
+            return template.render(name=name, project_name = project_data["project_name"])
+        elif role == "admin_contributor_rejection":
+            return template.render(name=name, project_name = project_data["project_name"])
+        elif role == "maitainer_contributor_rejection":
+            return template.render(name=name, project_name = project_data["project_name"])
+
 
 
 def email_template(subject: str, bodyText: str, emailHTML: Template) -> Dict[str, Dict[str, Any]]:

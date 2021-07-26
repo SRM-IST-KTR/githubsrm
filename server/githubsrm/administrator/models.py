@@ -307,13 +307,19 @@ class AdminEntry:
             return False
 
         project_id = maintainer["project_id"]
+
+        project_name = self.db.project.find_one(
+            {"_id": project_id})["project_name"]
+
         project = self.db.project.find_one_and_delete({
-            "_id":project_id,
-            "maintainer_id":{"$exists":False}
+            "_id": project_id,
+            "maintainer_id": {"$exists": False}
         })
 
+        maintainer["project_name"] = project_name
+
         if maintainer:
-            return True
+            return maintainer
         else:
             return False
 
@@ -334,7 +340,10 @@ class AdminEntry:
         })
 
         if contributor:
-            return True
+            project_name = self.db.project.find_one(
+                {"_id": contributor["interested_project"]})["project_name"]
+            contributor["project_name"] = project_name
+            return contributor
         else:
             return False
 
