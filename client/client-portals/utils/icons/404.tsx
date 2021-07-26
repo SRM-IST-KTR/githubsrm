@@ -23,14 +23,17 @@ export default function ErrorPage() {
         4
       </h1>
       <h2 className="text-6xl text-white my-2 font-extrabold">Not Found</h2>
-      <p className="text-xl lg:text-4xl text-white mt-16 font-semibold">
-        Sorry, The page you're looking for cannot be accessed :(
-      </p>
-      <p className="text-xl lg:text-4xl text-white my-2 font-semibold">
-        Go to{" "}
-        <Button btnStyle="primary" onClick={() => router.push("/")}>
-          Home
-        </Button>
+      <p className="flex flex-col text-xl lg:text-4xl text-white mt-16 font-semibold">
+        <span>Seems like you're lost,</span>
+        <span>
+          let's get you{" "}
+          <button
+            className="text-white bg-base-teal md:p-3 py-3 md:min-w-32 min-w-24 font-semibold rounded-lg my-3"
+            onClick={() => router.push("/")}
+          >
+            Home
+          </button>
+        </span>
       </p>
     </div>
   );
