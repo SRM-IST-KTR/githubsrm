@@ -84,7 +84,7 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
 
     maintainer_count = 0
     contributor_count = 0
-    print(doc)
+
     try:
         maintainer_count = doc[0]["maintainer"][0]["count"]
         contributor_count = doc[0]["contributor"][0]["count"]
@@ -101,7 +101,6 @@ def project_single_project(request, **kwargs) -> Dict[str, Any]:
             ITEMS_PER_PAGE * int(maintainer_page)) < int(maintainer_count)
         docs["contributorHasNextPage"] = (
             ITEMS_PER_PAGE * int(contributor_page)) < int(contributor_count)
-        print(docs)
 
     except Exception as e:
         return {
@@ -190,7 +189,7 @@ def RequestSetPassword(email):
     }, update={
         "$set": {"reset": True}
     })
-    expiry = 0.5
+    expiry = 10
     if not document:
         doc = {
             "email": email,
@@ -198,6 +197,6 @@ def RequestSetPassword(email):
             "reset": True
         }
         entry.maintainer_credentials.insert_one(doc)
-        expiry = 168
+        expiry = 168 * 60
 
     return jwt_keys.issue_key({"email": email}, expiry=expiry)
