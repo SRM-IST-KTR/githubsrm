@@ -10,3 +10,4 @@ export { default as Next } from "./next";
 export { default as Previous } from "./previous";
 export { default as Tick } from "./tick";
 export { default as TwitterIcon } from "./twitter";
+export { default as ErrorPage } from "./404";
