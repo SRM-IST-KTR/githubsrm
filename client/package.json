@@ -1,7 +1,7 @@
 {
   "name": "githubsrm-landing-and-portal",
   "description": "GitHub Community SRM Official Landing Page & Portal",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "private": false,
   "scripts": {
     "install": "yarn install:landing && yarn install:portal",
@@ -13,6 +13,12 @@
     "dev:landing": "cd client-landing && yarn dev",
     "dev:portal": "cd client-portals && yarn dev",
     "start:landing": "cd client-landing && yarn start",
-    "start:portal": "cd client-portals && yarn start"
+    "start:portal": "cd client-portals && yarn start",
+    "cleanup:landing": "rimraf client-landing/out && rimraf client-landing/.next",
+    "cleanup:portal": "rimraf client-portals/out && rimraf client-portals/.next",
+    "cleanup": "yarn cleanup:portal && yarn cleanup:landing"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
   }
 }

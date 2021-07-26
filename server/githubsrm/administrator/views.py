@@ -1,4 +1,5 @@
 
+from concurrent.futures import thread
 from threading import Thread
 from apis import PostThrottle, service
 from django.http.response import JsonResponse
@@ -229,7 +230,7 @@ class ProjectsAdmin(APIView):
             return JsonResponse({"error": "Query Params are different from expected"}, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def _remove_contributor(request) -> JsonResponse:
+    def _remove_contributor(request, status) -> JsonResponse:
         """Send sns of contributor removal with blame
 
         Returns:
@@ -244,12 +245,23 @@ class ProjectsAdmin(APIView):
                 "subject": "[CONTRIBUTOR-REMOVE]"
             }
         }).start()
+
+
+        Thread(target=service.wrapper_email, kwargs={
+            "role": "admin_contributor_rejection",
+            "data": {"name": status["name"],
+                    "email" :status["email"],
+                     "project_name": status["project_name"]
+                     },
+
+        }).start()
+
         return JsonResponse(data={
             "removed": str(request.data.get("contributor_id"))
         }, status=200)
 
     @staticmethod
-    def _remove_maintainer(request) -> JsonResponse:
+    def _remove_maintainer(request, status) -> JsonResponse:
         """Send sns of maintianer removal with blame
 
         Args:
@@ -264,6 +276,16 @@ class ProjectsAdmin(APIView):
                 "message": f"Maintainer -> {request.data.get('maintainer_id')} removed by -> {key.get('user')}",
                 "subject": "[MAINTAINER-REMOVAL]"
             }
+        }).start()
+
+
+        Thread(target=service.wrapper_email, kwargs={
+            "role": "maintainer_application_rejection",
+            "data": {"name": status["name"],
+                    "email" :status["email"],
+                     "project_name": status["project_name"]
+                     },
+
         }).start()
 
         return JsonResponse(data={
@@ -326,12 +348,12 @@ class ProjectsAdmin(APIView):
 
         if request.GET.get("role") == "contributor":
             if status:
-                return self._remove_contributor(request=request)
+                return self._remove_contributor(request=request, status=status)
             else:
                 return self._error_contributor(request=request)
         else:
             if status:
-                return self._remove_maintainer(request=request)
+                return self._remove_maintainer(request=request, status=status)
             else:
                 return self._error_maintainer(request=request)
 
@@ -358,7 +380,7 @@ class ProjectsAdmin(APIView):
                     validate.get("contributor_id"))
                 _, token = get_token(request_header=request.headers)
                 if decoded := jwt_keys.verify_key(token):
-                    request.decoded = decoded                    
+                    request.decoded = decoded
                     return self.action_to_status(
                         status=remove_status, request=request)
                 else:
@@ -377,6 +399,7 @@ class ProjectsAdmin(APIView):
                     return JsonResponse(data={
                         "error": "Invalid key"
                     }, status=401)
+
 
 class AdminAccepted(APIView):
     def get(self, request, **kwargs) -> JsonResponse:

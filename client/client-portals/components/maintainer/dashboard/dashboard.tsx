@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Card } from ".";
 import { Layout, CSSLoader } from "@/shared/index";
 import instance from "services/api";
 import { MaintainerProjectsProps } from "utils/interfaces";
 import { PaginationButtons } from "@/shared/index";
 import { errToast } from "utils/functions/toast";
-import router from "next/router";
+import { AuthContext } from "context/authContext";
 
 const index = () => {
+  const authContext = useContext(AuthContext);
   const [projects, setProjects] = useState<MaintainerProjectsProps[]>([]);
   const [accepted, setAccepted] = useState<boolean>(false);
   const [pageNo, setPageNo] = useState<number>(1);
@@ -22,6 +23,8 @@ const index = () => {
         API = await instance();
       } catch (error) {
         errToast("Session Expired! Please Login again!");
+        const authContext = useContext(AuthContext);
+        authContext.logoutHandler();
       } finally {
         API?.get(`maintainer/projects?page=${pageNo}`)
           .then((res) => {

@@ -12,7 +12,11 @@ const Navbar = ({ links }) => {
       <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
         <div className="w-full py-3 relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start w-screen">
           <h2 className="mr-3 font-bold text-xl md:text-2xl">
-            <span className="font-normal"> Hi,</span> {authContext.username}
+            <span className="font-normal">
+              {" "}
+              Hi{authContext.isAdmin ? " Admin" : " Maintainer"},
+            </span>{" "}
+            {authContext.username}
           </h2>
           <button
             className="text-white cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-white rounded bg-transparent block lg:hidden outline-none focus:outline-none"

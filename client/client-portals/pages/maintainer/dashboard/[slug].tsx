@@ -33,7 +33,8 @@ const ProjectDetail = () => {
   const [maintainers, setMaintainers] = useState<OtherMaintainersProps[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
-  const [pageNo, setPageNo] = useState<number>(1);
+  const [clickedAcceptBtn, setClickedAcceptBtn] = useState<string>("");
+  const [clickedRejectBtn, setClickedRejectBtn] = useState<string>("");
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -41,6 +42,7 @@ const ProjectDetail = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loading2, setLoading2] = useState<boolean>(true);
   const [rejectLoading, setRejectLoading] = useState<boolean>(false);
+  const [cPageNo, setCPageNo] = useState<number>(1);
 
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -54,6 +56,7 @@ const ProjectDetail = () => {
   }, [authContext]);
 
   const acceptContributorHandler = async (project_id, contributor_id) => {
+    setClickedAcceptBtn(contributor_id);
     setLoading(true);
     const res = await postAcceptContributor(project_id, contributor_id);
     if (res) {
@@ -64,11 +67,12 @@ const ProjectDetail = () => {
   };
 
   const deleteContributorHandler = async (contributor_id) => {
+    setClickedRejectBtn(contributor_id);
     setRejectLoading(true);
     const res = await deletefromMaintainerContributor(contributor_id);
     if (res) {
       setRejected(true);
-      alertToast("Contributor Rejected sucessfully!");
+      alertToast("Contributor Rejected successfully!");
       setRejectLoading(false);
     } else {
       setRejectLoading(false);
@@ -76,14 +80,14 @@ const ProjectDetail = () => {
   };
 
   const _getContributorsApplications = async (slug) => {
-    const res = await getContributorsApplications(slug);
+    const res = await getContributorsApplications(slug, cPageNo, 1);
     if (res) {
       setContributorsData(res.contributor);
       setProjectName(res.project_name);
       setProjectId(res._id);
       setMaintainers(res.maintainer);
       sethasNextPage(res.contributorHasNextPage);
-      if (pageNo > 1) {
+      if (cPageNo > 1) {
         sethasPrevPage(true);
       }
       setLoading2(false);
@@ -97,7 +101,7 @@ const ProjectDetail = () => {
     if (slug) {
       _getContributorsApplications(slug);
     }
-  }, [router.query, accepted, rejected]);
+  }, [router.query, accepted, rejected, cPageNo]);
 
   return !loading2 ? (
     <Layout type="maintainer">
@@ -191,7 +195,7 @@ const ProjectDetail = () => {
                               acceptContributorHandler(projectId, person._id)
                             }
                           >
-                            {loading ? (
+                            {loading && clickedAcceptBtn === person._id ? (
                               <span className="flex w-6 mx-auto">
                                 <Loading />
                               </span>
@@ -216,7 +220,8 @@ const ProjectDetail = () => {
                             className="flex justify-center w-1/8 mx-auto mt-4 bg-red-400 p-2 font-bold text-white rounded-xl"
                             onClick={() => deleteContributorHandler(person._id)}
                           >
-                            {rejectLoading ? (
+                            {rejectLoading &&
+                            clickedRejectBtn === person._id ? (
                               <span className="flex w-6 mx-auto">
                                 <Loading />
                               </span>

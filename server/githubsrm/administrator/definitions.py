@@ -12,7 +12,7 @@ class AdminSchema:
         self.data = data
 
         self.email_re = re.compile(
-            '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
+            '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
         self.admin_schema = Schema(
             schema={
                 "email": And(str, lambda email: self.email_re.fullmatch(email)),

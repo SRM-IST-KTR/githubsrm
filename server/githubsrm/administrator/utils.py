@@ -105,7 +105,7 @@ def accepted_project_pagination(request, **kwargs) -> response.JsonResponse:
     """Get all accepted project
 
     Args:
-        request 
+        request
 
     Returns:
         response.JsonResponse

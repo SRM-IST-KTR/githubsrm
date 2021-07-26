@@ -9,7 +9,7 @@ export const successToast = (message: string) => {
     pauseOnHover: true,
     draggable: true,
     progress: undefined,
-    className: "bg-base-green font-medium",
+    className: "toast-success",
   });
 };
 
@@ -22,7 +22,7 @@ export const errToast = (message: string) => {
     pauseOnHover: true,
     draggable: true,
     progress: undefined,
-    className: "font-medium bg-red-600",
+    className: "toast-error",
   });
 };
 
@@ -35,6 +35,6 @@ export const alertToast = (message: string) => {
     pauseOnHover: true,
     draggable: true,
     progress: undefined,
-    className: "font-medium bg-yellow-400",
+    className: "toast-alert",
   });
 };

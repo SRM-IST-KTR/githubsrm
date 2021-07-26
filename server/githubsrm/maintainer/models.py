@@ -92,7 +92,12 @@ class Entry:
                                                                    "is_admin_approved": True,
                                                                    "is_maintainer_approved": False,
                                                                    "interested_project": {"$in": project_ids}})
+            project_name = self.db.project.find_one({
+                "_id":contributor["interested_project"]
+            })["project_name"]
+
             if contributor:
+                contributor["project_name"] = project_name
                 return contributor
 
         else:

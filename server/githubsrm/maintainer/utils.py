@@ -136,7 +136,7 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
                     {
                         '$match': {
                             'is_admin_approved': True,
-                            'project_id': project_id
+                            'interested_project': project_id
                         }
                     }, {"$count": "count"}
             ],
@@ -157,7 +157,7 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
                     {
                         '$match': {'is_admin_approved': True, 'project_id': project_id}
                     },
-                    {"$skip": (int(maintainer_page)-1) * maintainer_docs}, {"$limit": ITEMS_PER_PAGE}],
+                    {"$skip": (int(maintainer_page)-1) * ITEMS_PER_PAGE}, {"$limit": ITEMS_PER_PAGE}],
                 'as': 'maintainer'
             }
         },
@@ -170,7 +170,7 @@ def get_pagnation_aggregate(count: bool, project_id, maintainer_docs=None, contr
                             'is_admin_approved': True,
                             'interested_project': project_id
                         }
-                    }, {"$skip": (int(contributor_page)-1) * contributor_docs}, {"$limit": ITEMS_PER_PAGE}],
+                    }, {"$skip": (int(contributor_page)-1) * ITEMS_PER_PAGE}, {"$limit": ITEMS_PER_PAGE}],
 
                 'as': 'contributor'
             }
@@ -197,6 +197,6 @@ def RequestSetPassword(email):
             "reset": True
         }
         entry.maintainer_credentials.insert_one(doc)
-        expiry = 168*60
+        expiry = 168 * 60
 
     return jwt_keys.issue_key({"email": email}, expiry=expiry)

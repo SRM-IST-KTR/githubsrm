@@ -94,7 +94,7 @@ class CommonSchema:
     def __init__(self, data: Dict[Any, Any], query_param: str) -> None:
         self.data = data
         self.email_re = re.compile(
-            '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$')
+            '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
         self.url_re = re.compile(
             '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
