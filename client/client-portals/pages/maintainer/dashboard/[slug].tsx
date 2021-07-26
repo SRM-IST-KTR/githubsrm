@@ -239,8 +239,8 @@ const ProjectDetail = () => {
                 <PaginationButtons
                   hasNextPage={hasNextPage}
                   hasPrevPage={hasPrevPage}
-                  pageNo={pageNo}
-                  setPageNo={setPageNo}
+                  pageNo={cPageNo}
+                  setPageNo={setCPageNo}
                 />
               </div>
             </>
