@@ -362,6 +362,7 @@ class TestClient(unittest.TestCase):
                 "Authorization": f"Bearer {admin_jwt}"
             }, params={"role": "maintainer"})
         self.assertEqual(response.status_code, 200)
+        
         response = self.client.post(
             url=self.base_url+'api/maintainer', data=json.dumps({**entry.beta_data, **{"project_id": alpha["project_id"]}}), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
@@ -401,6 +402,32 @@ class TestClient(unittest.TestCase):
             })
         maintainer_jwt=response.json()["access_token"]
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            url=self.base_url+'admin/projects', data=json.dumps({**entry.project_details, **{"project_id": beta["project_id"]}}), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {admin_jwt}"
+            }, params={"role": "project"})
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            url=self.base_url+'api/contributor', data=json.dumps({**entry.contributor_data, **{"interested_project": beta["project_id"]}}), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            }, params={"role": "contributor"})
+        self.assertEqual(response.status_code, 201)
+
+        contri = dict(self.db.contributor.find_one({"github_id": "xyz"}))
+        data = {
+            "contributor_id": contri["_id"],
+            "project_id": contri["interested_project"],
+        }
+        response = self.client.post(
+            url=self.base_url+'admin/projects', data=json.dumps(data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {admin_jwt}"
+            }, params={"role": "contributor"})
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.get(
             url=self.base_url+'maintainer/projects', headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
@@ -413,7 +440,10 @@ class TestClient(unittest.TestCase):
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {maintainer_jwt}"
             }, params={"projectId": alpha["project_id"], "maintainer": 1, "contributor": 1})
+        # print(response.json())
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()["contributor"]),1)
+        self.assertEqual(len(response.json()["maintainer"]),2)
         self.clean()
 
     def test_refresh_token(self):
