@@ -68,7 +68,7 @@ const ProjectDetail = () => {
     const res = await deletefromMaintainerContributor(contributor_id);
     if (res) {
       setRejected(true);
-      alertToast("Contributor Rejected sucessfully!");
+      alertToast("Contributor Rejected successfully!");
       setRejectLoading(false);
     } else {
       setRejectLoading(false);
