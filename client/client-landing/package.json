@@ -3,6 +3,7 @@
   "description": "GitHub Community SRM Official Landing Page",
   "version": "3.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

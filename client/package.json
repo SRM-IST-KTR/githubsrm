@@ -3,6 +3,7 @@
   "description": "GitHub Community SRM Official Landing Page & Portal",
   "version": "3.0.0",
   "private": false,
+  "license": "MIT",
   "scripts": {
     "install": "yarn install:landing && yarn install:portal",
     "install:landing": "cd client-landing && yarn",
