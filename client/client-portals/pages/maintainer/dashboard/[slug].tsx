@@ -34,6 +34,7 @@ const ProjectDetail = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectId, setProjectId] = useState<string>("");
   const [clickedAcceptBtn, setClickedAcceptBtn] = useState<string>("");
+  const [clickedRejectBtn, setClickedRejectBtn] = useState<string>("");
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -66,6 +67,7 @@ const ProjectDetail = () => {
   };
 
   const deleteContributorHandler = async (contributor_id) => {
+    setClickedRejectBtn(contributor_id);
     setRejectLoading(true);
     const res = await deletefromMaintainerContributor(contributor_id);
     if (res) {
@@ -218,7 +220,8 @@ const ProjectDetail = () => {
                             className="flex justify-center w-1/8 mx-auto mt-4 bg-red-400 p-2 font-bold text-white rounded-xl"
                             onClick={() => deleteContributorHandler(person._id)}
                           >
-                            {rejectLoading ? (
+                            {rejectLoading &&
+                            clickedRejectBtn === person._id ? (
                               <span className="flex w-6 mx-auto">
                                 <Loading />
                               </span>
