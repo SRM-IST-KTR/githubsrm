@@ -116,7 +116,7 @@ const ProjectDetail = () => {
         />
         <div className="overflow-auto w-full">
           {contributorsData?.length > 0 && (
-            <h2 className="mr-5 mb-3 font-bold text-white text-3xl text-center">
+            <h2 className="mr-5 mb-5 font-bold text-white text-3xl text-center">
               Contributors' Applications
             </h2>
           )}
@@ -235,12 +235,14 @@ const ProjectDetail = () => {
                   ))}
                 </tbody>
               </div>
-              <PaginationButtons
-                hasNextPage={hasNextPage}
-                hasPrevPage={hasPrevPage}
-                pageNo={cPageNo}
-                setPageNo={setCPageNo}
-              />
+              <div className="mt-4">
+                <PaginationButtons
+                  hasNextPage={hasNextPage}
+                  hasPrevPage={hasPrevPage}
+                  pageNo={pageNo}
+                  setPageNo={setPageNo}
+                />
+              </div>
             </>
           ) : (
             <h2 className="text-4xl text-center mt-10  text-white mb-5 no-scrollbar">

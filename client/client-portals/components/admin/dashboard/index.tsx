@@ -138,12 +138,14 @@ const ProjectApplications = () => {
         </div>
       </div>
       {tableDataProjects.length > 0 && (
-        <PaginationButtons
-          hasNextPage={hasNextPage}
-          hasPrevPage={hasPrevPage}
-          pageNo={pageNo}
-          setPageNo={setPageNo}
-        />
+        <div className="mt-4">
+          <PaginationButtons
+            hasNextPage={hasNextPage}
+            hasPrevPage={hasPrevPage}
+            pageNo={pageNo}
+            setPageNo={setPageNo}
+          />
+        </div>
       )}
       <ProjectVisibility
         projectId={projId}

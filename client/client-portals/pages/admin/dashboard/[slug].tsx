@@ -101,7 +101,7 @@ const MaintainerPage = () => {
             key={person._id}
             className="p-4 rounded-xl shadow-2xl bg-white text-base-black "
           >
-            <h2 className="text-xl font-medium mb-3">
+            <h2 className="text-xl font-medium mb-3 word-wrap">
               <span className="font-bold">Name: </span>
               {person.name}
             </h2>
@@ -110,17 +110,24 @@ const MaintainerPage = () => {
               {person.email.split("@")[0]}
               <br className="sm:hidden" />@{person.email.split("@")[1]}
             </h2>
-            <Link href={person.github_id}>
-              <div className="cursor-pointer hover:text-gray-800 flex text-xl font-medium mb-3">
-                <span className="font-bold">Github ID: </span>
-                <span className="flex items-center">
-                  <span className="mx-2">
-                    <CardGithub />
-                  </span>
-                  {person.github_id}
+            <div className="cursor-pointer hover:text-gray-800 flex text-xl font-medium mb-3">
+              <span className="font-bold">Github ID: </span>
+              <span className="flex items-center">
+                <span className="mx-2">
+                  <CardGithub />
                 </span>
-              </div>
-            </Link>
+                <div className="flex align-items-center">
+                  <a
+                    className="hover:text-base-teal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={`https://github.com/${person.github_id}`}
+                  >
+                    <div> {person.github_id}</div>
+                  </a>
+                </div>
+              </span>
+            </div>
             <h2 className="text-xl font-medium mb-3">
               <span className="font-bold">Registration Number: </span>
               {person.reg_number}
