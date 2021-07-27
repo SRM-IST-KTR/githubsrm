@@ -3,6 +3,7 @@ python3 githubsrm/manage.py runserver &
 
 sleep 5
 
+python3 -m unittest tests/test_schema.py
 python3 -m unittest tests/test_apis.py
 python3 -m unittest tests/test_admin.py
 python3 -m unittest tests/test_maintainer.py
