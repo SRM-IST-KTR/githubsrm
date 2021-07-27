@@ -48,7 +48,7 @@ const ContributorsPage = () => {
     }
   }, [authContext]);
 
-  const acceptMaintainerHandler = async (project_id, contributor_id) => {
+  const acceptContributorHandler = async (project_id, contributor_id) => {
     setClickedAcceptBtn(contributor_id);
     setLoading(true);
     const res = await postAcceptProject(project_id, contributor_id);
@@ -200,7 +200,7 @@ const ContributorsPage = () => {
                     ) : (
                       <Button
                         onClick={() =>
-                          acceptMaintainerHandler(projectId, person._id)
+                          acceptContributorHandler(projectId, person._id)
                         }
                       >
                         {loading && clickedAcceptBtn === person._id ? (
