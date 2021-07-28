@@ -590,6 +590,41 @@ class TestSchema(unittest.TestCase):
             self.assertEqual(response.status_code, 400)
         self.clean()
 
+    def test_contact_us_schema(self):
+        self.clean()
+        for i in entry.contact_us_data.keys():
+            time.sleep(1)
+            data = entry.contact_us_data.copy()
+            del data[i]
+            response = self.client.post(
+                url=self.base_url+'api/contact-us', data=json.dumps(data), headers={
+                    "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+                })
+            self.assertEqual(response.status_code, 400)
+
+        for i in entry.contact_us_data.keys():
+            if i=="phone_number":
+                continue
+            time.sleep(1)
+            data = entry.contact_us_data.copy()
+            data[i] = ""
+            response = self.client.post(
+                url=self.base_url+'api/contact-us', data=json.dumps(data), headers={
+                    "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+                })
+            self.assertEqual(response.status_code, 400)
+
+        for i in entry.contact_us_data.keys():
+            time.sleep(1)
+            data = entry.contact_us_data.copy()
+            data[i] = " "
+            response = self.client.post(
+                url=self.base_url+'api/contact-us', data=json.dumps(data), headers={
+                    "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+                })
+            self.assertEqual(response.status_code, 400)
+        self.clean()
+
     @classmethod
     def tearDownClass(cls) -> None:
         cls.db.admins.delete_many({})
@@ -597,6 +632,7 @@ class TestSchema(unittest.TestCase):
         cls.db.maintainer.delete_many({})
         cls.db.maintainer_credentials.delete_many({})
         cls.db.contributor.delete_many({})
+        cls.db.contactUs.delete_many({})
         cls.pymongo_client.close()
         cls.client.close()
 
@@ -606,3 +642,4 @@ class TestSchema(unittest.TestCase):
         self.db.maintainer.delete_many({})
         self.db.maintainer_credentials.delete_many({})
         self.db.contributor.delete_many({})
+        self.db.contactUs.delete_many({})
