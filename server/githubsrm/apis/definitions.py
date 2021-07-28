@@ -23,12 +23,14 @@ def check_github_id(github_id: str):
     Args:
         github_id (str) user entred value
     """
-    _url = f"https://github.com/{github_id}"
+    if len(github_id.strip()):
+        _url = f"https://github.com/{github_id}"
 
-    with httpx.Client() as client:
-        response = client.get(_url)
+        with httpx.Client() as client:
+            response = client.get(_url)
 
-    return response.status_code == 200
+        return response.status_code == 200
+    return False
 
 
 def check_repo(url: str):

@@ -35,13 +35,11 @@ USE_DATABASE = 'MONGO' if DEBUG is False else "TEST"
 
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
     'apis',
@@ -51,7 +49,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,7 +98,7 @@ if DEBUG:
     REST_FRAMEWORK = {
 
         'DEFAULT_THROTTLE_RATES': {
-            'post_throttle': '100/min',
+            'post_throttle': '1000/min',
         },
 
         'DEFAULT_RENDERER_CLASSES': (
@@ -162,14 +159,3 @@ USE_TZ = True
 
 APPEND_SLASH = False
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'dist'),
-]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '//'
-MEDIA_URL = '/media/'
-
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
