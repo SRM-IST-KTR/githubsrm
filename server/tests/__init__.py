@@ -60,3 +60,9 @@ class Base:
             "tags": ["e", "f", "g", "h"],
             "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkawdsfsdf asdfafd"
         }
+        self.contact_us_data = {
+            "name": "Riju Mukherjee",
+            "email": "rmukh561@gmail.com",
+            "message": "Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test",
+            "phone_number": "9818982052"
+        }

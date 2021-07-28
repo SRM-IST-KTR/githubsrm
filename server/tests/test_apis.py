@@ -8,6 +8,8 @@ from githubsrm.core.settings import DATABASE
 from . import Base
 
 entry = Base()
+
+
 class TestClient(unittest.TestCase):
     '''
     Integration tests
@@ -117,7 +119,7 @@ class TestClient(unittest.TestCase):
             }, params={"role": "contributor"})
         self.assertEqual(response.status_code, 201)
         self.clean()
-    
+
     def test_add_maintainer_after_contributor(self):
         self.clean()
         response = self.client.post(
@@ -200,7 +202,6 @@ class TestClient(unittest.TestCase):
             }, params={"role": "alpha"})
         self.assertEqual(response.status_code, 201)
 
-
         alpha = dict(self.db.maintainer.find_one({"github_id": "riju561"}))
 
         response = self.client.post(
@@ -227,8 +228,8 @@ class TestClient(unittest.TestCase):
             }, params={"role": "project"})
 
         self.assertEqual(response.status_code, 200)
-        
-        data={
+
+        data = {
             "name": "Riju",
             "email": "rijumukh50601@gmail.com",
             "github_id": "riju",
@@ -236,7 +237,7 @@ class TestClient(unittest.TestCase):
             "reg_number": "RA1911003010042",
             "branch": "CSE",
             "poa": "HelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelp",
-            "interested_project":alpha["project_id"]
+            "interested_project": alpha["project_id"]
         }
 
         response = self.client.post(
@@ -256,15 +257,15 @@ class TestClient(unittest.TestCase):
 
         id = dict(self.db.maintainer.find_one(
             {"github_id": "riju561"}))["project_id"]
-        
-        data={
+
+        data = {
             "name": "Riju",
             "email": "rmukh561@gmail.com",
             "github_id": "riju561",
             "srm_email": "rm8211@srmist.edu.in",
             "reg_number": "RA1911003010056",
             "branch": "CSE",
-            "project_id":id
+            "project_id": id
         }
         response = self.client.post(
             url=self.base_url+'api/maintainer', data=json.dumps(data), headers={
@@ -272,7 +273,7 @@ class TestClient(unittest.TestCase):
             }, params={"role": "beta"})
         self.assertEqual(response.status_code, 400)
         self.clean()
-    
+
     def test_add_duplicate_project(self):
         self.clean()
         response = self.client.post(
@@ -297,13 +298,74 @@ class TestClient(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
 
         alpha = dict(self.db.maintainer.find_one({"github_id": "riju561"}))
-        
+
         response = self.client.post(
             url=self.base_url+'api/contributor', data=json.dumps({**entry.contributor_data, **{"interested_project": alpha["project_id"]}}), headers={
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
             }, params={"role": "contributor"})
         self.assertEqual(response.status_code, 400)
         self.clean()
+
+    def test_add_duplicate_beta(self):
+        self.clean()
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps(entry.alpha_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            }, params={"role": "alpha"})
+        self.assertEqual(response.status_code, 201)
+
+        id = dict(self.db.maintainer.find_one(
+            {"github_id": "riju561"}))["project_id"]
+
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps({**entry.beta_data, **{"project_id": id}}), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            }, params={"role": "beta"})
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps({**entry.beta_data, **{"project_id": id}}), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            }, params={"role": "beta"})
+        self.assertEqual(response.status_code, 400)
+        self.clean()
+
+    def test_health_check(self):
+        response = self.client.get(
+            url=self.base_url+'api/healthcheck', headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            })
+        self.assertEqual(response.status_code, 200)
+
+    def test_contact_us(self):
+        self.clean()
+        response = self.client.post(
+            url=self.base_url+'api/contact-us', data=json.dumps(entry.contact_us_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            })
+        print(response.text)
+        self.assertEqual(response.status_code, 201)
+        self.clean()
+    
+    def test_duplicate_contact_us(self):
+        self.clean()
+        response = self.client.post(
+            url=self.base_url+'api/contact-us', data=json.dumps(entry.contact_us_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            })
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.post(
+            url=self.base_url+'api/contact-us', data=json.dumps(entry.contact_us_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            })
+        self.assertEqual(response.status_code, 400)
+        self.clean()
+
+    def test_get_all_public_projects(self):
+        response = self.client.get(
+            url=self.base_url+'api/maintainer')
+        self.assertEqual(response.status_code, 200)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -312,6 +374,7 @@ class TestClient(unittest.TestCase):
         cls.db.maintainer.delete_many({})
         cls.db.maintainer_credentials.delete_many({})
         cls.db.contributor.delete_many({})
+        cls.db.contactUs.delete_many({})
         cls.pymongo_client.close()
         cls.client.close()
 
@@ -321,3 +384,4 @@ class TestClient(unittest.TestCase):
         self.db.maintainer.delete_many({})
         self.db.maintainer_credentials.delete_many({})
         self.db.contributor.delete_many({})
+        self.db.contactUs.delete_many({})
