@@ -188,9 +188,7 @@ class Team(APIView):
         """
 
         result = json.loads(json_util.dumps(open_entry.get_team_data()))
-        return JsonResponse(data={
-            "team": result
-        }, status=200)
+        return JsonResponse(result, status=200, safe=False)
 
 
 class ContactUs(APIView):
