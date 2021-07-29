@@ -4,6 +4,7 @@ import pathlib
 from typing import Any, Dict, TypedDict
 
 import boto3
+import requests
 from dotenv import load_dotenv
 from jinja2 import Template
 
@@ -34,8 +35,7 @@ def check_token(token) -> bool:
         'response': token,
     }
 
-    with httpx.Client() as client:
-        response = client.post(url, data=payload)
+    response = requests.post(url, data=payload)
     return response.json()["success"] and response.json()["score"] >= 0.5
 
 
@@ -286,12 +286,11 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
                                    contributor_name=project_data["contributor_name"],
                                    contributor_email=project_data["contributor_email"])
         elif role == "maintainer_application_rejection":
-            return template.render(name=name, project_name = project_data["project_name"])
+            return template.render(name=name, project_name=project_data["project_name"])
         elif role == "admin_contributor_rejection":
-            return template.render(name=name, project_name = project_data["project_name"])
+            return template.render(name=name, project_name=project_data["project_name"])
         elif role == "maitainer_contributor_rejection":
-            return template.render(name=name, project_name = project_data["project_name"])
-
+            return template.render(name=name, project_name=project_data["project_name"])
 
 
 def email_template(subject: str, bodyText: str, emailHTML: Template) -> Dict[str, Dict[str, Any]]:
