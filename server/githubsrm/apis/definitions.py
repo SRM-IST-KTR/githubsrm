@@ -1,7 +1,8 @@
-from schema import Optional, Schema, And, SchemaError
+from schema import Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
-import httpx
+import requests
+import cProfile
 
 
 def get_json_schema(id: int, valid_schema: Callable) -> dict:
@@ -26,8 +27,7 @@ def check_github_id(github_id: str):
     if len(github_id.strip()):
         _url = f"https://github.com/{github_id}"
 
-        with httpx.Client() as client:
-            response = client.get(_url)
+        response = requests.get(_url)
 
         return response.status_code == 200
     return False
@@ -218,3 +218,22 @@ class ContactUsSchema:
                 "invalid data": self.data,
                 "error": str(e)
             }
+
+if __name__ == "__main__":
+    with cProfile.Profile() as pr:
+        validate = CommonSchema(data={
+            "name": "Aradhya",
+            "github_id": "Aradhya-Tripathi",
+            "description": "This is a random description for a tester project",
+            "reg_number": "RA1911004010187",
+            "srm_email": "at8029@srmist.edu.in",
+            "email": "aradhyatripathi51@gmail.com",
+            "project_url": "https://github.com/Aradhya-Tripathi",
+            "tags": ["django", "nextjs"],
+            "branch": "ECE",
+            "project_name": "Random Project"
+        }, query_param="alpha").valid()
+
+    print(pr.print_stats())
+
+    print(validate)

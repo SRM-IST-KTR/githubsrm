@@ -20,11 +20,11 @@ class EntryCheck:
             bool:
         """
 
-        Checks = [{"project_name": project_name}, {"description": description}]
+        checks = [{"project_name": project_name}, {"description": description}]
         if project_url != "":
-            Checks.append({"project_url": project_url})
+            checks.append({"project_url": project_url})
 
-        result = self.db.project.find_one({"$or": Checks})
+        result = self.db.project.find_one({"$or": checks})
 
         if result:
             return True
@@ -41,7 +41,8 @@ class EntryCheck:
         result = self.db.project.find_one({"_id": identifier})
 
         if result:
-            return result
+            if not result["is_admin_approved"]:
+                return result
         return
 
     def check_contributor(self, interested_project: str,
@@ -110,30 +111,20 @@ class EntryCheck:
         return False
 
     def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
-        """Checks for valid beta entry
+        """Checks for valid beta maintainer
 
         Args:
-            doc (Dict[str, Any]): beta maintainer's data
+            doc (Dict[str, Any]): beta maintainer data
 
         Returns:
-            True If all checks pass
-
+            Any: Returns document if checks pass
         """
-
-        if self.check_existing_beta(github_id=doc.get('github_id'),
-                                    project_id=doc.get('project_id'),
-                                    srm_email=doc.get('srm_email')):
+        if self.check_existing_beta(github_id=doc.get("github_id"), project_id=doc.get("project_id"),
+                                    srm_email=doc.get("srm_email")):
             return None
 
-        if self.check_approved_project(
-                identifier=doc.get('project_id')
-        ) is None:
+        if details := self.check_approved_project(identifier=doc.get("project_id")):
+            return details
+
+        else:
             return None
-
-        if details := self.check_approved_project(
-                identifier=doc.get('project_id')
-        ):
-            if details["is_admin_approved"] is False:
-                return details
-
-        return None

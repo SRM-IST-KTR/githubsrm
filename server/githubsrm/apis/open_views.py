@@ -93,77 +93,75 @@ class Maintainer(APIView):
         except Exception as e:
             return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if 'error' not in validate:
+        if 'error' in validate:
+            return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
 
-            if 'project_id' in validate:
+        if 'project_id' in validate:
+            if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
-                if details := open_entry_checks.validate_beta_maintainer(doc=validate):
+                if id := open_entry.enter_beta_maintainer(doc=request.data):
 
-                    if id := open_entry.enter_beta_maintainer(doc=request.data):
+                    if service.wrapper_email(role='maintainer_received', data={
+                        "name": validate["name"],
+                        "project_name": details["project_name"],
+                        "email": validate["email"]
+                    }):
+                        Thread(target=service.sns, kwargs={'payload': {
+                            'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
+                                Details: \n \
+                                Name: {validate.get("name")} \n \
+                                Email Personal: {validate.get("email")}',
+                            'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
+                        }}).start()
+                        return response.Response(status=status.HTTP_201_CREATED)
+                    else:
+                        open_entry.beta_maintainer_reset_status(
+                            maintainer_id=id)
 
-                        if service.wrapper_email(role='maintainer_received', data={
-                            "name": validate["name"],
-                            "project_name": details["project_name"],
-                            "email": validate["email"]
-                        }):
-                            Thread(target=service.sns, kwargs={'payload': {
-                                'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
-                                    Details: \n \
-                                    Name: {validate.get("name")} \n \
-                                    Email Personal: {validate.get("email")}',
-                                'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
-                            }}).start()
-                            return response.Response(status=status.HTTP_201_CREATED)
-                        else:
-                            open_entry.beta_maintainer_reset_status(
-                                maintainer_id=id)
+                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                        return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return response.Response(data={
+                "error": "Approved / Already Exists / Invalid"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-                return response.Response(data={
-                    "error": "Approved / Already Exists / Invalid"
-                }, status=status.HTTP_400_BAD_REQUEST)
+        elif open_entry_checks.check_existing(description=validate['description'],
+                                            project_name=validate['project_name'],
+                                            project_url=validate['project_url']):
 
-            if open_entry_checks.check_existing(description=validate['description'],
-                                                project_name=validate['project_name'],
-                                                project_url=validate['project_url']):
+            return response.Response({
+                "error": "Project Exists"
+            }, status=status.HTTP_409_CONFLICT)
 
-                return response.Response({
-                    "error": "Project Exists"
-                }, status=status.HTTP_409_CONFLICT)
+        elif value := open_entry.enter_maintainer(validate):
+            validate['project_id'] = value[0]
+            validate['project_name'] = value[2]
+            validate['description'] = value[3]
 
-            if value := open_entry.enter_maintainer(validate):
-                validate['project_id'] = value[0]
-                validate['project_name'] = value[2]
-                validate['description'] = value[3]
+            if service.wrapper_email(role='project_submission_confirmation', data={
+                "project_name": validate["project_name"],
+                "name": validate["name"],
+                "project_description": validate["description"],
+                "email": validate["email"]
 
-                if service.wrapper_email(role='project_submission_confirmation', data={
-                    "project_name": validate["project_name"],
-                    "name": validate["name"],
-                    "project_description": validate["description"],
-                    "email": validate["email"]
-
-                }):
-                    Thread(target=service.sns, kwargs={'payload': {
-                        'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
-                                    Details: \n \
-                                    Name: {validate.get("name")} \n \
-                                    Email Personal: {validate.get("email")} \n \
-                                    Project Details: \n \
-                                    Name: {validate.get("project_name")} \n \
-                                    Description: {validate.get("description")}',
-                        'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
-                    }}).start()
-                    return response.Response(status=status.HTTP_201_CREATED)
-                else:
-                    open_entry.alpha_maintainer_reset_status(
-                        project_id=validate.get('project_id'),
-                        maintainer_id=value[1])
-                return response.Response({
-                    "deleted record"
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
+            }):
+                Thread(target=service.sns, kwargs={'payload': {
+                    'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
+                                Details: \n \
+                                Name: {validate.get("name")} \n \
+                                Email Personal: {validate.get("email")} \n \
+                                Project Details: \n \
+                                Name: {validate.get("project_name")} \n \
+                                Description: {validate.get("description")}',
+                    'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
+                }}).start()
+                return response.Response(status=status.HTTP_201_CREATED)
+            else:
+                open_entry.alpha_maintainer_reset_status(
+                    project_id=validate.get('project_id'),
+                    maintainer_id=value[1])
+            return response.Response({
+                "deleted record"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, **kwargs) -> response.Response:
         """Get all projects
