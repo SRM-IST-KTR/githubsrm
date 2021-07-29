@@ -41,9 +41,8 @@ def check_repo(url: str):
     """
     if len(url) == 0:
         return True
-
-    with httpx.Client() as client:
-        response = client.get(url)
+    
+    response = requests.get(url)
     return response.status_code == 200
 
 
