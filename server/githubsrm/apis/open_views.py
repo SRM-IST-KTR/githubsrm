@@ -5,10 +5,10 @@ from threading import Thread
 
 import psutil
 from bson import json_util
-from rest_framework import response, status
+from django.http import JsonResponse
 from rest_framework.views import APIView
 
-from apis import (PostThrottle, check_token, open_entry, open_entry_checks,
+from apis import (PostThrottle, open_entry, open_entry_checks,
                   service)
 
 from .definitions import *
@@ -25,51 +25,48 @@ class Contributor(APIView):
     '''
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> response.Response:
+    def post(self, request, **kwargs) -> JsonResponse:
         """Adding Contributors to Projects
 
         Args:
             request
 
         Returns:
-            response.Response
+            JsonResponse
         """
+        validate = CommonSchema(
+            request.data, query_param=request.GET.get('role')).valid()
 
-        try:
-            validate = CommonSchema(
-                request.data, query_param=request.GET.get('role')).valid()
-        except Exception as e:
-            return response.Response(status=status.HTTP_400_BAD_REQUEST)
+        if 'error' in validate:
+            return JsonResponse(data={
+                "error": "Invalid data"
+            }, status=400)
 
-        if 'error' not in validate:
-            if open_entry_checks.check_contributor(validate['interested_project'],
-                                                   validate['reg_number'], validate["github_id"],
-                                                   validate["srm_email"]):
-                return response.Response({
-                    "invalid data": "Contributor for project exists / Project not approved"
-                }, status=status.HTTP_400_BAD_REQUEST)
+        if open_entry_checks.check_contributor(validate['interested_project'],
+                                               validate['reg_number'], validate["github_id"],
+                                               validate["srm_email"]):
+            return JsonResponse(data={
+                "invalid data": "Contributor for project exists / Project not approved"
+            }, status=400)
 
-            if doc := open_entry.enter_contributor(validate):
-                if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
-                                                                            "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
+        if doc := open_entry.enter_contributor(validate):
+            if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
+                                                                        "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
 
-                    Thread(target=service.sns, kwargs={
-                        "payload": {
-                            "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
-                            "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
-                        }
-                    }).start()
+                Thread(target=service.sns, kwargs={
+                    "payload": {
+                        "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
+                        "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
+                    }
+                }).start()
 
-                    return response.Response({
-                        "valid": validate
-                    }, status=status.HTTP_201_CREATED)
-                return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            return response.Response({
+                return JsonResponse(data={}, status=201)
+            else:
+                return JsonResponse(data={}, status=500)
+        else:
+            return JsonResponse(data={
                 "error": "project not approved or project does not exist"
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
+            }, status=400)
 
 
 class Maintainer(APIView):
@@ -78,7 +75,7 @@ class Maintainer(APIView):
     '''
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> response.Response:
+    def post(self, request, **kwargs) -> JsonResponse:
         """Accept Maintainers
 
         Args:
@@ -87,14 +84,12 @@ class Maintainer(APIView):
         Returns:
             Response
         """
-        try:
-            validate = CommonSchema(
-                request.data, query_param=request.GET.get('role')).valid()
-        except Exception as e:
-            return response.Response(status=status.HTTP_400_BAD_REQUEST)
-
+        validate = CommonSchema(
+            request.data, query_param=request.GET.get('role')).valid()
         if 'error' in validate:
-            return response.Response(validate.get('error'), status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(data={
+                "error": validate.get('error')
+            }, status=400)
 
         if 'project_id' in validate:
             if details := open_entry_checks.validate_beta_maintainer(doc=validate):
@@ -113,24 +108,24 @@ class Maintainer(APIView):
                                 Email Personal: {validate.get("email")}',
                             'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
                         }}).start()
-                        return response.Response(status=status.HTTP_201_CREATED)
+                        return JsonResponse(data={}, status=201)
                     else:
                         open_entry.beta_maintainer_reset_status(
                             maintainer_id=id)
 
-                    return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return JsonResponse(data={}, status=500)
 
-            return response.Response(data={
+            return JsonResponse(data={
                 "error": "Approved / Already Exists / Invalid"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            }, status=400)
 
         elif open_entry_checks.check_existing(description=validate['description'],
-                                            project_name=validate['project_name'],
-                                            project_url=validate['project_url']):
+                                              project_name=validate['project_name'],
+                                              project_url=validate['project_url']):
 
-            return response.Response({
+            return JsonResponse(data={
                 "error": "Project Exists"
-            }, status=status.HTTP_409_CONFLICT)
+            }, status=409)
 
         elif value := open_entry.enter_maintainer(validate):
             validate['project_id'] = value[0]
@@ -154,25 +149,25 @@ class Maintainer(APIView):
                                 Description: {validate.get("description")}',
                     'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
                 }}).start()
-                return response.Response(status=status.HTTP_201_CREATED)
+                return JsonResponse(data={}, status=201)
             else:
                 open_entry.alpha_maintainer_reset_status(
                     project_id=validate.get('project_id'),
                     maintainer_id=value[1])
-            return response.Response({
+            return JsonResponse({
                 "deleted record"
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            }, status=500)
 
-    def get(self, request, **kwargs) -> response.Response:
+    def get(self, request, **kwargs) -> JsonResponse:
         """Get all projects
 
         Args:
-            request ([type])
+            request
         """
 
         result = json.loads(json_util.dumps(open_entry.get_projects()))
 
-        return response.Response(data=result, status=status.HTTP_200_OK)
+        return JsonResponse(data=result, status=200, safe=False)
 
 
 class Team(APIView):
@@ -184,7 +179,7 @@ class Team(APIView):
     """
     throttle_classes = [PostThrottle]
 
-    def get(self, request, **kwargs) -> response.Response:
+    def get(self, request, **kwargs) -> JsonResponse:
         """
         Get Full team data
 
@@ -193,7 +188,9 @@ class Team(APIView):
         """
 
         result = json.loads(json_util.dumps(open_entry.get_team_data()))
-        return response.Response(result, status=status.HTTP_200_OK)
+        return JsonResponse(data={
+            "team": result
+        }, status=200)
 
 
 class ContactUs(APIView):
@@ -206,21 +203,21 @@ class ContactUs(APIView):
 
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> response.Response:
+    def post(self, request, **kwargs) -> JsonResponse:
         """Handles post data
 
         Args:
             request
 
         Returns:
-            response.Response
+            JsonResponse
         """
 
         validate = ContactUsSchema(data=request.data).valid()
         if 'error' in validate:
-            return response.Response(data={
+            return JsonResponse(data={
                 "error": validate.get('error')
-            }, status=status.HTTP_400_BAD_REQUEST)
+            }, status=400)
 
         result = open_entry.enter_contact_us(doc=request.data)
         if result:
@@ -232,10 +229,10 @@ class ContactUs(APIView):
                 'subject': '[QUERY]: https://githubsrm.tech'
             }}).start()
 
-            return response.Response(status=status.HTTP_201_CREATED)
-        return response.Response(data={
-            "entry exists"
-        }, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(data={}, status=201)
+        return JsonResponse(data={
+            "error": "entry exists"
+        }, status=400)
 
 
 class HealthCheck(APIView):
@@ -247,7 +244,7 @@ class HealthCheck(APIView):
 
     throttle_classes = [PostThrottle]
 
-    def get(self, request, **kwargs) -> response.Response:
+    def get(self, request, **kwargs) -> JsonResponse:
         """Get Process UpTime
 
         Args:
@@ -255,8 +252,8 @@ class HealthCheck(APIView):
         """
 
         uptime = time.time() - psutil.Process(os.getpid()).create_time()
-        return response.Response({
+        return JsonResponse({
             "uptime": uptime,
             "status": "OK",
             "timeStamp": time.time()
-        }, status=status.HTTP_200_OK)
+        }, status=200)
