@@ -4,7 +4,6 @@ import pathlib
 from typing import Any, Dict, TypedDict
 
 import boto3
-import httpx
 from dotenv import load_dotenv
 from jinja2 import Template
 
