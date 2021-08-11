@@ -155,7 +155,7 @@ class Maintainer(APIView):
                     project_id=validate.get('project_id'),
                     maintainer_id=value[1])
             return JsonResponse({
-                "deleted record"
+                "status": "deleted record"
             }, status=500)
 
     def get(self, request, **kwargs) -> JsonResponse:
