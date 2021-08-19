@@ -1,0 +1,19 @@
+{
+  "name": "create-project",
+  "version": "1.0.0",
+  "description": "AWS Lambda to accept a new project and create teams",
+  "main": "dist/index.js",
+  "repository": "git@github.com:SRM-IST-KTR/githubsrm.git",
+  "author": "GitHub Community SRM",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "postinstall": "chmod +x ../layers/pack-lambda-layer.sh && ../layers/pack-lambda-layer.sh v1"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "aws-sdk": "^2.971.0",
+    "octokit": "^1.4.0",
+    "yup": "^0.32.9"
+  }
+}
