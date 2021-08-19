@@ -3,10 +3,9 @@
 INFO_TEXT="\e[1;32m[INFO]\e[0m"
 ERROR_TEXT="\e[1;31m[ERROR]\e[0m"
 
-if [ $# -ne 1 ]
-then
-echo -e "$ERROR_TEXT Correct Usage: ./test.frontend.sh <PORT>"
-exit 1
+if [ $# -ne 1 ]; then
+    echo -e "$ERROR_TEXT Correct Usage: ./test.frontend.sh <PORT>"
+    exit 1
 fi
 
 echo -e "$INFO_TEXT Installing NPM packages [...]"

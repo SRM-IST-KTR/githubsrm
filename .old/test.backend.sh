@@ -3,10 +3,9 @@
 INFO_TEXT="\e[1;32m[INFO]\e[0m"
 ERROR_TEXT="\e[1;31m[ERROR]\e[0m"
 
-if [ $# -ne 1 ]
-then
-echo -e "$ERROR_TEXT Correct Usage: ./test.backend.sh <PORT>"
-exit 1
+if [ $# -ne 1 ]; then
+    echo -e "$ERROR_TEXT Correct Usage: ./test.backend.sh <PORT>"
+    exit 1
 fi
 
 # run tests on the API
@@ -14,7 +13,7 @@ cd server
 echo -e "$INFO_TEXT Running Unit Tests [...]"
 python3 -m unittest tests/test_schema.py
 echo -e "$INFO_TEXT Running Integration Tests [...]"
-python3 -m unittest tests/test_apis.py 
+python3 -m unittest tests/test_apis.py
 # TEMPORARY FIX
 sleep 10
 # TEMPORARY FIX
