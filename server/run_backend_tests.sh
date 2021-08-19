@@ -1,4 +1,4 @@
-start=`date +%s`
+start=$(date +%s)
 a=15
 
 echo "[STARTING-DJANGO-SERVER]"
@@ -22,6 +22,6 @@ python3 -m unittest tests/test_full_flow.py
 echo "[RUNNING-CLEANUP-JOBS]"
 fuser -k 8000/tcp
 
-end=`date +%s`
+end=$(date +%s)
 
-echo "Runtime:- $((end-start)) seconds"
+echo "Runtime:- $((end - start)) seconds"

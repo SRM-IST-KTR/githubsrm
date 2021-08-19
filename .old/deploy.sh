@@ -19,29 +19,27 @@ bash ./run.sh 5000 &
 # render next.js pages and static file generation
 echo -e "$INFO_TEXT Entering into 'client' [...]"
 cd client
-npm install 
-echo -e "$INFO_TEXT Building Next.js [...]" 
+npm install
+echo -e "$INFO_TEXT Building Next.js [...]"
 npm run build --max_old_space_size=1024
-echo -e "$INFO_TEXT Exporting Next.js [...]" 
+echo -e "$INFO_TEXT Exporting Next.js [...]"
 npm run export
 cd ..
 
 # cleaning up background django server
-echo -e "$INFO_TEXT Killing Background Django Proccess [...]" 
+echo -e "$INFO_TEXT Killing Background Django Proccess [...]"
 fuser -k 5000/tcp
 
 # copying static assets
-if [ -d "./server/githubsrm/dist" ]
-then
-echo -e "$INFO_TEXT Cleaning up 'server/githubsrm/dist' folder [...]" 
-rm -rf server/githubsrm/dist
+if [ -d "./server/githubsrm/dist" ]; then
+    echo -e "$INFO_TEXT Cleaning up 'server/githubsrm/dist' folder [...]"
+    rm -rf server/githubsrm/dist
 fi
-if [ -d "./server/githubsrm/static" ]
-then
-echo -e "$INFO_TEXT Cleaning up 'server/githubsrm/static' folder [...]" 
-rm -rf server/githubsrm/static
+if [ -d "./server/githubsrm/static" ]; then
+    echo -e "$INFO_TEXT Cleaning up 'server/githubsrm/static' folder [...]"
+    rm -rf server/githubsrm/static
 fi
-echo -e "$INFO_TEXT Moving folder 'client/out' to 'server/githubsrm/dist' [...]" 
+echo -e "$INFO_TEXT Moving folder 'client/out' to 'server/githubsrm/dist' [...]"
 mv client/out server/githubsrm/dist
 
 # running collectstatic
