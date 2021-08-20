@@ -17,17 +17,29 @@ if [ ! -f package.json ]; then
     exit 1
 fi
 echo -e "\e[1;33mPacking Lambda Layer '$1'... \e[0m"
-if [ ! -f "$WORKING_DIR/..layers/$1/nodejs" ]; then
+if [ ! -d "$WORKING_DIR/../layers/$1/nodejs" ]; then
     NORMAL_PATH=$(realpath "$WORKING_DIR/../layers")
-    echo -e "$INFO_TEXT '$NORMAL_PATH/v1/nodejs' was not found. Creating directory..."
-    mkdir -p "$NORMAL_PATH/v1/nodejs"
+    echo -e "$INFO_TEXT '$NORMAL_PATH/$1/nodejs' was not found. Creating directory..."
+    mkdir -p "$NORMAL_PATH/$1/nodejs"
 fi
-echo -e "$INFO_TEXT Copying node_modules..."
-cp -r node_modules "$WORKING_DIR/../layers/$1/nodejs/node_modules"
+if [ -d "$WORKING_DIR/../layers/$1/nodejs/node_modules" ]; then
+    echo -e "$INFO_TEXT Cleaning up old 'node_modules' directory..."
+    rm -rf "$NORMAL_PATH/$1/nodejs/node_modules"
+fi
+# echo -e "$INFO_TEXT Copying node_modules..."
+# cp -r node_modules "$WORKING_DIR/../layers/$1/nodejs/node_modules"
 echo -e "$INFO_TEXT Copying package.json..."
 cp package.json "$WORKING_DIR/../layers/$1/nodejs/package.json"
+echo -e "$INFO_TEXT Installing Production Dependencies..."
+cd "$WORKING_DIR/../layers/$1/nodejs"
+npm install --production --no-package-lock --ignore-scripts
+cd ..
 echo -e "$INFO_TEXT Zipping '$1' lambda layer..."
-cd "$WORKING_DIR/../layers/$1"
+if [ -f "$WORKING_DIR/../layers/$1.zip" ]; then
+    echo -e "$INFO_TEXT Cleaning up old '$1.zip' file..."
+    NORMAL_PATH=$(realpath "$WORKING_DIR/../layers")
+    rm -rf "$NORMAL_PATH/$1.zip"
+fi
 zip -r "$WORKING_DIR/../layers/$1.zip" "nodejs"
 echo -e "$INFO_TEXT Lambda layer '$1' ready to be uploaded!"
 echo -e "\e[1;33mDo you want to upload the lambda layer now (N/y)? \e[0m"
