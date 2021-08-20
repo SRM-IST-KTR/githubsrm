@@ -21,4 +21,5 @@ if [ $? -eq 0 ]; then
     echo -e "$INFO_TEXT Lambda Layer '$1' succesfully uploaded!"
 else
     echo -e "$ERROR_TEXT AWS Upload Error!"
+    exit 1
 fi
