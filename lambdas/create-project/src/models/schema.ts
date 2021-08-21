@@ -24,7 +24,7 @@ export interface successResponse {
   success: boolean;
   "repo-link": string;
   "team-slug": string;
-  visibility: string;
+  private: boolean;
 }
 
 export interface errorResponse {

@@ -1,6 +1,7 @@
 import { Octokit } from "octokit";
 
 import { eventRequest } from "../models/schema";
+import { parseTeamSlug } from "./parsers";
 
 const githubAPI = Octokit.defaults({
   auth: process.env.GITHUB_PAT!,
@@ -61,7 +62,7 @@ export const createChildTeam = async (
   teamSlug: string,
   parentID: number,
   parentSlug: string
-): Promise<{ slug: string; id: number }> => {
+): Promise<{ slug: string }> => {
   const octokit = new githubAPI();
   const { data } = await octokit.request("POST /orgs/{org}/teams", {
     org: process.env.GITHUB_ORG!,
@@ -85,17 +86,36 @@ export const createChildTeam = async (
   );
   for (const [index, maintainer] of event.maintainers.entries()) {
     await octokit.request(
-      "PUT /orgs/{org}/teams/{team_slug}/memberships/{username}",
+      "PUT /organizations/{org_id}/team/{team_id}/memberships/{username}",
       {
-        org: process.env.GITHUB_ORG!,
-        team_slug: teamGenSlug,
+        org_id: orgID,
+        team_id: teamID,
         username: maintainer,
         role: "maintainer",
       }
     );
   }
   return {
-    slug: `${parentSlug}/${teamGenSlug}`,
-    id: teamID,
+    slug: `${parentSlug}/${teamGenSlug}:::${orgID}/${teamID}`,
+  };
+};
+
+export const createEmptyRepository = async (
+  event: eventRequest,
+  slug: string
+): Promise<{ link: string; private: boolean }> => {
+  const teamInfo = parseTeamSlug(slug);
+  const octokit = new githubAPI();
+  const { data } = await octokit.request("POST /orgs/{org}/repos", {
+    org: process.env.GITHUB_ORG!,
+    name: teamInfo["team-slug"],
+    description: event["project-description"],
+    private: event.private,
+    team_id: teamInfo["team-id"],
+    auto_init: true,
+  });
+  return {
+    link: data.html_url,
+    private: data.private,
   };
 };
