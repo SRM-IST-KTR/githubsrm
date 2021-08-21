@@ -9,7 +9,11 @@ import {
 import { errors } from "./error/errors";
 import validateQuery from "./services/validate-query";
 import snsError from "./error/sns-error";
-import { checkTeamExists, createParentTeam } from "./services/github";
+import {
+  checkTeamExists,
+  createChildTeam,
+  createParentTeam,
+} from "./services/github";
 import { generateTeamID, generateYearID } from "./services/parsers";
 
 config();
@@ -29,10 +33,12 @@ const lambdaHandler: Handler<eventRequest, eventResponse> = async (
     } else {
       parentTeamID = checkYearExists;
     }
+    const childTeamSlug = await generateTeamID(event["project-name"]);
+    const childTeam = await createChildTeam(event, childTeamSlug, parentTeamID, yearID);
     return {
       success: true,
       "repo-link": "success",
-      "team-slug": "nice-team",
+      "team-slug": JSON.stringify(childTeam),
       visibility: `${parentTeamID}`,
     };
   } catch (err) {
