@@ -12,6 +12,7 @@ import snsError from "./error/sns-error";
 import {
   checkTeamExists,
   createChildTeam,
+  createEmptyRepository,
   createParentTeam,
 } from "./services/github";
 import { generateTeamID, generateYearID } from "./services/parsers";
@@ -34,12 +35,18 @@ const lambdaHandler: Handler<eventRequest, eventResponse> = async (
       parentTeamID = checkYearExists;
     }
     const childTeamSlug = await generateTeamID(event["project-name"]);
-    const childTeam = await createChildTeam(event, childTeamSlug, parentTeamID, yearID);
+    const childTeam = await createChildTeam(
+      event,
+      childTeamSlug,
+      parentTeamID,
+      yearID
+    );
+    const repoInfo = await createEmptyRepository(event, childTeam.slug);
     return {
       success: true,
-      "repo-link": "success",
-      "team-slug": JSON.stringify(childTeam),
-      visibility: `${parentTeamID}`,
+      "repo-link": repoInfo.link,
+      "team-slug": childTeam.slug,
+      private: repoInfo.private,
     };
   } catch (err) {
     if (err && err.message) {
