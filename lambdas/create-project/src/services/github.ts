@@ -114,6 +114,16 @@ export const createEmptyRepository = async (
     team_id: teamInfo["team-id"],
     auto_init: true,
   });
+  await octokit.request(
+    "PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}",
+    {
+      org: process.env.GITHUB_ORG!,
+      team_slug: teamInfo["team-slug"],
+      owner: process.env.GITHUB_ORG!,
+      repo: data.name,
+      permission: "admin",
+    }
+  );
   return {
     link: data.html_url,
     private: data.private,
