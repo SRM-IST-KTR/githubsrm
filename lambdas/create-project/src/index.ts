@@ -9,6 +9,8 @@ import {
 import { errors } from "./error/errors";
 import validateQuery from "./services/validate-query";
 import snsError from "./error/sns-error";
+import { checkTeamExists, createParentTeam } from "./services/github";
+import { generateTeamID, generateYearID } from "./services/parsers";
 
 config();
 
@@ -19,11 +21,19 @@ const lambdaHandler: Handler<eventRequest, eventResponse> = async (
 ) => {
   try {
     await validateQuery(event, eventRequestSchema);
+    const yearID = await generateYearID(event.year);
+    const checkYearExists = await checkTeamExists(yearID);
+    let parentTeamID;
+    if (checkYearExists === -1) {
+      parentTeamID = await createParentTeam(yearID);
+    } else {
+      parentTeamID = checkYearExists;
+    }
     return {
       success: true,
       "repo-link": "success",
       "team-slug": "nice-team",
-      visibility: "public-or-private",
+      visibility: `${parentTeamID}`,
     };
   } catch (err) {
     if (err && err.message) {
