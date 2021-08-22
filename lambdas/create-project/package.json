@@ -9,7 +9,9 @@
   "private": false,
   "scripts": {
     "postinstall": "chmod +x ../layers/pack-lambda-layer.sh && ../layers/pack-lambda-layer.sh v1",
-    "dev": "npx tsc --watch"
+    "dev": "npx tsc --watch",
+    "upload": "chmod +x ./upload-lambda.sh && ./upload-lambda.sh v1",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.82",
