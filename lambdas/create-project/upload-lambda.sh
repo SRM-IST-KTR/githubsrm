@@ -27,7 +27,9 @@ if [ -f "dist-$1.zip" ]; then
     rm "dist-$1.zip"
 fi
 echo -e "$INFO_TEXT Zipping the lambda source code..."
-zip -r "dist-$1.zip" "dist"
+cd dist
+zip -r "../dist-$1.zip" .
+cd -
 echo -e "\e[1;33m Uploading Lambda 'githubcommunitysrm-$1'... \e[0m"
 aws lambda update-function-code \
     --function-name "githubcommunitysrm-$1" \
