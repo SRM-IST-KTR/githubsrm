@@ -1,4 +1,4 @@
-from json.tool import main
+
 import secrets
 from datetime import datetime
 from hashlib import sha256
@@ -9,6 +9,9 @@ from django.conf import settings
 from dotenv import load_dotenv
 from pymongo import ReturnDocument
 
+from apis.aws import BotoService
+
+service = BotoService()
 load_dotenv()
 
 
@@ -161,36 +164,55 @@ class AdminEntry:
 
         return password
 
-    def approve_project(self, identifier: str, project_url: str, private: bool) -> bool:
+    def get_maintainer_github_id(self, maintainer_ids: list):
+        """get github ids from maintainer document
+
+        Args:
+            maintainer_ids (list): maintainer id list
+        """
+        val = []
+        if maintainers := list(self.db.maintainer.find(filter={"_id": {"$in": maintainer_ids}})):
+            for maintainer in maintainers:
+                val.append(maintainer["github_id"])
+            return val
+        else:
+            return False
+
+    def approve_project(self, identifier: str, year: str) -> bool:
         """Approve project and update the doc as required
 
         Args:
             identifier (str): project id
-            project_url (str): project url
-            private (bool): visibility status
+            academic_year (str): academic_year
 
         Returns:
             bool
         """
+        project_doc = self.db.project.find_one(filter={"_id": identifier})
+        if project_doc:
+            maintainer_github_id = self.get_maintainer_github_id(
+                project_doc["maintainer_id"])
+            submission = {**{"project-name": project_doc["project_name"]}, **{"project-description": project_doc["description"]},
+                          **{"year": year}, **{"private": project_doc["private"]}, **{"maintainers": maintainer_github_id}}
+            response = service.lambda_(
+                func="githubcommunitysrm-v1", payload=submission)
 
-        project = self.db.project.find_one_and_update(
-            {"_id": identifier},
-            update={
-                "$set": {
-                    "is_admin_approved": True,
-                    "project_url": project_url,
-                    "private": private
-                }
-            }, return_document=ReturnDocument.BEFORE)
-
-        maintainer = self.db.maintainer.find_one({"project_id": identifier})
-
-        if project:
-            if project.get("is_admin_approved"):
+            if response["success"] and project_doc["is_admin_approved"] == False:
+                project = self.db.project.find_one_and_update(
+                    {"_id": identifier},
+                    update={
+                        "$set": {
+                            "is_admin_approved": True,
+                            "year": year,
+                            "team_slug": response["team-slug"],
+                            "private": response["private"],
+                            "project_url": response["repo-link"]
+                        }
+                    }, return_document=ReturnDocument.BEFORE)
+                project = {**project, **{"project_url": response["repo-link"]}}
+                return project
+            else:
                 return False
-
-            return project, maintainer
-
         return False
 
     def approve_contributor(self, project_id: str, contributor_id: str) -> bool:
@@ -260,8 +282,9 @@ class AdminEntry:
         }, update={
             "$set": {
                 "is_admin_approved": False,
-                "project_url": project["project_url"],
-                "private": project["private"]
+                "project_url": "",
+                "team_slug": "",
+                "year": ""
             }
         }, return_document=ReturnDocument.BEFORE)
 

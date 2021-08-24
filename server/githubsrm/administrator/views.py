@@ -142,20 +142,17 @@ class ProjectsAdmin(APIView):
 
         elif params == 'project':
             if details := entry.approve_project(identifier=validate.get("project_id"),
-                                                project_url=validate.get(
-                                                    "project_url"),
-                                                private=validate.get("private")):
+                                                year=validate.get("year")):
 
-                project, maintainer = details
+                project = details
                 email_document = entry.get_all_maintainer_emails(
                     project=project)
                 if email_document:
-                    email_document["email"].append(maintainer.pop("email"))
                     if service.wrapper_email(
                             role="project_approval", data={**{
                                 "name": "Maintainer(s)",
                                 "project_name": project["project_name"],
-                                "project_url": validate["project_url"],
+                                "project_url": project["project_url"],
                                 "project_id": project["_id"]
 
                             }, **email_document}, send_all=True):

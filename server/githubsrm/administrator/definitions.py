@@ -77,7 +77,7 @@ class ApprovalSchema:
             Schema
         """
         validator = Schema(schema={**self.common, **{
-            "academic_year": And(str, lambda string: len(string.strip()) == 4)
+            "year": And(str, lambda string: len(string.strip()) == 4)
         }})
 
         return validator
