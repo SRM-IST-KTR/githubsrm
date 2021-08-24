@@ -6,6 +6,7 @@ import {
   resetPasswordValidation,
   setPasswordValidation,
   projectVisibiltyValidation,
+  academicYearValidation,
 } from "./constants";
 
 export interface InputClassNameProps {
@@ -143,3 +144,5 @@ export interface SetPasswordData
 
 export interface ProjectVisibilityData
   extends Yup.InferType<typeof projectVisibiltyValidation> {}
+export interface AcademicYearData
+  extends Yup.InferType<typeof academicYearValidation> {}

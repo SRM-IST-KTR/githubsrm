@@ -103,6 +103,16 @@ export const projectVisibilityInputs: InputProps[] = [
   },
 ];
 
+export const academicYearInputs: InputProps[] = [
+  {
+    id: "academic_year",
+    label: "Academic Year",
+    type: "text",
+    placeholder: "20XX",
+    required: true,
+  },
+];
+
 export const maintainerLoginValidation = Yup.object().shape({
   email: Yup.string()
     .trim()
@@ -144,4 +154,11 @@ export const setPasswordValidation = Yup.object().shape({
 export const projectVisibiltyValidation = Yup.object().shape({
   private: Yup.boolean().required("**Project Type:** Missing"),
   project_url: Yup.string().trim().required("**Project URL:** Missing"),
+});
+
+export const academicYearValidation = Yup.object().shape({
+  academic_year: Yup.number()
+    .required("**Academic Year:** Missing")
+    .min(4)
+    .max(4),
 });
