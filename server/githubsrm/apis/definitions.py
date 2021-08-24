@@ -1,9 +1,11 @@
+from requests.api import request
 from schema import Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
 import requests
 import cProfile
 
+session = requests.Session()
 
 def get_json_schema(id: int, valid_schema: Callable) -> dict:
     """Generate json schema
@@ -27,7 +29,7 @@ def check_github_id(github_id: str):
     if len(github_id.strip()):
         _url = f"https://github.com/{github_id}"
 
-        response = requests.get(_url)
+        response = session.get(_url)
 
         return response.status_code == 200
     return False
@@ -41,8 +43,8 @@ def check_repo(url: str):
     """
     if len(url) == 0:
         return True
-    
-    response = requests.get(url)
+
+    response = session.get(url)
     return response.status_code == 200
 
 
