@@ -2,6 +2,7 @@ import os
 from typing import Any, Dict, TypedDict
 from .utils import get_email_content
 import boto3
+import json
 
 
 class SNSpayload(TypedDict):
@@ -76,3 +77,13 @@ class BotoService:
         except Exception as e:
             print("EMAIL FAILED", e)
             return
+
+    def lambda_(self, func: str, payload: Dict):
+        client = boto3.client('lambda', region_name='ap-south-1')
+        try:
+            res = client.invoke(FunctionName=func, Payload=json.dumps(payload))
+        except Exception as e:
+            print(f"AWS failed with {e}")
+            res = {"error": e}
+
+        return res
