@@ -204,8 +204,7 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
     Returns:
         Template
     """
-    path = f'{pathlib.Path.cwd()}/apis/templates/{file}'
-
+    path = f'{pathlib.Path.cwd()}/server/githubsrm/apis/templates/{file}'
     if os.getenv("TEST"):
         path = f'{pathlib.Path.cwd()}/githubsrm/apis/templates/{file}'
 
