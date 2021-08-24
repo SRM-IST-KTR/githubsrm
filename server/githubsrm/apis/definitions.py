@@ -113,7 +113,8 @@ class CommonSchema:
             "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
             "project_url": And(str, lambda url: check_repo(url)),
             "description": And(str, lambda description: len(description.strip()) >= 30),
-            "tags": And(list, lambda tags: check_tags(tags=tags))
+            "tags": And(list, lambda tags: check_tags(tags=tags)),
+            "private": bool
         }
 
         self.beta_maintainer = {
