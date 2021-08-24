@@ -1,4 +1,3 @@
-from requests.api import request
 from schema import Schema, And, SchemaError
 from typing import Any, Callable, Dict
 import re
