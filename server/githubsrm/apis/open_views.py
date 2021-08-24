@@ -131,6 +131,18 @@ class Maintainer(APIView):
             validate['project_id'] = value[0]
             validate['project_name'] = value[2]
             validate['description'] = value[3]
+            
+            if validate['project_url'] and check_repo(validate['project_url']):
+                Thread(target=service.sns, kwargs={'payload': {
+                    'message': f'Porting new project {validate.get("project_id")}\n \
+                                Details: \n \
+                                Name: {validate.get("name")} \n \
+                                Email Personal: {validate.get("email")} \n \
+                                Project Details: \n \
+                                Name: {validate.get("project_name")} \n \
+                                Description: {validate.get("description")}',
+                    'subject': '[PROJECT-PORT]: https://githubsrm.tech'
+                }}).start()
 
             if service.wrapper_email(role='project_submission_confirmation', data={
                 "project_name": validate["project_name"],
