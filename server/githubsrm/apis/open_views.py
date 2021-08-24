@@ -74,6 +74,20 @@ class Maintainer(APIView):
     Maintainer API to Allow addition of maintainers to the database
     '''
     throttle_classes = [PostThrottle]
+    
+    @staticmethod
+    def _trigger_sns(validate): 
+        if check_repo(validate['project_url']):
+            service.sns(payload = {
+                        'message': f'Porting new project {validate.get("project_id")}\n \
+                                    Details: \n \
+                                    Name: {validate.get("name")} \n \
+                                    Email Personal: {validate.get("email")} \n \
+                                    Project Details: \n \
+                                    Name: {validate.get("project_name")} \n \
+                                    Description: {validate.get("description")}',
+                        'subject': '[PROJECT-PORT]: https://githubsrm.tech'
+                    })
 
     def post(self, request, **kwargs) -> JsonResponse:
         """Accept Maintainers
@@ -132,17 +146,8 @@ class Maintainer(APIView):
             validate['project_name'] = value[2]
             validate['description'] = value[3]
             
-            if validate['project_url'] and check_repo(validate['project_url']):
-                Thread(target=service.sns, kwargs={'payload': {
-                    'message': f'Porting new project {validate.get("project_id")}\n \
-                                Details: \n \
-                                Name: {validate.get("name")} \n \
-                                Email Personal: {validate.get("email")} \n \
-                                Project Details: \n \
-                                Name: {validate.get("project_name")} \n \
-                                Description: {validate.get("description")}',
-                    'subject': '[PROJECT-PORT]: https://githubsrm.tech'
-                }}).start()
+            if validate['project_url']:
+                Thread(target=self._trigger_sns, kwargs={'validate':validate}).start()
 
             if service.wrapper_email(role='project_submission_confirmation', data={
                 "project_name": validate["project_name"],
