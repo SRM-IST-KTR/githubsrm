@@ -78,12 +78,24 @@ class BotoService:
             print("EMAIL FAILED", e)
             return
 
-    def lambda_(self, func: str, payload: Dict):
+    def lambda_(self, func: str, payload: Dict) -> Dict:
+        """[Lambda wrapper for AWS]
+
+        Args:
+            func (str): [Func ARN or name of fucntion]
+            payload (Dict): [Payload to pass to function]
+
+        Returns:
+            Dict: [fucntion json response]
+        """
         client = boto3.client('lambda', region_name='ap-south-1')
         try:
             res = client.invoke(FunctionName=func, Payload=json.dumps(payload))
         except Exception as e:
             print(f"AWS failed with {e}")
-            res = {"error": e}
+            return {"error": e}
 
-        return res
+        if "Payload" in res and hasattr(res["Payload"], "read"):
+            return json.loads(res["Payload"].read())
+        else:
+            return {"error": "Lambda response was not expected"}
