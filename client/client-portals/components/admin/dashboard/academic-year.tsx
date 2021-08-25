@@ -35,7 +35,7 @@ const AcademicYear = ({ isOpen, close, projectId }: AcademicYearProps) => {
     year: "",
   };
 
-  const submitValues = async (values: AcademicYearProps) => {
+  const submitValues = async (values: AcademicYearData) => {
     setLoading(true);
     const _values = Object.assign({}, values, {
       project_id: projectId,

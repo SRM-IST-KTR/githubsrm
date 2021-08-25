@@ -17,9 +17,11 @@
     "start:portal": "cd client-portals && yarn start",
     "cleanup:landing": "rimraf client-landing/out && rimraf client-landing/.next",
     "cleanup:portal": "rimraf client-portals/out && rimraf client-portals/.next",
-    "cleanup": "yarn cleanup:portal && yarn cleanup:landing"
+    "cleanup": "yarn cleanup:portal && yarn cleanup:landing",
+    "prepare": "cd .. && husky install"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "husky": "^7.0.0"
   }
 }

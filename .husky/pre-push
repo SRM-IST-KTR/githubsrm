@@ -1,0 +1,14 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+INFO_TEXT="\e[1;32m[INFO]\e[0m"
+ERROR_TEXT="\e[1;31m[ERROR]\e[0m"
+WORKING_DIR=$(pwd)
+
+if [ -f "client/package.json" ]; then
+    cd client
+    yarn && yarn build
+else
+    echo -e "$ERROR_TEXT 'client/package.json' does not exist."
+    exit 1
+fi
