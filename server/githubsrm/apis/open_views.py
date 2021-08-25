@@ -75,6 +75,19 @@ class Maintainer(APIView):
     '''
     throttle_classes = [PostThrottle]
 
+    @staticmethod
+    def _trigger_sns(validate):
+        service.sns(payload={
+            'message': f'Porting new project {validate.get("project_id")}\n \
+                                    Details: \n \
+                                    Name: {validate.get("name")} \n \
+                                    Email Personal: {validate.get("email")} \n \
+                                    Project Details: \n \
+                                    Name: {validate.get("project_name")} \n \
+                                    Description: {validate.get("description")}',
+            'subject': '[PROJECT-PORT]: https://githubsrm.tech'
+        })
+
     def post(self, request, **kwargs) -> JsonResponse:
         """Accept Maintainers
 
@@ -132,6 +145,10 @@ class Maintainer(APIView):
             validate['project_name'] = value[2]
             validate['description'] = value[3]
 
+            if validate.get('project_url'):
+                Thread(target=self._trigger_sns, kwargs={
+                       'validate': validate}).start()
+
             if service.wrapper_email(role='project_submission_confirmation', data={
                 "project_name": validate["project_name"],
                 "name": validate["name"],
@@ -157,6 +174,9 @@ class Maintainer(APIView):
             return JsonResponse({
                 "status": "deleted record"
             }, status=500)
+        return JsonResponse({
+            "status": "error"
+        }, status=500)
 
     def get(self, request, **kwargs) -> JsonResponse:
         """Get all projects

@@ -35,7 +35,7 @@ class Entry:
         return ''.join(gen_id)
 
     def _enter_project(self, doc: Dict[str, str],
-                       visibility: Dict[str, str], project_id: str) -> None:
+                       visibility: bool, project_id: str) -> None:
         """Project Entry (only accessed by maintainer)
 
         Args:
@@ -43,7 +43,7 @@ class Entry:
             project_id (str): project id
         """
 
-        doc = {**doc, **{"_id": project_id}, **visibility}
+        doc = {**doc, **{"_id": project_id}, **{"private": visibility}}
         self.db.project.insert_one(doc)
 
     def _update_project(self, identifier: str,
@@ -81,7 +81,7 @@ class Entry:
         Returns:
             Any
         """
-        project_url = doc.pop("project_url")
+        project_url = doc.get("project_url")
 
         description = doc.pop("description")
         tags = doc.pop("tags")
@@ -104,18 +104,15 @@ class Entry:
             else:
                 self.db.maintainer.insert_one(doc)
 
-            if project_url:
-                visibility = {"private": False}
-            else:
-                visibility = {"private": True}
             # Default approve to false
             self._enter_project({
                 "project_url": project_url,
                 "description": description,
                 "tags": tags,
                 "is_admin_approved": False,
-                "project_name": project_name
-            }, visibility=visibility, project_id=project_id)
+                "project_name": project_name,
+                "project_url": project_url
+            }, visibility=doc["private"], project_id=project_id)
 
             return project_id, _id, project_name, description
 
@@ -124,7 +121,7 @@ class Entry:
             return
 
     def enter_beta_maintainer(self, doc: Dict[str, Any]) -> str:
-        """Add beta maintainers to project and updates maintainers 
+        """Add beta maintainers to project and updates maintainers
            collection.
 
         Args:

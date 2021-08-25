@@ -1,4 +1,4 @@
-import random
+import secrets
 from math import ceil
 from typing import Any, Dict
 from administrator import jwt_keys
@@ -14,7 +14,7 @@ ITEMS_PER_PAGE = 10
 def decode_payload(token: str) -> Dict[str, Any]:
     """Helper for jwt decode
     Args:
-        token (str): jwt 
+        token (str): jwt
     Returns:
         Dict[str, Any]
     """
@@ -193,7 +193,7 @@ def RequestSetPassword(email):
     if not document:
         doc = {
             "email": email,
-            "password": "".join(random.choice("ABHISHEK") for i in range(10)),
+            "password": secrets.token_hex(),
             "reset": True
         }
         entry.maintainer_credentials.insert_one(doc)
