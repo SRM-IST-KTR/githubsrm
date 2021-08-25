@@ -42,7 +42,7 @@ const NewProject = () => {
     resetForm: (nextState?: Partial<FormikState<NewMaintainerForm>>) => void
   ) => {
     setLoading(true);
-    if (!values.project_visibility) {
+    if (values.project_visibility === (undefined || null)) {
       setErrors({
         project_visibility: "**Public Visibility:** Missing",
       } as Partial<NewMaintainerForm>);
