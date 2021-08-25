@@ -15,6 +15,10 @@ export const customInputClasses: InputClassNameProps = {
   descriptionClassName: {
     default: "custom-description",
   },
+  optionClassName: {
+    label: { default: "custom-option-label" },
+    option: { default: "custom-option-input" },
+  },
 };
 
 export const colors: string[] = [
@@ -108,7 +112,7 @@ export const newMaintainerInputs: {
       },
       {
         id: "project_visibility",
-        label: "Public VISIBLE URL",
+        label: "Is your Project Public?",
         type: "radio",
         selectOptions: {
           options: [

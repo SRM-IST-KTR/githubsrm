@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }) {
       </Head>
 
       {/* //* INFO: prevent these classes from being purged */}
-      <span className="bg-colors custom-input-wrapper custom-input custom-input-error custom-label custom-description hidden" />
+      <span className="bg-colors custom-input-wrapper custom-input custom-input-error custom-label custom-description custom-option custom-option-label hidden" />
       <ToastContainer />
       <Component {...pageProps} />
     </>

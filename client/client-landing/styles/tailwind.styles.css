@@ -50,6 +50,9 @@
   .custom-description {
     @apply text-xs lg:text-sm font-medium md:text-right mt-1 mb-2;
   }
+  .custom-option-label {
+    @apply flex items-center py-1;
+  }
   .bg-colors {
     @apply bg-base-black bg-base-green bg-base-smoke bg-base-blue bg-base-teal;
   }

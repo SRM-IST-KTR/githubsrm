@@ -39,7 +39,7 @@ export interface InputClassNameProps {
   inputClassName?: InputClassTypes;
   labelClassName?: InputClassTypes;
   descriptionClassName?: InputClassTypes;
-  optionClass?: {
+  optionClassName?: {
     label?: InputClassTypes;
     option?: InputClassTypes;
   };

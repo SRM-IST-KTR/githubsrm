@@ -131,8 +131,8 @@ const Input = (props: InputProps) => {
               key={option.value}
               htmlFor={option.name}
               className={`${
-                props.onError ? props.optionClass?.label?.onError : ""
-              } ${props.optionClass?.label?.default}`}
+                props.onError ? props.optionClassName?.label?.onError : ""
+              } ${props.optionClassName?.label?.default}`}
             >
               <Field
                 type={props.type}
@@ -141,8 +141,8 @@ const Input = (props: InputProps) => {
                 id={option.value}
                 value={option.value}
                 className={`${
-                  props.onError ? props.optionClass?.option?.onError : ""
-                } ${props.optionClass?.option?.default}`}
+                  props.onError ? props.optionClassName?.option?.onError : ""
+                } ${props.optionClassName?.option?.default}`}
               />
               <div>
                 {option.name}{" "}
