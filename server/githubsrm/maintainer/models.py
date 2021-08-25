@@ -1,15 +1,42 @@
 
 from hashlib import sha256
+from threading import Thread
 from typing import Iterable, Dict, Any
 import pymongo
 from django.conf import settings
 from administrator import jwt_keys
+
+from apis.aws import BotoService
+
+service = BotoService()
 
 
 class Entry:
     def __init__(self) -> None:
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
+
+    def _approve_contributor(self, contributor: Dict[str, str]):
+        """Trigger lambda for contributor addition
+
+        Args:
+            contributor (Dict[str, str]): contirbutor details
+        """
+        project = self.db.project.find_one(
+            filter={"_id": contributor["interested_project"]})
+        submission = {
+            **{"team-slug": project["team_slug"]}, **{"contributor": contributor["github_id"]}}
+        response = service.lambda_(
+            func="githubcommunitysrm-v2", payload=submission)
+
+        if response["success"] == False:
+            service.sns(payload={
+                        "message": f"Lambda failing on contirbutor approval contributor_id -> {contributor['_id']} \
+                         Error: {response}", "subject": "[LAMBDA-FAILING]"})
+        else:
+            self.db.contributor.find_one_and_update({"_id": contributor["_id"]}, update={
+                "$set": {"is_added_to_repo": True}
+            })
 
     def approve_contributor(self, project_id: str, contributor_id: str) -> Any:
         """Maintainer approve contributor
@@ -32,6 +59,8 @@ class Entry:
         if contributor:
             if contributor.get("is_maintainer_approved") and contributor.get("is_admin_approved"):
                 return False
+            Thread(target=self._approve_contributor, kwargs={
+                   "contributor": contributor}).start()
             project_doc = self.db.project.find_one_and_update(
                 {"_id": project_id},
                 update={
@@ -93,7 +122,7 @@ class Entry:
                                                                    "is_maintainer_approved": False,
                                                                    "interested_project": {"$in": project_ids}})
             project_name = self.db.project.find_one({
-                "_id":contributor["interested_project"]
+                "_id": contributor["interested_project"]
             })["project_name"]
 
             if contributor:

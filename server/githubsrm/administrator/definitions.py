@@ -77,8 +77,7 @@ class ApprovalSchema:
             Schema
         """
         validator = Schema(schema={**self.common, **{
-            "private": bool,
-            "project_url": And(str, lambda project_url: check_repo(project_url) and len(project_url.strip()) > 0)
+            "year": And(str, lambda string: len(string.strip()) == 4)
         }})
 
         return validator
