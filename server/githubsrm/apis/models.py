@@ -81,7 +81,7 @@ class Entry:
         Returns:
             Any
         """
-        project_url = doc.pop("project_url")
+        project_url = doc.get("project_url")
 
         description = doc.pop("description")
         tags = doc.pop("tags")
@@ -110,7 +110,8 @@ class Entry:
                 "description": description,
                 "tags": tags,
                 "is_admin_approved": False,
-                "project_name": project_name
+                "project_name": project_name,
+                "project_url": project_url
             }, visibility=doc["private"], project_id=project_id)
 
             return project_id, _id, project_name, description
