@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useState } from "react";
 import Link from "next/link";
 import { Formik, Form, FormikState } from "formik";
@@ -40,6 +42,19 @@ const NewProject = () => {
     resetForm: (nextState?: Partial<FormikState<NewMaintainerForm>>) => void
   ) => {
     setLoading(true);
+    if (!values.project_visibility) {
+      setErrors({
+        project_visibility: "**Public Visibility:** Missing",
+      } as Partial<NewMaintainerForm>);
+      return;
+    }
+    values.project_visibility =
+      values.project_visibility === "true"
+        ? true
+        : values.project_visibility === "false"
+        ? false
+        : null;
+
     if (await getUser(values.github_id)) {
       if (values.project_url?.length > 0) {
         const data = values.project_url.split("/");
@@ -56,7 +71,6 @@ const NewProject = () => {
         .split(",")
         .filter((i) => i.trim().length > 0);
       const res = await postMaintainer(
-        //@ts-ignore
         { ...parsedValues, tags: parsedTags },
         "alpha"
       );

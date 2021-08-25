@@ -29,15 +29,31 @@ export interface ProjectProps {
   tags: string[];
 }
 
+export interface InputClassTypes {
+  default?: string;
+  onError?: string;
+}
+
 export interface InputClassNameProps {
-  wrapperClassName?: { default?: string; onError?: string };
-  inputClassName?: { default?: string; onError?: string };
-  labelClassName?: { default?: string; onError?: string };
-  descriptionClassName?: { default?: string; onError?: string };
+  wrapperClassName?: InputClassTypes;
+  inputClassName?: InputClassTypes;
+  labelClassName?: InputClassTypes;
+  descriptionClassName?: InputClassTypes;
+  optionClass?: {
+    label?: InputClassTypes;
+    option?: InputClassTypes;
+  };
 }
 
 export interface InputProps extends InputClassNameProps {
-  type: "text" | "textarea" | "select" | "email" | "password";
+  type:
+    | "text"
+    | "textarea"
+    | "select"
+    | "email"
+    | "password"
+    | "checkbox"
+    | "radio";
   required?: boolean;
   id: string;
   label?: string;

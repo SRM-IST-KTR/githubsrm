@@ -107,6 +107,25 @@ export const newMaintainerInputs: {
         description: "Only for a personal existing project!",
       },
       {
+        id: "project_visibility",
+        label: "Public VISIBLE URL",
+        type: "radio",
+        selectOptions: {
+          options: [
+            {
+              value: "true",
+              name: "Yes",
+            },
+            {
+              value: "false",
+              name: "No",
+            },
+          ],
+        },
+        placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
+        description: "Only for a personal existing project!",
+      },
+      {
         id: "tags",
         label: "Project Tags",
         type: "text",
@@ -127,34 +146,34 @@ export const newMaintainerInputs: {
 ];
 
 export const newMaintainerValidation = Yup.object().shape({
-  name: Yup.string().trim().required("**Name**: Missing"),
-  email: Yup.string()
-    .trim()
-    .required("**Email:** Missing")
-    .email("**Email:** Invalid"),
-  github_id: Yup.string().trim().required("**GitHub ID**: Missing"),
-  srm_email: Yup.string()
-    .trim()
-    .required("**SRM Email ID:** Missing")
-    .test("test-srm-email", "**SRM Email ID:** Invalid", (value) =>
-      value?.endsWith("@srmist.edu.in")
-    ),
-  reg_number: Yup.string().trim().required("**Registration Number:** Missing"),
-  branch: Yup.string().trim().required("**Branch:** Missing"),
-  project_name: Yup.string()
-    .trim()
-    .required("**Public Repository URL:** Missing"),
-  project_url: Yup.string().trim().url("**Public Repository URL:** Invalid"),
-  tags: Yup.string()
-    .trim()
-    .required("**Tags:** Missing")
-    .test(
-      "test-tags",
-      "**Tags:** Invalid Quantity",
-      (value) =>
-        value?.split(",").filter((i) => i.trim().length > 0).length >= 2 &&
-        value?.split(",").filter((i) => i.trim().length > 0).length <= 4
-    ),
+  // name: Yup.string().trim().required("**Name**: Missing"),
+  // email: Yup.string()
+  //   .trim()
+  //   .required("**Email:** Missing")
+  //   .email("**Email:** Invalid"),
+  // github_id: Yup.string().trim().required("**GitHub ID**: Missing"),
+  // srm_email: Yup.string()
+  //   .trim()
+  //   .required("**SRM Email ID:** Missing")
+  //   .test("test-srm-email", "**SRM Email ID:** Invalid", (value) =>
+  //     value?.endsWith("@srmist.edu.in")
+  //   ),
+  // reg_number: Yup.string().trim().required("**Registration Number:** Missing"),
+  // branch: Yup.string().trim().required("**Branch:** Missing"),
+  // project_name: Yup.string()
+  //   .trim()
+  //   .required("**Public Repository URL:** Missing"),
+  // project_url: Yup.string().trim().url("**Public Repository URL:** Invalid"),
+  // tags: Yup.string()
+  //   .trim()
+  //   .required("**Tags:** Missing")
+  //   .test(
+  //     "test-tags",
+  //     "**Tags:** Invalid Quantity",
+  //     (value) =>
+  //       value?.split(",").filter((i) => i.trim().length > 0).length >= 2 &&
+  //       value?.split(",").filter((i) => i.trim().length > 0).length <= 4
+  //   ),
   description: Yup.string()
     .trim()
     .required("**Description:** Missing")
