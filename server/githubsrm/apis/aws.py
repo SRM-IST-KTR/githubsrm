@@ -88,6 +88,12 @@ class BotoService:
         Returns:
             Dict: [fucntion json response]
         """
+        if os.getenv("SENDEMAIL"):
+            return {"success": True,
+                    "team-slug": "team-slug-123",
+                    "private": True,
+                    "repo-link": "https://github.com/SRM-IST-KTR/githubsrm"
+                    }
         client = boto3.client('lambda', region_name='ap-south-1')
         try:
             res = client.invoke(FunctionName=func, Payload=json.dumps(payload))

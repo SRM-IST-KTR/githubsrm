@@ -429,6 +429,43 @@ class TestClient(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.clean()
 
+    def test_approve_maintainer_w_wrong_jwt_none_algo(self):
+        self.clean()
+        response = self.client.post(
+            url=self.base_url+'admin/register', data=json.dumps(entry.admin_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {self.webhook}"
+            })
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            url=self.base_url+'admin/login', data=json.dumps(entry.admin_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": f"Bearer {self.webhook}"
+            })
+        admin_jwt = response.json()["access_token"]
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            url=self.base_url+'api/maintainer', data=json.dumps(entry.alpha_data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken"
+            }, params={"role": "alpha"})
+        self.assertEqual(response.status_code, 201)
+
+        alpha = dict(self.db.maintainer.find_one({"github_id": "riju561"}))
+        data = {
+            "maintainer_id": alpha["_id"],
+            "project_id": alpha["project_id"],
+            "email": alpha["email"]
+        }
+        response = self.client.post(
+            url=self.base_url+'admin/projects', data=json.dumps(data), headers={
+                "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
+                "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJhZG1pbiI6dHJ1ZSwidXNlciI6InJtdWtoNTYxQGdtYWlsLmNvbSIsImV4cCI6MTYyNzQ0NDY2NH0."
+            }, params={"role": "maintainer"})
+        self.assertEqual(response.status_code, 401)
+        self.clean()
+
     def test_maintainer_rejection(self):
         self.clean()
         response = self.client.post(
