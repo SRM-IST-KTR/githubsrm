@@ -10,7 +10,7 @@ const TeamPage = () => {
         <title>GitHub Community SRM | Team</title>
         <meta
           name="description"
-          content="A team of 11 students of SRMIST trying to spearhead open-source revolution in SRMIST through the GitHub Community SRM"
+          content="A team of passionate student developers of SRMIST trying to spearhead open-source revolution in SRMIST through the GitHub Community SRM"
         />
       </Head>
       <Layout>

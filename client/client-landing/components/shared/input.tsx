@@ -108,6 +108,54 @@ const Input = (props: InputProps) => {
       );
     }
 
+    case "radio":
+    case "checkbox": {
+      return (
+        <div
+          className={`${props.onError ? props.wrapperClassName?.onError : ""} ${
+            props.wrapperClassName?.default
+          }`}
+          role="group"
+        >
+          {props.label && (
+            <label
+              className={`${
+                props.onError ? props.labelClassName?.onError : ""
+              } ${props.labelClassName?.default}`}
+            >
+              {props.label}
+            </label>
+          )}
+          {props.selectOptions?.options.map((option) => (
+            <label
+              key={option.value}
+              htmlFor={option.name}
+              className={`${
+                props.onError ? props.optionClassName?.label?.onError : ""
+              } ${props.optionClassName?.label?.default}`}
+            >
+              <Field
+                type={props.type}
+                name={props.id}
+                placeholder={props.placeholder || ""}
+                id={option.value}
+                value={option.value}
+                className={`${
+                  props.onError ? props.optionClassName?.option?.onError : ""
+                } ${props.optionClassName?.option?.default}`}
+              />
+              <div>
+                {option.name}{" "}
+                {props.required && (
+                  <span className="text-red-500 font-bold">*</span>
+                )}
+              </div>
+            </label>
+          ))}
+        </div>
+      );
+    }
+
     default: {
       return <></>;
     }

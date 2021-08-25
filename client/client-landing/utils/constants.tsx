@@ -15,6 +15,10 @@ export const customInputClasses: InputClassNameProps = {
   descriptionClassName: {
     default: "custom-description",
   },
+  optionClassName: {
+    label: { default: "custom-option-label" },
+    option: { default: "custom-option-input" },
+  },
 };
 
 export const colors: string[] = [
@@ -101,8 +105,27 @@ export const newMaintainerInputs: {
       },
       {
         id: "project_url",
-        label: "Public Repository URL",
+        label: "Repository URL",
         type: "text",
+        placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
+        description: "Only for a personal existing project!",
+      },
+      {
+        id: "private",
+        label: "Is your Project Private?",
+        type: "radio",
+        selectOptions: {
+          options: [
+            {
+              value: "true",
+              name: "Yes",
+            },
+            {
+              value: "false",
+              name: "No",
+            },
+          ],
+        },
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
         description: "Only for a personal existing project!",
       },

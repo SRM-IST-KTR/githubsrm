@@ -3,9 +3,9 @@ import { getAdminProjectApplications } from "services/api";
 import Link from "next/link";
 import { Layout, Button, CSSLoader } from "@/shared/index";
 import { TableProjectsProps } from "utils/interfaces";
-import ProjectVisibility from "./project-visibility-popup";
 import { Tick } from "@/icons/index";
 import { PaginationButtons } from "@/shared/index";
+import AcademicYear from "./academic-year";
 
 const ProjectApplications = () => {
   const [tableDataProjects, setTableDataProjects] = useState<
@@ -17,6 +17,7 @@ const ProjectApplications = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
   const [projId, setProjId] = useState<string>("");
+  const [year, setYear] = useState<string>("");
 
   const headings = [
     "Maintainers",
@@ -24,6 +25,7 @@ const ProjectApplications = () => {
     "Project Url",
     "Tags",
     "Private",
+    "Academic Year",
     "Project Description",
     "Project Approval",
   ];
@@ -31,6 +33,7 @@ const ProjectApplications = () => {
   const _getProjectApplications = async () => {
     const res = await getAdminProjectApplications(pageNo);
     if (res) {
+      console.log(res);
       setTableDataProjects(res.records);
       sethasNextPage(res.hasNextPage);
       sethasPrevPage(res.hasPreviousPage);
@@ -109,6 +112,12 @@ const ProjectApplications = () => {
                 </td>
 
                 <td className="p-3">
+                  <div className="flex align-items-center">
+                    <div>{data.year}</div>
+                  </div>
+                </td>
+
+                <td className="p-3">
                   <div className="flex max-w-3xl overflow-auto word-wrap no-scrollbar">
                     <div className="overflow-auto word-wrap no-scrollbar">
                       {data.description}
@@ -147,8 +156,9 @@ const ProjectApplications = () => {
           />
         </div>
       )}
-      <ProjectVisibility
+      <AcademicYear
         projectId={projId}
+        year={year}
         close={() => setOpen(false)}
         isOpen={open}
       />

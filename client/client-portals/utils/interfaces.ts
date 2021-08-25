@@ -6,6 +6,7 @@ import {
   resetPasswordValidation,
   setPasswordValidation,
   projectVisibiltyValidation,
+  academicYearValidation,
 } from "./constants";
 
 export interface InputClassNameProps {
@@ -45,6 +46,7 @@ export interface TableProjectsProps {
   project_name: string;
   project_url: string;
   tags: string[];
+  year: string;
 }
 
 export interface ContributorsProps {
@@ -126,6 +128,11 @@ export interface ButtonWrapperProps {
   onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
+export interface ModalProps {
+  setIsOpen: (_isOpen: boolean) => void;
+  children: JSX.Element;
+}
+
 export interface MaintainerLoginData
   extends Yup.InferType<typeof maintainerLoginValidation> {}
 
@@ -143,3 +150,5 @@ export interface SetPasswordData
 
 export interface ProjectVisibilityData
   extends Yup.InferType<typeof projectVisibiltyValidation> {}
+export interface AcademicYearData
+  extends Yup.InferType<typeof academicYearValidation> {}
