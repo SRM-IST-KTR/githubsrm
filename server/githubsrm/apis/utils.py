@@ -204,9 +204,14 @@ def emailbody(name: str, file: str, project_data: Dict[str, Any], role: str) -> 
     Returns:
         Template
     """
-    path = f'{pathlib.Path.cwd()}/server/githubsrm/apis/templates/{file}'
-    if os.getenv("TEST"):
-        path = f'{pathlib.Path.cwd()}/githubsrm/apis/templates/{file}'
+
+    path = ""
+    for (root, dirs, _) in os.walk("."):
+        if "templates" in dirs:
+            path = f"{root}/templates/{file}"
+
+    if not path:
+        raise IOError("templates folder not found")
 
     with open(path) as file_:
         template = Template(file_.read())
