@@ -157,6 +157,9 @@ class Maintainer(APIView):
             return JsonResponse({
                 "status": "deleted record"
             }, status=500)
+        return JsonResponse({
+            "status": "error"
+        }, status=500)
 
     def get(self, request, **kwargs) -> JsonResponse:
         """Get all projects
