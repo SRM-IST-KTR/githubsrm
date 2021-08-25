@@ -22,13 +22,21 @@ class Entry:
         Args:
             contributor (Dict[str, str]): contirbutor details
         """
-        project = self.db.project.find_one(filter={"_id": contributor["interested_project"]})
-        submission = {**project["team_slug"], **contributor["github_id"]}
-        response = service.lambda_(func="githubcommunitysrm-v2", payload=submission)
+        project = self.db.project.find_one(
+            filter={"_id": contributor["interested_project"]})
+        submission = {
+            **{"team-slug": project["team_slug"]}, **{"contributor": contributor["github_id"]}}
+        response = service.lambda_(
+            func="githubcommunitysrm-v2", payload=submission)
 
         if response["success"] == False:
-            service.sns(payload={"message": "Lambda failing on contirbutor approval", "subject": "[LAMBDA-FAILING]"})
-
+            service.sns(payload={
+                        "message": f"Lambda failing on contirbutor approval contributor_id -> {contributor['_id']} \
+                         Error: {response}", "subject": "[LAMBDA-FAILING]"})
+        else:
+            self.db.contributor.find_one_and_update({"_id": contributor["_id"]}, update={
+                "$set": {"is_added_to_repo": True}
+            })
 
     def approve_contributor(self, project_id: str, contributor_id: str) -> Any:
         """Maintainer approve contributor
@@ -51,7 +59,8 @@ class Entry:
         if contributor:
             if contributor.get("is_maintainer_approved") and contributor.get("is_admin_approved"):
                 return False
-            Thread(target=self._approve_contributor, kwargs={"contributor": contributor}).start()
+            Thread(target=self._approve_contributor, kwargs={
+                   "contributor": contributor}).start()
             project_doc = self.db.project.find_one_and_update(
                 {"_id": project_id},
                 update={
