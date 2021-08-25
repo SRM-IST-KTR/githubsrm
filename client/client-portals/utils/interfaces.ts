@@ -46,6 +46,7 @@ export interface TableProjectsProps {
   project_name: string;
   project_url: string;
   tags: string[];
+  year: string;
 }
 
 export interface ContributorsProps {
@@ -125,6 +126,11 @@ export interface ButtonWrapperProps {
   disabled?: boolean;
   children?: JSX.Element | string;
   onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
+
+export interface ModalProps {
+  setIsOpen: (_isOpen: boolean) => void;
+  children: JSX.Element;
 }
 
 export interface MaintainerLoginData

@@ -20,20 +20,27 @@ const customStyles = {
     transform: "translate(-50%, -50%)",
   },
 };
+interface AcademicYearProps {
+  isOpen: boolean;
+  close: (state: boolean) => void;
+  year: string;
+  projectId: string;
+}
 
-const AcademicYear = ({ isOpen, close, projectId }) => {
+const AcademicYear = ({ isOpen, close, projectId }: AcademicYearProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   //@ts-ignore
   const initialValues: AcademicYearData = {
-    academic_year: "",
+    year: "",
   };
 
-  const submitValues = async (values) => {
-    const _values = Object.assign({}, values, {
-      academic_year: academicYear,
-    });
+  const submitValues = async (values: AcademicYearProps) => {
     setLoading(true);
+    const _values = Object.assign({}, values, {
+      project_id: projectId,
+    });
+
     const res = await postAcceptProjectHandler(_values);
     if (res) {
       successToast("Project Approved successfully!");
@@ -63,14 +70,14 @@ const AcademicYear = ({ isOpen, close, projectId }) => {
           >
             {({ errors, touched }) => (
               <Form>
-                {academicYearInputs.map((input) => {
+                {academicYearInputs.map((input) => (
                   <div
                     key={input.id}
                     className="border-2 border-gray-700 rounded my-4 p-4"
                   >
-                    <Input {...input}></Input>
-                  </div>;
-                })}
+                    <Input {...input} />
+                  </div>
+                ))}
                 <div className="flex justify-center">
                   <Button disabled={Object.keys(errors).length < 0}>
                     {loading ? (

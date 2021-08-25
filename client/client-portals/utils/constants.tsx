@@ -105,7 +105,7 @@ export const projectVisibilityInputs: InputProps[] = [
 
 export const academicYearInputs: InputProps[] = [
   {
-    id: "academic_year",
+    id: "year",
     label: "Academic Year",
     type: "text",
     placeholder: "20XX",
@@ -157,8 +157,5 @@ export const projectVisibiltyValidation = Yup.object().shape({
 });
 
 export const academicYearValidation = Yup.object().shape({
-  academic_year: Yup.number()
-    .required("**Academic Year:** Missing")
-    .min(4)
-    .max(4),
+  year: Yup.string().required("**Academic Year:** Missing"),
 });
