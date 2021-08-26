@@ -8,7 +8,7 @@ WORKING_DIR=$(pwd)
 if [ -f "client/package.json" ]; then
     LAST_COMMIT=$(git log -1 --pretty=format:"%B")
     echo "$LAST_COMMIT"
-    OUTPUT_STRING=$(python -c "print(\"\"\"$LAST_COMMIT\"\"\".startswith('🚧'))")
+    OUTPUT_STRING=$(python -c "print(\"\"\"$LAST_COMMIT\"\"\".startswith(('🚧', 'WIP', 'wip')))")
     if [ $OUTPUT_STRING == 'True' ]; then
         echo "Work in progress commit...skipping build"
         exit 0
