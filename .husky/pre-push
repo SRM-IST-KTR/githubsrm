@@ -6,8 +6,17 @@ ERROR_TEXT="\e[1;31m[ERROR]\e[0m"
 WORKING_DIR=$(pwd)
 
 if [ -f "client/package.json" ]; then
-    cd client
-    yarn && yarn build
+    LAST_COMMIT=$(git log -1 --pretty=format:"%B")
+    echo "$LAST_COMMIT"
+    OUTPUT_STRING=$(python -c "print(\"\"\"$LAST_COMMIT\"\"\".startswith(('🚧', 'WIP', 'wip')))")
+    if [ $OUTPUT_STRING == 'True' ]; then
+        echo "Work in progress commit...skipping build"
+        exit 0
+    else
+        cd client
+        yarn
+        yarn build
+    fi
 else
     echo -e "$ERROR_TEXT 'client/package.json' does not exist."
     exit 1
