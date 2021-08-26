@@ -10,6 +10,7 @@ if [ -f "client/package.json" ]; then
     echo "$LAST_COMMIT"
     OUTPUT_STRING=$(python -c "print(\"\"\"$LAST_COMMIT\"\"\".startswith('🚧'))")
     if [ $OUTPUT_STRING == 'True' ]; then
+        echo "Work in progress commit...skipping build"
         exit 0
     else
         cd client
