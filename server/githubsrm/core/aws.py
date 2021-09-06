@@ -46,36 +46,21 @@ class BotoService:
         client = boto3.client("sesv2", region_name="ap-south-1")
 
         try:
-            if send_all:
-                client.send_email(
-                    FromEmailAddress="GitHub Community SRM <community@githubsrm.tech>",
-                    Destination={
-                        "ToAddresses": data.get("email"),
-                    },
-                    ReplyToAddresses=[
-                        "community@githubsrm.tech",
-                    ],
-                    Content=get_email_content(role=role, data=data),
-                )
-            else:
-                client.send_email(
-                    FromEmailAddress="GitHub Community SRM <community@githubsrm.tech>",
-                    Destination={
-                        "ToAddresses": [
-                            data.get("email"),
-                        ],
-                    },
-                    ReplyToAddresses=[
-                        "community@githubsrm.tech",
-                    ],
-                    Content=get_email_content(role=role, data=data),
-                )
-
+            client.send_email(
+                FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
+                Destination={
+                    'ToAddresses': [data.get("email")],
+                },
+                ReplyToAddresses=[
+                    'community@githubsrm.tech',
+                ],
+                Content=get_email_content(role, data)
+            )
             return True
 
         except Exception as e:
             print("EMAIL FAILED", e)
-            return
+            return False
 
     def lambda_(self, func: str, payload: Dict) -> Dict:
         """[Lambda wrapper for AWS]
