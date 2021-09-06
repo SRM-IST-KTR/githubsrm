@@ -136,3 +136,15 @@ class ReCaptcha:
                 "error": "invalid recaptcha token"
             }, status=401)
         return self.view(request)
+
+class JsonResponseCheck:
+    def __init__(self,view) -> None:
+        self.view = view
+
+    def __call__(self, request, **kwargs) -> JsonResponse:
+        if request.method == 'POST' or request.method == "DELETE":
+            if request.META["CONTENT_TYPE"] != "application/json":
+                return JsonResponse(data={
+                    "error": "content type should be json"
+                }, status=415)
+        return self.view(request)
