@@ -3,17 +3,20 @@ import secrets
 from datetime import datetime
 from hashlib import sha256
 from typing import Any, Dict
+from threading import Thread
 
 import pymongo
 from django.conf import settings
 from dotenv import load_dotenv
 from pymongo import ReturnDocument
 
-from apis.aws import BotoService
+from core import service
+
 
 import hashlib, binascii, os
 
 service = BotoService()
+
 load_dotenv()
 
 
@@ -271,6 +274,11 @@ class AdminEntry:
                 project = {**project, **{"project_url": response["repo-link"]}}
                 return project
             else:
+                if response["success"] == False:
+                    Thread(target=service.sns, kwargs={"payload": {
+                        "message": "Lambda returned success false",
+                        "subject": "Lambda failed"
+                    }}).start()
                 return False
         return False
 
