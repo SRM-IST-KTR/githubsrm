@@ -17,6 +17,10 @@ from .utils import (
     beta_maintainer_support, get_token, project_pagination,
     project_single_project
 )
+from .models import (
+    hash_password,
+    check_hash
+)
 
 maintainer_entry = Entry()
 

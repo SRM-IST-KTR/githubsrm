@@ -15,6 +15,10 @@ from .utils import (
     RequestSetPassword, project_pagination,
     project_single_project
 )
+from .models import (
+    hash_password,
+    check_hash
+)
 
 
 db = entry.db

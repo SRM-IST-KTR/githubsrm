@@ -6,6 +6,8 @@ import pymongo
 from django.conf import settings
 from administrator import jwt_keys
 
+import hashlib, binascii, os
+
 from apis.aws import BotoService
 
 service = BotoService()
@@ -15,6 +17,62 @@ class Entry:
     def __init__(self) -> None:
         client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
         self.db = client[settings.DATABASE['db']]
+
+    def hash_password(self, pwd: str) -> str:
+        """Hashes password using salted password hashing (SHA512 & PBKDF_HMAC2)
+            Args:
+                pwd : Password to be hashed
+                
+            Returns:
+                str : Hashed password
+        """
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+        # print("SALT1: ", salt)
+        pwd_hash = hashlib.pbkdf2_hmac('sha512', pwd.encode('utf-8'), salt, 100000)
+        pwd_hash = binascii.hexlify(pwd_hash)
+        final_hashed_pwd = (salt + pwd_hash).decode('ascii')
+        # print("FINAL HASHED PWD:", final_hashed_pwd)
+        return final_hashed_pwd
+
+    #Might Not be needed in maintainer
+    def check_hash(self, email: str, pwd: str) -> bool:
+        """Verifies hashed password with stored hash & verifies maintainer before login
+
+            Args:
+                email : Email ID of maintainer
+                pwd : Password to be checked
+                
+            Returns:
+                bool
+        """
+        if value := self.db.maintainer_credentials.find_one(
+                {"email": email}
+        ):
+            dbpwd = value['password']
+            #print("DBPWD: ", dbpwd)
+
+            #PASSWORD HASH AND SALT STORED IN DATABASE
+            salt = dbpwd[:64]
+            #print("SALT2: ", salt)
+            dbpwd = dbpwd[64:]
+            #print("Stored password hash: ", dbpwd)
+            
+            #PASSWORD HASH FOR PASSWORD THAT USER HAS CURRENTLY ENTERED
+            pwd_hash = hashlib.pbkdf2_hmac('sha512', pwd.encode('utf-8'), salt.encode('ascii'), 100000)
+            pwd_hash = binascii.hexlify(pwd_hash).decode('ascii')
+            #print("pwd_hash: ", pwd_hash)
+            
+            if pwd_hash==dbpwd:
+                print("Hash Match")
+                return True
+            else:
+                print("Hash does NOT match")
+                return False
+
+        else:
+            print("User NOT in DB")
+            return False
+
 
     def _approve_contributor(self, contributor: Dict[str, str]):
         """Trigger lambda for contributor addition
