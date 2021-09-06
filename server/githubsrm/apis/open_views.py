@@ -5,14 +5,14 @@ from threading import Thread
 
 import psutil
 from bson import json_util
+from core import PostThrottle, service
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from rest_framework.views import APIView
 
-from apis import (PostThrottle, open_entry, open_entry_checks,
-                  service)
+from apis import open_entry, open_entry_checks
 
 from .definitions import *
-from django.shortcuts import redirect
 
 
 def catch_all(request, path=None):
@@ -61,12 +61,8 @@ class Contributor(APIView):
                 }).start()
 
                 return JsonResponse(data={}, status=201)
-            else:
-                return JsonResponse(data={}, status=500)
-        else:
-            return JsonResponse(data={
-                "error": "project not approved or project does not exist"
-            }, status=400)
+            return JsonResponse(data={}, status=500)
+        return JsonResponse(data={"error": "project not approved or project does not exist"}, status=400)
 
 
 class Maintainer(APIView):
@@ -122,23 +118,16 @@ class Maintainer(APIView):
                             'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
                         }}).start()
                         return JsonResponse(data={}, status=201)
-                    else:
-                        open_entry.beta_maintainer_reset_status(
-                            maintainer_id=id)
 
+                    open_entry.beta_maintainer_reset_status(
+                        maintainer_id=id)
                     return JsonResponse(data={}, status=500)
-
-            return JsonResponse(data={
-                "error": "Approved / Already Exists / Invalid"
-            }, status=400)
+            return JsonResponse(data={"error": "Approved / Already Exists / Invalid"}, status=400)
 
         elif open_entry_checks.check_existing(description=validate['description'],
                                               project_name=validate['project_name'],
                                               project_url=validate['project_url']):
-
-            return JsonResponse(data={
-                "error": "Project Exists"
-            }, status=409)
+            return JsonResponse(data={"error": "Project Exists"}, status=409)
 
         elif value := open_entry.enter_maintainer(validate):
             validate['project_id'] = value[0]
@@ -167,16 +156,11 @@ class Maintainer(APIView):
                     'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
                 }}).start()
                 return JsonResponse(data={}, status=201)
-            else:
-                open_entry.alpha_maintainer_reset_status(
-                    project_id=validate.get('project_id'),
-                    maintainer_id=value[1])
-            return JsonResponse({
-                "status": "deleted record"
-            }, status=500)
-        return JsonResponse({
-            "status": "error"
-        }, status=500)
+            open_entry.alpha_maintainer_reset_status(
+                project_id=validate.get('project_id'),
+                maintainer_id=value[1])
+            return JsonResponse({"status": "deleted record"}, status=500)
+        return JsonResponse({"status": "error"}, status=500)
 
     def get(self, request, **kwargs) -> JsonResponse:
         """Get all projects
@@ -248,9 +232,7 @@ class ContactUs(APIView):
             }}).start()
 
             return JsonResponse(data={}, status=201)
-        return JsonResponse(data={
-            "error": "entry exists"
-        }, status=400)
+        return JsonResponse(data={"error": "entry exists"}, status=400)
 
 
 class HealthCheck(APIView):

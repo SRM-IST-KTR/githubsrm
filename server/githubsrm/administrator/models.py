@@ -9,9 +9,8 @@ from django.conf import settings
 from dotenv import load_dotenv
 from pymongo import ReturnDocument
 
-from apis.aws import BotoService
+from core import service
 
-service = BotoService()
 load_dotenv()
 
 
