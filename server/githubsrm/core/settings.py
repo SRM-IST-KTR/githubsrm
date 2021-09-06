@@ -56,9 +56,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'administrator.middleware.ReCaptcha',
-    'administrator.middleware.Authorize',
-    'administrator.middleware.MeVerification'    
+    'core.middleware.ReCaptcha',
+    'core.middleware.Authorize',
+    'core.middleware.MeVerification'
 ]
 
 CORS_ALLOWED_ORIGINS = [

@@ -783,6 +783,7 @@ class TestClient(unittest.TestCase):
                 "Content-type": "application/json", "X-RECAPTCHA-TOKEN": "TestToken",
                 "Authorization": f"Bearer {admin_jwt}"
             }, params={"role": "project"})
+        print(response.json())
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(
