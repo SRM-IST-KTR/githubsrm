@@ -1,5 +1,6 @@
 import json
 import os
+from .errors import ExistingProjectError, NotApprovedError, MiscErrors
 import time
 from threading import Thread
 
@@ -21,9 +22,10 @@ def catch_all(request, path=None):
 
 
 class Contributor(APIView):
-    '''
+    """
     Contributors API Allows additon of contributors to the database
-    '''
+    """
+
     throttle_classes = [PostThrottle]
 
     def post(self, request, **kwargs) -> JsonResponse:
@@ -36,54 +38,74 @@ class Contributor(APIView):
             JsonResponse
         """
         validate = CommonSchema(
-            request.data, query_param=request.GET.get('role')).valid()
+            request.data, query_param=request.GET.get("role")
+        ).valid()
 
-        if 'error' in validate:
-            return JsonResponse(data={
-                "error": "Invalid data"
-            }, status=400)
+        if "error" in validate:
+            return JsonResponse(data={"error": "Invalid data"}, status=400)
 
-        if open_entry_checks.check_contributor(validate['interested_project'],
-                                               validate['reg_number'], validate["github_id"],
-                                               validate["srm_email"]):
-            return JsonResponse(data={
-                "invalid data": "Contributor for project exists / Project not approved"
-            }, status=400)
+        try:
+            open_entry_checks.check_contributor(
+                validate["interested_project"],
+                validate["reg_number"],
+                validate["github_id"],
+                validate["srm_email"],
+            )
+        except Exception as e:
+            return JsonResponse(
+                data={"invalid data": str(e)},
+                status=400,
+            )
 
         if doc := open_entry.enter_contributor(validate):
-            if service.wrapper_email(role='contributor_received', data={"contribution": validate["poa"],
-                                                                        "project_name": doc["project_name"], "name": doc["name"], "email": doc["email"]}):
+            if service.wrapper_email(
+                role="contributor_received",
+                data={
+                    "contribution": validate["poa"],
+                    "project_name": doc["project_name"],
+                    "name": doc["name"],
+                    "email": doc["email"],
+                },
+            ):
 
-                Thread(target=service.sns, kwargs={
-                    "payload": {
-                        "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
-                        "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied"
-                    }
-                }).start()
+                Thread(
+                    target=service.sns,
+                    kwargs={
+                        "payload": {
+                            "message": f"A new contributor has applied for this project -> {doc.get('interested_project')}",
+                            "subject": "[CONTRIBUTOR-ENTRY] New Contributor Applied",
+                        }
+                    },
+                ).start()
 
                 return JsonResponse(data={}, status=201)
             return JsonResponse(data={}, status=500)
-        return JsonResponse(data={"error": "project not approved or project does not exist"}, status=400)
+        return JsonResponse(
+            data={"error": "project not approved or project does not exist"}, status=400
+        )
 
 
 class Maintainer(APIView):
-    '''
+    """
     Maintainer API to Allow addition of maintainers to the database
-    '''
+    """
+
     throttle_classes = [PostThrottle]
 
     @staticmethod
     def _trigger_sns(validate):
-        service.sns(payload={
-            'message': f'Porting new project {validate.get("project_id")}\n \
+        service.sns(
+            payload={
+                "message": f'Porting new project {validate.get("project_id")}\n \
                                     Details: \n \
                                     Name: {validate.get("name")} \n \
                                     Email Personal: {validate.get("email")} \n \
                                     Project Details: \n \
                                     Name: {validate.get("project_name")} \n \
                                     Description: {validate.get("description")}',
-            'subject': '[PROJECT-PORT]: https://githubsrm.tech'
-        })
+                "subject": "[PROJECT-PORT]: https://githubsrm.tech",
+            }
+        )
 
     def post(self, request, **kwargs) -> JsonResponse:
         """Accept Maintainers
@@ -95,71 +117,89 @@ class Maintainer(APIView):
             Response
         """
         validate = CommonSchema(
-            request.data, query_param=request.GET.get('role')).valid()
-        if 'error' in validate:
-            return JsonResponse(data={
-                "error": validate.get('error')
-            }, status=400)
+            request.data, query_param=request.GET.get("role")
+        ).valid()
+        if "error" in validate:
+            return JsonResponse(data={"error": validate.get("error")}, status=400)
 
-        if 'project_id' in validate:
+        if "project_id" in validate:
             if details := open_entry_checks.validate_beta_maintainer(doc=validate):
 
                 if id := open_entry.enter_beta_maintainer(doc=request.data):
 
-                    if service.wrapper_email(role='maintainer_received', data={
-                        "name": validate["name"],
-                        "project_name": details["project_name"],
-                        "email": validate["email"]
-                    }):
-                        Thread(target=service.sns, kwargs={'payload': {
-                            'message': f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
+                    if service.wrapper_email(
+                        role="maintainer_received",
+                        data={
+                            "name": validate["name"],
+                            "project_name": details["project_name"],
+                            "email": validate["email"],
+                        },
+                    ):
+                        Thread(
+                            target=service.sns,
+                            kwargs={
+                                "payload": {
+                                    "message": f'New Beta Maintainer for Project ID {validate.get("project_id")}\n \
                                 Details: \n \
                                 Name: {validate.get("name")} \n \
                                 Email Personal: {validate.get("email")}',
-                            'subject': '[BETA-MAINTAINER]: https://githubsrm.tech'
-                        }}).start()
+                                    "subject": "[BETA-MAINTAINER]: https://githubsrm.tech",
+                                }
+                            },
+                        ).start()
                         return JsonResponse(data={}, status=201)
 
-                    open_entry.beta_maintainer_reset_status(
-                        maintainer_id=id)
+                    open_entry.beta_maintainer_reset_status(maintainer_id=id)
                     return JsonResponse(data={}, status=500)
-            return JsonResponse(data={"error": "Approved / Already Exists / Invalid"}, status=400)
+            return JsonResponse(
+                data={"error": "Approved / Already Exists / Invalid"}, status=400
+            )
 
-        elif open_entry_checks.check_existing(description=validate['description'],
-                                              project_name=validate['project_name'],
-                                              project_url=validate['project_url']):
-            return JsonResponse(data={"error": "Project Exists"}, status=409)
+        try:
+            open_entry_checks.check_existing_project(
+                description=validate["description"],
+                project_name=validate["project_name"],
+                project_url=validate["project_url"],
+            )
+        except ExistingProjectError as e:
+            return JsonResponse(data={"error": str(e)}, status=409)
 
-        elif value := open_entry.enter_maintainer(validate):
-            validate['project_id'] = value[0]
-            validate['project_name'] = value[2]
-            validate['description'] = value[3]
+        if value := open_entry.enter_maintainer(validate):
+            validate["project_id"] = value[0]
+            validate["project_name"] = value[2]
+            validate["description"] = value[3]
 
-            if validate.get('project_url'):
-                Thread(target=self._trigger_sns, kwargs={
-                       'validate': validate}).start()
+            if validate.get("project_url"):
+                Thread(target=self._trigger_sns, kwargs={"validate": validate}).start()
 
-            if service.wrapper_email(role='project_submission_confirmation', data={
-                "project_name": validate["project_name"],
-                "name": validate["name"],
-                "project_description": validate["description"],
-                "email": validate["email"]
-
-            }):
-                Thread(target=service.sns, kwargs={'payload': {
-                    'message': f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
+            if service.wrapper_email(
+                role="project_submission_confirmation",
+                data={
+                    "project_name": validate["project_name"],
+                    "name": validate["name"],
+                    "project_description": validate["description"],
+                    "email": validate["email"],
+                },
+            ):
+                Thread(
+                    target=service.sns,
+                    kwargs={
+                        "payload": {
+                            "message": f'New Alpha Maintainer for Project ID {validate.get("project_id")}\n \
                                 Details: \n \
                                 Name: {validate.get("name")} \n \
                                 Email Personal: {validate.get("email")} \n \
                                 Project Details: \n \
                                 Name: {validate.get("project_name")} \n \
                                 Description: {validate.get("description")}',
-                    'subject': '[ALPHA-MAINTAINER]: https://githubsrm.tech'
-                }}).start()
+                            "subject": "[ALPHA-MAINTAINER]: https://githubsrm.tech",
+                        }
+                    },
+                ).start()
                 return JsonResponse(data={}, status=201)
             open_entry.alpha_maintainer_reset_status(
-                project_id=validate.get('project_id'),
-                maintainer_id=value[1])
+                project_id=validate.get("project_id"), maintainer_id=value[1]
+            )
             return JsonResponse({"status": "deleted record"}, status=500)
         return JsonResponse({"status": "error"}, status=500)
 
@@ -182,6 +222,7 @@ class Team(APIView):
     Args:
         APIView
     """
+
     throttle_classes = [PostThrottle]
 
     def get(self, request, **kwargs) -> JsonResponse:
@@ -217,20 +258,23 @@ class ContactUs(APIView):
         """
 
         validate = ContactUsSchema(data=request.data).valid()
-        if 'error' in validate:
-            return JsonResponse(data={
-                "error": validate.get('error')
-            }, status=400)
+        if "error" in validate:
+            return JsonResponse(data={"error": validate.get("error")}, status=400)
 
         result = open_entry.enter_contact_us(doc=request.data)
         if result:
-            Thread(target=service.sns, kwargs={'payload': {
-                'message': f'New Query Received! \n Name:{validate.get("name")} \n \
+            Thread(
+                target=service.sns,
+                kwargs={
+                    "payload": {
+                        "message": f'New Query Received! \n Name:{validate.get("name")} \n \
                     Email: {validate.get("email")} \n \
                     Message: {validate.get("message")} \n \
                     Phone Number: {validate.get("phone_number")}',
-                'subject': '[QUERY]: https://githubsrm.tech'
-            }}).start()
+                        "subject": "[QUERY]: https://githubsrm.tech",
+                    }
+                },
+            ).start()
 
             return JsonResponse(data={}, status=201)
         return JsonResponse(data={"error": "entry exists"}, status=400)
@@ -253,8 +297,6 @@ class HealthCheck(APIView):
         """
 
         uptime = time.time() - psutil.Process(os.getpid()).create_time()
-        return JsonResponse({
-            "uptime": uptime,
-            "status": "OK",
-            "timeStamp": time.time()
-        }, status=200)
+        return JsonResponse(
+            {"uptime": uptime, "status": "OK", "timeStamp": time.time()}, status=200
+        )
