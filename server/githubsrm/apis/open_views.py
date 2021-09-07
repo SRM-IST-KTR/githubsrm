@@ -5,7 +5,8 @@ from threading import Thread
 
 import psutil
 from bson import json_util
-from core import PostThrottle, service
+from core import service
+from core.settings import PostThrottle
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from rest_framework.views import APIView

@@ -58,7 +58,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.ReCaptcha',
     'core.middleware.Authorize',
-    'core.middleware.MeVerification'
+    'core.middleware.MeVerification',
+    'core.middleware.JsonResponseCheck'
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -118,6 +119,7 @@ else:
         )
     }
 
+from .throttle import PostThrottle
 
 AUTH_PASSWORD_VALIDATORS = [
     {
