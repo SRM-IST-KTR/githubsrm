@@ -14,16 +14,18 @@ class Authorize:
         Initialize requirements
         """
 
-        self.protected = ['/admin/projects',
-                          '/admin/projects/accepted',
-                          '/maintainer/projects']
+        self.protected = [
+            "/admin/projects",
+            "/admin/projects/accepted",
+            "/maintainer/projects",
+        ]
         self.view = view
 
     def __call__(self, request) -> JsonResponse:
         """Middleware to check valid protection
 
         Args:
-            request 
+            request
 
         Returns:
             response.Response
@@ -32,21 +34,19 @@ class Authorize:
             if value := get_token(request_header=request.headers):
                 token_type, token = value
                 try:
-                    assert token_type == 'Bearer'
+                    assert token_type == "Bearer"
                 except AssertionError as e:
-                    return JsonResponse(data={
-                        "error": "invalid token type"
-                    }, status=401)
-                if decoded := jwt_keys.verify_key(key=token) and jwt_keys.verify_role(key=token, path=request.path):
+                    return JsonResponse(
+                        data={"error": "invalid token type"}, status=401
+                    )
+                if decoded := jwt_keys.verify_key(key=token) and jwt_keys.verify_role(
+                    key=token, path=request.path
+                ):
                     request.decoded = decoded
                     return self.view(request)
-                return JsonResponse(data={
-                    "error": "invalid key"
-                }, status=401)
+                return JsonResponse(data={"error": "invalid key"}, status=401)
 
-            return JsonResponse(data={
-                "error": "token error"
-            }, status=401)
+            return JsonResponse(data={"error": "token error"}, status=401)
 
         return self.view(request)
 
@@ -54,9 +54,12 @@ class Authorize:
 class MeVerification:
     def __init__(self, view):
         self.view = view
-        self.protected = ['/admin/projects',
-                          '/admin/projects/accepted',
-                          '/maintainer/projects', "/me"]
+        self.protected = [
+            "/admin/projects",
+            "/admin/projects/accepted",
+            "/maintainer/projects",
+            "/me",
+        ]
 
     def __call__(self, request, **kwargs) -> JsonResponse:
         """Me verification
@@ -74,13 +77,9 @@ class MeVerification:
                     token_type, token = token
                     assert token_type == "Bearer"
                 else:
-                    return JsonResponse(data={
-                        "error": "No token provided"
-                    }, status=401)
+                    return JsonResponse(data={"error": "No token provided"}, status=401)
             except AssertionError as e:
-                return JsonResponse(data={
-                    "error": "Invalid token type"
-                }, status=401)
+                return JsonResponse(data={"error": "Invalid token type"}, status=401)
 
             decoded = jwt_keys.verify_key(key=token)
             if decoded:
@@ -91,20 +90,16 @@ class MeVerification:
                 else:
                     email = decoded.get("email")
                     project_ids = decoded.get("project_id")
-                    total_items = maintainer_entry.maintainer.count_documents({
-                        "email": email, "is_admin_approved": True
-                    })
+                    total_items = maintainer_entry.maintainer.count_documents(
+                        {"email": email, "is_admin_approved": True}
+                    )
 
                 if len(project_ids) != total_items:
-                    return JsonResponse(data={
-                        "error": "Key expired"
-                    }, status=401)
+                    return JsonResponse(data={"error": "Key expired"}, status=401)
                 request.project_ids = project_ids
                 request.total_items = total_items
                 return self.view(request)
-            return JsonResponse(data={
-                "error": "Invalid Key"
-            }, status=401)
+            return JsonResponse(data={"error": "Invalid Key"}, status=401)
         return self.view(request)
 
 
@@ -121,30 +116,29 @@ class ReCaptcha:
         Returns:
             JsonResponse
         """
-        if request.method == 'POST' or request.method == "DELETE":
+        if request.method == "POST" or request.method == "DELETE":
             try:
                 recaptcha = request.META["HTTP_X_RECAPTCHA_TOKEN"]
             except KeyError as e:
-                return JsonResponse(data={
-                    "error": "recaptcha token not provided"
-                }, status=401)
+                return JsonResponse(
+                    data={"error": "recaptcha token not provided"}, status=401
+                )
 
             if check_token(recaptcha):
                 return self.view(request)
 
-            return JsonResponse(data={
-                "error": "invalid recaptcha token"
-            }, status=401)
+            return JsonResponse(data={"error": "invalid recaptcha token"}, status=401)
         return self.view(request)
 
+
 class JsonResponseCheck:
-    def __init__(self,view) -> None:
+    def __init__(self, view) -> None:
         self.view = view
 
     def __call__(self, request, **kwargs) -> JsonResponse:
-        if request.method == 'POST' or request.method == "DELETE":
+        if request.method == "POST" or request.method == "DELETE":
             if request.META["CONTENT_TYPE"] != "application/json":
-                return JsonResponse(data={
-                    "error": "content type should be json"
-                }, status=415)
+                return JsonResponse(
+                    data={"error": "content type should be json"}, status=415
+                )
         return self.view(request)
