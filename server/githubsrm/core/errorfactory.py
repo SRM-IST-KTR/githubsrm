@@ -20,3 +20,15 @@ class AuthenticationErrors(Exception):
 
 class AdminErrors(Exception):
     ...
+
+
+class ContributorApprovedError(ContributorErrors):
+    ...
+
+
+class ContributorNotFoundError(ContributorErrors):
+    ...
+
+
+class MaintainerNotFoundError(MaintainerErrors):
+    ...

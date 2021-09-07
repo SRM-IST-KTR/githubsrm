@@ -1,9 +1,11 @@
 from core.errorfactory import (
     AuthenticationErrors,
     AdminErrors,
-    ContributorErrors,
     MaintainerErrors,
     ProjectErrors,
+    ContributorApprovedError,
+    ContributorNotFoundError,
+    MaintainerNotFoundError,
 )
 
 
@@ -19,23 +21,11 @@ class InvalidAdminCredentialsError(AdminErrors):
     ...
 
 
-class MaintainerNotFoundError(MaintainerErrors):
-    ...
-
-
 class MaintainerApprovedError(MaintainerErrors):
     ...
 
 
 class ProjectNotFoundError(ProjectErrors):
-    ...
-
-
-class ContributorNotFoundError(ContributorErrors):
-    ...
-
-
-class ContributorApprovedError(ContributorErrors):
     ...
 
 

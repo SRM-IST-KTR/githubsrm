@@ -13,6 +13,7 @@ from maintainer import entry
 
 from . import entry
 from .definitions import MaintainerSchema, RejectionSchema
+from core.errorfactory import ContributorErrors
 from .utils import RequestSetPassword, project_pagination, project_single_project
 
 db = entry.db
@@ -37,9 +38,10 @@ class Projects(APIView):
         if "error" in validate:
             return JsonResponse(data=validate, status=400)
 
-        if doc := entry.approve_contributor(
-            validate.get("project_id"), validate.get("contributor_id")
-        ):
+        try:
+            doc = entry.approve_contributor(
+                validate.get("project_id"), validate.get("contributor_id")
+            )
             service.wrapper_email(
                 role="contributor_approval",
                 data={
@@ -51,10 +53,8 @@ class Projects(APIView):
             )
 
             return JsonResponse(data={"approved contributor": True}, status=200)
-
-        return JsonResponse(
-            data={"error": "invalid ids or contributor already approved"}, status=400
-        )
+        except ContributorErrors as e:
+            return JsonResponse(data={"error": str(e)}, status=400)
 
     @staticmethod
     def _remove_contributor(request) -> JsonResponse:
@@ -66,11 +66,10 @@ class Projects(APIView):
         Returns:
             JsonResponse
         """
-        contributor = entry.find_contributor_for_removal(
-            request.data.get("contributor_id"), request.decoded.get("project_id")
-        )
-
-        if contributor:
+        try:
+            contributor = entry.find_contributor_for_removal(
+                request.data.get("contributor_id"), request.decoded.get("project_id")
+            )
             Thread(
                 target=service.sns,
                 kwargs={
@@ -96,8 +95,8 @@ class Projects(APIView):
             return JsonResponse(
                 data={"removed": request.data.get("contributor_id")}, status=200
             )
-
-        return JsonResponse(data={"error": "Invalid request"}, status=400)
+        except Exception as e:
+            return JsonResponse(data={"error": str(e)}, status=400)
 
     def delete(self, request, **kwargs) -> JsonResponse:
         """Remove contributors
@@ -231,8 +230,10 @@ class SetPassword(APIView):
         if not jwt_keys.verify_key(key=token):
             return JsonResponse(data={"error": "Invalid jwt"}, status=400)
 
-        if not entry.set_password(key=token, password=password):
-            return JsonResponse(data={"error": "Already changed"}, status=400)
+        try:
+            entry.set_password(key=token, password=password)
+        except Exception as e:
+            return JsonResponse(data={"error": str(e)}, status=400)
 
         return JsonResponse(data={}, status=200)
 

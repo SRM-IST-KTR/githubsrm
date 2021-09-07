@@ -1,4 +1,11 @@
 from hashlib import sha256
+from .errors import (
+    ContributorNotFoundError,
+    ContributorApprovedError,
+    ProjectErrors,
+    MaintainerNotFoundError,
+    AuthenticationErrors,
+)
 from threading import Thread
 from typing import Iterable, Dict, Any
 import pymongo
@@ -61,7 +68,7 @@ class Entry:
             if contributor.get("is_maintainer_approved") and contributor.get(
                 "is_admin_approved"
             ):
-                return False
+                raise ContributorApprovedError("Contributor approved")
             Thread(
                 target=self._approve_contributor, kwargs={"contributor": contributor}
             ).start()
@@ -70,8 +77,7 @@ class Entry:
                 update={"$addToSet": {"contributor_id": contributor_id}},
             )
             return {**project_doc, **contributor}
-
-        return False
+        raise ContributorNotFoundError("No contributor found")
 
     def find_Maintainer_credentials_with_email(self, email: str) -> Dict[str, Any]:
         """To find maintainer with email
@@ -118,25 +124,24 @@ class Entry:
         Returns:
             Dict[str, Any]
         """
-        if len(project_ids):
-            contributor = self.db.contributor.find_one_and_delete(
-                {
-                    "_id": identifier,
-                    "is_admin_approved": True,
-                    "is_maintainer_approved": False,
-                    "interested_project": {"$in": project_ids},
-                }
-            )
-            project_name = self.db.project.find_one(
-                {"_id": contributor["interested_project"]}
-            )["project_name"]
+        if not len(project_ids):
+            raise ProjectErrors("Projects not found")
+        contributor = self.db.contributor.find_one_and_delete(
+            {
+                "_id": identifier,
+                "is_admin_approved": True,
+                "is_maintainer_approved": False,
+                "interested_project": {"$in": project_ids},
+            }
+        )
+        project_name = self.db.project.find_one(
+            {"_id": contributor["interested_project"]}
+        )["project_name"]
 
-            if contributor:
-                contributor["project_name"] = project_name
-                return contributor
-
-        else:
-            return False
+        if contributor:
+            contributor["project_name"] = project_name
+            return contributor
+        raise ContributorNotFoundError("Contributor not found")
 
     def remove_contributor(self, identifier: str) -> bool:
         """Remove contributor
@@ -162,24 +167,25 @@ class Entry:
         """
 
         decode = jwt_keys.verify_key(key=key)
-        if decode:
-            if "email" not in decode:
-                return False
+        if not decode:
+            raise AuthenticationErrors("Not allowed to reset")
 
-            maintainer = self.db.maintainer_credentials.find_one_and_update(
-                {"$and": [{"email": decode.get("email")}, {"reset": True}]},
-                update={
-                    "$set": {
-                        "password": sha256(password.encode()).hexdigest(),
-                        "reset": False,
-                    }
-                },
-            )
+        if "email" not in decode:
+            raise AuthenticationErrors("Email not found invalid JWT")
 
-            if maintainer:
-                return True
-            return False
-        return False
+        maintainer = self.db.maintainer_credentials.find_one_and_update(
+            {"$and": [{"email": decode.get("email")}, {"reset": True}]},
+            update={
+                "$set": {
+                    "password": sha256(password.encode()).hexdigest(),
+                    "reset": False,
+                }
+            },
+        )
+
+        if maintainer:
+            return True
+        raise MaintainerNotFoundError("No maintainer found/not allowed to reset")
 
     def projects_from_email(self, email: str) -> list:
         """Get all projects from email

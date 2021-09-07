@@ -12,9 +12,9 @@ from pymongo import ReturnDocument
 
 from core import service
 from .errors import (
-    ContributorApprovedError,
-    ContributorNotFoundError,
     InvalidAdminCredentialsError,
+    ContributorNotFoundError,
+    ContributorApprovedError,
     InvalidWebhookError,
     ExistingAdminError,
     MaintainerApprovedError,
