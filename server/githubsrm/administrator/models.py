@@ -1,4 +1,3 @@
-
 import secrets
 from datetime import datetime
 from hashlib import sha256
@@ -21,8 +20,8 @@ class AdminEntry:
         Connect to mongodb
         """
 
-        client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
-        self.db = client[settings.DATABASE['db']]
+        client = pymongo.MongoClient(settings.DATABASE["mongo_uri"])
+        self.db = client[settings.DATABASE["db"]]
 
     def check_webHook(self, token: str):
         """Checks for available webHook Token
@@ -46,10 +45,10 @@ class AdminEntry:
             bool
 
         """
-        if self.db.admins.find_one({"email": doc.get('email')}):
+        if self.db.admins.find_one({"email": doc.get("email")}):
             return False
         try:
-            password = doc.pop('password')
+            password = doc.pop("password")
             hash_password = sha256(password.encode()).hexdigest()
 
             doc = {**doc, **{"password": hash_password}}
@@ -68,40 +67,45 @@ class AdminEntry:
             bool
         """
         hash_password = sha256(password.encode()).hexdigest()
-        if value := self.db.admins.find_one({
-            "$and": [
-                {"password": hash_password},
-                {"email": email}
-            ]
-        }):
+        if value := self.db.admins.find_one(
+            {"$and": [{"password": hash_password}, {"email": email}]}
+        ):
             return value
         return False
 
-    def find_maintainer_for_approval(self, maintainer_id: str, project_id: str,
-                                     maintainer_email: str) -> bool:
+    def find_maintainer_for_approval(
+        self, maintainer_id: str, project_id: str, maintainer_email: str
+    ) -> bool:
         """find and approve maintainer
 
         Args:
             maintainer_id (str): maintainer identifier
             project_id (str): project identifier
-            maintainer_email (str): maintainer_email 
+            maintainer_email (str): maintainer_email
 
         Returns:
             bool
         """
 
         maintainer = self.db.maintainer.find_one_and_update(
-            {"_id": maintainer_id, "project_id": project_id,
-                "email": maintainer_email},
+            {"_id": maintainer_id, "project_id": project_id, "email": maintainer_email},
             update={
-                "$set": {"is_admin_approved": True, "time_stamp": str(datetime.strftime(datetime.now(), format="%Y-%m-%d"))}
-            }, return_document=ReturnDocument.BEFORE)
+                "$set": {
+                    "is_admin_approved": True,
+                    "time_stamp": str(
+                        datetime.strftime(datetime.now(), format="%Y-%m-%d")
+                    ),
+                }
+            },
+            return_document=ReturnDocument.BEFORE,
+        )
 
         if maintainer:
-            if maintainer.get('is_admin_approved'):
+            if maintainer.get("is_admin_approved"):
                 return False
-            project = self._update_project(project_id=project_id,
-                                           maintainer_id=maintainer_id)
+            project = self._update_project(
+                project_id=project_id, maintainer_id=maintainer_id
+            )
             return project, maintainer
         return False
 
@@ -116,11 +120,11 @@ class AdminEntry:
             bool
         """
 
-        project = self.db.project.find_one_and_update({"_id": project_id}, update={
-            "$addToSet": {
-                "maintainer_id": maintainer_id
-            }
-        }, return_document=ReturnDocument.AFTER)
+        project = self.db.project.find_one_and_update(
+            {"_id": project_id},
+            update={"$addToSet": {"maintainer_id": maintainer_id}},
+            return_document=ReturnDocument.AFTER,
+        )
 
         return project
 
@@ -135,9 +139,7 @@ class AdminEntry:
             bool: [description]
         """
 
-        credentials = self.db.maintainer_credentials.find_one({
-            "email": email
-        })
+        credentials = self.db.maintainer_credentials.find_one({"email": email})
 
         if credentials:
             return credentials.get("password")
@@ -156,9 +158,7 @@ class AdminEntry:
         """
         password = str(secrets.token_hex(length))
 
-        doc = {"email": email,
-               "password": password,
-               "reset": True}
+        doc = {"email": email, "password": password, "reset": True}
 
         self.db.maintainer_credentials.insert_one(document=doc)
 
@@ -171,7 +171,9 @@ class AdminEntry:
             maintainer_ids (list): maintainer id list
         """
         val = []
-        if maintainers := list(self.db.maintainer.find(filter={"_id": {"$in": maintainer_ids}})):
+        if maintainers := list(
+            self.db.maintainer.find(filter={"_id": {"$in": maintainer_ids}})
+        ):
             for maintainer in maintainers:
                 val.append(maintainer["github_id"])
             return val
@@ -191,11 +193,16 @@ class AdminEntry:
         project_doc = self.db.project.find_one(filter={"_id": identifier})
         if project_doc:
             maintainer_github_id = self.get_maintainer_github_id(
-                project_doc["maintainer_id"])
-            submission = {**{"project-name": project_doc["project_name"]}, **{"project-description": project_doc["description"]},
-                          **{"year": year}, **{"private": project_doc["private"]}, **{"maintainers": maintainer_github_id}}
-            response = service.lambda_(
-                func="githubcommunitysrm-v1", payload=submission)
+                project_doc["maintainer_id"]
+            )
+            submission = {
+                **{"project-name": project_doc["project_name"]},
+                **{"project-description": project_doc["description"]},
+                **{"year": year},
+                **{"private": project_doc["private"]},
+                **{"maintainers": maintainer_github_id},
+            }
+            response = service.lambda_(func="githubcommunitysrm-v1", payload=submission)
 
             if response["success"] and project_doc["is_admin_approved"] == False:
                 project = self.db.project.find_one_and_update(
@@ -206,17 +213,24 @@ class AdminEntry:
                             "year": year,
                             "team_slug": response["team-slug"],
                             "private": response["private"],
-                            "project_url": response["repo-link"]
+                            "project_url": response["repo-link"],
                         }
-                    }, return_document=ReturnDocument.BEFORE)
+                    },
+                    return_document=ReturnDocument.BEFORE,
+                )
                 project = {**project, **{"project_url": response["repo-link"]}}
                 return project
             else:
                 if response["success"] == False:
-                    Thread(target=service.sns, kwargs={"payload": {
-                        "message": "Lambda returned success false",
-                        "subject": "Lambda failed"
-                    }}).start()
+                    Thread(
+                        target=service.sns,
+                        kwargs={
+                            "payload": {
+                                "message": "Lambda returned success false",
+                                "subject": "Lambda failed",
+                            }
+                        },
+                    ).start()
                 return False
         return False
 
@@ -232,9 +246,8 @@ class AdminEntry:
         """
         contributor = self.db.contributor.find_one_and_update(
             {"_id": contributor_id, "interested_project": project_id},
-            update={
-                "$set": {"is_admin_approved": True}
-            }, return_document=ReturnDocument.BEFORE
+            update={"$set": {"is_admin_approved": True}},
+            return_document=ReturnDocument.BEFORE,
         )
         if contributor:
             # Already approved
@@ -242,7 +255,8 @@ class AdminEntry:
                 return False
 
             project = self.db.project.find_one(
-                {"_id": contributor["interested_project"]})
+                {"_id": contributor["interested_project"]}
+            )
             return contributor, project
 
         return False
@@ -256,19 +270,13 @@ class AdminEntry:
         Returns:
             bool
         """
-        self.db.maintainer.find_one_and_update({
-            "_id": identifier
-        }, update={
-            "$set": {"is_admin_approved": False}
-        })
+        self.db.maintainer.find_one_and_update(
+            {"_id": identifier}, update={"$set": {"is_admin_approved": False}}
+        )
 
-        self.db.project.find_one_and_update({
-            "_id": project_id
-        }, update={
-            "$pull": {
-                "maintainer_id": identifier
-            }
-        })
+        self.db.project.find_one_and_update(
+            {"_id": project_id}, update={"$pull": {"maintainer_id": identifier}}
+        )
 
         return True
 
@@ -282,16 +290,18 @@ class AdminEntry:
             bool
         """
 
-        project = self.db.project.find_one_and_update({
-            "_id": project["_id"]
-        }, update={
-            "$set": {
-                "is_admin_approved": False,
-                "project_url": "",
-                "team_slug": "",
-                "year": ""
-            }
-        }, return_document=ReturnDocument.BEFORE)
+        project = self.db.project.find_one_and_update(
+            {"_id": project["_id"]},
+            update={
+                "$set": {
+                    "is_admin_approved": False,
+                    "project_url": "",
+                    "team_slug": "",
+                    "year": "",
+                }
+            },
+            return_document=ReturnDocument.BEFORE,
+        )
 
         if project:
             return True
@@ -308,11 +318,9 @@ class AdminEntry:
             bool
         """
 
-        self.db.contributor.find_one_and_update({
-            "_id": contributor["_id"]
-        }, update={
-            "$set": {"is_admin_approved": False}
-        })
+        self.db.contributor.find_one_and_update(
+            {"_id": contributor["_id"]}, update={"$set": {"is_admin_approved": False}}
+        )
 
         return True
 
@@ -326,23 +334,20 @@ class AdminEntry:
             bool:
         """
 
-        maintainer = self.db.maintainer.find_one_and_delete({
-            "_id": identifier,
-            "is_admin_approved": False
-        })
+        maintainer = self.db.maintainer.find_one_and_delete(
+            {"_id": identifier, "is_admin_approved": False}
+        )
 
         if not maintainer:
             return False
 
         project_id = maintainer["project_id"]
 
-        project_name = self.db.project.find_one(
-            {"_id": project_id})["project_name"]
+        project_name = self.db.project.find_one({"_id": project_id})["project_name"]
 
-        project = self.db.project.find_one_and_delete({
-            "_id": project_id,
-            "maintainer_id": {"$exists": False}
-        })
+        project = self.db.project.find_one_and_delete(
+            {"_id": project_id, "maintainer_id": {"$exists": False}}
+        )
 
         maintainer["project_name"] = project_name
 
@@ -361,15 +366,18 @@ class AdminEntry:
             str: Removal status
         """
 
-        contributor = self.db.contributor.find_one_and_delete({
-            "_id": identifier,
-            "is_maintainer_approved": False,
-            "is_admin_approved": False
-        })
+        contributor = self.db.contributor.find_one_and_delete(
+            {
+                "_id": identifier,
+                "is_maintainer_approved": False,
+                "is_admin_approved": False,
+            }
+        )
 
         if contributor:
             project_name = self.db.project.find_one(
-                {"_id": contributor["interested_project"]})["project_name"]
+                {"_id": contributor["interested_project"]}
+            )["project_name"]
             contributor["project_name"] = project_name
             return contributor
         else:
@@ -386,9 +394,9 @@ class AdminEntry:
         """
         try:
             maintainer_ids = project["maintainer_id"]
-            maintainers = list(self.db.maintainer.find({
-                "_id": {"$in": maintainer_ids}
-            }))
+            maintainers = list(
+                self.db.maintainer.find({"_id": {"$in": maintainer_ids}})
+            )
 
         except Exception as e:
             return

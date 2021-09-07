@@ -20,7 +20,7 @@ class AuthAdminPerms(BasePermission):
             if value := get_token(request_header=request.headers):
                 token_type, token = value
 
-                assert token_type == 'Bearer'
+                assert token_type == "Bearer"
                 return entry.check_webHook(token)
             return False
         except Exception as e:
