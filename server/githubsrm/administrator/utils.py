@@ -2,7 +2,8 @@ from math import ceil
 from threading import Thread
 from typing import Dict
 
-from apis import open_entry, service
+from apis import open_entry
+from core import service
 from django.http import response
 from rest_framework import status
 

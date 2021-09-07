@@ -1,6 +1,6 @@
 from administrator import jwt_keys
 from django.http.response import JsonResponse
-from .utils import get_token
+from administrator.utils import get_token
 from apis.utils import check_token
 from maintainer.models import Entry
 
@@ -40,18 +40,15 @@ class Authorize:
                 if decoded := jwt_keys.verify_key(key=token) and jwt_keys.verify_role(key=token, path=request.path):
                     request.decoded = decoded
                     return self.view(request)
-
-                else:
-                    return JsonResponse(data={
-                        "error": "invalid key"
-                    }, status=401)
-            else:
                 return JsonResponse(data={
-                    "error": "token error"
+                    "error": "invalid key"
                 }, status=401)
 
-        else:
-            return self.view(request)
+            return JsonResponse(data={
+                "error": "token error"
+            }, status=401)
+
+        return self.view(request)
 
 
 class MeVerification:
@@ -102,16 +99,13 @@ class MeVerification:
                     return JsonResponse(data={
                         "error": "Key expired"
                     }, status=401)
-                else:
-                    request.project_ids = project_ids
-                    request.total_items = total_items
-                    return self.view(request)
-            else:
-                return JsonResponse(data={
-                    "error": "Invalid Key"
-                }, status=401)
-        else:
-            return self.view(request)
+                request.project_ids = project_ids
+                request.total_items = total_items
+                return self.view(request)
+            return JsonResponse(data={
+                "error": "Invalid Key"
+            }, status=401)
+        return self.view(request)
 
 
 class ReCaptcha:
@@ -138,9 +132,19 @@ class ReCaptcha:
             if check_token(recaptcha):
                 return self.view(request)
 
-            else:
+            return JsonResponse(data={
+                "error": "invalid recaptcha token"
+            }, status=401)
+        return self.view(request)
+
+class JsonResponseCheck:
+    def __init__(self,view) -> None:
+        self.view = view
+
+    def __call__(self, request, **kwargs) -> JsonResponse:
+        if request.method == 'POST' or request.method == "DELETE":
+            if request.META["CONTENT_TYPE"] != "application/json":
                 return JsonResponse(data={
-                    "error": "invalid recaptcha token"
-                }, status=401)
-        else:
-            return self.view(request)
+                    "error": "content type should be json"
+                }, status=415)
+        return self.view(request)

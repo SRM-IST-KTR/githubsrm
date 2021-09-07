@@ -1,14 +1,15 @@
 from hashlib import sha256
 from threading import Thread
 
-from apis import PostThrottle, service
+from administrator import jwt_keys
+from administrator.utils import get_token
+from core import PostThrottle, service
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
 
 from maintainer import entry
-from administrator import jwt_keys
-from administrator.utils import get_token
+
 from . import entry
 from .definitions import MaintainerSchema, RejectionSchema
 from .utils import (
@@ -19,6 +20,9 @@ from .models import (
     hash_password,
     check_hash
 )
+
+from .utils import (RequestSetPassword, project_pagination,
+                    project_single_project)
 
 
 db = entry.db
@@ -93,10 +97,9 @@ class Projects(APIView):
                 "removed": request.data.get("contributor_id")
             }, status=200)
 
-        else:
-            return JsonResponse(data={
-                "error": "Invalid request"
-            }, status=400)
+        return JsonResponse(data={
+            "error": "Invalid request"
+        }, status=400)
 
     def delete(self, request, **kwargs) -> JsonResponse:
         """Remove contributors

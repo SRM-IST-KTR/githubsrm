@@ -1,16 +1,15 @@
 
-from concurrent.futures import thread
 from threading import Thread
-from apis import PostThrottle, service
+
+from core import PostThrottle, service
 from django.http.response import JsonResponse
+from maintainer.models import Entry
 from rest_framework import status
 from rest_framework.views import APIView
-from maintainer.models import Entry
+
 from administrator import entry, jwt_keys
 
-from .definitions import (
-    AdminSchema, ApprovalSchema, RejectionSchema
-)
+from .definitions import AdminSchema, ApprovalSchema, RejectionSchema
 from .perms import AuthAdminPerms
 from .utils import (
     accepted_project_pagination, alpha_maintainer_support,
@@ -21,6 +20,9 @@ from .models import (
     hash_password,
     check_hash
 )
+from .utils import (accepted_project_pagination, alpha_maintainer_support,
+                    beta_maintainer_support, get_token, project_pagination,
+                    project_single_project)
 
 maintainer_entry = Entry()
 
@@ -448,23 +450,11 @@ class RefreshRoute(APIView):
                         refresh_token, payload=payload)
                     if key:
                         return JsonResponse(data=key, status=200)
-                    else:
-                        return JsonResponse(data={
-                            "error": "Invalid refresh token"
-                        }, status=401)
-                else:
-                    return JsonResponse(data={
-                        "error": "invalid user"
-                    }, status=400)
-            else:
-                return JsonResponse(data={
-                    "error": "invalid token"
-                }, status=401)
+                    return JsonResponse(data={"error": "Invalid refresh token"}, status=401)
+                return JsonResponse(data={"error": "invalid user"}, status=400)
 
-        else:
-            return JsonResponse(data={
-                "error": "Token not provided"
-            }, status=401)
+            return JsonResponse(data={"error": "invalid token"}, status=401)
+        return JsonResponse(data={"error": "Token not provided"}, status=401)
 
 
 class Verification(APIView):

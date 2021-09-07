@@ -6,11 +6,15 @@ import pymongo
 from django.conf import settings
 from administrator import jwt_keys
 
+
 import hashlib, binascii, os
 
 from apis.aws import BotoService
 
 service = BotoService()
+
+from core import service
+
 
 
 class Entry:
