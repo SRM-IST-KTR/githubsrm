@@ -53,13 +53,13 @@ class Entry:
             identifier (str): Contributor ID
             project_id: (str): Project to add contributors to
         """
-
-        project = self.db.project.update_one(
-            {"_id": project_id}, {"$push": {"contributor_id": identifier}}, upsert=True
+        project = self.db.project.find_one_and_update(
+            {"_id": project_id},
+            {"$push": {"contributor_id": identifier}},
+            upsert=False,
         )
         if project:
             return True
-        return
 
     def enter_maintainer(self, doc: Dict[str, str]) -> Any:
         """Enter Maintainers
