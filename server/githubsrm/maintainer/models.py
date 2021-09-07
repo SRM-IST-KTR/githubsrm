@@ -224,7 +224,7 @@ class Entry:
                     {"reset": True}
                 ]
             }, update={
-                "$set": {"password": sha256(password.encode()).hexdigest(), "reset": False}
+                "$set": {"password": hash_password(password), "reset": False}
             })
 
             if maintainer:

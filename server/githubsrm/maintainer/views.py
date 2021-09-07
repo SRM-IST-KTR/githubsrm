@@ -165,7 +165,7 @@ class Login(APIView):
         if 'error' in validate:
             return JsonResponse(data={"error": validate.get("error")}, status=400)
 
-        password_hashed = sha256(request.data["password"].encode()).hexdigest()
+        password_hashed = hash_password(request.data["password"])
         user_credentials = entry.find_Maintainer_credentials_with_email(
             request.data["email"])
 
