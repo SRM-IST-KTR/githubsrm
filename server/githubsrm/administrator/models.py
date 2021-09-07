@@ -1,7 +1,8 @@
 import secrets
 from datetime import datetime
 from hashlib import sha256
-from typing import Any, Dict
+from core.errorfactory import ProjectErrors
+from typing import Any, Dict, Tuple
 from threading import Thread
 
 import pymongo
@@ -10,6 +11,16 @@ from dotenv import load_dotenv
 from pymongo import ReturnDocument
 
 from core import service
+from .errors import (
+    ContributorApprovedError,
+    ContributorNotFoundError,
+    InvalidAdminCredentialsError,
+    InvalidWebhookError,
+    ExistingAdminError,
+    MaintainerApprovedError,
+    MaintainerNotFoundError,
+    ProjectNotFoundError,
+)
 
 load_dotenv()
 
@@ -23,17 +34,19 @@ class AdminEntry:
         client = pymongo.MongoClient(settings.DATABASE["mongo_uri"])
         self.db = client[settings.DATABASE["db"]]
 
-    def check_webHook(self, token: str):
+    def check_webHook(self, token: Tuple):
         """Checks for available webHook Token
 
         Args:
-            token (str): token sent as header
+            token (Tuple): token sent as header
         """
-        try:
-            if self.db.webHook.find_one({"token": token}):
-                return True
-        except Exception as e:
-            return False
+        token_type, token = token
+        if token_type != "Bearer":
+            raise InvalidWebhookError("Invalid token type")
+        webHook = self.db.webHook.find_one({"token": token})
+        if webHook:
+            return True
+        raise InvalidWebhookError("Invalid token")
 
     def insert_admin(self, doc: Dict[str, str]) -> bool:
         """Insert admin details.
@@ -46,16 +59,12 @@ class AdminEntry:
 
         """
         if self.db.admins.find_one({"email": doc.get("email")}):
-            return False
-        try:
-            password = doc.pop("password")
-            hash_password = sha256(password.encode()).hexdigest()
+            raise ExistingAdminError("Admin exists")
+        password = doc.pop("password")
+        hash_password = sha256(password.encode()).hexdigest()
 
-            doc = {**doc, **{"password": hash_password}}
-            self.db.admins.insert_one(document=doc)
-            return True
-        except Exception as e:
-            return False
+        doc = {**doc, **{"password": hash_password}}
+        self.db.admins.insert_one(document=doc)
 
     def verify_admin(self, email: str, password: str) -> bool:
         """Verify admin users
@@ -71,7 +80,7 @@ class AdminEntry:
             {"$and": [{"password": hash_password}, {"email": email}]}
         ):
             return value
-        return False
+        raise InvalidAdminCredentialsError("Invalid credentials")
 
     def find_maintainer_for_approval(
         self, maintainer_id: str, project_id: str, maintainer_email: str
@@ -102,12 +111,12 @@ class AdminEntry:
 
         if maintainer:
             if maintainer.get("is_admin_approved"):
-                return False
+                raise MaintainerApprovedError("Maintainer already approved")
             project = self._update_project(
                 project_id=project_id, maintainer_id=maintainer_id
             )
             return project, maintainer
-        return False
+        raise MaintainerNotFoundError("Maintainer not found")
 
     def _update_project(self, project_id: str, maintainer_id: str) -> bool:
         """Update the project collection when a maintainer is added.
@@ -231,8 +240,8 @@ class AdminEntry:
                             }
                         },
                     ).start()
-                return False
-        return False
+                raise ProjectErrors("Lambda returned success False")
+        raise ProjectNotFoundError("No project document found")
 
     def approve_contributor(self, project_id: str, contributor_id: str) -> bool:
         """Approve contributor to project.
@@ -252,14 +261,14 @@ class AdminEntry:
         if contributor:
             # Already approved
             if contributor.get("is_admin_approved"):
-                return False
+                raise ContributorApprovedError("Contributor already approved")
 
             project = self.db.project.find_one(
                 {"_id": contributor["interested_project"]}
             )
             return contributor, project
 
-        return False
+        raise ContributorNotFoundError("Contributor/Project not found")
 
     def reset_status_maintainer(self, identifier: str, project_id: str) -> bool:
         """On failed email reset maintainer state

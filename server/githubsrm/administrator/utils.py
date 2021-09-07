@@ -5,12 +5,43 @@ from typing import Dict
 from apis import open_entry
 from core import service
 from django.http import response
+from django.http.response import JsonResponse
 from rest_framework import status
 
-from administrator import entry
+from administrator import entry, jwt_keys
+from .errors import InvalidRefreshTokenError, InvalidUserError
+from maintainer import entry as maintainer_entry
 from .models import AdminEntry
 
 ITEMS_PER_PAGE = 10
+
+
+def update_token(refresh_token):
+    if not refresh_token:
+        raise InvalidRefreshTokenError("No tokens provided")
+    user = jwt_keys.verify_key(refresh_token)
+    if user:
+        email = user.get("email") if user.get("email") else user.get("user")
+        name = user.get("name")
+
+        admin = user.get("admin")
+        if admin:
+            payload = {"user": email, "admin": True}
+            key = jwt_keys.refresh_to_access(
+                refresh_token=refresh_token, payload=payload
+            )
+            if key:
+                return key
+            raise InvalidRefreshTokenError("invalid refresh token")
+
+        project_ids = maintainer_entry.projects_from_email(email=email)
+        if project_ids:
+            payload = {"email": email, "name": name, "project_id": project_ids}
+            key = jwt_keys.refresh_to_access(refresh_token, payload=payload)
+            if key:
+                return key
+            raise InvalidRefreshTokenError("Invalid refresh token")
+    raise InvalidUserError("Invalid User")
 
 
 def project_pagination(request, **kwargs):
@@ -114,7 +145,6 @@ def project_single_project(request, **kwargs):
 def get_token(request_header: Dict[str, str]):
     try:
         token = request_header.get("Authorization").split()
-
         return token[0], token[1]
     except Exception as e:
         print(e)

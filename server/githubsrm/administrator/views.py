@@ -1,6 +1,12 @@
 from threading import Thread
 
 from core import service
+from core.errorfactory import (
+    AuthenticationErrors,
+    ContributorErrors,
+    MaintainerErrors,
+    ProjectErrors,
+)
 from core.settings import PostThrottle
 from django.http.response import JsonResponse
 from maintainer.models import Entry
@@ -10,6 +16,7 @@ from rest_framework.views import APIView
 from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema, ApprovalSchema, RejectionSchema
+from .errors import ExistingAdminError, InvalidAdminCredentialsError
 from .perms import AuthAdminPerms
 from .utils import (
     accepted_project_pagination,
@@ -18,9 +25,8 @@ from .utils import (
     get_token,
     project_pagination,
     project_single_project,
+    update_token,
 )
-
-maintainer_entry = Entry()
 
 
 class RegisterAdmin(APIView):
@@ -31,23 +37,20 @@ class RegisterAdmin(APIView):
         """Register Admins
 
         Args:
-            request
+            request: request object
 
         Returns:
-            JsonResponse
+            JsonResponse: status
         """
 
         valid = AdminSchema(request.data).valid()
-
         if "error" in valid:
             return JsonResponse(data={"error": valid}, status=400)
-
-        if entry.insert_admin(request.data):
-            return JsonResponse(data={"registered": True}, status=200)
-        return JsonResponse(
-            data={"error": "invalid data / user exists"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        try:
+            entry.insert_admin(request.data)
+            return JsonResponse(data={"registred": True}, status=200)
+        except ExistingAdminError as e:
+            return JsonResponse(data={"error": str(e)}, status=400)
 
 
 class AdminLogin(APIView):
@@ -70,15 +73,15 @@ class AdminLogin(APIView):
         if "error" in validate:
             return JsonResponse(data={"error": "Invalid data"}, status=400)
         password = validate.get("password")
-        if entry.verify_admin(email=validate.get("email"), password=password):
+        try:
+            entry.verify_admin(email=validate.get("email"), password=password)
             keys = jwt_keys.issue_key(
                 payload={"admin": True, "user": validate.get("email")},
                 get_refresh_token=True,
             )
-            if keys:
-                return JsonResponse(data=keys, status=200)
-            return JsonResponse({"error": "ISR?"}, status=500)
-        return JsonResponse(data={"error": "invalid password"}, status=401)
+            return JsonResponse(data=keys, status=200)
+        except InvalidAdminCredentialsError as e:
+            return JsonResponse(data={"error": str(e)}, status=401)
 
 
 class ProjectsAdmin(APIView):
@@ -104,14 +107,12 @@ class ProjectsAdmin(APIView):
             return JsonResponse(data={"error": str(validate.get("error"))}, status=400)
         if params == "maintainer":
 
-            if details := entry.find_maintainer_for_approval(
-                validate.get("maintainer_id"),
-                validate.get("project_id"),
-                validate.get("email"),
-            ):
-
-                project, maintainer = details
-
+            try:
+                project, maintainer = entry.find_maintainer_for_approval(
+                    validate.get("maintainer_id"),
+                    validate.get("project_id"),
+                    validate.get("email"),
+                )
                 existing = entry.check_existing_maintainer(email=validate.get("email"))
 
                 if len(project["maintainer_id"]) == 1:
@@ -140,17 +141,14 @@ class ProjectsAdmin(APIView):
                     return JsonResponse(
                         data=response.get("message"), status=response.get("status")
                     )
-
-            return JsonResponse(
-                data={"error": "Invalid data / Maintainer already approved"}, status=400
-            )
+            except MaintainerErrors as e:
+                return JsonResponse(data={"error": str(e)}, status=400)
 
         elif params == "project":
-            if details := entry.approve_project(
-                identifier=validate.get("project_id"), year=validate.get("year")
-            ):
-
-                project = details
+            try:
+                project = entry.approve_project(
+                    identifier=validate.get("project_id"), year=validate.get("year")
+                )
                 email_document = entry.get_all_maintainer_emails(project=project)
                 if email_document:
                     if service.wrapper_email(
@@ -170,6 +168,8 @@ class ProjectsAdmin(APIView):
                             data={"Approved Project": validate.get("project_id")},
                             status=200,
                         )
+                    entry.reset_status_project(project=project)
+                    return JsonResponse(data={"error": "email failed"}, status=500)
                 else:
                     entry.reset_status_project(project=project)
 
@@ -193,19 +193,16 @@ class ProjectsAdmin(APIView):
                         data={"error": "Approve maintainer before approving project"},
                         status=400,
                     )
-
-                entry.reset_status_project(project=project)
-                return JsonResponse(data={"error": "email failed"}, status=500)
-
-            return JsonResponse(data={"error": "Inconsistant data"}, status=400)
+            except ProjectErrors as e:
+                return JsonResponse(data={"error": str(e)}, status=400)
 
         else:
-            if details := entry.approve_contributor(
-                project_id=validate.get("project_id"),
-                contributor_id=validate.get("contributor_id"),
-            ):
+            try:
+                contributor, project = entry.approve_contributor(
+                    project_id=validate.get("project_id"),
+                    contributor_id=validate.get("contributor_id"),
+                )
 
-                contributor, project = details
                 emails = entry.get_all_maintainer_emails(project=project)
                 Thread(
                     target=service.wrapper_email,
@@ -224,12 +221,8 @@ class ProjectsAdmin(APIView):
 
                 return JsonResponse(data={"admin_approved": True}, status=200)
 
-            return JsonResponse(
-                data={
-                    "error": "contributor/project does not exist / contributor already approved"
-                },
-                status=400,
-            )
+            except ContributorErrors as e:
+                return JsonResponse(data={"error": str(e)}, status=400)
 
     def get(self, request, **kwargs):
 
@@ -441,38 +434,11 @@ class RefreshRoute(APIView):
             JsonResponse
         """
         refresh_token = get_token(request_header=request.headers)
-        if refresh_token:
-            user = jwt_keys.verify_key(refresh_token)
-            if user:
-                email = user.get("email") if user.get("email") else user.get("user")
-                name = user.get("name")
-
-                admin = user.get("admin")
-                if admin:
-                    payload = {"user": email, "admin": True}
-                    key = jwt_keys.refresh_to_access(
-                        refresh_token=refresh_token, payload=payload
-                    )
-                    if key:
-                        return JsonResponse(data=key, status=200)
-                    else:
-                        return JsonResponse(
-                            data={"error": "Invalid refresh token"}, status=401
-                        )
-
-                project_ids = maintainer_entry.projects_from_email(email=email)
-                if project_ids:
-                    payload = {"email": email, "name": name, "project_id": project_ids}
-                    key = jwt_keys.refresh_to_access(refresh_token, payload=payload)
-                    if key:
-                        return JsonResponse(data=key, status=200)
-                    return JsonResponse(
-                        data={"error": "Invalid refresh token"}, status=401
-                    )
-                return JsonResponse(data={"error": "invalid user"}, status=400)
-
-            return JsonResponse(data={"error": "invalid token"}, status=401)
-        return JsonResponse(data={"error": "Token not provided"}, status=401)
+        try:
+            key = update_token(refresh_token=refresh_token)
+            return JsonResponse(data=key, status=400)
+        except AuthenticationErrors as e:
+            return JsonResponse(data={"error": str(e)}, status=400)
 
 
 class Verification(APIView):

@@ -1,28 +1,27 @@
+from typing import Callable
 from rest_framework.permissions import BasePermission
+from .errors import InvalidWebhookError
 
 from administrator import entry
 from .utils import get_token
+from django.http import request
 
 
 class AuthAdminPerms(BasePermission):
-    def has_permission(self, request, view) -> bool:
-        """Define register permissions.
+    def has_permission(self, request: request, view: Callable) -> bool:
+        """Check admin register perms
 
         Args:
-            request ([type])
-            view ([type])
+            request (request): request object
+            view (Callable): view
 
         Returns:
-            bool
+            bool: has permissions
         """
-
-        try:
-            if value := get_token(request_header=request.headers):
-                token_type, token = value
-
-                assert token_type == "Bearer"
+        token = get_token(request_header=request.headers)
+        if token:
+            try:
                 return entry.check_webHook(token)
-            return False
-        except Exception as e:
-            print(e)
-            return False
+            except InvalidWebhookError as e:
+                return False
+        return False
