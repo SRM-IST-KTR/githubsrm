@@ -119,6 +119,7 @@ else:
         )
     }
 
+from .throttle import PostThrottle
 
 AUTH_PASSWORD_VALIDATORS = [
     {

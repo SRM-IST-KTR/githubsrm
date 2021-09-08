@@ -1,7 +1,8 @@
 
 from threading import Thread
 
-from core import PostThrottle, service
+from core import service
+from core.settings import PostThrottle
 from django.http.response import JsonResponse
 from maintainer.models import Entry
 from rest_framework import status
