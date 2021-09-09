@@ -6,6 +6,7 @@ import cProfile
 
 session = requests.Session()
 
+
 def get_json_schema(id: int, valid_schema: Callable) -> dict:
     """Generate json schema
 
@@ -48,7 +49,7 @@ def check_repo(url: str):
 
 
 def check_tags(tags: list) -> bool:
-    """Checks available tags 
+    """Checks available tags
 
     Args:
         tags
@@ -95,36 +96,38 @@ def check_phone(ph: str) -> bool:
 class CommonSchema:
     def __init__(self, data: Dict[Any, Any], query_param: str) -> None:
         self.data = data
-        self.email_re = re.compile(
-            '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
+        self.email_re = re.compile("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
         self.url_re = re.compile(
-            '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
+            "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+        )
 
         self.query_params = query_param
         self.common = {
             "name": And(str, lambda name: len(name.strip()) > 0),
             "email": And(str, lambda email: self.email_re.fullmatch(email)),
-            "srm_email": And(str, lambda email: email.endswith('@srmist.edu.in')),
+            "srm_email": And(str, lambda email: email.endswith("@srmist.edu.in")),
             "reg_number": And(str, lambda reg: len(reg.strip()) > 0),
             "branch": And(str, lambda branch: len(branch.strip()) > 0),
-            "github_id": And(str, lambda github_id: check_github_id(github_id=github_id))
+            "github_id": And(
+                str, lambda github_id: check_github_id(github_id=github_id)
+            ),
         }
 
         self.alpha_maintainer = {
-            "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
+            "project_name": And(
+                str, lambda project_name: len(project_name.strip()) > 0
+            ),
             "project_url": And(str, lambda url: check_repo(url)),
             "description": And(str, lambda description: len(description.strip()) >= 30),
             "tags": And(list, lambda tags: check_tags(tags=tags)),
-            "private": bool
+            "private": bool,
         }
 
-        self.beta_maintainer = {
-            "project_id": And(str, lambda id: len(id) == 8)
-        }
+        self.beta_maintainer = {"project_id": And(str, lambda id: len(id) == 8)}
 
         self.contributor = {
             "interested_project": And(str, lambda project_id: len(project_id) == 8),
-            "poa": And(str, lambda poa: check_poa(poa))
+            "poa": And(str, lambda poa: check_poa(poa)),
         }
 
     @staticmethod
@@ -137,25 +140,25 @@ class CommonSchema:
         Returns:
             str
         """
-        if 'contributor' in query_param:
-            return 'contributor'
-        elif 'alpha' in query_param:
-            return 'alpha'
-        elif 'beta' in query_param:
-            return 'beta'
+        if "contributor" in query_param:
+            return "contributor"
+        elif "alpha" in query_param:
+            return "alpha"
+        elif "beta" in query_param:
+            return "beta"
         else:
             return
 
     def valid_schema(self) -> Schema:
         direction = self.check_path(self.query_params)
 
-        if direction == 'contributor':
+        if direction == "contributor":
             validator = Schema(schema={**self.common, **self.contributor})
             return validator
-        elif direction == 'alpha':
+        elif direction == "alpha":
             validator = Schema(schema={**self.common, **self.alpha_maintainer})
             return validator
-        elif direction == 'beta':
+        elif direction == "beta":
             validator = Schema(schema={**self.common, **self.beta_maintainer})
             return validator
         else:
@@ -181,10 +184,7 @@ class CommonSchema:
         try:
             return self.valid_schema().validate(self.data)
         except SchemaError as e:
-            return {
-                "invalid data": self.data,
-                "error": str(e)
-            }
+            return {"invalid data": self.data, "error": str(e)}
 
 
 class ContactUsSchema:
@@ -197,12 +197,14 @@ class ContactUsSchema:
         Returns:
             Schema
         """
-        validator = Schema(schema={
-            "name": And(str, lambda name: len(name.strip()) > 0),
-            "email": And(str, lambda email: len(email.strip()) > 0),
-            "message": And(str, lambda message: len(message.strip()) > 30),
-            "phone_number": And(str, lambda phone: check_phone(phone))
-        })
+        validator = Schema(
+            schema={
+                "name": And(str, lambda name: len(name.strip()) > 0),
+                "email": And(str, lambda email: len(email.strip()) > 0),
+                "message": And(str, lambda message: len(message.strip()) > 30),
+                "phone_number": And(str, lambda phone: check_phone(phone)),
+            }
+        )
 
         return validator
 
@@ -215,26 +217,4 @@ class ContactUsSchema:
         try:
             return self.valid_schema().validate(self.data)
         except SchemaError as e:
-            return {
-                "invalid data": self.data,
-                "error": str(e)
-            }
-
-if __name__ == "__main__":
-    with cProfile.Profile() as pr:
-        validate = CommonSchema(data={
-            "name": "Aradhya",
-            "github_id": "Aradhya-Tripathi",
-            "description": "This is a random description for a tester project",
-            "reg_number": "RA1911004010187",
-            "srm_email": "at8029@srmist.edu.in",
-            "email": "aradhyatripathi51@gmail.com",
-            "project_url": "https://github.com/Aradhya-Tripathi",
-            "tags": ["django", "nextjs"],
-            "branch": "ECE",
-            "project_name": "Random Project"
-        }, query_param="alpha").valid()
-
-    print(pr.print_stats())
-
-    print(validate)
+            return {"invalid data": self.data, "error": str(e)}

@@ -14,10 +14,14 @@ class MaintainerSchema:
             Schema
         """
 
-        validator = Schema(schema={
-            "contributor_id": And(str, lambda contributor_id: len(contributor_id.strip()) == 8),
-            "project_id": And(str, lambda project_id: len(project_id.strip()) == 8)
-        })
+        validator = Schema(
+            schema={
+                "contributor_id": And(
+                    str, lambda contributor_id: len(contributor_id.strip()) == 8
+                ),
+                "project_id": And(str, lambda project_id: len(project_id.strip()) == 8),
+            }
+        )
 
         return validator
 
@@ -28,10 +32,12 @@ class MaintainerSchema:
             Schema
         """
 
-        validator = Schema(schema={
-            "email": And(str, lambda email: len(email.strip()) > 0),
-            "password": And(str, lambda password: len(password.strip()) > 0)
-        })
+        validator = Schema(
+            schema={
+                "email": And(str, lambda email: len(email.strip()) > 0),
+                "password": And(str, lambda password: len(password.strip()) > 0),
+            }
+        )
 
         return validator
 
@@ -42,9 +48,9 @@ class MaintainerSchema:
             Schema
         """
 
-        validator = Schema(schema={
-            "password": And(str, lambda password: len(password.strip()) > 0)
-        })
+        validator = Schema(
+            schema={"password": And(str, lambda password: len(password.strip()) > 0)}
+        )
 
         return validator
 
@@ -54,9 +60,9 @@ class MaintainerSchema:
         Returns:
             Schema
         """
-        validator = Schema(schema={
-            "email": And(str, lambda email: len(email.strip()) > 0)
-        })
+        validator = Schema(
+            schema={"email": And(str, lambda email: len(email.strip()) > 0)}
+        )
 
         return validator
 
@@ -68,11 +74,11 @@ class MaintainerSchema:
         """
 
         try:
-            if self.path == '/maintainer/projects':
+            if self.path == "/maintainer/projects":
                 return self.approve_valid_schema().validate(self.data)
-            elif self.path == '/maintainer/login':
+            elif self.path == "/maintainer/login":
                 return self.login_valid_schema().validate(self.data)
-            elif self.path == '/maintainer/reset-password/set':
+            elif self.path == "/maintainer/reset-password/set":
                 return self.reset_valid_schema().validate(self.data)
             else:
                 return self.set_valid_schema().validate(self.data)
@@ -84,13 +90,13 @@ class RejectionSchema:
     def __init__(self, data: Dict[str, Any]) -> None:
         self.data = data
         self.valid_contributor_schema = {
-            "contributor_id": And(str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8)
+            "contributor_id": And(
+                str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8
+            )
         }
 
     def valid(self) -> Dict[str, str]:
         try:
             return Schema(schema=self.valid_contributor_schema).validate(self.data)
         except SchemaError as e:
-            return {
-                "error": str(e)
-            }
+            return {"error": str(e)}
