@@ -218,26 +218,3 @@ class ContactUsSchema:
             return self.valid_schema().validate(self.data)
         except SchemaError as e:
             return {"invalid data": self.data, "error": str(e)}
-
-
-if __name__ == "__main__":
-    with cProfile.Profile() as pr:
-        validate = CommonSchema(
-            data={
-                "name": "Aradhya",
-                "github_id": "Aradhya-Tripathi",
-                "description": "This is a random description for a tester project",
-                "reg_number": "RA1911004010187",
-                "srm_email": "at8029@srmist.edu.in",
-                "email": "aradhyatripathi51@gmail.com",
-                "project_url": "https://github.com/Aradhya-Tripathi",
-                "tags": ["django", "nextjs"],
-                "branch": "ECE",
-                "project_name": "Random Project",
-            },
-            query_param="alpha",
-        ).valid()
-
-    print(pr.print_stats())
-
-    print(validate)
