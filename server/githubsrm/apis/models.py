@@ -11,10 +11,9 @@ load_dotenv()
 
 
 class Entry:
-
     def __init__(self):
-        client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
-        self.db = client[settings.DATABASE['db']]
+        client = pymongo.MongoClient(settings.DATABASE["mongo_uri"])
+        self.db = client[settings.DATABASE["db"]]
 
     def get_uid(self) -> str:
         """Returns 8 character alpha numeric unique id
@@ -32,10 +31,11 @@ class Entry:
         if self.db.collection.find_one({"_id": gen_id}):
             return self.get_uid(length=8)
 
-        return ''.join(gen_id)
+        return "".join(gen_id)
 
-    def _enter_project(self, doc: Dict[str, str],
-                       visibility: bool, project_id: str) -> None:
+    def _enter_project(
+        self, doc: Dict[str, str], visibility: bool, project_id: str
+    ) -> None:
         """Project Entry (only accessed by maintainer)
 
         Args:
@@ -46,31 +46,20 @@ class Entry:
         doc = {**doc, **{"_id": project_id}, **{"private": visibility}}
         self.db.project.insert_one(doc)
 
-    def _update_project(self, identifier: str,
-                        project_id: str) -> None:
+    def _update_project(self, identifier: str, project_id: str) -> None:
         """Update contributers of the project (only accessed by contributor)
 
         Args:
             identifier (str): Contributor ID
             project_id: (str): Project to add contributors to
         """
-
-        # Check if project exists
-        project = self.db.project.find_one({"_id": project_id})
+        project = self.db.project.find_one_and_update(
+            {"_id": project_id},
+            {"$push": {"contributor_id": identifier}},
+            upsert=False,
+        )
         if project:
-            # Check if contributors exists
-            if "contributor_id" in project:
-                self.db.project.update_one({"_id": project_id}, {
-                    "$push": {"contributor_id": identifier}})
-                return True
-            else:
-                # Creates new contributor if no contributor present
-                self.db.project.update_one({"_id": project_id}, {"$set": {
-                    "contributor_id": [identifier]
-                }})
-
-                return True
-        return
+            return True
 
     def enter_maintainer(self, doc: Dict[str, str]) -> Any:
         """Enter Maintainers
@@ -85,34 +74,42 @@ class Entry:
 
         description = doc.pop("description")
         tags = doc.pop("tags")
-        project_name = doc.pop('project_name')
+        project_name = doc.pop("project_name")
 
         project_id = self.get_uid()
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}, **{"project_id": project_id},
-               **{"is_admin_approved": False}}
+        doc = {
+            **doc,
+            **{"_id": _id},
+            **{"project_id": project_id},
+            **{"is_admin_approved": False},
+        }
         try:
             existing_maintainer = self.db.maintainer.find_one(
-                {"srm_email": doc.get("srm_email"),
-                 "reg_number": doc.get("reg_number")}
+                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")}
             )
 
-            if existing_maintainer and 'password' in existing_maintainer:
+            if existing_maintainer and "password" in existing_maintainer:
                 self.db.maintainer.insert_one(
-                    {**doc, **{"password": existing_maintainer.get("password")}})
+                    {**doc, **{"password": existing_maintainer.get("password")}}
+                )
 
             else:
                 self.db.maintainer.insert_one(doc)
 
             # Default approve to false
-            self._enter_project({
-                "project_url": project_url,
-                "description": description,
-                "tags": tags,
-                "is_admin_approved": False,
-                "project_name": project_name,
-                "project_url": project_url
-            }, visibility=doc["private"], project_id=project_id)
+            self._enter_project(
+                {
+                    "project_url": project_url,
+                    "description": description,
+                    "tags": tags,
+                    "is_admin_approved": False,
+                    "project_name": project_name,
+                    "project_url": project_url,
+                },
+                visibility=doc["private"],
+                project_id=project_id,
+            )
 
             return project_id, _id, project_name, description
 
@@ -134,18 +131,30 @@ class Entry:
             _id = self.get_uid()
 
             existing_maintainer = self.db.maintainer.find_one(
-                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")})
+                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")}
+            )
 
-            if existing_maintainer and 'password' in existing_maintainer:
+            if existing_maintainer and "password" in existing_maintainer:
                 self.db.maintainer.insert_one(
-                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
-                        **{"is_admin_approved": False}, **{"password": existing_maintainer.get("password")}})
+                    {
+                        **doc,
+                        **{"_id": _id},
+                        **{"project_id": doc.get("project_id")},
+                        **{"is_admin_approved": False},
+                        **{"password": existing_maintainer.get("password")},
+                    }
+                )
                 return _id
 
             else:
                 self.db.maintainer.insert_one(
-                    {**doc, **{"_id": _id}, **{"project_id": doc.get('project_id')},
-                        **{"is_admin_approved": False}})
+                    {
+                        **doc,
+                        **{"_id": _id},
+                        **{"project_id": doc.get("project_id")},
+                        **{"is_admin_approved": False},
+                    }
+                )
                 return _id
 
         except Exception as e:
@@ -160,11 +169,15 @@ class Entry:
         """
 
         _id = self.get_uid()
-        doc = {**doc, **{"_id": _id}, **{"is_admin_approved": False},
-               **{"is_maintainer_approved": False}, **{"is_added_to_repo": False}}
+        doc = {
+            **doc,
+            **{"_id": _id},
+            **{"is_admin_approved": False},
+            **{"is_maintainer_approved": False},
+            **{"is_added_to_repo": False},
+        }
 
-        project_doc = self.db.project.find_one(
-            {"_id": doc.get('interested_project')})
+        project_doc = self.db.project.find_one({"_id": doc.get("interested_project")})
         if not project_doc:
             return
 
@@ -184,21 +197,19 @@ class Entry:
 
         """
         self.db.maintainer.delete_one({"_id": maintainer_id})
-        
-    def alpha_maintainer_reset_status(self, project_id: str, maintainer_id: str) -> None:
+
+    def alpha_maintainer_reset_status(
+        self, project_id: str, maintainer_id: str
+    ) -> None:
         """Delete alpha maintainer and added project
 
         Args:
             project_id (str)
             maintainer_id (str)
         """
-        self.db.project.delete_one({
-            "_id": project_id
-        })
+        self.db.project.delete_one({"_id": project_id})
 
-        self.db.maintainer.delete_one({
-            "_id": maintainer_id
-        })
+        self.db.maintainer.delete_one({"_id": maintainer_id})
 
     def delete_contributor(self, identifier: str) -> bool:
         """Delete Contributos
@@ -240,7 +251,7 @@ class Entry:
         """Get all maintainers and status
 
         Returns:
-            [type]: MongoDB cursor 
+            [type]: MongoDB cursor
         """
         return self.db.maintainer.find({})
 
@@ -248,7 +259,7 @@ class Entry:
         """Get all team data
 
         Returns:
-            [type]: MongoDB cursor 
+            [type]: MongoDB cursor
         """
         return self.db.team.find({})
 
@@ -262,9 +273,7 @@ class Entry:
             bool
         """
 
-        details = self.db.contactUs.find_one({
-            "message": doc.get("message")
-        })
+        details = self.db.contactUs.find_one({"message": doc.get("message")})
 
         if details:
             return

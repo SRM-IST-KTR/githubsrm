@@ -1,14 +1,24 @@
+from .errors import MiscErrors
 import pymongo
 from django.conf import settings
 from typing import Dict, Any
 
+from .errors import (
+    ApprovedError,
+    NotApprovedError,
+    ExisitingMaintainerError,
+    ExistingProjectError
+)
+
 
 class EntryCheck:
     def __init__(self) -> None:
-        client = pymongo.MongoClient(settings.DATABASE['mongo_uri'])
-        self.db = client[settings.DATABASE['db']]
+        client = pymongo.MongoClient(settings.DATABASE["mongo_uri"])
+        self.db = client[settings.DATABASE["db"]]
 
-    def check_existing(self, description: str, project_name: str, project_url: str) -> bool:
+    def check_existing_project(
+        self, description: str, project_name: str, project_url: str
+    ) -> bool:
         """Checks existing project proposals
 
         Args:
@@ -27,7 +37,7 @@ class EntryCheck:
         result = self.db.project.find_one({"$or": checks})
 
         if result:
-            return True
+            raise ExistingProjectError("Project Exists")
 
     def check_approved_project(self, identifier: str) -> bool:
         """Checks if given identifier is valid and approved status
@@ -39,15 +49,14 @@ class EntryCheck:
             bool
         """
         result = self.db.project.find_one({"_id": identifier})
-
         if result:
-            if not result["is_admin_approved"]:
-                return result
-        return
+            if result.get("is_admin_approved"):
+                raise ApprovedError("Project approved")
+            return result
 
-    def check_contributor(self, interested_project: str,
-                          reg_number: str, github_id: str,
-                          srm_email: str) -> bool:
+    def check_contributor(
+        self, interested_project: str, reg_number: str, github_id: str, srm_email: str
+    ) -> bool:
         """Existing contributor to same project
 
         Args:
@@ -59,36 +68,45 @@ class EntryCheck:
         """
 
         result = self.db.project.find_one({"_id": interested_project})
+        if not result.get("is_admin_approved"):
+            raise NotApprovedError("Project not approved")
 
-        try:
-            if not result['is_admin_approved']:
-                return True
-        except Exception as e:
-            return True
+        contributor = self.db.contributor.find_one(
+            {
+                "$and": [
+                    {"interested_project": interested_project},
+                    {
+                        "$or": [
+                            {"reg_number": reg_number},
+                            {"github_id": github_id},
+                            {"srm_email": srm_email},
+                        ]
+                    },
+                ]
+            }
+        )
 
-        result = self.db.contributor.find_one({"$and": [
-            {"interested_project": interested_project},
-            {"$or": [{"reg_number": reg_number},
-                     {"github_id": github_id}, {"srm_email": srm_email}]
-             }]})
+        maintainer = self.db.maintainer.find_one(
+            {
+                "$and": [
+                    {"project_id": interested_project},
+                    {
+                        "$or": [
+                            {"reg_number": reg_number},
+                            {"github_id": github_id},
+                            {"srm_email": srm_email},
+                        ]
+                    },
+                ]
+            }
+        )
 
-        results = self.db.maintainer.find_one({
-            "$and": [
-                {"project_id": interested_project},
-                {"$or": [{"reg_number": reg_number},
-                         {"github_id": github_id}, {"srm_email": srm_email}]}
-            ]
-        })
+        if contributor or maintainer:
+            raise MiscErrors("Existing contributor/maintainer for project")
 
-        if results:
-            return True
-
-        if result:
-            return True
-
-        return
-
-    def check_existing_beta(self, github_id: str, project_id: str, srm_email: str) -> bool:
+    def check_existing_beta(
+        self, github_id: str, project_id: str, srm_email: str
+    ) -> bool:
         """Checks for existing beta maintainer
 
         Args:
@@ -98,17 +116,15 @@ class EntryCheck:
             bool
         """
 
-        result = self.db.maintainer.count_documents({
-            "project_id": project_id,
-            "$or": [
-                {"github_id": github_id}, {"srm_email": srm_email}
-            ]
-        })
+        result = self.db.maintainer.count_documents(
+            {
+                "project_id": project_id,
+                "$or": [{"github_id": github_id}, {"srm_email": srm_email}],
+            }
+        )
 
         if result >= 1:
-            return True
-
-        return False
+            raise ExisitingMaintainerError("Maintainer for this project exists")
 
     def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
         """Checks for valid beta maintainer
@@ -119,12 +135,17 @@ class EntryCheck:
         Returns:
             Any: Returns document if checks pass
         """
-        if self.check_existing_beta(github_id=doc.get("github_id"), project_id=doc.get("project_id"),
-                                    srm_email=doc.get("srm_email")):
+        try:
+            self.check_existing_beta(
+                github_id=doc.get("github_id"),
+                project_id=doc.get("project_id"),
+                srm_email=doc.get("srm_email"),
+            )
+        except ExisitingMaintainerError as e:
             return None
 
-        if details := self.check_approved_project(identifier=doc.get("project_id")):
-            return details
-
-        else:
+        try:
+            result = self.check_approved_project(identifier=doc.get("project_id"))
+            return result
+        except ApprovedError as e:
             return None
