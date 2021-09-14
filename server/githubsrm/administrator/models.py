@@ -4,6 +4,7 @@ from hashlib import sha256
 from core.errorfactory import ProjectErrors
 from typing import Any, Dict, Tuple
 from threading import Thread
+import hashlib, binascii, os
 
 import pymongo
 from django.conf import settings
@@ -21,11 +22,6 @@ from .errors import (
     MaintainerNotFoundError,
     ProjectNotFoundError,
 )
-
-
-import hashlib, binascii, os
-
-service = BotoService()
 
 load_dotenv()
 
@@ -54,20 +50,18 @@ class AdminEntry:
         raise InvalidWebhookError("Invalid token")
 
 
-    def hash_password(self, pwd: str) -> str:
+    def hash_password(self, password: str) -> str:
         """Hashes password using salted password hashing (SHA512 & PBKDF_HMAC2)
             Args:
-                pwd : Password to be hashed
+                password : Password to be hashed
                 
             Returns:
                 str : Hashed password
         """
         salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-        # print("SALT1: ", salt)
-        pwd_hash = hashlib.pbkdf2_hmac('sha512', pwd.encode('utf-8'), salt, 100000)
+        pwd_hash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
         pwd_hash = binascii.hexlify(pwd_hash)
         final_hashed_pwd = (salt + pwd_hash).decode('ascii')
-        # print("FINAL HASHED PWD:", final_hashed_pwd)
         return final_hashed_pwd
 
 
@@ -85,7 +79,7 @@ class AdminEntry:
             return False
         try:
             password = doc.pop('password')
-            password_hash = hash_password(password)
+            password_hash = self.hash_password(password)
 
             doc = {**doc, **{"password": password_hash}}
             self.db.admins.insert_one(document=doc)
@@ -106,28 +100,16 @@ class AdminEntry:
                 {"email": email}
         ):
             dbpwd = value['password']
-            #print("DBPWD: ", dbpwd)
-
-            #PASSWORD HASH AND SALT STORED IN DATABASE
             salt = dbpwd[:64]
-            #print("SALT2: ", salt)
             dbpwd = dbpwd[64:]
-            #print("Stored password hash: ", dbpwd)
-            
-            #PASSWORD HASH FOR PASSWORD THAT USER HAS CURRENTLY ENTERED
-            pwd_hash = hashlib.pbkdf2_hmac('sha512', pwd.encode('utf-8'), salt.encode('ascii'), 100000)
+            pwd_hash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt.encode('ascii'), 100000)
             pwd_hash = binascii.hexlify(pwd_hash).decode('ascii')
-            #print("pwd_hash: ", pwd_hash)
             
             if pwd_hash==dbpwd:
-                #print("Hash Match")
                 return True
             else:
-                #print("Hash does NOT match")
                 return False
-
         else:
-            #print("User NOT in DB")
             return False
 
     def find_maintainer_for_approval(
