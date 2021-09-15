@@ -4,6 +4,7 @@ from hashlib import sha256
 from core.errorfactory import ProjectErrors
 from typing import Any, Dict, Tuple
 from threading import Thread
+import hashlib, binascii, os
 
 import pymongo
 from django.conf import settings
@@ -48,6 +49,20 @@ class AdminEntry:
             return True
         raise InvalidWebhookError("Invalid token")
 
+    def hash_password(self, password: str) -> str:
+        """Hashes password using salted password hashing (SHA512 & PBKDF_HMAC2)
+        Args:
+            password : Password to be hashed
+
+        Returns:
+            str : Hashed password
+        """
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("ascii")
+        pwd_hash = hashlib.pbkdf2_hmac("sha512", password.encode("utf-8"), salt, 100000)
+        pwd_hash = binascii.hexlify(pwd_hash)
+        final_hashed_pwd = (salt + pwd_hash).decode("ascii")
+        return final_hashed_pwd
+
     def insert_admin(self, doc: Dict[str, str]) -> bool:
         """Insert admin details.
 
@@ -59,12 +74,16 @@ class AdminEntry:
 
         """
         if self.db.admins.find_one({"email": doc.get("email")}):
-            raise ExistingAdminError("Admin exists")
-        password = doc.pop("password")
-        hash_password = sha256(password.encode()).hexdigest()
+            raise ExistingAdminError("Admin Exists")
+        try:
+            password = doc.pop("password")
+            password_hash = self.hash_password(password)
 
-        doc = {**doc, **{"password": hash_password}}
-        self.db.admins.insert_one(document=doc)
+            doc = {**doc, **{"password": password_hash}}
+            self.db.admins.insert_one(document=doc)
+            return True
+        except Exception as e:
+            return False
 
     def verify_admin(self, email: str, password: str) -> bool:
         """Verify admin users
@@ -75,12 +94,21 @@ class AdminEntry:
         Returns:
             bool
         """
-        hash_password = sha256(password.encode()).hexdigest()
-        if value := self.db.admins.find_one(
-            {"$and": [{"password": hash_password}, {"email": email}]}
-        ):
-            return value
-        raise InvalidAdminCredentialsError("Invalid credentials")
+        if value := self.db.admins.find_one({"email": email}):
+            dbpwd = value["password"]
+            salt = dbpwd[:64]
+            dbpwd = dbpwd[64:]
+            pwd_hash = hashlib.pbkdf2_hmac(
+                "sha512", password.encode("utf-8"), salt.encode("ascii"), 100000
+            )
+            pwd_hash = binascii.hexlify(pwd_hash).decode("ascii")
+
+            if pwd_hash == dbpwd:
+                return value
+            else:
+                raise InvalidAdminCredentialsError("Invalid Credentials")
+        else:
+            raise InvalidAdminCredentialsError("Invalid Credentials")
 
     def find_maintainer_for_approval(
         self, maintainer_id: str, project_id: str, maintainer_email: str

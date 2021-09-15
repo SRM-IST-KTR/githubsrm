@@ -13,8 +13,10 @@ from maintainer import entry
 
 from . import entry
 from .definitions import MaintainerSchema, RejectionSchema
-from core.errorfactory import ContributorErrors
 from .utils import RequestSetPassword, project_pagination, project_single_project
+
+from core.errorfactory import ContributorErrors
+
 
 db = entry.db
 
@@ -166,7 +168,7 @@ class Login(APIView):
         if "error" in validate:
             return JsonResponse(data={"error": validate.get("error")}, status=400)
 
-        password_hashed = sha256(request.data["password"].encode()).hexdigest()
+        password_hashed = entry.hash_password(request.data["password"])
         user_credentials = entry.find_Maintainer_credentials_with_email(
             request.data["email"]
         )
