@@ -13,10 +13,7 @@ from maintainer import entry
 
 from . import entry
 from .definitions import MaintainerSchema, RejectionSchema
-from .utils import (
-    RequestSetPassword, project_pagination,
-    project_single_project
-)
+from .utils import RequestSetPassword, project_pagination, project_single_project
 
 from core.errorfactory import ContributorErrors
 

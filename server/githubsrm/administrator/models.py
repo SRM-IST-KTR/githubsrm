@@ -49,21 +49,19 @@ class AdminEntry:
             return True
         raise InvalidWebhookError("Invalid token")
 
-
     def hash_password(self, password: str) -> str:
         """Hashes password using salted password hashing (SHA512 & PBKDF_HMAC2)
-            Args:
-                password : Password to be hashed
-                
-            Returns:
-                str : Hashed password
-        """
-        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-        pwd_hash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
-        pwd_hash = binascii.hexlify(pwd_hash)
-        final_hashed_pwd = (salt + pwd_hash).decode('ascii')
-        return final_hashed_pwd
+        Args:
+            password : Password to be hashed
 
+        Returns:
+            str : Hashed password
+        """
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("ascii")
+        pwd_hash = hashlib.pbkdf2_hmac("sha512", password.encode("utf-8"), salt, 100000)
+        pwd_hash = binascii.hexlify(pwd_hash)
+        final_hashed_pwd = (salt + pwd_hash).decode("ascii")
+        return final_hashed_pwd
 
     def insert_admin(self, doc: Dict[str, str]) -> bool:
         """Insert admin details.
@@ -75,10 +73,10 @@ class AdminEntry:
             bool
 
         """
-        if self.db.admins.find_one({"email": doc.get('email')}):
+        if self.db.admins.find_one({"email": doc.get("email")}):
             raise ExistingAdminError("Admin Exists")
         try:
-            password = doc.pop('password')
+            password = doc.pop("password")
             password_hash = self.hash_password(password)
 
             doc = {**doc, **{"password": password_hash}}
@@ -96,16 +94,16 @@ class AdminEntry:
         Returns:
             bool
         """
-        if value := self.db.admins.find_one(
-                {"email": email}
-        ):
-            dbpwd = value['password']
+        if value := self.db.admins.find_one({"email": email}):
+            dbpwd = value["password"]
             salt = dbpwd[:64]
             dbpwd = dbpwd[64:]
-            pwd_hash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt.encode('ascii'), 100000)
-            pwd_hash = binascii.hexlify(pwd_hash).decode('ascii')
-            
-            if pwd_hash==dbpwd:
+            pwd_hash = hashlib.pbkdf2_hmac(
+                "sha512", password.encode("utf-8"), salt.encode("ascii"), 100000
+            )
+            pwd_hash = binascii.hexlify(pwd_hash).decode("ascii")
+
+            if pwd_hash == dbpwd:
                 return value
             else:
                 raise InvalidAdminCredentialsError("Invalid Credentials")

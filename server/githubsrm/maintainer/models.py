@@ -25,45 +25,43 @@ class Entry:
 
     def hash_password(self, password: str) -> str:
         """Hashes password using salted password hashing (SHA512 & PBKDF_HMAC2)
-            Args:
-                password : Password to be hashed
-                
-            Returns:
-                str : Hashed password
+        Args:
+            password : Password to be hashed
+
+        Returns:
+            str : Hashed password
         """
-        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-        pwd_hash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("ascii")
+        pwd_hash = hashlib.pbkdf2_hmac("sha512", password.encode("utf-8"), salt, 100000)
         pwd_hash = binascii.hexlify(pwd_hash)
-        final_hashed_pwd = (salt + pwd_hash).decode('ascii')
+        final_hashed_pwd = (salt + pwd_hash).decode("ascii")
         return final_hashed_pwd
 
-    #Might Not be needed in maintainer
+    # Might Not be needed in maintainer
     def check_hash(self, email: str, pwd: str) -> bool:
         """Verifies hashed password with stored hash & verifies maintainer before login
 
-            Args:
-                email : Email ID of maintainer
-                pwd : Password to be checked
-                
-            Returns:
-                bool
+        Args:
+            email : Email ID of maintainer
+
+        Returns:
+            bool
         """
-        if value := self.db.maintainer_credentials.find_one(
-                {"email": email}
-        ):
-            dbpwd = value['password']
+        if value := self.db.maintainer_credentials.find_one({"email": email}):
+            dbpwd = value["password"]
             salt = dbpwd[:64]
             dbpwd = dbpwd[64:]
-            pwd_hash = hashlib.pbkdf2_hmac('sha512', pwd.encode('utf-8'), salt.encode('ascii'), 100000)
-            pwd_hash = binascii.hexlify(pwd_hash).decode('ascii')
-            
-            if pwd_hash==dbpwd:
+            pwd_hash = hashlib.pbkdf2_hmac(
+                "sha512", pwd.encode("utf-8"), salt.encode("ascii"), 100000
+            )
+            pwd_hash = binascii.hexlify(pwd_hash).decode("ascii")
+
+            if pwd_hash == dbpwd:
                 return value
             else:
                 return False
         else:
             return False
-
 
     def _approve_contributor(self, contributor: Dict[str, str]):
         """Trigger lambda for contributor addition
@@ -218,7 +216,7 @@ class Entry:
 
         if "email" not in decode:
             raise AuthenticationErrors("Email not found invalid JWT")
-            
+
         maintainer = self.db.maintainer_credentials.find_one_and_update(
             {"$and": [{"email": decode.get("email")}, {"reset": True}]},
             update={
@@ -232,7 +230,6 @@ class Entry:
         if maintainer:
             return True
         raise MaintainerNotFoundError("No maintainer found/not allowed to reset")
-
 
     def projects_from_email(self, email: str) -> list:
         """Get all projects from email

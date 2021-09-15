@@ -18,9 +18,12 @@ from .definitions import AdminSchema, ApprovalSchema, RejectionSchema
 from .errors import ExistingAdminError, InvalidAdminCredentialsError
 from .perms import AuthAdminPerms
 from .utils import (
-    accepted_project_pagination, alpha_maintainer_support,
-    beta_maintainer_support, get_token, project_pagination,
-    project_single_project
+    accepted_project_pagination,
+    alpha_maintainer_support,
+    beta_maintainer_support,
+    get_token,
+    project_pagination,
+    project_single_project,
 )
 
 maintainer_entry = Entry()
