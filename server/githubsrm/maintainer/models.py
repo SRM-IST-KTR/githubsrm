@@ -58,7 +58,7 @@ class Entry:
             pwd_hash = binascii.hexlify(pwd_hash).decode('ascii')
             
             if pwd_hash==dbpwd:
-                return True
+                return value
             else:
                 return False
         else:

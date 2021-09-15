@@ -76,7 +76,7 @@ class AdminEntry:
 
         """
         if self.db.admins.find_one({"email": doc.get('email')}):
-            return False
+            raise ExistingAdminError("Admin Exists")
         try:
             password = doc.pop('password')
             password_hash = self.hash_password(password)
@@ -106,11 +106,11 @@ class AdminEntry:
             pwd_hash = binascii.hexlify(pwd_hash).decode('ascii')
             
             if pwd_hash==dbpwd:
-                return True
+                return value
             else:
-                return False
+                raise InvalidAdminCredentialsError("Invalid Credentials")
         else:
-            return False
+            raise InvalidAdminCredentialsError("Invalid Credentials")
 
     def find_maintainer_for_approval(
         self, maintainer_id: str, project_id: str, maintainer_email: str
