@@ -1,6 +1,9 @@
+import binascii
+import hashlib
+import os
 from django.conf import settings
 
-settings.configure(USE_DATABASE='TESTMONGO')
+settings.configure(USE_DATABASE="TESTMONGO")
 
 
 class Base:
@@ -16,12 +19,9 @@ class Base:
             "project_url": "",
             "private": True,
             "tags": ["a", "b", "c", "d"],
-            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkaw"
+            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkaw",
         }
-        self.admin_data = {
-            "email": "rmukh561@gmail.com",
-            "password": "test"
-        }
+        self.admin_data = {"email": "rmukh561@gmail.com", "password": "test"}
         self.beta_data = {
             "name": "Riju",
             "email": "rijumukh50601@gmail.com",
@@ -37,19 +37,17 @@ class Base:
             "reg_number": "RA1911027010102",
             "branch": "CSE-BD",
             "github_id": "xyz",
-            "poa": "HelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelp"
+            "poa": "HelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelpHelp",
         }
         self.maintainer_login_data = {
             "email": "rmukh561@gmail.com",
-            "password": "test1234"
+            "password": "test1234",
         }
         self.beta_maintainer_login_data = {
             "email": "rijumukh50601@gmail.com",
-            "password": "test1234"
+            "password": "test1234",
         }
-        self.project_details = {
-            "year": "2021"
-        }
+        self.project_details = {"year": "2021"}
         self.another_alpha = {
             "name": "Riju",
             "email": "rmukh561@gmail.com",
@@ -61,11 +59,18 @@ class Base:
             "project_url": "",
             "private": True,
             "tags": ["e", "f", "g", "h"],
-            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkawdsfsdf asdfafd"
+            "description": "abc.asd.wd wdakwdaw dawdkwadaw dawldwadkaw dwadkawkdlawmd awdawodkawdsfsdf asdfafd",
         }
         self.contact_us_data = {
             "name": "Riju Mukherjee",
             "email": "rmukh561@gmail.com",
             "message": "Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test",
-            "phone_number": "9818982052"
+            "phone_number": "9818982052",
         }
+
+    def hash_password(self, password: str) -> str:
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("ascii")
+        pwd_hash = hashlib.pbkdf2_hmac("sha512", password.encode("utf-8"), salt, 100000)
+        pwd_hash = binascii.hexlify(pwd_hash)
+        final_hashed_pwd = (salt + pwd_hash).decode("ascii")
+        return final_hashed_pwd
