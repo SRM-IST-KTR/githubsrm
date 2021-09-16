@@ -24,9 +24,8 @@ from .utils import (
     get_token,
     project_pagination,
     project_single_project,
+    update_token,
 )
-
-maintainer_entry = Entry()
 
 
 class RegisterAdmin(APIView):

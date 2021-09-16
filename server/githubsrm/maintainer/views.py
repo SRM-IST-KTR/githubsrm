@@ -168,7 +168,6 @@ class Login(APIView):
         if "error" in validate:
             return JsonResponse(data={"error": validate.get("error")}, status=400)
 
-        password_hashed = entry.hash_password(request.data["password"])
         user_credentials = entry.find_Maintainer_credentials_with_email(
             request.data["email"]
         )
@@ -177,8 +176,9 @@ class Login(APIView):
             return JsonResponse(
                 data={"error": "Maintainer not found / Not approved"}, status=400
             )
-
-        if user_credentials["password"] != password_hashed:
+        try:
+            entry.check_hash(request.data["email"], request.data["password"])
+        except:
             return JsonResponse(
                 data={"message": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED
             )

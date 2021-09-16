@@ -1,7 +1,7 @@
-from hashlib import sha256
 from .errors import (
     ContributorNotFoundError,
     ContributorApprovedError,
+    InvalidMaintainerCredentialsError,
     ProjectErrors,
     MaintainerNotFoundError,
     AuthenticationErrors,
@@ -58,10 +58,7 @@ class Entry:
 
             if pwd_hash == dbpwd:
                 return value
-            else:
-                return False
-        else:
-            return False
+        raise InvalidMaintainerCredentialsError("Invalid credentials")
 
     def _approve_contributor(self, contributor: Dict[str, str]):
         """Trigger lambda for contributor addition
