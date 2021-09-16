@@ -75,15 +75,11 @@ class AdminEntry:
         """
         if self.db.admins.find_one({"email": doc.get("email")}):
             raise ExistingAdminError("Admin Exists")
-        try:
-            password = doc.pop("password")
-            password_hash = self.hash_password(password)
+        password = doc.pop("password")
+        password_hash = self.hash_password(password)
 
-            doc = {**doc, **{"password": password_hash}}
-            self.db.admins.insert_one(document=doc)
-            return True
-        except Exception as e:
-            return False
+        doc = {**doc, **{"password": password_hash}}
+        self.db.admins.insert_one(document=doc)
 
     def verify_admin(self, email: str, password: str) -> bool:
         """Verify admin users
@@ -102,13 +98,9 @@ class AdminEntry:
                 "sha512", password.encode("utf-8"), salt.encode("ascii"), 100000
             )
             pwd_hash = binascii.hexlify(pwd_hash).decode("ascii")
-
             if pwd_hash == dbpwd:
                 return value
-            else:
-                raise InvalidAdminCredentialsError("Invalid Credentials")
-        else:
-            raise InvalidAdminCredentialsError("Invalid Credentials")
+        raise InvalidAdminCredentialsError("Invalid Credentials")
 
     def find_maintainer_for_approval(
         self, maintainer_id: str, project_id: str, maintainer_email: str
