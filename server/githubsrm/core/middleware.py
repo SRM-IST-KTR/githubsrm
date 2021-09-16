@@ -96,8 +96,7 @@ class MeVerification:
 
                 if len(project_ids) != total_items:
                     return JsonResponse(data={"error": "Key expired"}, status=401)
-                request.project_ids = project_ids
-                request.total_items = total_items
+                request.project_ids, request.total_items = project_ids, total_items
                 return self.view(request)
             return JsonResponse(data={"error": "Invalid Key"}, status=401)
         return self.view(request)
@@ -137,7 +136,7 @@ class JsonResponseCheck:
 
     def __call__(self, request, **kwargs) -> JsonResponse:
         if request.method == "POST" or request.method == "DELETE":
-            if request.META["CONTENT_TYPE"] != "application/json":
+            if "application/json" not in request.META["CONTENT_TYPE"].split(";"):
                 return JsonResponse(
                     data={"error": "content type should be json"}, status=415
                 )
