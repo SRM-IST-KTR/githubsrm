@@ -4,4 +4,9 @@ from core.errorfactory import (
     ProjectErrors,
     MaintainerNotFoundError,
     AuthenticationErrors,
+    MaintainerErrors,
 )
+
+
+class InvalidMaintainerCredentialsError(MaintainerErrors):
+    ...
