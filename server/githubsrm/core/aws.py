@@ -1,8 +1,10 @@
-import os
-from typing import Any, Dict, TypedDict
-from .utils import get_email_content
-import boto3
 import json
+import os
+from typing import Any, Dict, List, TypedDict
+
+import boto3
+
+from .utils import get_email_content
 
 
 class SNSpayload(TypedDict):
@@ -45,16 +47,21 @@ class BotoService:
             return True
         client = boto3.client("sesv2", region_name="ap-south-1")
 
+        email_addresses = []
+        data_email = data.get("email")
+        if isinstance(data_email, List):
+            email_addresses.extend(data_email)
+        else:
+            email_addresses.append(data_email)
+
         try:
             client.send_email(
-                FromEmailAddress='GitHub Community SRM <community@githubsrm.tech>',
-                Destination={
-                    'ToAddresses': [data.get("email")],
-                },
+                FromEmailAddress="GitHub Community SRM <community@githubsrm.tech>",
+                Destination={"ToAddresses": email_addresses},
                 ReplyToAddresses=[
-                    'community@githubsrm.tech',
+                    "community@githubsrm.tech",
                 ],
-                Content=get_email_content(role, data)
+                Content=get_email_content(role, data),
             )
             return True
 
