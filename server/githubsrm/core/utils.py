@@ -1,6 +1,6 @@
 import json
 import os
-from functools import cache
+from functools import lru_cache
 from typing import Any, Dict
 
 from jinja2 import Template
@@ -58,7 +58,7 @@ def get_email_content(role: str, data: Dict[str, str]) -> Dict[str, Any]:
     }
 
 
-@cache
+@lru_cache
 def find_templates_folder():
     for (root, dirs, _) in os.walk("."):
         if "templates" in dirs:
