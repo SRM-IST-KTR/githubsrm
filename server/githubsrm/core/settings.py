@@ -15,143 +15,123 @@ from sentry_sdk.integrations.django import DjangoIntegration
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 DEBUG = True if os.getenv("DEBUG") else False
 
 
 if DEBUG == False:
-    sentry_sdk.init(
-        dsn=os.getenv("SENTRY_DSN"),
-        integrations=[DjangoIntegration()]
-    )
-    print('\033[92mServer in Production Mode. Sentry Enabled.\033[0m')
+    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), integrations=[DjangoIntegration()])
+    print("\033[92mServer in Production Mode. Sentry Enabled.\033[0m")
 else:
-    print(f'\033[93mServer in DEBUG Mode. Disabling Sentry.\033[0m')
+    print(f"\033[93mServer in DEBUG Mode. Disabling Sentry.\033[0m")
 
-ALLOWED_HOSTS = ['*']
-USE_DATABASE = 'MONGO' if DEBUG is False else "TEST"
+ALLOWED_HOSTS = ["*"]
+USE_DATABASE = "MONGO" if DEBUG is False else "TEST"
 
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'rest_framework',
-    'corsheaders',
-    'apis',
-    'administrator',
-    'maintainer'
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "rest_framework",
+    "corsheaders",
+    "apis",
+    "administrator",
+    "maintainer",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.ReCaptcha',
-    'core.middleware.Authorize',
-    'core.middleware.MeVerification',
-    'core.middleware.JsonResponseCheck'
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "core.middleware.ReCaptcha",
+    "core.middleware.Authorize",
+    "core.middleware.MeVerification",
+    "core.middleware.JsonResponseCheck",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5000",
-    "http://localhost:8000"
+    "http://localhost:8000",
 ]
 
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X-RECAPTCHA-TOKEN',
-    'SENTRY-TRACE'
-]
+CORS_ALLOW_HEADERS = list(default_headers) + ["X-RECAPTCHA-TOKEN", "SENTRY-TRACE"]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'dist')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "dist")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = "core.wsgi.application"
 if DEBUG:
     REST_FRAMEWORK = {
-
-        'DEFAULT_THROTTLE_RATES': {
-            'post_throttle': '1000/min',
+        "DEFAULT_THROTTLE_RATES": {
+            "post_throttle": "1000/min",
         },
-
-        'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.JSONRenderer',
-        )
+        "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     }
 
 else:
     REST_FRAMEWORK = {
-
-        'DEFAULT_THROTTLE_RATES': {
-            'post_throttle': '10/min',
+        "DEFAULT_THROTTLE_RATES": {
+            "post_throttle": "10/min",
         },
-
-        'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.JSONRenderer',
-        )
+        "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     }
 
 from .throttle import PostThrottle
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
-if USE_DATABASE == 'MONGO':
-    DATABASE = {
-        "mongo_uri": os.getenv("MONGO_URI"),
-        "db": os.getenv("MONGO_DB")
-    }
+if USE_DATABASE == "MONGO":
+    DATABASE = {"mongo_uri": os.getenv("MONGO_URI"), "db": os.getenv("MONGO_DB")}
 else:
-    DATABASE = {
-        "mongo_uri": os.getenv("MONGO_URI"),
-        "db": os.getenv("TEST_MONGO_DB")
-    }
+    DATABASE = {"mongo_uri": os.getenv("MONGO_URI"), "db": os.getenv("TEST_MONGO_DB")}
 
 print("USING DB: ", DATABASE["db"])
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -160,4 +140,3 @@ USE_L10N = True
 USE_TZ = True
 
 APPEND_SLASH = False
-
