@@ -24,9 +24,13 @@ jobs:
 
     - name: Run Tests
       env:
-        TEST_MONGO_DB: ${{ secrets.DATABASE }}
+        TEST_MONGO_DB: ${{ secrets.TEST_MONGO_DB }}
         MONGO_URI: ${{ secrets.MONGO_URI }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         SIGNATURE: ${{ secrets.WEB_HOOK }}
+        TestDB: ${{ secrets.TestDB }}
+        SENDEMAIL: false
+        DEBUG: true
       run: |
-          . ./server/run_backend_tests.sh || true
+          cd ./server
+          . ./run_backend_tests.sh
