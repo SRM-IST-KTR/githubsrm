@@ -8,5 +8,8 @@ from core.errorfactory import (
 )
 
 
-class InvalidMaintainerCredentialsError(MaintainerErrors):
-    ...
+class InvalidMaintainerCredentialsError(AuthenticationErrors):
+    def __init__(self, *args, **kwargs):
+        self.status_code = 403
+        detail = kwargs.get("detail", {"error": "Invalid Maintainer Credentails"})
+        super().__init__(detail=detail)

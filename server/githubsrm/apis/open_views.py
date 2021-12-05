@@ -295,7 +295,6 @@ class HealthCheck(APIView):
         Args:
             request
         """
-
         uptime = time.time() - psutil.Process(os.getpid()).create_time()
         return JsonResponse(
             {"uptime": uptime, "status": "OK", "timeStamp": time.time()}, status=200

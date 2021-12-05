@@ -7,7 +7,7 @@ from .errors import (
     ApprovedError,
     NotApprovedError,
     ExisitingMaintainerError,
-    ExistingProjectError
+    ExistingProjectError,
 )
 
 
