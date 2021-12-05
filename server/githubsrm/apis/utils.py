@@ -1,4 +1,3 @@
-
 import os
 import requests
 from dotenv import load_dotenv
@@ -26,11 +25,11 @@ def check_token(token) -> bool:
         return True
 
     url = "https://www.google.com/recaptcha/api/siteverify"
-    secret_key = os.getenv('RECAPTCHA_SECRET_KEY')
+    secret_key = os.getenv("RECAPTCHA_SECRET_KEY")
 
     payload = {
-        'secret': secret_key,
-        'response': token,
+        "secret": secret_key,
+        "response": token,
     }
 
     response = requests.post(url, data=payload)
