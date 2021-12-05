@@ -45,11 +45,9 @@ class RegisterAdmin(APIView):
         valid = AdminSchema(request.data).valid()
         if "error" in valid:
             return JsonResponse(data={"error": valid}, status=400)
-        try:
-            entry.insert_admin(request.data)
-            return JsonResponse(data={"registred": True}, status=200)
-        except ExistingAdminError as e:
-            return JsonResponse(data={"error": str(e)}, status=400)
+
+        entry.insert_admin(request.data)
+        return JsonResponse(data={"registred": True}, status=200)
 
 
 class AdminLogin(APIView):
@@ -72,15 +70,13 @@ class AdminLogin(APIView):
         if "error" in validate:
             return JsonResponse(data={"error": "Invalid data"}, status=400)
         password = validate.get("password")
-        try:
-            entry.verify_admin(email=validate.get("email"), password=password)
-            keys = jwt_keys.issue_key(
-                payload={"admin": True, "user": validate.get("email")},
-                get_refresh_token=True,
-            )
-            return JsonResponse(data=keys, status=200)
-        except InvalidAdminCredentialsError as e:
-            return JsonResponse(data={"error": str(e)}, status=401)
+
+        entry.verify_admin(email=validate.get("email"), password=password)
+        keys = jwt_keys.issue_key(
+            payload={"admin": True, "user": validate.get("email")},
+            get_refresh_token=True,
+        )
+        return JsonResponse(data=keys, status=200)
 
 
 class ProjectsAdmin(APIView):
@@ -105,123 +101,111 @@ class ProjectsAdmin(APIView):
         if "error" in validate:
             return JsonResponse(data={"error": str(validate.get("error"))}, status=400)
         if params == "maintainer":
+            project, maintainer = entry.find_maintainer_for_approval(
+                validate.get("maintainer_id"),
+                validate.get("project_id"),
+                validate.get("email"),
+            )
+            existing = entry.check_existing_maintainer(email=validate.get("email"))
 
-            try:
-                project, maintainer = entry.find_maintainer_for_approval(
-                    validate.get("maintainer_id"),
-                    validate.get("project_id"),
-                    validate.get("email"),
+            if len(project["maintainer_id"]) == 1:
+                response = alpha_maintainer_support(
+                    existing=existing,
+                    project=project,
+                    maintainer=maintainer,
+                    request=request,
                 )
-                existing = entry.check_existing_maintainer(email=validate.get("email"))
+                return JsonResponse(
+                    data=response.get("message"), status=response.get("status")
+                )
 
-                if len(project["maintainer_id"]) == 1:
-                    response = alpha_maintainer_support(
-                        existing=existing,
-                        project=project,
-                        maintainer=maintainer,
-                        request=request,
-                    )
-                    return JsonResponse(
-                        data=response.get("message"), status=response.get("status")
-                    )
+            if len(project["maintainer_id"]) > 1:
+                alpha_email = entry.get_maintainer_email(
+                    identifier=project["maintainer_id"][0]
+                )
+                response = beta_maintainer_support(
+                    existing=existing,
+                    project=project,
+                    maintainer=maintainer,
+                    alpha_email=alpha_email,
+                    request=request,
+                )
 
-                if len(project["maintainer_id"]) > 1:
-                    alpha_email = entry.get_maintainer_email(
-                        identifier=project["maintainer_id"][0]
-                    )
-                    response = beta_maintainer_support(
-                        existing=existing,
-                        project=project,
-                        maintainer=maintainer,
-                        alpha_email=alpha_email,
-                        request=request,
-                    )
-
-                    return JsonResponse(
-                        data=response.get("message"), status=response.get("status")
-                    )
-            except MaintainerErrors as e:
-                return JsonResponse(data={"error": str(e)}, status=400)
-
+                return JsonResponse(
+                    data=response.get("message"), status=response.get("status")
+                )
         elif params == "project":
-            try:
-                project = entry.approve_project(
-                    identifier=validate.get("project_id"), year=validate.get("year")
-                )
-                email_document = entry.get_all_maintainer_emails(project=project)
-                if email_document:
-                    if service.wrapper_email(
-                        role="project_approval",
-                        data={
-                            **{
-                                "name": "Maintainer(s)",
-                                "project_name": project["project_name"],
-                                "project_url": project["project_url"],
-                                "project_id": project["_id"],
-                            },
-                            **email_document,
-                        },
-                        send_all=True,
-                    ):
-                        return JsonResponse(
-                            data={"Approved Project": validate.get("project_id")},
-                            status=200,
-                        )
-                    entry.reset_status_project(project=project)
-                    return JsonResponse(data={"error": "email failed"}, status=500)
-                else:
-                    entry.reset_status_project(project=project)
-
-                    blame = None
-                    try:
-                        blame = request.decoded.get("user")
-                    except Exception as e:
-                        blame = None
-
-                    Thread(
-                        target=service.sns,
-                        kwargs={
-                            "payload": {
-                                "message": "Trying to approve project without approving maintainers",
-                                "subject": f"[ADMIN-ERROR] This person messed up -> {blame}",
-                            }
-                        },
-                    ).start()
-
-                    return JsonResponse(
-                        data={"error": "Approve maintainer before approving project"},
-                        status=400,
-                    )
-            except ProjectErrors as e:
-                return JsonResponse(data={"error": str(e)}, status=400)
-
-        else:
-            try:
-                contributor, project = entry.approve_contributor(
-                    project_id=validate.get("project_id"),
-                    contributor_id=validate.get("contributor_id"),
-                )
-
-                emails = entry.get_all_maintainer_emails(project=project)
-                Thread(
-                    target=service.wrapper_email,
-                    kwargs={
-                        "role": "contributor_application_to_maintainer",
-                        "send_all": True,
-                        "data": {
+            project = entry.approve_project(
+                identifier=validate.get("project_id"), year=validate.get("year")
+            )
+            email_document = entry.get_all_maintainer_emails(project=project)
+            if email_document:
+                if service.wrapper_email(
+                    role="project_approval",
+                    data={
+                        **{
                             "name": "Maintainer(s)",
                             "project_name": project["project_name"],
-                            "contributor_name": contributor["name"],
-                            "contributor_email": contributor["email"],
-                            "email": emails["email"],
+                            "project_url": project["project_url"],
+                            "project_id": project["_id"],
                         },
+                        **email_document,
+                    },
+                    send_all=True,
+                ):
+                    return JsonResponse(
+                        data={"Approved Project": validate.get("project_id")},
+                        status=200,
+                    )
+                entry.reset_status_project(project=project)
+                return JsonResponse(data={"error": "email failed"}, status=500)
+            else:
+                entry.reset_status_project(project=project)
+
+                blame = None
+                try:
+                    blame = request.decoded.get("user")
+                except Exception as e:
+                    blame = None
+
+                Thread(
+                    target=service.sns,
+                    kwargs={
+                        "payload": {
+                            "message": "Trying to approve project without approving maintainers",
+                            "subject": f"[ADMIN-ERROR] This person messed up -> {blame}",
+                        }
                     },
                 ).start()
 
-                return JsonResponse(data={"admin_approved": True}, status=200)
+                return JsonResponse(
+                    data={"error": "Approve maintainer before approving project"},
+                    status=400,
+                )
 
-            except ContributorErrors as e:
-                return JsonResponse(data={"error": str(e)}, status=400)
+        else:
+            contributor, project = entry.approve_contributor(
+                project_id=validate.get("project_id"),
+                contributor_id=validate.get("contributor_id"),
+            )
+
+            emails = entry.get_all_maintainer_emails(project=project)
+            Thread(
+                target=service.wrapper_email,
+                kwargs={
+                    "role": "contributor_application_to_maintainer",
+                    "send_all": True,
+                    "data": {
+                        "name": "Maintainer(s)",
+                        "project_name": project["project_name"],
+                        "contributor_name": contributor["name"],
+                        "contributor_email": contributor["email"],
+                        "email": emails["email"],
+                    },
+                },
+            ).start()
+
+            return JsonResponse(data={"admin_approved": True}, status=200)
 
     def get(self, request, **kwargs):
 
@@ -433,11 +417,8 @@ class RefreshRoute(APIView):
             JsonResponse
         """
         refresh_token = get_token(request_header=request.headers)
-        try:
-            key = update_token(refresh_token=refresh_token)
-            return JsonResponse(data=key, status=400)
-        except AuthenticationErrors as e:
-            return JsonResponse(data={"error": str(e)}, status=400)
+        key = update_token(refresh_token=refresh_token)
+        return JsonResponse(data=key, status=400)
 
 
 class Verification(APIView):

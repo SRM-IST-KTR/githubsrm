@@ -43,11 +43,11 @@ class AdminEntry:
         """
         token_type, token = token
         if token_type != "Bearer":
-            raise InvalidWebhookError("Invalid token type")
+            raise InvalidWebhookError(detail={"error": "Invalid token type"})
         webHook = self.db.webHook.find_one({"token": token})
         if webHook:
             return True
-        raise InvalidWebhookError("Invalid token")
+        raise InvalidWebhookError(detail={"error": "Invalid token"})
 
     def hash_password(self, password: str) -> str:
         """Hashes password using salted password hashing (SHA512 & PBKDF_HMAC2)
@@ -74,7 +74,7 @@ class AdminEntry:
 
         """
         if self.db.admins.find_one({"email": doc.get("email")}):
-            raise ExistingAdminError("Admin Exists")
+            raise ExistingAdminError()
         password = doc.pop("password")
         password_hash = self.hash_password(password)
 
@@ -100,7 +100,7 @@ class AdminEntry:
             pwd_hash = binascii.hexlify(pwd_hash).decode("ascii")
             if pwd_hash == dbpwd:
                 return value
-        raise InvalidAdminCredentialsError("Invalid Credentials")
+        raise InvalidAdminCredentialsError()
 
     def find_maintainer_for_approval(
         self, maintainer_id: str, project_id: str, maintainer_email: str
@@ -131,12 +131,12 @@ class AdminEntry:
 
         if maintainer:
             if maintainer.get("is_admin_approved"):
-                raise MaintainerApprovedError("Maintainer already approved")
+                raise MaintainerApprovedError()
             project = self._update_project(
                 project_id=project_id, maintainer_id=maintainer_id
             )
             return project, maintainer
-        raise MaintainerNotFoundError("Maintainer not found")
+        raise MaintainerNotFoundError(detail={"error": "Maintainer not found"})
 
     def _update_project(self, project_id: str, maintainer_id: str) -> bool:
         """Update the project collection when a maintainer is added.
@@ -260,8 +260,8 @@ class AdminEntry:
                             }
                         },
                     ).start()
-                raise ProjectErrors("Lambda returned success False")
-        raise ProjectNotFoundError("No project document found")
+                raise ProjectErrors(detail={"error": "Lambda returned success False"})
+        raise ProjectNotFoundError()
 
     def approve_contributor(self, project_id: str, contributor_id: str) -> bool:
         """Approve contributor to project.
@@ -281,14 +281,16 @@ class AdminEntry:
         if contributor:
             # Already approved
             if contributor.get("is_admin_approved"):
-                raise ContributorApprovedError("Contributor already approved")
+                raise ContributorApprovedError(
+                    detail={"error": "Contributor already approved"}
+                )
 
             project = self.db.project.find_one(
                 {"_id": contributor["interested_project"]}
             )
             return contributor, project
 
-        raise ContributorNotFoundError("Contributor/Project not found")
+        raise ContributorNotFoundError({"error": "Contributor/Project not found"})
 
     def reset_status_maintainer(self, identifier: str, project_id: str) -> bool:
         """On failed email reset maintainer state
