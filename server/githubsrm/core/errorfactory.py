@@ -23,7 +23,7 @@ class ProjectErrors(APIException):
 
 
 class AuthenticationErrors(APIException):
-    def __init__(self, detail="Error Occoured!", status_code=403):
+    def __init__(self, detail="Error Occoured!", status_code=401):
         self.status_code = status_code
         super().__init__(detail=detail)
 
