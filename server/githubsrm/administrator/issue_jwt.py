@@ -1,10 +1,10 @@
-from hashlib import new
 import os
 from datetime import datetime, timedelta
 from typing import Any, Dict
 
 import jwt
 from dotenv import load_dotenv
+from .errors import AuthenticationErrors
 
 load_dotenv()
 
@@ -60,13 +60,13 @@ class IssueKey:
                     "access_token": jwt.encode(payload, key=self.signature),
                     "refresh_token": jwt.encode(refresh_payload, key=self.signature),
                 }
-            except Exception as e:
-                return False
+            except Exception:
+                raise AuthenticationErrors(detail={"error": "Does not exist!"})
         else:
             try:
                 return jwt.encode(payload=payload, key=self.signature)
-            except Exception as e:
-                return False
+            except Exception:
+                raise AuthenticationErrors(detail={"error": "Does not exist!"})
 
     def verify_key(self, key: str) -> bool:
         """Verify JwT with the original signature
@@ -107,9 +107,11 @@ class IssueKey:
                     algorithms=["HS256"],
                 )
                 return decoded
-        except Exception as e:
-            print(e)
-            return False
+        except Exception:
+            # Fix status code here
+            raise AuthenticationErrors(
+                status_code=400, detail={"error": "Invalid key!"}
+            )
 
     def verify_role(self, key: str, path: str) -> bool:
         """Verify user permissions

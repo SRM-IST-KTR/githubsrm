@@ -3,6 +3,7 @@ from threading import Thread
 from core import service
 from core.errorfactory import (
     AuthenticationErrors,
+    MaintainerNotFoundError,
     ProjectErrors,
     ContributorErrors,
     MaintainerErrors,
@@ -140,7 +141,7 @@ class ProjectsAdmin(APIView):
             )
             email_document = entry.get_all_maintainer_emails(project=project)
             if email_document:
-                if service.wrapper_email(
+                email_status = service.wrapper_email(
                     role="project_approval",
                     data={
                         **{
@@ -152,22 +153,18 @@ class ProjectsAdmin(APIView):
                         **email_document,
                     },
                     send_all=True,
-                ):
-                    return JsonResponse(
-                        data={"Approved Project": validate.get("project_id")},
-                        status=200,
-                    )
-                entry.reset_status_project(project=project)
-                return JsonResponse(data={"error": "email failed"}, status=500)
+                )
+                if not email_status:
+                    entry.reset_status_project(project=project)
+                    return JsonResponse(data={}, status=500)
+
+                return JsonResponse(
+                    data={"Approved Project": validate.get("project_id")},
+                    status=200,
+                )
             else:
                 entry.reset_status_project(project=project)
-
-                blame = None
-                try:
-                    blame = request.decoded.get("user")
-                except Exception as e:
-                    blame = None
-
+                blame = request.decoded.get("user")
                 Thread(
                     target=service.sns,
                     kwargs={

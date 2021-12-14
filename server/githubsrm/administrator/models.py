@@ -428,15 +428,9 @@ class AdminEntry:
             maintainers = list(
                 self.db.maintainer.find({"_id": {"$in": maintainer_ids}})
             )
-
-        except Exception as e:
+        except Exception:
             return
-
-        doc = {}
-
-        doc["email"] = [maintainer["email"] for maintainer in maintainers]
-
-        return doc
+        return dict(email=[maintainer["email"] for maintainer in maintainers])
 
     def get_maintainer_email(self, identifier: str) -> str:
         """Get maintainer email from identifier
