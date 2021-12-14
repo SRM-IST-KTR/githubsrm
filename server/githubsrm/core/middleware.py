@@ -42,9 +42,10 @@ class Authorize:
                         data={"error": "invalid token type"}, status=401
                     )
                 try:
-                    decoded = jwt_keys.verify_key(key=token) and jwt_keys.verify_role(
-                        key=token, path=request.path
-                    )
+                    decoded = jwt_keys.verify_key(key=token)
+                    role = jwt_keys.verify_role(key=token, path=request.path)
+                    if not role:
+                        raise AuthenticationErrors()
                 except AuthenticationErrors:
                     return JsonResponse(data={"error": "Invalid key!"}, status=401)
                 request.decoded = decoded

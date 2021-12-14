@@ -123,12 +123,15 @@ class IssueKey:
         Returns:
             bool: is allowed
         """
-        decoded = jwt.decode(
-            jwt=key,
-            key=self.signature,
-            options={"verify_signature": True},
-            algorithms=["HS256"],
-        )
+        try:
+            decoded = jwt.decode(
+                jwt=key,
+                key=self.signature,
+                options={"verify_signature": True},
+                algorithms=["HS256"],
+            )
+        except Exception:
+            raise AuthenticationErrors(detail={"error": "Invalid key"})
         if "admin" in path:
             return decoded.get("admin") == True
         if "maintainer" in path:
