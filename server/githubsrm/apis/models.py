@@ -171,7 +171,7 @@ class Entry:
         project_doc = self.db.project.find_one({"_id": doc.get("interested_project")})
         if not project_doc:
             raise ProjectErrors(
-                {"error": "Project not approved or project does not exist"}
+                detail={"error": "Project not approved or project does not exist"}
             )
 
         self.db.contributor.insert_one(doc)
@@ -264,7 +264,9 @@ class Entry:
         details = self.db.contactUs.find_one({"message": doc.get("message")})
 
         if details:
-            raise MiscErrors({"error": "Message already exists!"})
+            raise MiscErrors(
+                status_code=409, detail={"error": "Message already exists!"}
+            )
         self.db.contactUs.insert_one(doc)
 
     def get_contact_us(self) -> object:

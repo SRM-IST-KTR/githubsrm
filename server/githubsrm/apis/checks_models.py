@@ -37,7 +37,7 @@ class EntryCheck:
         result = self.db.project.find_one({"$or": checks})
 
         if result:
-            raise ExistingProjectError({"error": "Project Exists"})
+            raise ExistingProjectError(detail={"error": "Project Exists"})
 
     def check_approved_project(self, identifier: str) -> bool:
         """Checks if given identifier is valid and approved status
@@ -51,7 +51,7 @@ class EntryCheck:
         result = self.db.project.find_one({"_id": identifier})
         if result:
             if result.get("is_admin_approved"):
-                raise ApprovedError({"error": "Project approved"})
+                raise ApprovedError(detail={"error": "Project approved"})
             return result
 
     def check_contributor(
@@ -69,7 +69,7 @@ class EntryCheck:
 
         result = self.db.project.find_one({"_id": interested_project})
         if not result.get("is_admin_approved"):
-            raise NotApprovedError({"error": "Project not approved"})
+            raise NotApprovedError(detail={"error": "Project not approved"})
 
         contributor = self.db.contributor.find_one(
             {
@@ -102,7 +102,10 @@ class EntryCheck:
         )
 
         if contributor or maintainer:
-            raise MiscErrors({"error": "Existing contributor/maintainer for project"})
+            raise MiscErrors(
+                status_code=409,
+                detail={"error": "Existing contributor/maintainer for project"},
+            )
 
     def check_existing_beta(
         self, github_id: str, project_id: str, srm_email: str
@@ -125,7 +128,7 @@ class EntryCheck:
 
         if result >= 1:
             raise ExisitingMaintainerError(
-                {"error": "Maintainer for this project exists"}
+                detail={"error": "Maintainer for this project exists"}
             )
 
     def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
