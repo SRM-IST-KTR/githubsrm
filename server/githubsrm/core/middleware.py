@@ -1,8 +1,10 @@
 from administrator import jwt_keys
-from django.http.response import JsonResponse
 from administrator.utils import get_token
 from apis.utils import check_token
+from django.http.response import JsonResponse
 from maintainer.models import Entry
+
+from .errorfactory import AuthenticationErrors
 
 maintainer_entry = Entry()
 maintainer_entry = maintainer_entry.db
@@ -35,16 +37,18 @@ class Authorize:
                 token_type, token = value
                 try:
                     assert token_type == "Bearer"
-                except AssertionError as e:
+                except AssertionError:
                     return JsonResponse(
                         data={"error": "invalid token type"}, status=401
                     )
-                if decoded := jwt_keys.verify_key(key=token) and jwt_keys.verify_role(
-                    key=token, path=request.path
-                ):
-                    request.decoded = decoded
-                    return self.view(request)
-                return JsonResponse(data={"error": "invalid key"}, status=401)
+                try:
+                    decoded = jwt_keys.verify_key(key=token) and jwt_keys.verify_role(
+                        key=token, path=request.path
+                    )
+                except AuthenticationErrors:
+                    return JsonResponse(data={"error": "Invalid key!"}, status=401)
+                request.decoded = decoded
+                return self.view(request)
 
             return JsonResponse(data={"error": "token error"}, status=401)
 
@@ -78,27 +82,29 @@ class MeVerification:
                     assert token_type == "Bearer"
                 else:
                     return JsonResponse(data={"error": "No token provided"}, status=401)
-            except AssertionError as e:
+            except AssertionError:
                 return JsonResponse(data={"error": "Invalid token type"}, status=401)
 
-            decoded = jwt_keys.verify_key(key=token)
-            if decoded:
-                request.decoded = decoded
-                admin = decoded.get("admin")
-                if admin:
-                    return self.view(request)
-                else:
-                    email = decoded.get("email")
-                    project_ids = decoded.get("project_id")
-                    total_items = maintainer_entry.maintainer.count_documents(
-                        {"email": email, "is_admin_approved": True}
-                    )
+            try:
+                decoded = jwt_keys.verify_key(key=token)
+            except AuthenticationErrors:
+                return JsonResponse(data={"error": "Invalid key!"}, status=401)
 
-                if len(project_ids) != total_items:
-                    return JsonResponse(data={"error": "Key expired"}, status=401)
-                request.project_ids, request.total_items = project_ids, total_items
+            request.decoded = decoded
+            admin = decoded.get("admin")
+            if admin:
                 return self.view(request)
-            return JsonResponse(data={"error": "Invalid Key"}, status=401)
+            else:
+                email = decoded.get("email")
+                project_ids = decoded.get("project_id")
+                total_items = maintainer_entry.maintainer.count_documents(
+                    {"email": email, "is_admin_approved": True}
+                )
+
+            if len(project_ids) != total_items:
+                return JsonResponse(data={"error": "Key expired"}, status=401)
+            request.project_ids, request.total_items = project_ids, total_items
+            return self.view(request)
         return self.view(request)
 
 
