@@ -35,38 +35,21 @@ class IssueKey:
         payload = {**payload, **{"exp": generation_time + timedelta(minutes=expiry)}}
 
         if get_refresh_token:
-            email = (
-                payload.get("email") if payload.get("email") else payload.get("user")
+            email = payload.get("email", payload.get("user"))
+            refresh_payload = {
+                "exp": generation_time + timedelta(days=refresh_expiry),
+                "refresh": True,
+            }
+            refresh_payload.update(
+                {"email": email, "name": payload.get("name", "Anonymous")}
             )
-            name = payload.get("name")
-            if name:
-                refresh_payload = {
-                    **{
-                        "exp": generation_time + timedelta(days=refresh_expiry),
-                        "refresh": True,
-                    },
-                    **{"email": email, "name": name},
-                }
-            else:
-                refresh_payload = {
-                    **{
-                        "exp": generation_time + timedelta(days=refresh_expiry),
-                        "refresh": True,
-                    },
-                    **{"email": email},
-                }
-            try:
-                return {
-                    "access_token": jwt.encode(payload, key=self.signature),
-                    "refresh_token": jwt.encode(refresh_payload, key=self.signature),
-                }
-            except Exception:
-                raise AuthenticationErrors(detail={"error": "Does not exist!"})
-        else:
-            try:
-                return jwt.encode(payload=payload, key=self.signature)
-            except Exception:
-                raise AuthenticationErrors(detail={"error": "Does not exist!"})
+
+            return {
+                "access_token": jwt.encode(payload, key=self.signature),
+                "refresh_token": jwt.encode(refresh_payload, key=self.signature),
+            }
+
+        return jwt.encode(payload=payload, key=self.signature)
 
     def verify_key(self, key: str) -> bool:
         """Verify JwT with the original signature
@@ -147,14 +130,12 @@ class IssueKey:
         Returns:
             str: jwt
         """
-        old_jwt = self.verify_key(old_token)
-        if old_jwt:
-            payload = {**old_jwt, **payload}
-            new_key = self.issue_key(payload=payload)
-            if new_key:
-                return new_key
-        else:
+        try:
+            old_jwt = self.verify_key(old_token)
+        except AuthenticationErrors:
             return False
+        payload = {**old_jwt, **payload}
+        return self.issue_key(payload=payload)
 
     def refresh_to_access(
         self, refresh_token: str, payload: Dict[str, Any], expiry: int = 1
@@ -168,13 +149,10 @@ class IssueKey:
             str: new access tokens
         """
 
-        if token := self.verify_key(key=refresh_token):
-            if token.get("refresh"):
-                payload["exp"] = (
-                    datetime.utcnow() + timedelta(hours=expiry)
-                ).timestamp()
-                return self.issue_key(payload=payload, get_refresh_token=True)
-            else:
-                return False
-        else:
-            return False
+        try:
+            token = self.verify_key(key=refresh_token)
+        except AuthenticationErrors:
+            return
+        if token.get("refresh"):
+            payload["exp"] = (datetime.utcnow() + timedelta(hours=expiry)).timestamp()
+            return self.issue_key(payload=payload, get_refresh_token=True)
