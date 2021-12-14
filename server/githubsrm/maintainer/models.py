@@ -1,27 +1,26 @@
-from .errors import (
-    ContributorNotFoundError,
-    ContributorApprovedError,
-    InvalidMaintainerCredentialsError,
-    ProjectErrors,
-    MaintainerNotFoundError,
-    AuthenticationErrors,
-)
+import binascii
+import hashlib
+import os
 from threading import Thread
-from typing import Iterable, Dict, Any
-import pymongo
-from django.conf import settings
+from typing import Any, Dict, Iterable
+
 from administrator import jwt_keys
-
-
-import hashlib, binascii, os
-
 from core import service
+from core.models import BaseModel
+
+from .errors import (
+    AuthenticationErrors,
+    ContributorApprovedError,
+    ContributorNotFoundError,
+    InvalidMaintainerCredentialsError,
+    MaintainerNotFoundError,
+    ProjectErrors,
+)
 
 
-class Entry:
+class Entry(BaseModel):
     def __init__(self) -> None:
-        client = pymongo.MongoClient(settings.DATABASE["mongo_uri"])
-        self.db = client[settings.DATABASE["db"]]
+        super().__init__()
 
     def hash_password(self, password: str) -> str:
         """Hashes password using salted password hashing (SHA512 & PBKDF_HMAC2)
