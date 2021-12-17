@@ -39,10 +39,9 @@ class IssueKey:
             refresh_payload = {
                 "exp": generation_time + timedelta(days=refresh_expiry),
                 "refresh": True,
+                "email": email,
+                "name": payload.get("name", "Anonymous"),
             }
-            refresh_payload.update(
-                {"email": email, "name": payload.get("name", "Anonymous")}
-            )
 
             return {
                 "access_token": jwt.encode(payload, key=self.signature),
