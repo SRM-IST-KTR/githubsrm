@@ -1,39 +1,31 @@
+import binascii
+import hashlib
+import os
 import secrets
 from datetime import datetime
-from hashlib import sha256
-from core.errorfactory import ProjectErrors
-from typing import Any, Dict, Tuple
 from threading import Thread
-import hashlib, binascii, os
-
-import pymongo
-from django.conf import settings
-from dotenv import load_dotenv
-from pymongo import ReturnDocument
+from typing import Any, Dict, Tuple
 
 from core import service
+from core.errorfactory import ProjectErrors
+from core.models import BaseModel
+from pymongo import ReturnDocument
+
 from .errors import (
-    InvalidAdminCredentialsError,
-    ContributorNotFoundError,
     ContributorApprovedError,
-    InvalidWebhookError,
+    ContributorNotFoundError,
     ExistingAdminError,
+    InvalidAdminCredentialsError,
+    InvalidWebhookError,
     MaintainerApprovedError,
     MaintainerNotFoundError,
     ProjectNotFoundError,
 )
 
-load_dotenv()
 
-
-class AdminEntry:
+class AdminEntry(BaseModel):
     def __init__(self) -> None:
-        """
-        Connect to mongodb
-        """
-
-        client = pymongo.MongoClient(settings.DATABASE["mongo_uri"])
-        self.db = client[settings.DATABASE["db"]]
+        super().__init__()
 
     def check_webHook(self, token: Tuple):
         """Checks for available webHook Token
@@ -428,15 +420,9 @@ class AdminEntry:
             maintainers = list(
                 self.db.maintainer.find({"_id": {"$in": maintainer_ids}})
             )
-
-        except Exception as e:
+        except Exception:
             return
-
-        doc = {}
-
-        doc["email"] = [maintainer["email"] for maintainer in maintainers]
-
-        return doc
+        return dict(email=[maintainer["email"] for maintainer in maintainers])
 
     def get_maintainer_email(self, identifier: str) -> str:
         """Get maintainer email from identifier

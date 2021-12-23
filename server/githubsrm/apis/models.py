@@ -1,37 +1,13 @@
-import random
-import string
-from datetime import datetime
 from typing import Any, Dict
 
-import pymongo
-from django.conf import settings
-from dotenv import load_dotenv
+from core.models import BaseModel
 
-load_dotenv()
+from .errors import MiscErrors, ProjectErrors
 
 
-class Entry:
-    def __init__(self):
-        client = pymongo.MongoClient(settings.DATABASE["mongo_uri"])
-        self.db = client[settings.DATABASE["db"]]
-
-    def get_uid(self) -> str:
-        """Returns 8 character alpha numeric unique id
-
-        Args:
-            length (int)
-            operator (pymongo.MongoClient)
-
-        Returns:
-            str
-        """
-
-        gen_id = random.choices(string.ascii_uppercase + string.digits, k=8)
-
-        if self.db.collection.find_one({"_id": gen_id}):
-            return self.get_uid(length=8)
-
-        return "".join(gen_id)
+class Entry(BaseModel):
+    def __init__(self) -> None:
+        super().__init__()
 
     def _enter_project(
         self, doc: Dict[str, str], visibility: bool, project_id: str
@@ -84,38 +60,33 @@ class Entry:
             **{"project_id": project_id},
             **{"is_admin_approved": False},
         }
-        try:
-            existing_maintainer = self.db.maintainer.find_one(
-                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")}
+        existing_maintainer = self.db.maintainer.find_one(
+            {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")}
+        )
+
+        if existing_maintainer and "password" in existing_maintainer:
+            self.db.maintainer.insert_one(
+                {**doc, **{"password": existing_maintainer.get("password")}}
             )
 
-            if existing_maintainer and "password" in existing_maintainer:
-                self.db.maintainer.insert_one(
-                    {**doc, **{"password": existing_maintainer.get("password")}}
-                )
+        else:
+            self.db.maintainer.insert_one(doc)
 
-            else:
-                self.db.maintainer.insert_one(doc)
+        # Default approve to false
+        self._enter_project(
+            {
+                "project_url": project_url,
+                "description": description,
+                "tags": tags,
+                "is_admin_approved": False,
+                "project_name": project_name,
+                "project_url": project_url,
+            },
+            visibility=doc["private"],
+            project_id=project_id,
+        )
 
-            # Default approve to false
-            self._enter_project(
-                {
-                    "project_url": project_url,
-                    "description": description,
-                    "tags": tags,
-                    "is_admin_approved": False,
-                    "project_name": project_name,
-                    "project_url": project_url,
-                },
-                visibility=doc["private"],
-                project_id=project_id,
-            )
-
-            return project_id, _id, project_name, description
-
-        except Exception as e:
-            print(e)
-            return
+        return project_id, _id, project_name, description
 
     def enter_beta_maintainer(self, doc: Dict[str, Any]) -> str:
         """Add beta maintainers to project and updates maintainers
@@ -127,39 +98,34 @@ class Entry:
         Returns:
             str
         """
-        try:
-            _id = self.get_uid()
+        _id = self.get_uid()
 
-            existing_maintainer = self.db.maintainer.find_one(
-                {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")}
+        existing_maintainer = self.db.maintainer.find_one(
+            {"srm_email": doc.get("srm_email"), "reg_number": doc.get("reg_number")}
+        )
+
+        if existing_maintainer and "password" in existing_maintainer:
+            self.db.maintainer.insert_one(
+                {
+                    **doc,
+                    **{"_id": _id},
+                    **{"project_id": doc.get("project_id")},
+                    **{"is_admin_approved": False},
+                    **{"password": existing_maintainer.get("password")},
+                }
             )
+            return _id
 
-            if existing_maintainer and "password" in existing_maintainer:
-                self.db.maintainer.insert_one(
-                    {
-                        **doc,
-                        **{"_id": _id},
-                        **{"project_id": doc.get("project_id")},
-                        **{"is_admin_approved": False},
-                        **{"password": existing_maintainer.get("password")},
-                    }
-                )
-                return _id
-
-            else:
-                self.db.maintainer.insert_one(
-                    {
-                        **doc,
-                        **{"_id": _id},
-                        **{"project_id": doc.get("project_id")},
-                        **{"is_admin_approved": False},
-                    }
-                )
-                return _id
-
-        except Exception as e:
-            print(e)
-            return
+        else:
+            self.db.maintainer.insert_one(
+                {
+                    **doc,
+                    **{"_id": _id},
+                    **{"project_id": doc.get("project_id")},
+                    **{"is_admin_approved": False},
+                }
+            )
+            return _id
 
     def enter_contributor(self, doc: Dict[str, Any]) -> Dict[str, str]:
         """Addition of contributors for avaliable Projects
@@ -179,15 +145,12 @@ class Entry:
 
         project_doc = self.db.project.find_one({"_id": doc.get("interested_project")})
         if not project_doc:
-            return
+            raise ProjectErrors(
+                detail={"error": "Project not approved or project does not exist"}
+            )
 
-        try:
-            self.db.contributor.insert_one(doc)
-            return {**doc, **project_doc}
-
-        except Exception as e:
-            print(e)
-            return
+        self.db.contributor.insert_one(doc)
+        return {**doc, **project_doc}
 
     def beta_maintainer_reset_status(self, maintainer_id: str) -> None:
         """Delete beta maintainer
@@ -276,12 +239,10 @@ class Entry:
         details = self.db.contactUs.find_one({"message": doc.get("message")})
 
         if details:
-            return
-        try:
-            self.db.contactUs.insert_one(doc)
-            return True
-        except Exception as e:
-            return
+            raise MiscErrors(
+                status_code=409, detail={"error": "Message already exists!"}
+            )
+        self.db.contactUs.insert_one(doc)
 
     def get_contact_us(self) -> object:
         """Gets all contact us data for admin

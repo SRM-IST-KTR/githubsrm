@@ -368,7 +368,7 @@ class TestClient(unittest.TestCase):
             },
             params={"role": "contributor"},
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
         self.clean()
 
     def test_same_alpha_and_beta_maintainer(self):
@@ -404,7 +404,8 @@ class TestClient(unittest.TestCase):
             },
             params={"role": "beta"},
         )
-        self.assertEqual(response.status_code, 400)
+
+        self.assertEqual(response.status_code, 409)
         self.clean()
 
     def test_add_duplicate_project(self):
@@ -499,7 +500,7 @@ class TestClient(unittest.TestCase):
             },
             params={"role": "beta"},
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
         self.clean()
 
     def test_health_check(self):
@@ -545,7 +546,7 @@ class TestClient(unittest.TestCase):
                 "X-RECAPTCHA-TOKEN": "TestToken",
             },
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
         self.clean()
 
     def test_get_all_public_projects(self):

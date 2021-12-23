@@ -1,10 +1,10 @@
-from hashlib import new
 import os
 from datetime import datetime, timedelta
 from typing import Any, Dict
 
 import jwt
 from dotenv import load_dotenv
+from .errors import AuthenticationErrors
 
 load_dotenv()
 
@@ -35,38 +35,20 @@ class IssueKey:
         payload = {**payload, **{"exp": generation_time + timedelta(minutes=expiry)}}
 
         if get_refresh_token:
-            email = (
-                payload.get("email") if payload.get("email") else payload.get("user")
-            )
-            name = payload.get("name")
-            if name:
-                refresh_payload = {
-                    **{
-                        "exp": generation_time + timedelta(days=refresh_expiry),
-                        "refresh": True,
-                    },
-                    **{"email": email, "name": name},
-                }
-            else:
-                refresh_payload = {
-                    **{
-                        "exp": generation_time + timedelta(days=refresh_expiry),
-                        "refresh": True,
-                    },
-                    **{"email": email},
-                }
-            try:
-                return {
-                    "access_token": jwt.encode(payload, key=self.signature),
-                    "refresh_token": jwt.encode(refresh_payload, key=self.signature),
-                }
-            except Exception as e:
-                return False
-        else:
-            try:
-                return jwt.encode(payload=payload, key=self.signature)
-            except Exception as e:
-                return False
+            email = payload.get("email", payload.get("user"))
+            refresh_payload = {
+                "exp": generation_time + timedelta(days=refresh_expiry),
+                "refresh": True,
+                "email": email,
+                "name": payload.get("name", "Anonymous"),
+            }
+
+            return {
+                "access_token": jwt.encode(payload, key=self.signature),
+                "refresh_token": jwt.encode(refresh_payload, key=self.signature),
+            }
+
+        return jwt.encode(payload=payload, key=self.signature)
 
     def verify_key(self, key: str) -> bool:
         """Verify JwT with the original signature
@@ -107,9 +89,11 @@ class IssueKey:
                     algorithms=["HS256"],
                 )
                 return decoded
-        except Exception as e:
-            print(e)
-            return False
+        except Exception:
+            # Fix status code here
+            raise AuthenticationErrors(
+                status_code=400, detail={"error": "Invalid key!"}
+            )
 
     def verify_role(self, key: str, path: str) -> bool:
         """Verify user permissions
@@ -121,12 +105,15 @@ class IssueKey:
         Returns:
             bool: is allowed
         """
-        decoded = jwt.decode(
-            jwt=key,
-            key=self.signature,
-            options={"verify_signature": True},
-            algorithms=["HS256"],
-        )
+        try:
+            decoded = jwt.decode(
+                jwt=key,
+                key=self.signature,
+                options={"verify_signature": True},
+                algorithms=["HS256"],
+            )
+        except Exception:
+            raise AuthenticationErrors(detail={"error": "Invalid key"})
         if "admin" in path:
             return decoded.get("admin") == True
         if "maintainer" in path:
@@ -142,14 +129,12 @@ class IssueKey:
         Returns:
             str: jwt
         """
-        old_jwt = self.verify_key(old_token)
-        if old_jwt:
-            payload = {**old_jwt, **payload}
-            new_key = self.issue_key(payload=payload)
-            if new_key:
-                return new_key
-        else:
+        try:
+            old_jwt = self.verify_key(old_token)
+        except AuthenticationErrors:
             return False
+        payload = {**old_jwt, **payload}
+        return self.issue_key(payload=payload)
 
     def refresh_to_access(
         self, refresh_token: str, payload: Dict[str, Any], expiry: int = 1
@@ -163,13 +148,10 @@ class IssueKey:
             str: new access tokens
         """
 
-        if token := self.verify_key(key=refresh_token):
-            if token.get("refresh"):
-                payload["exp"] = (
-                    datetime.utcnow() + timedelta(hours=expiry)
-                ).timestamp()
-                return self.issue_key(payload=payload, get_refresh_token=True)
-            else:
-                return False
-        else:
-            return False
+        try:
+            token = self.verify_key(key=refresh_token)
+        except AuthenticationErrors:
+            return
+        if token.get("refresh"):
+            payload["exp"] = (datetime.utcnow() + timedelta(hours=expiry)).timestamp()
+            return self.issue_key(payload=payload, get_refresh_token=True)

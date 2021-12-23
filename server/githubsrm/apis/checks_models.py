@@ -37,7 +37,7 @@ class EntryCheck:
         result = self.db.project.find_one({"$or": checks})
 
         if result:
-            raise ExistingProjectError("Project Exists")
+            raise ExistingProjectError(detail={"error": "Project Exists"})
 
     def check_approved_project(self, identifier: str) -> bool:
         """Checks if given identifier is valid and approved status
@@ -51,7 +51,7 @@ class EntryCheck:
         result = self.db.project.find_one({"_id": identifier})
         if result:
             if result.get("is_admin_approved"):
-                raise ApprovedError("Project approved")
+                raise ApprovedError(detail={"error": "Project approved"})
             return result
 
     def check_contributor(
@@ -69,7 +69,7 @@ class EntryCheck:
 
         result = self.db.project.find_one({"_id": interested_project})
         if not result.get("is_admin_approved"):
-            raise NotApprovedError("Project not approved")
+            raise NotApprovedError(detail={"error": "Project not approved"})
 
         contributor = self.db.contributor.find_one(
             {
@@ -102,7 +102,10 @@ class EntryCheck:
         )
 
         if contributor or maintainer:
-            raise MiscErrors("Existing contributor/maintainer for project")
+            raise MiscErrors(
+                status_code=409,
+                detail={"error": "Existing contributor/maintainer for project"},
+            )
 
     def check_existing_beta(
         self, github_id: str, project_id: str, srm_email: str
@@ -124,7 +127,9 @@ class EntryCheck:
         )
 
         if result >= 1:
-            raise ExisitingMaintainerError("Maintainer for this project exists")
+            raise ExisitingMaintainerError(
+                detail={"error": "Maintainer for this project exists"}
+            )
 
     def validate_beta_maintainer(self, doc: Dict[str, Any]) -> Any:
         """Checks for valid beta maintainer
@@ -135,17 +140,11 @@ class EntryCheck:
         Returns:
             Any: Returns document if checks pass
         """
-        try:
-            self.check_existing_beta(
-                github_id=doc.get("github_id"),
-                project_id=doc.get("project_id"),
-                srm_email=doc.get("srm_email"),
-            )
-        except ExisitingMaintainerError as e:
-            return None
+        self.check_existing_beta(
+            github_id=doc.get("github_id"),
+            project_id=doc.get("project_id"),
+            srm_email=doc.get("srm_email"),
+        )
 
-        try:
-            result = self.check_approved_project(identifier=doc.get("project_id"))
-            return result
-        except ApprovedError as e:
-            return None
+        result = self.check_approved_project(identifier=doc.get("project_id"))
+        return result

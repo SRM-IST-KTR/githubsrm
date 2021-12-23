@@ -174,19 +174,13 @@ class Login(APIView):
         doc_list = list(entry.find_all_Maintainer_with_email(request.data["email"]))
 
         if doc_list:
-
             payload = {}
             payload["email"] = doc_list[0]["email"]
             payload["name"] = doc_list[0]["name"]
             payload["project_id"] = [i["project_id"] for i in doc_list]
 
-            if jwt := jwt_keys.issue_key(payload, get_refresh_token=True):
-                return JsonResponse(data=jwt, status=status.HTTP_200_OK)
-            else:
-                return JsonResponse(
-                    data={"message": "Does not exist"},
-                    status=status.HTTP_401_UNAUTHORIZED,
-                )
+            jwt = jwt_keys.issue_key(payload, get_refresh_token=True)
+            return JsonResponse(data=jwt, status=status.HTTP_200_OK)
 
         return JsonResponse(data={"error": "Email not found"}, status=400)
 
@@ -212,14 +206,11 @@ class SetPassword(APIView):
             token = request.headers.get("Authorization").split()
             token_type, token = token[0], token[1]
             assert token_type == "Bearer"
-        except (ValueError, AssertionError) as e:
+        except (ValueError, AssertionError):
             return JsonResponse(data={"error": "Invalid token"}, status=400)
 
         password = request.data.get("password")
-
-        if not jwt_keys.verify_key(key=token):
-            return JsonResponse(data={"error": "Invalid jwt"}, status=400)
-
+        jwt_keys.verify_key(key=token)
         entry.set_password(key=token, password=password)
         return JsonResponse(data={}, status=200)
 
