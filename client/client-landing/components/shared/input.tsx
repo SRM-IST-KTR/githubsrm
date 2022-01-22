@@ -124,6 +124,9 @@ const Input = (props: InputProps) => {
               } ${props.labelClassName?.default}`}
             >
               {props.label}
+              {props.required && (
+                <span className="text-red-500 font-bold"> *</span>
+              )}
             </label>
           )}
           {props.selectOptions?.options.map((option) => (
@@ -144,12 +147,7 @@ const Input = (props: InputProps) => {
                   props.onError ? props.optionClassName?.option?.onError : ""
                 } ${props.optionClassName?.option?.default}`}
               />
-              <div>
-                {option.name}{" "}
-                {props.required && (
-                  <span className="text-red-500 font-bold">*</span>
-                )}
-              </div>
+              <div>{option.name} </div>
             </label>
           ))}
         </div>
