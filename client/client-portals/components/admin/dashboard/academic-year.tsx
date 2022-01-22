@@ -25,10 +25,20 @@ interface AcademicYearProps {
   close: (state: boolean) => void;
   year: string;
   projectId: string;
+  isOpenHook: (boolean) => void;
 }
 
-const AcademicYear = ({ isOpen, close, projectId }: AcademicYearProps) => {
+const AcademicYear = ({
+  isOpen,
+  close,
+  projectId,
+  isOpenHook,
+}: AcademicYearProps) => {
   const [loading, setLoading] = useState<boolean>(false);
+
+  const closeModal = () => {
+    isOpenHook(false);
+  };
 
   //@ts-ignore
   const initialValues: AcademicYearData = {
@@ -60,6 +70,9 @@ const AcademicYear = ({ isOpen, close, projectId }: AcademicYearProps) => {
         ariaHideApp={false}
       >
         <div>
+          <h1 className="text-red-500 font-bold py-2">
+            Make sure you have approved all the maintainers
+          </h1>
           <div>
             <h1>Enter the Academic Year</h1>
           </div>
@@ -78,16 +91,23 @@ const AcademicYear = ({ isOpen, close, projectId }: AcademicYearProps) => {
                     <Input {...input} />
                   </div>
                 ))}
-                <div className="flex justify-center">
-                  <Button disabled={Object.keys(errors).length < 0}>
-                    {loading ? (
-                      <span className="flex w-6 mx-auto">
-                        <Loading />
-                      </span>
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
+                <div className="flex justify-center items-center ">
+                  <div className="flex justify-center mx-5">
+                    <Button disabled={Object.keys(errors).length < 0}>
+                      {loading ? (
+                        <span className="flex w-6 mx-auto">
+                          <Loading />
+                        </span>
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
+                  </div>
+                  <div className="flex justify-center mx-5">
+                    <Button btnStyle="danger" onClick={closeModal}>
+                      Close
+                    </Button>
+                  </div>
                 </div>
                 {Object.keys(errors).map((error) => {
                   if (touched[error]) {
