@@ -298,13 +298,14 @@ export const contributorInputs: {
       {
         id: "name",
         label: "Name",
+        description: "As per your ID card.",
         type: "text",
         placeholder: "GitHub Community SRM",
         required: true,
       },
       {
         id: "email",
-        label: "Email",
+        label: "Personal Email",
         type: "email",
         placeholder: "community@githubsrm.tech",
         required: true,
@@ -332,16 +333,18 @@ export const contributorInputs: {
       },
       {
         id: "reg_number",
-        label: "Registration Number or Employee ID",
+        label: "Registration Number / Employee ID",
+        description:
+          "Registration Number for students or Employee ID for faculty",
         type: "text",
         placeholder: "RAXXXXXXXXXXXXX",
         required: true,
       },
       {
         id: "branch",
-        label: "Branch",
+        label: "Department",
         type: "text",
-        placeholder: "CSE-BD",
+        placeholder: "DSBS",
         required: true,
       },
     ],
