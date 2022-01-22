@@ -76,8 +76,8 @@ const ProjectApplications = () => {
                 <td className="p-3">
                   <div className="flex align-items-center">
                     <Link href={`/admin/dashboard/${data._id}`}>
-                      <div className="cursor-pointer rounded-lg bg-gray-700 p-3 hover:bg-gray-900 ">
-                        Open
+                      <div className="cursor-pointer rounded-lg bg-gray-700 p-3 hover:bg-gray-900 text-center">
+                        Approve Maintainers
                       </div>
                     </Link>
                   </div>
@@ -161,6 +161,7 @@ const ProjectApplications = () => {
         year={year}
         close={() => setOpen(false)}
         isOpen={open}
+        isOpenHook={setOpen}
       />
     </Layout>
   ) : (

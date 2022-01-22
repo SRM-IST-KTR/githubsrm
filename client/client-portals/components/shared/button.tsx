@@ -1,6 +1,12 @@
 import { ButtonWrapperProps } from "../../utils/interfaces";
 
-const STYLE = ["primary", "secondary"];
+export const STYLE = {
+  primary: "text-white bg-base-teal p-3 min-w-32 font-semibold rounded-lg my-3",
+  secondary:
+    "flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl",
+  danger:
+    "flex justify-center w-1/8 mx-auto mt-4 bg-red-600 p-2 font-bold text-white rounded-xl",
+};
 
 const Button = ({
   type,
@@ -9,12 +15,8 @@ const Button = ({
   children,
   onClick,
 }: ButtonWrapperProps) => {
-  const primary =
-    "text-white bg-base-teal p-3 min-w-32 font-semibold rounded-lg my-3";
-  const secondary =
-    "flex justify-center w-1/8 mx-auto mt-4 bg-green-400 p-2 font-bold text-white rounded-xl";
-
-  const checkButtonStyle = STYLE.includes(btnStyle) ? primary : secondary;
+  const checkButtonStyle =
+    btnStyle in STYLE ? STYLE[btnStyle] : STYLE["secondary"];
 
   return (
     <button

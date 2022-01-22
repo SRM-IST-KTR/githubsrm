@@ -9,6 +9,8 @@ import {
   academicYearValidation,
 } from "./constants";
 
+import { STYLE } from "@/shared/button";
+
 export interface InputClassNameProps {
   wrapperClassName?: { default?: string; onError?: string };
   inputClassName?: { default?: string; onError?: string };
@@ -122,7 +124,7 @@ export interface AcceptedProjectsProps {
 
 export interface ButtonWrapperProps {
   type?: "button" | "submit" | "reset";
-  btnStyle?: "primary" | "secondary";
+  btnStyle?: keyof typeof STYLE;
   disabled?: boolean;
   children?: JSX.Element | string;
   onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
