@@ -110,6 +110,11 @@ const MaintainerPage = () => {
               {person.email.split("@")[0]}
               <br className="sm:hidden" />@{person.email.split("@")[1]}
             </h2>
+            <h2 className="text-xl font-medium mb-3">
+              <span className="font-bold">SRM Email: </span>
+              {person.srm_email.split("@")[0]}
+              <br className="sm:hidden" />@{person.srm_email.split("@")[1]}
+            </h2>
             <div className="cursor-pointer hover:text-gray-800 flex text-xl font-medium mb-3">
               <span className="font-bold">Github ID: </span>
               <span className="flex items-center">

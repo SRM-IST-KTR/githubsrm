@@ -72,6 +72,7 @@ export interface MaintainersProps {
   is_admin_rejected: boolean;
   branch: string;
   email: string;
+  srm_email: string;
   name: string;
   github_id: string;
   reg_number: string;
