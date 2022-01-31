@@ -9,7 +9,7 @@ const ServerErrorPage = () => {
         <div className="flex flex-col justify-center items-center h-full md:mt-24 text-center">
           <h1 className="text-white text-9xl font-extrabold flex-nowrap flex my-1 py-2 px-5">
             5
-            <span className="flex text-9xl">
+            <span className="flex text-9xl animate-pulse">
               <ServerError />
               <ServerError />
             </span>
