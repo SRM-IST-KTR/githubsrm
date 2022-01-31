@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
+import { Chat } from "../components/shared/crisp";
 
 import "../styles/tailwind.styles.css";
 
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps }) {
       {/* //* INFO: prevent these classes from being purged */}
       <span className="bg-colors custom-input-wrapper custom-input custom-input-error custom-label custom-description custom-option custom-option-label hidden" />
       <ToastContainer />
+      <Chat />
       <Component {...pageProps} />
     </>
   );

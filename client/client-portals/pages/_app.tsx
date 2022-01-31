@@ -5,6 +5,7 @@ import AuthContextProvider from "context/authContext";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import "../styles/tailwind.styles.css";
+import { Chat } from "@/shared/crisp";
 
 if (process.env.NODE_ENV === "production") {
   Sentry.init({
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps }) {
       {/* //* INFO: prevent these classes from being purged */}
       <span className="toast-alert toast-success toast-error bg-colors custom-input-wrapper custom-input custom-input-error custom-label custom-description hidden" />
       <ToastContainer />
+      <Chat />
       <AuthContextProvider>
         <Component {...pageProps} />
       </AuthContextProvider>
