@@ -243,12 +243,13 @@ class AdminEntry(BaseModel):
                 return project
             else:
                 if response["success"] == False:
+                    print(response)
                     Thread(
                         target=service.sns,
                         kwargs={
                             "payload": {
-                                "message": "Lambda returned success false",
-                                "subject": "Lambda failed",
+                                "message": f"Lambda failing on Project Creation\nError:\n{response}",
+                                "subject": "[LAMBDA-ERROR] Lambda failed: Lambda githubcommunitysrm-v1 return False",
                             }
                         },
                     ).start()

@@ -77,9 +77,9 @@ class Entry(BaseModel):
         if response["success"] == False:
             service.sns(
                 payload={
-                    "message": f"Lambda failing on contirbutor approval contributor_id -> {contributor['_id']} \
+                    "message": f"Lambda failing on contributor approval contributor_id -> {contributor['_id']} \
                          Error: {response}",
-                    "subject": "[LAMBDA-FAILING]",
+                    "subject": "[LAMBDA-ERROR] githubcommunitysrm-v2 returned False",
                 }
             )
         else:
