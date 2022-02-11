@@ -9,6 +9,7 @@ import {
 import { errors } from "./error/errors";
 import validateQuery from "./services/validate-query";
 import snsError from "./error/sns-error";
+import discordError from "./error/discord-error";
 import { addContributor } from "./services/github";
 
 import { parseTeamSlug } from "./services/parsers";
@@ -29,11 +30,15 @@ const lambdaHandler: Handler<eventRequest, eventResponse> = async (
       contributor: event.contributor,
       "team-slug": event["team-slug"],
     };
-  } catch (err) {
+  } catch (err: any) {
+    await discordError("add-contributor", err);
     if (err && err.message) {
       return {
         success: false,
-        error: { ...err },
+        error: {
+          name: `CUSTOM_ERROR: ${err.message}`,
+          message: JSON.stringify(err),
+        },
       };
     } else {
       await snsError("add-contributor", err);

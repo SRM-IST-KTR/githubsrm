@@ -37,7 +37,7 @@ aws lambda update-function-code \
     --profile gcsrm
 if [ $? -eq 0 ]; then
     echo -e "$INFO_TEXT Lambda 'githubcommunitysrm-$1' succesfully uploaded!"
-    echo -e "$INFO_TEXT WARNING: Please remember to update the Lambda Layer to the latest version in the AWS Dashboard!"
+    echo -e "$INFO_TEXT \e[1;31mWARNING: Please remember to update the Lambda Layer to the latest version in the AWS Dashboard!\e[0m"
 else
     echo -e "$ERROR_TEXT AWS Upload Error!"
     exit 1
