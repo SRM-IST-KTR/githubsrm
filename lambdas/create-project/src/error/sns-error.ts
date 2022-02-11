@@ -23,7 +23,7 @@ const snsError = async (scope: string, err: any, maxRetries: number = 5) => {
           Message: JSON.stringify(
             {
               lambda: scope,
-              error: { ...err },
+              error: err,
             },
             null,
             "\t"

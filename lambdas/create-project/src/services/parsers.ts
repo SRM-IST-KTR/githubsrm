@@ -8,7 +8,7 @@ import slugify from "slugify";
  * @returns {Promise<string>} The unique team-slug
  */
 export const generateTeamID = async (team: string): Promise<string> => {
-  const slug = slugify(team);
+  let slug = slugify(team);
   const id_1 = customAlphabet(lowercase, 4)();
   const id_2 = customAlphabet(numbers, 4)();
   const id = [];
@@ -16,6 +16,7 @@ export const generateTeamID = async (team: string): Promise<string> => {
     id.push(char);
     id.push(id_2.split("")[index]);
   }
+  slug = slug.substring(0, 90);
   return `${slug}-${id.join("")}`;
 };
 
