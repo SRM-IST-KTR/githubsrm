@@ -106,7 +106,9 @@ class BotoService:
         if "Payload" in res and hasattr(res["Payload"], "read"):
             return json.loads(res["Payload"].read())
         else:
-            logger.critical("lambda returned without payload!")
+            logger.critical(
+                f"lambda returned without payload!\n Returned Value: {response}"
+            )
             return {"error": "lambda failed!"}
 
 
