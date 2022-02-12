@@ -37,7 +37,7 @@ else:
 
 ALLOWED_HOSTS = ["*"]
 USE_DATABASE = "MONGO" if DEBUG is False else "TEST"
-
+TRIGGER_AWS = False if DEBUG else True
 
 INSTALLED_APPS = [
     "django.contrib.admin",
