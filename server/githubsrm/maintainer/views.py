@@ -3,7 +3,7 @@ from threading import Thread
 
 from administrator import jwt_keys
 from administrator.utils import get_token
-from core import service
+from core.aws import service
 from core.settings import PostThrottle
 from django.http.response import JsonResponse
 from rest_framework import status
