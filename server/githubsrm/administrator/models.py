@@ -243,7 +243,6 @@ class AdminEntry(BaseModel):
                 return project
             else:
                 if response["success"] == False:
-                    print(response)
                     Thread(
                         target=service.sns,
                         kwargs={
