@@ -1,9 +1,20 @@
+import os
+
 from rest_framework.exceptions import APIException
+
+from core.log_utils.log import get_logger
+
+
+logger = get_logger(
+    "custom.exception.logger",
+    filename="CustomExceptionLog.log",
+    level=20,
+)
 
 
 def set_default_error(detail):
-    if not detail:
-        return dict(error="Error Occurred!")
+    detail = detail if detail else dict(error="Error!")
+    logger.info(f"Custom Exception:\n {detail}")
     return detail
 
 

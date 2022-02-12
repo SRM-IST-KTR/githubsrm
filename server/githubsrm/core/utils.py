@@ -1,9 +1,11 @@
 import json
 import os
 from functools import lru_cache
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from jinja2 import Template
+
+from .settings import PostThrottle
 
 
 def get_email_content(role: str, data: Dict[str, str]) -> Dict[str, Any]:
@@ -64,3 +66,19 @@ def find_templates_folder():
         if "templates" in dirs:
             return f"{root}/templates"
     raise IOError("templates folder not found")
+
+
+def api_view(
+    http_methods: List[str],
+    throttle_classes: Optional[List[type]] = [PostThrottle],
+    permission_classes: Optional[List[type]] = None,
+):
+    from rest_framework.decorators import api_view as base_api_view
+
+    def decorator(func):
+        func.throttle_classes = throttle_classes if throttle_classes else []
+        func.permission_classes = permission_classes if permission_classes else []
+        func = base_api_view(http_methods)(func)
+        return func
+
+    return decorator
