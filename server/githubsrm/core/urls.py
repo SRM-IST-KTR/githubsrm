@@ -2,10 +2,11 @@
 URL configurations for GitHubSRM
 
 """
-from django.urls import path, include, re_path
+from administrator.views import RefreshRoute, Verification
 from apis.open_views import catch_all
-from administrator.views import RefreshRoute
-from administrator.views import Verification
+from django.urls import include, path, re_path
+
+from .views import health_check
 
 urlpatterns = [
     path("api/", include("apis.urls")),
@@ -13,5 +14,6 @@ urlpatterns = [
     path("maintainer/", include("maintainer.urls")),
     path("refresh-token", RefreshRoute.as_view()),
     path("me", Verification.as_view()),
+    path("api/healthcheck", health_check),
     re_path("^(?P<path>.*)\/?$", catch_all),
 ]

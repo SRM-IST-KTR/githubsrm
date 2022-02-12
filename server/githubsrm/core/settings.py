@@ -10,22 +10,30 @@ from corsheaders.defaults import default_headers
 import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-
+from sentry_sdk.integrations.logging import LoggingIntegration
+import logging
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-
 DEBUG = True if os.getenv("DEBUG") else False
+
+sentry_logging = LoggingIntegration(
+    level=logging.DEBUG,
+    event_level=logging.ERROR,  # Send errors as events
+)
 
 
 if DEBUG == False:
-    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), integrations=[DjangoIntegration()])
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"), integrations=[DjangoIntegration(), sentry_logging]
+    )
     print("\033[92mServer in Production Mode. Sentry Enabled.\033[0m")
 else:
     print(f"\033[93mServer in DEBUG Mode. Disabling Sentry.\033[0m")
+
 
 ALLOWED_HOSTS = ["*"]
 USE_DATABASE = "MONGO" if DEBUG is False else "TEST"
