@@ -25,3 +25,8 @@ class ExisitingMaintainerError(MaintainerErrors):
 class ExistingProjectError(ProjectErrors):
     def __init__(self, detail):
         super().__init__(status_code=409, detail=detail)
+
+
+class InvalidProjectId(ProjectErrors):
+    def __init__(self, detail):
+        super().__init__(status_code=400, detail=detail)

@@ -1,5 +1,3 @@
-import os
-
 from rest_framework.exceptions import APIException
 
 from core.log_utils.log import get_logger

@@ -8,6 +8,7 @@ from .errors import (
     NotApprovedError,
     ExisitingMaintainerError,
     ExistingProjectError,
+    InvalidProjectId,
 )
 
 
@@ -68,6 +69,9 @@ class EntryCheck:
         """
 
         result = self.db.project.find_one({"_id": interested_project})
+        if not result:
+            raise InvalidProjectId(detail={"error": "Invalid Project Id!"})
+
         if not result.get("is_admin_approved"):
             raise NotApprovedError(detail={"error": "Project not approved"})
 
