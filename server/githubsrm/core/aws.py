@@ -5,7 +5,7 @@ from typing import Any, Dict, List, TypedDict
 import boto3
 
 from .log_utils.log import get_logger
-from .settings import BASE_DIR
+from .settings import TRIGGER_AWS
 from .utils import get_email_content
 
 # Set logging level to critical since breaking aws service breaks everything :).
@@ -28,7 +28,7 @@ class BotoService:
         Args:
             payload (SNSpayload): SNSpayload
         """
-        if os.getenv("SENDEMAIL"):
+        if not TRIGGER_AWS:
             return True
 
         client = boto3.client("sns", region_name="ap-south-1")
@@ -52,7 +52,7 @@ class BotoService:
         Returns:
             bool
         """
-        if not eval(os.getenv("SENDEMAIL")):
+        if not TRIGGER_AWS:
             return True
         client = boto3.client("sesv2", region_name="ap-south-1")
 
@@ -88,7 +88,7 @@ class BotoService:
         Returns:
             Dict: [function json response]
         """
-        if not eval(os.getenv("SENDEMAIL")):
+        if not TRIGGER_AWS:
             # Test return!
             return {
                 "success": True,
