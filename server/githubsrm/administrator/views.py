@@ -1,13 +1,7 @@
 from threading import Thread
 
-from core import service
-from core.errorfactory import (
-    AuthenticationErrors,
-    MaintainerNotFoundError,
-    ProjectErrors,
-    ContributorErrors,
-    MaintainerErrors,
-)
+from core.aws import service
+
 from core.settings import PostThrottle
 from django.http.response import JsonResponse
 from rest_framework import status
@@ -16,7 +10,6 @@ from rest_framework.views import APIView
 from administrator import entry, jwt_keys
 
 from .definitions import AdminSchema, ApprovalSchema, RejectionSchema
-from .errors import ExistingAdminError, InvalidAdminCredentialsError
 from .perms import AuthAdminPerms
 from .utils import (
     accepted_project_pagination,

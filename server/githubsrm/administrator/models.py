@@ -6,7 +6,7 @@ from datetime import datetime
 from threading import Thread
 from typing import Any, Dict, Tuple
 
-from core import service
+from core.aws import service
 from core.errorfactory import ProjectErrors
 from core.models import BaseModel
 from pymongo import ReturnDocument
