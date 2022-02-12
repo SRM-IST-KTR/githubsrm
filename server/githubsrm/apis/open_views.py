@@ -1,12 +1,10 @@
 import json
-import os
-import time
 from threading import Thread
 
-import psutil
 from bson import json_util
-from core import service
+from core.aws import service
 from core.settings import PostThrottle
+from core.utils import api_view
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from rest_framework.views import APIView
@@ -204,26 +202,17 @@ class Maintainer(APIView):
         return JsonResponse(data=result, status=200, safe=False)
 
 
-class Team(APIView):
+@api_view(["GET"])
+def team(request) -> JsonResponse:
     """
-    Team data route
+    Get Full team data
 
     Args:
-        APIView
+        request
     """
 
-    throttle_classes = [PostThrottle]
-
-    def get(self, request, **kwargs) -> JsonResponse:
-        """
-        Get Full team data
-
-        Args:
-            request
-        """
-
-        result = json.loads(json_util.dumps(open_entry.get_team_data()))
-        return JsonResponse(result, status=200, safe=False)
+    result = json.loads(json_util.dumps(open_entry.get_team_data()))
+    return JsonResponse(result, status=200, safe=False)
 
 
 class ContactUs(APIView):
@@ -266,24 +255,3 @@ class ContactUs(APIView):
         ).start()
 
         return JsonResponse(data={"success": True}, status=201)
-
-
-class HealthCheck(APIView):
-    """Health Checker route
-
-    Args:
-        APIView
-    """
-
-    throttle_classes = [PostThrottle]
-
-    def get(self, request, **kwargs) -> JsonResponse:
-        """Get Process UpTime
-
-        Args:
-            request
-        """
-        uptime = time.time() - psutil.Process(os.getpid()).create_time()
-        return JsonResponse(
-            {"uptime": uptime, "status": "OK", "timeStamp": time.time()}, status=200
-        )

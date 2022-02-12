@@ -5,7 +5,7 @@ from threading import Thread
 from typing import Any, Dict, Iterable
 
 from administrator import jwt_keys
-from core import service
+from core.aws import service
 from core.models import BaseModel
 
 from .errors import (
@@ -74,7 +74,7 @@ class Entry(BaseModel):
         }
         response = service.lambda_(func="githubcommunitysrm-v2", payload=submission)
 
-        if response["success"] == False:
+        if not response["success"]:
             service.sns(
                 payload={
                     "message": f"Lambda failing on contributor approval contributor_id -> {contributor['_id']} \
