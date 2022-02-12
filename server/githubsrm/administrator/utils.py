@@ -3,7 +3,7 @@ from threading import Thread
 from typing import Dict
 
 from apis import open_entry
-from core import service
+from core.aws import service
 from django.http import response
 from django.http.response import JsonResponse
 from rest_framework import status
