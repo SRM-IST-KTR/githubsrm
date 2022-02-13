@@ -22,13 +22,13 @@ def rotate():
     parent_path = Path(__file__).resolve().parent.parent.parent
     log_path = os.path.join(parent_path, "logs")
     size = 0
-    throttle = 1
+    max_size = 1000000
 
     if os.path.exists(log_path):
         for file in os.scandir(log_path):
             size += os.path.getsize(file)
 
-    if size > throttle:
+    if size > max_size:
         zip_path = get_folder_name(os.path.join(parent_path, "archives"))
         with ZipFile(zip_path, "w") as f:
             for file in os.scandir(log_path):
