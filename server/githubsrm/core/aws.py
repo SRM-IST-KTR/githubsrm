@@ -88,6 +88,8 @@ class BotoService:
         Returns:
             Dict: [function json response]
         """
+        res = None
+
         if not TRIGGER_AWS:
             # Test return!
             return {
@@ -103,11 +105,11 @@ class BotoService:
             logger.critical("lambda failed during invocation!")
             logger.exception(e)
 
-        if "Payload" in res and hasattr(res["Payload"], "read"):
+        if res and "Payload" in res and hasattr(res["Payload"], "read"):
             return json.loads(res["Payload"].read())
         else:
             logger.critical(
-                f"lambda returned without payload!\n Returned Value: {response}"
+                f"lambda returned without payload!\n Returned Value: {res}"
             )
             return {"error": "lambda failed!"}
 
