@@ -1,14 +1,11 @@
+from functools import lru_cache
 import os
 import requests
 from dotenv import load_dotenv
-from jinja2 import Template
-from typing import Dict, Any
 
-import pathlib
-from .models import Entry
 
-open_entry = Entry()
 load_dotenv()
+session = requests.Session()
 
 
 def check_token(token) -> bool:
@@ -34,3 +31,25 @@ def check_token(token) -> bool:
 
     response = requests.post(url, data=payload)
     return response.json()["success"] and response.json()["score"] >= 0.5
+
+
+@lru_cache()
+def verify_github_details(verify_user=False, **kwargs):
+    """Perf enhancement using the github rest API instead
+    of directly hitting the github url, handles rate-limiting
+    by directly hitting the url.
+    """
+    github_api = "https://api.github.com"
+    source_route = "https://github.com"
+
+    if verify_user:
+        response = session.get(f"{github_api}/users/{kwargs['user_id']}")
+        if response.status_code == 403:
+            response = session.get(f"{source_route}/{kwargs['user_id']}")
+        return response.status_code == 200
+    else:
+        # Todo: move to github apis after discussion on porting
+        # Used for existing projects.
+        response = session.get(kwargs["url"])
+
+        return response.status_code == 200
