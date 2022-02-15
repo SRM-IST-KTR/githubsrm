@@ -25,21 +25,10 @@ class Contributor(APIView):
 
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Adding Contributors to Projects
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
+    def post(self, request) -> JsonResponse:
         validate = CommonSchema(
             request.data, query_param=request.GET.get("role")
         ).valid()
-
-        if "error" in validate:
-            return JsonResponse(data={"error": "Invalid data"}, status=400)
 
         open_entry_checks.check_contributor(
             validate["interested_project"],
@@ -96,20 +85,10 @@ class Maintainer(APIView):
             }
         )
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Accept Maintainers
-
-        Args:
-            request
-
-        Returns:
-            Response
-        """
+    def post(self, request) -> JsonResponse:
         validate = CommonSchema(
             request.data, query_param=request.GET.get("role")
         ).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
 
         if "project_id" in validate:
             details = open_entry_checks.validate_beta_maintainer(doc=validate)
@@ -190,55 +169,23 @@ class Maintainer(APIView):
         ).start()
         return JsonResponse(data={}, status=201)
 
-    def get(self, request, **kwargs) -> JsonResponse:
-        """Get all projects
-
-        Args:
-            request
-        """
-
+    def get(self, request) -> JsonResponse:
         result = json.loads(json_util.dumps(open_entry.get_projects()))
-
         return JsonResponse(data=result, status=200, safe=False)
 
 
 @api_view(["GET"])
 def team(request) -> JsonResponse:
-    """
-    Get Full team data
-
-    Args:
-        request
-    """
-
     result = json.loads(json_util.dumps(open_entry.get_team_data()))
     return JsonResponse(result, status=200, safe=False)
 
 
 class ContactUs(APIView):
-    """
-    ContactUs route
-
-    Args:
-        APIView
-    """
 
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Handles post data
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-
+    def post(self, request) -> JsonResponse:
         validate = ContactUsSchema(data=request.data).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
-
         open_entry.enter_contact_us(doc=request.data)
 
         Thread(
