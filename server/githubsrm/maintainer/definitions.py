@@ -1,5 +1,29 @@
 from typing import Dict, Any
 from schema import And, Schema, SchemaError
+from core.errorfactory import SchemaError as CustomSchemaError
+
+
+"""
+Module level schema to avoid re-initialization of schema
+on every request.
+"""
+
+projects = {
+    "contributor_id": And(str, lambda contributor_id: len(contributor_id.strip()) == 8),
+    "project_id": And(str, lambda project_id: len(project_id.strip()) == 8),
+}
+login = {
+    "email": And(str, lambda email: len(email.strip()) > 0),
+    "password": And(str, lambda password: len(password.strip()) > 0),
+}
+
+reset = {"password": And(str, lambda password: len(password.strip()) > 0)}
+set = {"email": And(str, lambda email: len(email.strip()) > 0)}
+
+
+contributor_rejection = {
+    "contributor_id": And(str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8)
+}
 
 
 class MaintainerSchema:
@@ -7,96 +31,28 @@ class MaintainerSchema:
         self.data = data
         self.path = path
 
-    def approve_valid_schema(self) -> Schema:
-        """Returns valid schema for accepting contributors
+        self.valid_paths = ["projects", "login", "set", "reset"]
 
-        Returns:
-            Schema
-        """
-
-        validator = Schema(
-            schema={
-                "contributor_id": And(
-                    str, lambda contributor_id: len(contributor_id.strip()) == 8
-                ),
-                "project_id": And(str, lambda project_id: len(project_id.strip()) == 8),
-            }
-        )
-
-        return validator
-
-    def login_valid_schema(self) -> Schema:
-        """Returns valid schema for maintainer login
-
-        Returns:
-            Schema
-        """
-
-        validator = Schema(
-            schema={
-                "email": And(str, lambda email: len(email.strip()) > 0),
-                "password": And(str, lambda password: len(password.strip()) > 0),
-            }
-        )
-
-        return validator
-
-    def reset_valid_schema(self) -> Schema:
-        """Returns valid schema for reset password
-
-        Returns:
-            Schema
-        """
-
-        validator = Schema(
-            schema={"password": And(str, lambda password: len(password.strip()) > 0)}
-        )
-
-        return validator
-
-    def set_valid_schema(self) -> Schema:
-        """Returns valid schema for set password
-
-        Returns:
-            Schema
-        """
-        validator = Schema(
-            schema={"email": And(str, lambda email: len(email.strip()) > 0)}
-        )
-
+    def valid_schema(self) -> Schema:
+        validator = Schema(schema=eval(self.path))
         return validator
 
     def valid(self) -> Dict[str, Dict[str, str]]:
-        """Checks validity of approval data
-
-        Returns:
-            Dict[str, str]
-        """
+        if self.path not in self.valid_paths:
+            return {"error": "Invalid path"}
 
         try:
-            if self.path == "/maintainer/projects":
-                return self.approve_valid_schema().validate(self.data)
-            elif self.path == "/maintainer/login":
-                return self.login_valid_schema().validate(self.data)
-            elif self.path == "/maintainer/reset-password/set":
-                return self.reset_valid_schema().validate(self.data)
-            else:
-                return self.set_valid_schema().validate(self.data)
+            return self.valid_schema().validate(self.data)
         except SchemaError as e:
-            return {"invalid data": self.data, "error": str(e)}
+            raise CustomSchemaError(detail={"invalid data": self.data, "error": str(e)})
 
 
 class RejectionSchema:
     def __init__(self, data: Dict[str, Any]) -> None:
         self.data = data
-        self.valid_contributor_schema = {
-            "contributor_id": And(
-                str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8
-            )
-        }
 
     def valid(self) -> Dict[str, str]:
         try:
-            return Schema(schema=self.valid_contributor_schema).validate(self.data)
+            return Schema(schema=contributor_rejection).validate(self.data)
         except SchemaError as e:
-            return {"error": str(e)}
+            raise CustomSchemaError(detail={"error": str(e)})
