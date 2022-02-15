@@ -1,8 +1,8 @@
 import re
 from typing import Any, Dict
 
+from core.errorfactory import SchemaError as CustomSchemaError
 from schema import And, Schema, SchemaError
-from apis.definitions import check_repo
 
 
 class AdminSchema:
@@ -27,7 +27,7 @@ class AdminSchema:
         try:
             return self.admin_schema.validate(self.data)
         except SchemaError as e:
-            return {"invalid_data": self.data, "error": str(e)}
+            raise CustomSchemaError(detail={"invalid_data": self.data, "error": str(e)})
 
 
 class ApprovalSchema:
@@ -167,4 +167,4 @@ class RejectionSchema:
             try:
                 return self.contributor_valid_schema.validate(self.data)
             except SchemaError as e:
-                return {"error": str(e)}
+                raise CustomSchemaError(detail={"error": str(e)})

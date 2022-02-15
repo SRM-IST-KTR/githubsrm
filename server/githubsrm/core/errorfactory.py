@@ -10,9 +10,10 @@ logger = get_logger(
 )
 
 
-def set_default_error(detail):
+def set_default_error(detail, log=True):
     detail = detail if detail else dict(error="Error!")
-    logger.info(f"Custom Exception:\n {detail}")
+    if log:
+        logger.info(f"Custom Exception:\n {detail}")
     return detail
 
 
@@ -74,3 +75,10 @@ class MaintainerNotFoundError(MaintainerErrors):
     def __init__(self, status_code=400, detail=None):
         detail = set_default_error(detail)
         super().__init__(status_code=status_code, detail=detail)
+
+
+class SchemaError(APIException):
+    def __init__(self, status_code=400, detail=None):
+        detail = set_default_error(detail, log=False)
+        self.status_code = status_code
+        super().__init__(detail=detail)
