@@ -1,8 +1,8 @@
 from threading import Thread
 
 from core.aws import service
-
 from core.settings import PostThrottle
+from core.utils import api_view
 from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -26,43 +26,16 @@ class RegisterAdmin(APIView):
     permission_classes = [AuthAdminPerms]
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Register Admins
-
-        Args:
-            request: request object
-
-        Returns:
-            JsonResponse: status
-        """
-
-        valid = AdminSchema(request.data).valid()
-        if "error" in valid:
-            return JsonResponse(data={"error": valid}, status=400)
-
+    def post(self, request) -> JsonResponse:
         entry.insert_admin(request.data)
         return JsonResponse(data={"registred": True}, status=200)
 
 
 class AdminLogin(APIView):
-    """
-    Log in admins.
-    """
-
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Handle post data on this route and issue jwtkeys.
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
+    def post(self, request) -> JsonResponse:
         validate = AdminSchema(request.data).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": "Invalid data"}, status=400)
         password = validate.get("password")
 
         entry.verify_admin(email=validate.get("email"), password=password)
@@ -77,23 +50,13 @@ class ProjectsAdmin(APIView):
 
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Handle Approval of maintainer, contributor and Project.
-
-        Args:
-            request ([type])
-
-        Returns:
-            JsonResponse
-        """
+    def post(self, request) -> JsonResponse:
         try:
             params = request.GET["role"]
-        except Exception as e:
+        except Exception:
             return JsonResponse(data={"error": "invalid query parameters"}, status=400)
 
         validate = ApprovalSchema(request.data, params=params).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": str(validate.get("error"))}, status=400)
         if params == "maintainer":
             project, maintainer = entry.find_maintainer_for_approval(
                 validate.get("maintainer_id"),
@@ -198,15 +161,14 @@ class ProjectsAdmin(APIView):
             return JsonResponse(data={"admin_approved": True}, status=200)
 
     def get(self, request, **kwargs):
+        pagination = ["page"]
+        single_project = ["projectId", "maintainer", "contributor"]
+        request_query_keys = list(request.GET.keys())
 
-        Pagination = ["page"]
-        SingleProject = ["projectId", "maintainer", "contributor"]
-        RequestQueryKeys = list(request.GET.keys())
-
-        if len(set(Pagination) & set(RequestQueryKeys)) == 1:
+        if len(set(pagination) & set(request_query_keys)) == 1:
             return project_pagination(request, **kwargs)
 
-        elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
+        elif len(set(single_project) & set(request_query_keys)) == 3:
             return project_single_project(request, **kwargs)
 
         else:
@@ -253,14 +215,6 @@ class ProjectsAdmin(APIView):
 
     @staticmethod
     def _remove_maintainer(request, status) -> JsonResponse:
-        """Send sns of maintianer removal with blame
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
         key = request.decoded
         Thread(
             target=service.sns,
@@ -290,14 +244,6 @@ class ProjectsAdmin(APIView):
 
     @staticmethod
     def _error_maintainer(request) -> JsonResponse:
-        """Warning sns
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
         key = request.decoded
         Thread(
             target=service.sns,
@@ -314,14 +260,6 @@ class ProjectsAdmin(APIView):
 
     @staticmethod
     def _error_contributor(request) -> JsonResponse:
-        """Warning sns
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
         key = request.decoded
         Thread(
             target=service.sns,
@@ -337,12 +275,6 @@ class ProjectsAdmin(APIView):
         return JsonResponse(data={"error": "invalid request"}, status=400)
 
     def action_to_status(self, status: str, request) -> None:
-        """Take action according to the response from remove functions
-
-        Args:
-            status (str): response
-            request:  blame
-        """
         if request.GET.get("role") == "contributor":
             if status:
                 return self._remove_contributor(request=request, status=status)
@@ -354,20 +286,10 @@ class ProjectsAdmin(APIView):
             else:
                 return self._error_maintainer(request=request)
 
-    def delete(self, request, **kwargs) -> JsonResponse:
-        """Delete route for admin rejections
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
+    def delete(self, request) -> JsonResponse:
         validate = RejectionSchema(
             data=request.data, params=request.GET.get("role")
         ).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
 
         if request.GET.get("role") == "contributor":
             remove_status = entry.admin_remove_contributor(
@@ -380,45 +302,21 @@ class ProjectsAdmin(APIView):
             return self.action_to_status(status=remove_status, request=request)
 
 
-class AdminAccepted(APIView):
-    def get(self, request, **kwargs) -> JsonResponse:
-        """pagination for all accepted projects
+@api_view(["GET"])
+def admin_accepted(request) -> JsonResponse:
+    if "page" not in request.GET:
+        return JsonResponse({"error": "Invalid query paramerts"}, status=400)
 
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-        if "page" not in request.GET:
-            return JsonResponse({"error": "Invalid query paramerts"}, status=400)
-
-        return accepted_project_pagination(request=request)
+    return accepted_project_pagination(request=request)
 
 
-class RefreshRoute(APIView):
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Get new tokens from refresh token
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-        refresh_token = get_token(request_header=request.headers)
-        key = update_token(refresh_token=refresh_token)
-        return JsonResponse(data=key, status=400)
+@api_view(["POST"])
+def refresh(request) -> JsonResponse:
+    refresh_token = get_token(request_header=request.headers)
+    key = update_token(refresh_token=refresh_token)
+    return JsonResponse(data=key, status=400)
 
 
-class Verification(APIView):
-    def get(self, request, **kwargs) -> JsonResponse:
-        """Verify jwt
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-        return JsonResponse(data={"success": True}, status=200)
+@api_view(["GET"])
+def verify(request) -> JsonResponse:
+    return JsonResponse(data={"success": True}, status=200)
