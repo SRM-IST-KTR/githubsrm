@@ -70,21 +70,6 @@ class Maintainer(APIView):
 
     throttle_classes = [PostThrottle]
 
-    @staticmethod
-    def _trigger_sns(validate):
-        service.sns(
-            payload={
-                "message": f'Porting new project {validate.get("project_id")}\n \
-                                    Details: \n \
-                                    Name: {validate.get("name")} \n \
-                                    Email Personal: {validate.get("email")} \n \
-                                    Project Details: \n \
-                                    Name: {validate.get("project_name")} \n \
-                                    Description: {validate.get("description")}',
-                "subject": "[PROJECT-PORT]: https://githubsrm.tech",
-            }
-        )
-
     def post(self, request) -> JsonResponse:
         validate = CommonSchema(
             request.data, query_param=request.GET.get("role")
@@ -135,7 +120,21 @@ class Maintainer(APIView):
         ) = maintainer_details
 
         if validate.get("project_url"):
-            Thread(target=self._trigger_sns, kwargs={"validate": validate}).start()
+            Thread(
+                target=service.sns,
+                kwargs={
+                    "payload": {
+                        "message": f'Porting new project {validate.get("project_id")}\n \
+                                    Details: \n \
+                                    Name: {validate.get("name")} \n \
+                                    Email Personal: {validate.get("email")} \n \
+                                    Project Details: \n \
+                                    Name: {validate.get("project_name")} \n \
+                                    Description: {validate.get("description")}',
+                        "subject": "[PROJECT-PORT]: https://githubsrm.tech"
+                    }
+                },
+            ).start()
 
         email_status = service.wrapper_email(
             role="project_submission_confirmation",
