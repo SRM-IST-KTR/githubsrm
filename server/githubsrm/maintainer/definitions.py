@@ -8,21 +8,30 @@ Module level schema to avoid re-initialization of schema
 on every request.
 """
 
-projects = {
-    "contributor_id": And(str, lambda contributor_id: len(contributor_id.strip()) == 8),
-    "project_id": And(str, lambda project_id: len(project_id.strip()) == 8),
-}
-login = {
-    "email": And(str, lambda email: len(email.strip()) > 0),
-    "password": And(str, lambda password: len(password.strip()) > 0),
-}
-
-reset = {"password": And(str, lambda password: len(password.strip()) > 0)}
-set = {"email": And(str, lambda email: len(email.strip()) > 0)}
-
-
-contributor_rejection = {
-    "contributor_id": And(str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8)
+schema = {
+    "projects": Schema(
+        {
+            "contributor_id": And(
+                str, lambda contributor_id: len(contributor_id.strip()) == 8
+            ),
+            "project_id": And(str, lambda project_id: len(project_id.strip()) == 8),
+        }
+    ),
+    "login": Schema(
+        {
+            "email": And(str, lambda email: len(email.strip()) > 0),
+            "password": And(str, lambda password: len(password.strip()) > 0),
+        }
+    ),
+    "reset": Schema({"password": And(str, lambda password: len(password.strip()) > 0)}),
+    "set": Schema({"email": And(str, lambda email: len(email.strip()) > 0)}),
+    "contributor_rejection": Schema(
+        {
+            "contributor_id": And(
+                str, lambda contirbutor_id: len(contirbutor_id.strip()) == 8
+            )
+        }
+    ),
 }
 
 
@@ -34,7 +43,7 @@ class MaintainerSchema:
         self.valid_paths = ["projects", "login", "set", "reset"]
 
     def valid_schema(self) -> Schema:
-        validator = Schema(schema=eval(self.path))
+        validator = schema[self.path]
         return validator
 
     def valid(self) -> Dict[str, Dict[str, str]]:
@@ -53,6 +62,6 @@ class RejectionSchema:
 
     def valid(self) -> Dict[str, str]:
         try:
-            return Schema(schema=contributor_rejection).validate(self.data)
+            return schema["contributor_rejection"].validate(self.data)
         except SchemaError as e:
             raise CustomSchemaError(detail={"error": str(e)})

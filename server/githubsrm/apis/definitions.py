@@ -28,34 +28,59 @@ common = {
     ),
 }
 
-alpha = {
-    "project_name": And(str, lambda project_name: len(project_name.strip()) > 0),
-    "project_url": And(
-        str,
-        lambda url,: True if not len(url) else verify_github_details(url=url),
-    ),
-    "description": And(str, lambda description: len(description.strip()) >= 30),
-    "tags": And(
-        list,
-        lambda tags: 2 <= len([tag for tag in tags if len(tag.strip())]) <= 4,
-    ),
-    "private": bool,
-}
-
-beta = {"project_id": And(str, lambda id: len(id) == 8)}
-
-contributor = {
-    "interested_project": And(str, lambda project_id: len(project_id) == 8),
-    "poa": And(str, lambda poa: len(poa.strip()) >= 30),
-}
-
-contact_us = {
-    "name": And(str, lambda name: len(name.strip()) > 0),
-    "email": And(str, lambda email: len(email.strip()) > 0),
-    "message": And(str, lambda message: len(message.strip()) > 30),
-    "phone_number": And(
-        str,
-        lambda phone: re.compile("[0-9]{10}").fullmatch(phone) if phone else True,
+schema = {
+    "common_schema": {
+        "alpha": Schema(
+            {
+                **common,
+                **{
+                    "project_name": And(
+                        str, lambda project_name: len(project_name.strip()) > 0
+                    ),
+                    "project_url": And(
+                        str,
+                        lambda url,: True
+                        if not len(url)
+                        else verify_github_details(url=url),
+                    ),
+                    "description": And(
+                        str, lambda description: len(description.strip()) >= 30
+                    ),
+                    "tags": And(
+                        list,
+                        lambda tags: 2
+                        <= len([tag for tag in tags if len(tag.strip())])
+                        <= 4,
+                    ),
+                    "private": bool,
+                },
+            }
+        ),
+        "beta": Schema({**common, **{"project_id": And(str, lambda id: len(id) == 8)}}),
+        "contributor": Schema(
+            {
+                **common,
+                **{
+                    "interested_project": And(
+                        str, lambda project_id: len(project_id) == 8
+                    ),
+                    "poa": And(str, lambda poa: len(poa.strip()) >= 30),
+                },
+            }
+        ),
+    },
+    "contact_us": Schema(
+        {
+            "name": And(str, lambda name: len(name.strip()) > 0),
+            "email": And(str, lambda email: len(email.strip()) > 0),
+            "message": And(str, lambda message: len(message.strip()) > 30),
+            "phone_number": And(
+                str,
+                lambda phone: re.compile("[0-9]{10}").fullmatch(phone)
+                if phone
+                else True,
+            ),
+        }
     ),
 }
 
@@ -67,7 +92,7 @@ class CommonSchema:
         self.valid_params = ["contributor", "alpha", "beta"]
 
     def valid_schema(self) -> Schema:
-        validator = Schema(schema={**common, **eval(self.query_params)})
+        validator = schema["common_schema"][self.query_params]
         return validator
 
     def valid(self) -> Dict[str, Any]:
@@ -85,7 +110,7 @@ class ContactUsSchema:
         self.data = data
 
     def valid_schema(self) -> Schema:
-        validator = Schema(schema=contact_us)
+        validator = schema["contact_us"]
         return validator
 
     def valid(self) -> Dict[str, Any]:
