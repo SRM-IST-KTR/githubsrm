@@ -4,20 +4,20 @@ a=15
 echo "[STARTING-DJANGO-SERVER]"
 python3 githubsrm/manage.py runserver &
 
-sleep 5
-python3 -m unittest tests/test_schema.py
+sleep $a
+python3 -m unittest -v tests/test_schema.py
 
 sleep $a
-python3 -m unittest tests/test_apis.py
+python3 -m unittest -v tests/test_apis.py
 
 sleep $a
-python3 -m unittest tests/test_admin.py
+python3 -m unittest -v tests/test_admin.py
 
 sleep $a
-python3 -m unittest tests/test_maintainer.py
+python3 -m unittest -v tests/test_maintainer.py
 
 sleep $a
-python3 -m unittest tests/test_full_flow.py
+python3 -m unittest -v tests/test_full_flow.py
 
 echo "[RUNNING-CLEANUP-JOBS]"
 fuser -k 8000/tcp
