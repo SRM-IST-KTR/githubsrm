@@ -93,6 +93,7 @@ class TestSchema(unittest.TestCase):
         self.clean()
 
     def test_project_approval_schema(self):
+        # Failing test since academic year is accepted as string
         self.clean()
         response = entry.register_admin(self)
         self.assertEqual(response.status_code, 200)
