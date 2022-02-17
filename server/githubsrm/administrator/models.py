@@ -252,7 +252,7 @@ class AdminEntry(BaseModel):
                             }
                         },
                     ).start()
-                raise ProjectErrors(detail={"error": "Lambda returned success False"})
+                raise ProjectErrors(detail={"error": response})
         raise ProjectNotFoundError()
 
     def approve_contributor(self, project_id: str, contributor_id: str) -> bool:
