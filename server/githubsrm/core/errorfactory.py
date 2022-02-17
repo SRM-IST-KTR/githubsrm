@@ -10,7 +10,7 @@ logger = get_logger(
 )
 
 
-def set_default_error(detail):
+def set_default_error(detail, log=True):
     detail = detail if detail else dict(error="Error!")
     return detail
 
