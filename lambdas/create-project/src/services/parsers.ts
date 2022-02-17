@@ -52,3 +52,8 @@ export const parseTeamSlug = (
     "team-id": +idPart.split("/")[1],
   };
 };
+
+export const parseDescription = (description: string) => {
+  description = description.replace(/\n/g, " ");
+  return description;
+};

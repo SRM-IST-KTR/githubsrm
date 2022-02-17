@@ -1,7 +1,7 @@
 import { Octokit } from "octokit";
 
 import { eventRequest } from "../models/schema";
-import { parseTeamSlug } from "./parsers";
+import { parseDescription, parseTeamSlug } from "./parsers";
 
 // * INFO: Creating a global instance for Octokit
 const githubAPI = Octokit.defaults({
@@ -149,7 +149,7 @@ export const createEmptyRepository = async (
   const { data } = await octokit.request("POST /orgs/{org}/repos", {
     org: process.env.GITHUB_ORG!,
     name: teamInfo["team-slug"],
-    description: event["project-description"],
+    description: parseDescription(event["project-description"]),
     private: event.private,
     team_id: teamInfo["team-id"],
     auto_init: true,
