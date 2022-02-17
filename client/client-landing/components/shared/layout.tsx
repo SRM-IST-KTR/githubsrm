@@ -37,6 +37,9 @@ const Layout: React.FC = ({ children }) => {
       case "/contact-us": {
         return <Titles.Contact />;
       }
+      case "/documentation": {
+        return "Documentation Svg Template";
+      }
       case "/500": {
         return <Titles.ServerError />;
       }

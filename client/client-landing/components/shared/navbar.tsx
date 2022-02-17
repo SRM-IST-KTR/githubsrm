@@ -25,6 +25,10 @@ const Navbar = () => {
       name: "Contact Us",
       href: "/contact-us",
     },
+    {
+      name: "Documentation",
+      href: "/documentation",
+    },
   ];
 
   return (
