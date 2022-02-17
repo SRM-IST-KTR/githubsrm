@@ -12,8 +12,6 @@ logger = get_logger(
 
 def set_default_error(detail, log=True):
     detail = detail if detail else dict(error="Error!")
-    if log:
-        logger.info(f"Custom Exception:\n {detail}")
     return detail
 
 
@@ -34,6 +32,7 @@ class MaintainerErrors(APIException):
 class MiscErrors(APIException):
     def __init__(self, status_code=400, detail=None):
         detail = set_default_error(detail)
+        logger.info(f"Error occured!\n Exception: {detail}")
         self.status_code = status_code
         super().__init__(detail=detail)
 
@@ -41,6 +40,7 @@ class MiscErrors(APIException):
 class ProjectErrors(APIException):
     def __init__(self, status_code=401, detail=None):
         detail = set_default_error(detail)
+        logger.error(f"Project error! Exception: {detail}")
         self.status_code = status_code
         super().__init__(detail=detail)
 
@@ -48,6 +48,7 @@ class ProjectErrors(APIException):
 class AuthenticationErrors(APIException):
     def __init__(self, status_code=401, detail=None):
         detail = set_default_error(detail)
+        logger.info(f"Auth failed!\n Exception: {detail}")
         self.status_code = status_code
         super().__init__(detail=detail)
 
@@ -55,6 +56,7 @@ class AuthenticationErrors(APIException):
 class AdminErrors(APIException):
     def __init__(self, status_code=400, detail=None):
         detail = set_default_error(detail)
+        logger.error(f"Admin error occured!\n Exception: {detail}")
         self.status_code = status_code
         super().__init__(detail=detail)
 
@@ -62,18 +64,21 @@ class AdminErrors(APIException):
 class ContributorApprovedError(ContributorErrors):
     def __init__(self, status_code=400, detail=None):
         detail = set_default_error(detail)
+        logger.info(f"Contributor Already approved!\n Exception {detail}")
         super().__init__(status_code=status_code, detail=detail)
 
 
 class ContributorNotFoundError(ContributorErrors):
     def __init__(self, status_code=400, detail=None):
         detail = set_default_error(detail)
+        logger.info(f"Contributor not found!\n Exception {detail}")
         super().__init__(status_code=status_code, detail=detail)
 
 
 class MaintainerNotFoundError(MaintainerErrors):
     def __init__(self, status_code=400, detail=None):
         detail = set_default_error(detail)
+        logger.info(f"Maintainer not found!\n Exception {detail}")
         super().__init__(status_code=status_code, detail=detail)
 
 
