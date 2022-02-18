@@ -22,12 +22,12 @@ const Navbar = () => {
       href: "/join-us",
     },
     {
-      name: "Contact Us",
-      href: "/contact-us",
-    },
-    {
       name: "Documentation",
       href: "/documentation",
+    },
+    {
+      name: "Contact Us",
+      href: "/contact-us",
     },
   ];
 
