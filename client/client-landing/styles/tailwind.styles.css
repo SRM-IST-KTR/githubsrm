@@ -88,3 +88,9 @@
     @apply bottom-0 top-0 right-0 left-0;
   }
 }
+
+.pdfcenter{
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+}

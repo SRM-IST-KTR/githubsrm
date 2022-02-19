@@ -1,9 +1,11 @@
+import PdfFile from "./pdfintegration";
 const Documentation = () => {
   return (
     <div>
-      <h1 className="text-center text-3xl lg:text-5xl font-bold mb-10 text-base-black">
+      <h1 className="text-5xl lg:text-5xl font-extrabold text-base-blue">
         Documentation
-      </h1>
+      </h1><hr/>
+      <PdfFile />
     </div>
   );
 };

@@ -23,7 +23,7 @@ const Navbar = () => {
     },
     {
       name: "Documentation",
-      href: "/docmentation",
+      href: "/documentation",
     },
     {
       name: "Contact Us",
