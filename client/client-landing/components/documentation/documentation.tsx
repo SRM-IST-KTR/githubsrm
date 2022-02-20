@@ -35,21 +35,21 @@ const Documentation = () => {
       subTitle: "Fireship",
       content:
         "C++ or C-plus-plus or Cpp is an extremely popular object-oriented programming language. Created in 1979, today it powers game engines, databases, compilers, embedded systems, desktop software, and much of our software infrastructure. ",
-      href: "https://www.youtube.com/watch?v=MNeX4EGtR5Y",
+      href: "https://www.youtube.com/embed/MNeX4EGtR5Y",
     },
     {
       title: "Firebase in 100 Seconds",
       subTitle: "Fireship",
       content:
         "Firebase is a suite of tools for building apps on top of Google Cloud Platform. It's most famous for its realtime database, but also includes services for user authentication, serverless computing, push messaging, file storage, and more.",
-      href: "https://www.youtube.com/watch?v=vAoB4VbhRzM&t=82s",
+      href: "https://www.youtube.com/embed/vAoB4VbhRzM",
     },
     {
       title: "GraphQL Explained in 100 Seconds",
       subTitle: "Fireship",
       content:
         "What is GraphQL? Learn how it compares to REST and why developers love this query language for reading and mutating data in APIs",
-      href: "https://www.youtube.com/watch?v=eIQh02xuVw4",
+      href: "https://www.youtube.com/embed/eIQh02xuVw4",
     },
   ];
 
