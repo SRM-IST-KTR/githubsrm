@@ -11,7 +11,6 @@ interface linkProps {
 }
 
 const YoutubeSideBarLink = ({ fnc, sources, current, icon }: linkProps) => {
-  console.log(sources);
   return (
     <>
       <p className="text-3xl my-3">Youtube Tutorial</p>

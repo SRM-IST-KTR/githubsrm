@@ -68,7 +68,7 @@ const Documentation = () => {
         <br />
 
         <div className="flex flex-col md:flex-row justify-evenly mt-8">
-          <div className="w-full md:w-4/12 flex flex-col sm:flex-row md:flex-col">
+          <div className="w-full md:w-4/12 flex flex-col md:flex-row md:flex-col">
             <PdfSideBarLink
               fnc={setDisplay}
               icon={<ArrowIcon />}
@@ -83,7 +83,7 @@ const Documentation = () => {
             />
           </div>
           <div className="w-full md:px-8 mt-8 md:mt-0">
-            <div className="px-8 py-4 lg:px-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
+            <div className="px-4 md:px-8 py-4 lg:px-8 bg-gray-100 border-t-8 rounded-sm border-base-green">
               {display.type === "PDF" ? (
                 <PdfDisplay source={display.source} />
               ) : (
