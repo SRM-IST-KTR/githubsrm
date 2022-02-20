@@ -5,8 +5,6 @@ import PdfSideBarLink from "./pdfSideBarLink";
 import YoutubeDisplay from "./youtubeDisplay";
 import YoutubeSideBarLink from "./youtubeSideBarLinks";
 
-// import PdfFile from "./pdfintegration";
-
 const Documentation = () => {
   const pdfSources: {
     name: string;
