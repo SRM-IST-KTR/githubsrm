@@ -1,4 +1,4 @@
-interface linkProps {
+interface LinkProps {
   fnc: Function;
   sources: {
     href: string;
@@ -8,7 +8,7 @@ interface linkProps {
   icon: JSX.Element;
 }
 
-const PdfSideBarLink = ({ fnc, sources, current, icon }: linkProps) => {
+const PdfSideBarLink = ({ fnc, sources, current, icon }: LinkProps) => {
   return (
     <>
       <p className="text-3xl my-3">PDF Tutorial</p>

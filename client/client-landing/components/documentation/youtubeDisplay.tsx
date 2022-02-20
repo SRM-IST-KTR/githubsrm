@@ -1,4 +1,4 @@
-interface linkProps {
+interface LinkProps {
   source: {
     href: string;
     title?: string;
@@ -9,7 +9,7 @@ interface linkProps {
   };
 }
 
-const YoutubeDisplay = ({ source }: linkProps) => {
+const YoutubeDisplay = ({ source }: LinkProps) => {
   return (
     <>
       <div className="flex flex-col justify-center items-center">

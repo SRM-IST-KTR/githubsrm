@@ -1,4 +1,4 @@
-interface pdfDiaplayBarProps {
+interface PdfDiaplayProps {
   source: {
     href: string;
     title?: string;
@@ -9,7 +9,7 @@ interface pdfDiaplayBarProps {
   };
 }
 
-const PdfDisplay = ({ source }: pdfDiaplayBarProps) => {
+const PdfDisplay = ({ source }: PdfDiaplayProps) => {
   return (
     <>
       <div key={source.name} className="">
