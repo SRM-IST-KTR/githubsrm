@@ -3,7 +3,7 @@ import { ArrowIcon } from "../../utils/icons";
 import PdfDisplay from "./pdfDisplay";
 import PdfSideBarLink from "./pdfSideBarLink";
 import YoutubeDisplay from "./youtubeDisplay";
-import YoutubeSideBarLink from "./youtubeSideBarLinks";
+import YoutubeSideBarLink from "./YoutubeSideBarLinks";
 
 /*
   pdfSources (array of Objects) to store name and url of the PDF.
