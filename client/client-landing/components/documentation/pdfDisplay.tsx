@@ -1,15 +1,8 @@
-interface PdfDiaplayProps {
-  source: {
-    href: string;
-    title?: string;
-    subTitle?: string;
-    content?: string;
-    name?: string;
-    icon?: JSX.Element;
-  };
+import { LinkProps } from "../../utils/interfaces";
+{
+  /* Function takes the object as parameters and displays the video using Object.href inside an iframe. */
 }
-{/* Function takes the object as parameters and displays the video using Object.href inside an iframe. */}
-const PdfDisplay = ({ source }: PdfDiaplayProps) => {
+const PdfDisplay = ({ source }: LinkProps) => {
   return (
     <>
       <div key={source.name} className="">

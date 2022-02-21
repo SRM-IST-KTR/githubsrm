@@ -1,13 +1,4 @@
-interface LinkProps {
-  source: {
-    href: string;
-    title?: string;
-    subTitle?: string;
-    content?: string;
-    name?: string;
-    icon?: JSX.Element;
-  };
-}
+import { LinkProps } from "../../utils/interfaces";
 /* Function which takes Video details as an Object and displays them inside an iframe. */
 const YoutubeDisplay = ({ source }: LinkProps) => {
   return (
