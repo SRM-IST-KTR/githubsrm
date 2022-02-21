@@ -7,7 +7,9 @@ interface LinkProps {
   current: string;
   icon: JSX.Element;
 }
-
+/* The component takes array of Objects in parameters, iterates over it using map function
+   and calls the display function with Object as parameter.
+*/
 const PdfSideBarLink = ({ fnc, sources, current, icon }: LinkProps) => {
   return (
     <>

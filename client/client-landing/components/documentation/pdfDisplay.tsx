@@ -8,7 +8,7 @@ interface PdfDiaplayProps {
     icon?: JSX.Element;
   };
 }
-
+{/* Function takes the object as parameters and displays the video using Object.href inside an iframe. */}
 const PdfDisplay = ({ source }: PdfDiaplayProps) => {
   return (
     <>

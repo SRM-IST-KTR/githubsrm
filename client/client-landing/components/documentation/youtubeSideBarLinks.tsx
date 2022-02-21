@@ -9,7 +9,10 @@ interface LinkProps {
   current: string;
   icon: JSX.Element;
 }
-
+/* Video Selection Side bar to select the required video to display.
+   This saves space and only required information is displayed.
+   Array of Objects are passed and iterated to create buttons for each object.
+*/
 const YoutubeSideBarLink = ({ fnc, sources, current, icon }: LinkProps) => {
   return (
     <>
