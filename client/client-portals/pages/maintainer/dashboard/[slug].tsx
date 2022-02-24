@@ -43,7 +43,7 @@ const ProjectDetail = () => {
   const [loading2, setLoading2] = useState<boolean>(true);
   const [rejectLoading, setRejectLoading] = useState<boolean>(false);
   const [cPageNo, setCPageNo] = useState<number>(1);
-
+  const [lastPage, setLastPage] = useState<number>(1);
   const router = useRouter();
   const authContext = useContext(AuthContext);
 
@@ -87,6 +87,9 @@ const ProjectDetail = () => {
       setProjectId(res._id);
       setMaintainers(res.maintainer);
       sethasNextPage(res.contributorHasNextPage);
+      setLastPage(res.lastPage);
+      
+
       if (cPageNo > 1) {
         sethasPrevPage(true);
       }
@@ -241,6 +244,7 @@ const ProjectDetail = () => {
                   hasPrevPage={hasPrevPage}
                   pageNo={cPageNo}
                   setPageNo={setCPageNo}
+                  lastPage={lastPage}
                 />
               </div>
             </>

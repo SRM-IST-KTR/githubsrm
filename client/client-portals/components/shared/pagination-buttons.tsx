@@ -4,12 +4,8 @@ const PaginationButtons = ({ hasNextPage, hasPrevPage, pageNo, setPageNo, lastPa
   return (
     <div className="flex justify-center items-center">
       <button
-        disabled={!hasPrevPage}
-        className={`${
-          !hasPrevPage
-            ? "opacity-10 cursor-not-allowed"
-            : "hover:bg-base-green focus:bg-base-green"
-          } p-3 rounded-full`}
+        className="hover:bg-base-green focus:bg-base-green
+           p-3 rounded-full"
         onClick={() => setPageNo(1)}
       >
         <span className="text-2xl font-extrabold">
@@ -44,15 +40,11 @@ const PaginationButtons = ({ hasNextPage, hasPrevPage, pageNo, setPageNo, lastPa
         </span>
       </button>
       <button
-        disabled={!hasNextPage}
-        className={`${
-          !hasNextPage
-            ? "opacity-10 cursor-not-allowed"
-            : "hover:bg-base-green focus:bg-base-green"
-          } p-3 rounded-full`}
+        className="hover:bg-base-green focus:bg-base-green
+        p-3 rounded-full"
         onClick={() => setPageNo(lastPage)}
       >
-        <span className="text-2xl font-extrabold">
+        <span className="text-2xl font-extrabold text-black">
           <Last />
         </span>
       </button>
