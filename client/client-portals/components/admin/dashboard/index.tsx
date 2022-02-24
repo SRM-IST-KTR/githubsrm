@@ -18,7 +18,7 @@ const ProjectApplications = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [projId, setProjId] = useState<string>("");
   const [year, setYear] = useState<string>("");
-  const [lastPageNo, setLastPageNo] = useState<number>(1);
+
   const headings = [
     "Maintainers",
     "Project Name",
@@ -38,7 +38,6 @@ const ProjectApplications = () => {
       sethasNextPage(res.hasNextPage);
       sethasPrevPage(res.hasPreviousPage);
       setLoading(false);
-      setLastPageNo(res.lastpage)
     } else {
       setLoading(false);
     }
@@ -154,7 +153,6 @@ const ProjectApplications = () => {
             hasPrevPage={hasPrevPage}
             pageNo={pageNo}
             setPageNo={setPageNo}
-            lastPageNo={lastPageNo}
           />
         </div>
       )}

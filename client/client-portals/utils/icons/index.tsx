@@ -12,5 +12,3 @@ export { default as Tick } from "./tick";
 export { default as TwitterIcon } from "./twitter";
 export { default as ErrorPage } from "./404";
 export { default as ServerError } from "./500";
-export {default as ChevronLeft} from './first';
-export {default as ChevronRight} from './last';
