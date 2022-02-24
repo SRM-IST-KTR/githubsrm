@@ -23,9 +23,9 @@ const Maintainer = () => {
       isNewProject: true,
     },
     {
-      name: "Existing Project",
-      href: "/join-us/maintainer/existing-project",
-      statement: "Apply for an existing Project",
+      name: "Registered Project",
+      href: "/join-us/maintainer/registered-project",
+      statement: "Apply for a Registered Project",
       description: [
         "Project which is already registered with Github SRM.",
         "You have the Secret code for the respective project.",
