@@ -22,30 +22,6 @@ from .utils import (
 )
 
 
-class RegisterAdmin(APIView):
-    permission_classes = [AuthAdminPerms]
-    throttle_classes = [PostThrottle]
-
-    def post(self, request) -> JsonResponse:
-        entry.insert_admin(request.data)
-        return JsonResponse(data={"registred": True}, status=200)
-
-
-class AdminLogin(APIView):
-    throttle_classes = [PostThrottle]
-
-    def post(self, request) -> JsonResponse:
-        validate = AdminSchema(request.data).valid()
-        password = validate.get("password")
-
-        entry.verify_admin(email=validate.get("email"), password=password)
-        keys = jwt_keys.issue_key(
-            payload={"admin": True, "user": validate.get("email")},
-            get_refresh_token=True,
-        )
-        return JsonResponse(data=keys, status=200)
-
-
 class ProjectsAdmin(APIView):
 
     throttle_classes = [PostThrottle]
@@ -300,6 +276,25 @@ class ProjectsAdmin(APIView):
         else:
             remove_status = entry.admin_remove_maintainer(validate.get("maintainer_id"))
             return self.action_to_status(status=remove_status, request=request)
+
+
+@api_view(["POST"], permission_classes=[AuthAdminPerms])
+def register_admin(request) -> JsonResponse:
+    entry.insert_admin(request.data)
+    return JsonResponse(data={"registred": True}, status=200)
+
+
+@api_view(["POST"])
+def admin_login(request) -> JsonResponse:
+    validate = AdminSchema(request.data).valid()
+    password = validate.get("password")
+
+    entry.verify_admin(email=validate.get("email"), password=password)
+    keys = jwt_keys.issue_key(
+        payload={"admin": True, "user": validate.get("email")},
+        get_refresh_token=True,
+    )
+    return JsonResponse(data=keys, status=200)
 
 
 @api_view(["GET"])

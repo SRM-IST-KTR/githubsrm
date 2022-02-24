@@ -11,11 +11,7 @@ from rest_framework.views import APIView
 
 from apis import open_entry, open_entry_checks
 
-from .definitions import *
-
-
-def catch_all(request, path=None):
-    return redirect("https://githubsrm.tech")
+from .definitions import CommonSchema, ContactUsSchema
 
 
 class Contributor(APIView):
@@ -131,7 +127,7 @@ class Maintainer(APIView):
                                     Project Details: \n \
                                     Name: {validate.get("project_name")} \n \
                                     Description: {validate.get("description")}',
-                        "subject": "[PROJECT-PORT]: https://githubsrm.tech"
+                        "subject": "[PROJECT-PORT]: https://githubsrm.tech",
                     }
                 },
             ).start()
@@ -173,31 +169,32 @@ class Maintainer(APIView):
         return JsonResponse(data=result, status=200, safe=False)
 
 
+def catch_all(request, path=None):
+    return redirect("https://githubsrm.tech")
+
+
 @api_view(["GET"])
 def team(request) -> JsonResponse:
     result = json.loads(json_util.dumps(open_entry.get_team_data()))
     return JsonResponse(result, status=200, safe=False)
 
 
-class ContactUs(APIView):
+@api_view(["POST"])
+def contact_us(request) -> JsonResponse:
+    validate = ContactUsSchema(data=request.data).valid()
+    open_entry.enter_contact_us(doc=request.data)
 
-    throttle_classes = [PostThrottle]
+    Thread(
+        target=service.sns,
+        kwargs={
+            "payload": {
+                "message": f'New Query Received! \n Name:{validate.get("name")} \n \
+            Email: {validate.get("email")} \n \
+            Message: {validate.get("message")} \n \
+            Phone Number: {validate.get("phone_number")}',
+                "subject": "[QUERY]: https://githubsrm.tech",
+            }
+        },
+    ).start()
 
-    def post(self, request) -> JsonResponse:
-        validate = ContactUsSchema(data=request.data).valid()
-        open_entry.enter_contact_us(doc=request.data)
-
-        Thread(
-            target=service.sns,
-            kwargs={
-                "payload": {
-                    "message": f'New Query Received! \n Name:{validate.get("name")} \n \
-                Email: {validate.get("email")} \n \
-                Message: {validate.get("message")} \n \
-                Phone Number: {validate.get("phone_number")}',
-                    "subject": "[QUERY]: https://githubsrm.tech",
-                }
-            },
-        ).start()
-
-        return JsonResponse(data={"success": True}, status=201)
+    return JsonResponse(data={"success": True}, status=201)
