@@ -111,7 +111,7 @@ export const newMaintainerInputs: {
         label: "Repository URL",
         type: "text",
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
-        description: "Only for a personal existing project!",
+        description: "Only for a personal registered project!",
       },
       {
         id: "private",
@@ -130,7 +130,7 @@ export const newMaintainerInputs: {
           ],
         },
         placeholder: "https://github.com/SRM-IST-KTR/githubsrm",
-        description: "Only for a personal existing project!",
+        description: "Only for a personal registered project!",
         required: true,
       },
       {
