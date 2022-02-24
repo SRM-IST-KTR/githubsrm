@@ -6,8 +6,10 @@ const instance: AxiosInstance = axios.create({
 
 export const getUser = async (id: string): Promise<boolean> => {
   try {
-    await instance.get(`/users/${id}`);
-    return true;
+    const { data } = await instance.get(`/users/${id}`); 
+    if (data.type === "User")
+      return true;
+    return false;
   } catch (error) {
     return false;
   }
