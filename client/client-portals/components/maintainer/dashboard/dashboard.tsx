@@ -15,6 +15,7 @@ const index = () => {
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [lastPage, setLastPage] = useState<number>(1);
 
   useEffect(() => {
     (async () => {
@@ -32,6 +33,7 @@ const index = () => {
             sethasNextPage(res.data.hasNextPage);
             sethasPrevPage(res.data.hasPreviousPage);
             setLoading(false);
+            setLastPage(res.lastPage);
           })
           .catch((err) => {
             setLoading(false);
@@ -74,6 +76,7 @@ const index = () => {
               hasPrevPage={hasPrevPage}
               pageNo={pageNo}
               setPageNo={setPageNo}
+              lastPage={lastPage}
             />
           </div>
         )}

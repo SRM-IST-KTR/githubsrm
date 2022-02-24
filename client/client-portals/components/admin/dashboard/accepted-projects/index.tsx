@@ -14,6 +14,7 @@ const AcceptedProjectDashboard = () => {
   const [hasNextPage, sethasNextPage] = useState<boolean>(false);
   const [hasPrevPage, sethasPrevPage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [lastPage, setLastPage] = useState<number>(1);
 
   const _getAcceptedProjects = async () => {
     const res = await getAcceptedProjects(pageNo);
@@ -22,6 +23,7 @@ const AcceptedProjectDashboard = () => {
       sethasNextPage(res.hasNextPage);
       sethasPrevPage(res.hasPreviousPage);
       setLoading(false);
+      setLastPage(res.lastPage);
     }
   };
 
@@ -62,6 +64,7 @@ const AcceptedProjectDashboard = () => {
                 hasPrevPage={hasPrevPage}
                 pageNo={pageNo}
                 setPageNo={setPageNo}
+                lastPage={lastPage}
               />
             </div>
           )}
