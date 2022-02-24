@@ -18,6 +18,7 @@ const ProjectApplications = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [projId, setProjId] = useState<string>("");
   const [year, setYear] = useState<string>("");
+  const [lastPage, setLastPage] = useState<number>(1);
 
   const headings = [
     "Maintainers",
@@ -37,6 +38,7 @@ const ProjectApplications = () => {
       setTableDataProjects(res.records);
       sethasNextPage(res.hasNextPage);
       sethasPrevPage(res.hasPreviousPage);
+      setLastPage(res.lastPage);
       setLoading(false);
     } else {
       setLoading(false);
@@ -153,6 +155,7 @@ const ProjectApplications = () => {
             hasPrevPage={hasPrevPage}
             pageNo={pageNo}
             setPageNo={setPageNo}
+            lastPage={lastPage}
           />
         </div>
       )}
