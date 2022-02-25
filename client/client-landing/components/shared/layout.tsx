@@ -24,7 +24,7 @@ const Layout: React.FC = ({ children }) => {
       case "/join-us": {
         return <Titles.JoinUs />;
       }
-      case "/join-us/maintainer/existing-project":
+      case "/join-us/maintainer/registered-project":
       case "/join-us/maintainer/new-project":
       case "/join-us/maintainer":
       case "/join-us/contributor":

@@ -6,9 +6,6 @@ from .errors import MiscErrors, ProjectErrors
 
 
 class Entry(BaseModel):
-    def __init__(self) -> None:
-        super().__init__()
-
     def _enter_project(
         self, doc: Dict[str, str], visibility: bool, project_id: str
     ) -> None:
@@ -42,9 +39,6 @@ class Entry(BaseModel):
 
         Args:
             doc (Dict[str, str]): Maintainer Schema
-
-        Returns:
-            Any
         """
         project_url = doc.get("project_url")
 
@@ -90,13 +84,7 @@ class Entry(BaseModel):
 
     def enter_beta_maintainer(self, doc: Dict[str, Any]) -> str:
         """Add beta maintainers to project and updates maintainers
-           collection.
-
-        Args:
-            doc (Dict): beta maintainer details
-
-        Returns:
-            str
+        collection.
         """
         _id = self.get_uid()
 
@@ -153,89 +141,36 @@ class Entry(BaseModel):
         return {**doc, **project_doc}
 
     def beta_maintainer_reset_status(self, maintainer_id: str) -> None:
-        """Delete beta maintainer
-
-        Args:
-            maintainer_id (str): maintainer id
-
-        """
         self.db.maintainer.delete_one({"_id": maintainer_id})
 
     def alpha_maintainer_reset_status(
         self, project_id: str, maintainer_id: str
     ) -> None:
-        """Delete alpha maintainer and added project
-
-        Args:
-            project_id (str)
-            maintainer_id (str)
-        """
         self.db.project.delete_one({"_id": project_id})
-
         self.db.maintainer.delete_one({"_id": maintainer_id})
 
     def delete_contributor(self, identifier: str) -> bool:
-        """Delete Contributos
-
-        Args:
-            identifier (str): Contributor ID
-
-        Returns:
-            bool
-        """
-        try:
-            self.db.project.delete_one({"contributor_id": identifier})
-
-            self.db.contributor.delete_one({"_id": identifier})
-            return True
-        except Exception as e:
-            return
+        self.db.project.delete_one({"contributor_id": identifier})
+        self.db.contributor.delete_one({"_id": identifier})
 
     def get_projects(self, admin: bool = False) -> object:
-        """Get all public projects / all project for admin
-
-        Returns:
-            object: MongoDB cursor
-            admin (bool): admin access
-        """
         if admin:
             self.db.project.find({})
-        return self.db.project.find({"private": False, "is_admin_approved": True})
+        return self.db.project.find(
+            {"private": False, "is_admin_approved": True},
+            {"maintainer_id": 0, "team_slug": 0},
+        )
 
     def get_contributors(self) -> object:
-        """Get all existing contributors
-
-        Returns:
-            [type]: MongoDB cursor
-        """
         return self.db.contributor.find({})
 
     def get_maintainers(self) -> object:
-        """Get all maintainers and status
-
-        Returns:
-            [type]: MongoDB cursor
-        """
         return self.db.maintainer.find({})
 
     def get_team_data(self) -> object:
-        """Get all team data
-
-        Returns:
-            [type]: MongoDB cursor
-        """
         return self.db.team.find({})
 
     def enter_contact_us(self, doc: Dict[str, Any]) -> bool:
-        """Enter Contact us details
-
-        Args:
-            data
-
-        Returns:
-            bool
-        """
-
         details = self.db.contactUs.find_one({"message": doc.get("message")})
 
         if details:
@@ -245,23 +180,9 @@ class Entry(BaseModel):
         self.db.contactUs.insert_one(doc)
 
     def get_contact_us(self) -> object:
-        """Gets all contact us data for admin
-
-        Returns:
-            type: MongoDB cursor
-        """
         return self.db.contactus.find({})
 
     def get_project_from_id(self, identifier: str) -> Dict[str, Any]:
-        """Get project documents from project ids
-
-        Args:
-            identifier (str): project id
-
-        Returns:
-            Dict[str, Any]: project document
-        """
-
         project = self.db.project.find_one({"_id": identifier})
         if project:
             return project

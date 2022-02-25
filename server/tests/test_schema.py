@@ -109,16 +109,10 @@ class TestSchema(unittest.TestCase):
         response = entry.approve_alpha_maintainer(self, alpha, admin_jwt)
         self.assertEqual(response.status_code, 200)
 
-        for j in [0, "", " ", None]:
-            for i in entry.project_details.keys():
-                time.sleep(1)
-                data = entry.project_details.copy()
-                if j == 0:
-                    del data[i]
-                else:
-                    data[i] = j
-                response = entry.approve_project(self, alpha, admin_jwt, data)
-                self.assertEqual(response.status_code, 400)
+        data = entry.project_details.copy()
+        data["year"] = None
+        response = entry.approve_project(self, alpha, admin_jwt, data)
+        self.assertEqual(response.status_code, 400)
         self.clean()
 
     def test_alpha_maintainer_approval_schema(self):

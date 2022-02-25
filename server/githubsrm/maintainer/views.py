@@ -4,6 +4,7 @@ from administrator import jwt_keys
 from administrator.utils import get_token
 from core.aws import service
 from core.settings import PostThrottle
+from core.utils import api_view
 from django.http.response import JsonResponse
 from rest_framework.views import APIView
 
@@ -103,82 +104,67 @@ class Projects(APIView):
             )
 
 
-class Login(APIView):
+@api_view(["POST"])
+def login(request) -> JsonResponse:
+    MaintainerSchema(request.data, path=request.path.split("maintainer/")[1]).valid()
+    user_credentials = entry.find_Maintainer_credentials_with_email(
+        request.data["email"]
+    )
 
-    throttle_classes = [PostThrottle]
-
-    def post(self, request) -> JsonResponse:
-        MaintainerSchema(
-            request.data, path=request.path.split("maintainer/")[1]
-        ).valid()
-        user_credentials = entry.find_Maintainer_credentials_with_email(
-            request.data["email"]
+    if not user_credentials:
+        return JsonResponse(
+            data={"error": "Maintainer not found / Not approved"}, status=400
         )
 
-        if not user_credentials:
-            return JsonResponse(
-                data={"error": "Maintainer not found / Not approved"}, status=400
-            )
+    entry.check_hash(request.data["email"], request.data["password"])
+    doc_list = list(entry.find_all_Maintainer_with_email(request.data["email"]))
 
-        entry.check_hash(request.data["email"], request.data["password"])
-        doc_list = list(entry.find_all_Maintainer_with_email(request.data["email"]))
+    if doc_list:
+        payload = {}
+        payload["email"] = doc_list[0]["email"]
+        payload["name"] = doc_list[0]["name"]
+        payload["project_id"] = [i["project_id"] for i in doc_list]
 
-        if doc_list:
-            payload = {}
-            payload["email"] = doc_list[0]["email"]
-            payload["name"] = doc_list[0]["name"]
-            payload["project_id"] = [i["project_id"] for i in doc_list]
+        jwt = jwt_keys.issue_key(payload, get_refresh_token=True)
+        return JsonResponse(data=jwt, status=200)
 
-            jwt = jwt_keys.issue_key(payload, get_refresh_token=True)
-            return JsonResponse(data=jwt, status=200)
-
-        return JsonResponse(data={"error": "Email not found"}, status=400)
+    return JsonResponse(data={"error": "Email not found"}, status=400)
 
 
-class SetPassword(APIView):
+@api_view(["POST"])
+def set_password(request) -> JsonResponse:
+    MaintainerSchema(request.data, path=request.path.split("maintainer/")[1]).valid()
 
-    throttle_classes = [PostThrottle]
+    try:
+        token = request.headers.get("Authorization").split()
+        token_type, token = token[0], token[1]
+        assert token_type == "Bearer"
+    except (ValueError, AssertionError):
+        return JsonResponse(data={"error": "Invalid token"}, status=400)
 
-    def post(self, request) -> JsonResponse:
-        MaintainerSchema(
-            request.data, path=request.path.split("maintainer/")[1]
-        ).valid()
-
-        try:
-            token = request.headers.get("Authorization").split()
-            token_type, token = token[0], token[1]
-            assert token_type == "Bearer"
-        except (ValueError, AssertionError):
-            return JsonResponse(data={"error": "Invalid token"}, status=400)
-
-        password = request.data.get("password")
-        jwt_keys.verify_key(key=token)
-        entry.set_password(key=token, password=password)
-        return JsonResponse(data={}, status=200)
+    password = request.data.get("password")
+    jwt_keys.verify_key(key=token)
+    entry.set_password(key=token, password=password)
+    return JsonResponse(data={}, status=200)
 
 
-class ResetPassword(APIView):
+@api_view(["POST"])
+def reset_password(request) -> JsonResponse:
+    MaintainerSchema(request.data, path=request.path.split("maintainer/")[1]).valid()
 
-    throttle_classes = [PostThrottle]
-
-    def post(self, request) -> JsonResponse:
-        MaintainerSchema(
-            request.data, path=request.path.split("maintainer/")[1]
-        ).valid()
-
-        email = request.data.get("email")
-        doc = entry.find_Maintainer_credentials_with_email(email)
-        # send 200 even if email is not found
-        if not doc:
-            return JsonResponse({}, status=200)
-
-        maintainer = entry.find_Maintainer_with_email(email)
-
-        jwt_link = RequestSetPassword(email)
-        service.wrapper_email(
-            role="forgot_password",
-            data={"name": maintainer["name"], "email": email, "reset_token": jwt_link},
-        )
-
-        # send 200 in all cases
+    email = request.data.get("email")
+    doc = entry.find_Maintainer_credentials_with_email(email)
+    # send 200 even if email is not found
+    if not doc:
         return JsonResponse({}, status=200)
+
+    maintainer = entry.find_Maintainer_with_email(email)
+
+    jwt_link = RequestSetPassword(email)
+    service.wrapper_email(
+        role="forgot_password",
+        data={"name": maintainer["name"], "email": email, "reset_token": jwt_link},
+    )
+
+    # send 200 in all cases
+    return JsonResponse({}, status=200)
