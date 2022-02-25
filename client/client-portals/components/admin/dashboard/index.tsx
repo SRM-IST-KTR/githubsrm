@@ -30,7 +30,6 @@ const ProjectApplications = () => {
     "Project Description",
     "Project Approval",
   ];
-
   const _getProjectApplications = async () => {
     const res = await getAdminProjectApplications(pageNo);
     if (res) {
@@ -154,8 +153,8 @@ const ProjectApplications = () => {
             hasNextPage={hasNextPage}
             hasPrevPage={hasPrevPage}
             pageNo={pageNo}
-            setPageNo={setPageNo}
             lastPage={lastPage}
+            setPageNo={setPageNo}
           />
         </div>
       )}
