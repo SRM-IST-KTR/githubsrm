@@ -26,12 +26,18 @@ def check_github_id(github_id: str):
     Args:
         github_id (str) user entred value
     """
-    if len(github_id.strip()):
-        _url = f"https://github.com/{github_id}"
-
-        response = session.get(_url)
-
-        return response.status_code == 200
+    try:
+        _apiurl = f"https://api.github.com/users/{github_id}"
+        response = requests.get(_apiurl) 
+        res = response.json()
+        if(res['type']=="User" and response.status_code == 200):
+            return response.status_code == 200
+        elif(res['type']!="User" and response.status_code == 200):
+            return False
+        else:
+            raise Exception
+    except:
+            return False
     return False
 
 
