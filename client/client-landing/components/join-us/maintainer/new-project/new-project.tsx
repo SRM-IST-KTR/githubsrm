@@ -190,12 +190,12 @@ const NewProject = () => {
                 </div>
 
                 <div className="w-11/12 mx-auto grid grid-rows-3 sm:grid-rows-none sm:grid-cols-3 lg:grid-rows-none lg:grid-cols-3 grid-flow-row lg:grid-flow-col gap-4 justify-items-auto">
-                  <Link href="/join-us/maintainer/existing-project">
+                  <Link href="/join-us/maintainer/registered-project">
                     <a
                       type="button"
                       className="bg-base-teal py-3 rounded-lg text-white font-medium w-full text-center"
                     >
-                      Existing Project?
+                      Registered Project?
                     </a>
                   </Link>
                   {stage == 0 ? (

@@ -15,19 +15,14 @@ class BaseModel:
         self.db = client[settings.DATABASE["db"]]
 
     def get_uid(self) -> str:
-        """Returns 8 character alpha numeric unique id
-
-        Args:
-            length (int)
-            operator (pymongo.MongoClient)
-
-        Returns:
-            str
-        """
-
+        # Todo: Find more efficient way for 4 byte uuid generation
         gen_id = random.choices(string.ascii_uppercase + string.digits, k=8)
 
-        if self.db.collection.find_one({"_id": gen_id}):
-            return self.get_uid(length=8)
+        if (
+            self.db.project.find_one({"_id": gen_id})
+            or self.db.contributor.find_one({"_id": gen_id})
+            or self.db.maintainer.find_one({"_id": gen_id})
+        ):
+            return self.get_uid()
 
         return "".join(gen_id)

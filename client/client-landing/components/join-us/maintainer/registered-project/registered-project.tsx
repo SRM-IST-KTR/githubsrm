@@ -16,7 +16,7 @@ import { postMaintainer } from "../../../../services/api";
 import { getUser } from "../../../../services/validate";
 import { successToast } from "../../../../utils/functions/toast";
 
-const ExistingProject = () => {
+const RegisteredProject = () => {
   let [stage, setStage] = useState<number>(0);
   let [loading, setLoading] = useState<boolean>(false);
 
@@ -213,4 +213,4 @@ const ExistingProject = () => {
   );
 };
 
-export default ExistingProject;
+export default RegisteredProject;

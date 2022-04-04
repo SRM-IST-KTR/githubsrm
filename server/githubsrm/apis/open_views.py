@@ -11,11 +11,7 @@ from rest_framework.views import APIView
 
 from apis import open_entry, open_entry_checks
 
-from .definitions import *
-
-
-def catch_all(request, path=None):
-    return redirect("https://githubsrm.tech")
+from .definitions import CommonSchema, ContactUsSchema
 
 
 class Contributor(APIView):
@@ -25,21 +21,10 @@ class Contributor(APIView):
 
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Adding Contributors to Projects
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
+    def post(self, request) -> JsonResponse:
         validate = CommonSchema(
             request.data, query_param=request.GET.get("role")
         ).valid()
-
-        if "error" in validate:
-            return JsonResponse(data={"error": "Invalid data"}, status=400)
 
         open_entry_checks.check_contributor(
             validate["interested_project"],
@@ -81,35 +66,10 @@ class Maintainer(APIView):
 
     throttle_classes = [PostThrottle]
 
-    @staticmethod
-    def _trigger_sns(validate):
-        service.sns(
-            payload={
-                "message": f'Porting new project {validate.get("project_id")}\n \
-                                    Details: \n \
-                                    Name: {validate.get("name")} \n \
-                                    Email Personal: {validate.get("email")} \n \
-                                    Project Details: \n \
-                                    Name: {validate.get("project_name")} \n \
-                                    Description: {validate.get("description")}',
-                "subject": "[PROJECT-PORT]: https://githubsrm.tech",
-            }
-        )
-
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Accept Maintainers
-
-        Args:
-            request
-
-        Returns:
-            Response
-        """
+    def post(self, request) -> JsonResponse:
         validate = CommonSchema(
             request.data, query_param=request.GET.get("role")
         ).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
 
         if "project_id" in validate:
             details = open_entry_checks.validate_beta_maintainer(doc=validate)
@@ -156,7 +116,21 @@ class Maintainer(APIView):
         ) = maintainer_details
 
         if validate.get("project_url"):
-            Thread(target=self._trigger_sns, kwargs={"validate": validate}).start()
+            Thread(
+                target=service.sns,
+                kwargs={
+                    "payload": {
+                        "message": f'Porting new project {validate.get("project_id")}\n \
+                                    Details: \n \
+                                    Name: {validate.get("name")} \n \
+                                    Email Personal: {validate.get("email")} \n \
+                                    Project Details: \n \
+                                    Name: {validate.get("project_name")} \n \
+                                    Description: {validate.get("description")}',
+                        "subject": "[PROJECT-PORT]: https://githubsrm.tech",
+                    }
+                },
+            ).start()
 
         email_status = service.wrapper_email(
             role="project_submission_confirmation",
@@ -190,68 +164,37 @@ class Maintainer(APIView):
         ).start()
         return JsonResponse(data={}, status=201)
 
-    def get(self, request, **kwargs) -> JsonResponse:
-        """Get all projects
-
-        Args:
-            request
-        """
-
+    def get(self, request) -> JsonResponse:
         result = json.loads(json_util.dumps(open_entry.get_projects()))
-
         return JsonResponse(data=result, status=200, safe=False)
+
+
+def catch_all(request, path=None):
+    return redirect("https://githubsrm.tech")
 
 
 @api_view(["GET"])
 def team(request) -> JsonResponse:
-    """
-    Get Full team data
-
-    Args:
-        request
-    """
-
     result = json.loads(json_util.dumps(open_entry.get_team_data()))
     return JsonResponse(result, status=200, safe=False)
 
 
-class ContactUs(APIView):
-    """
-    ContactUs route
+@api_view(["POST"])
+def contact_us(request) -> JsonResponse:
+    validate = ContactUsSchema(data=request.data).valid()
+    open_entry.enter_contact_us(doc=request.data)
 
-    Args:
-        APIView
-    """
+    Thread(
+        target=service.sns,
+        kwargs={
+            "payload": {
+                "message": f'New Query Received! \n Name:{validate.get("name")} \n \
+            Email: {validate.get("email")} \n \
+            Message: {validate.get("message")} \n \
+            Phone Number: {validate.get("phone_number")}',
+                "subject": "[QUERY]: https://githubsrm.tech",
+            }
+        },
+    ).start()
 
-    throttle_classes = [PostThrottle]
-
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Handles post data
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-
-        validate = ContactUsSchema(data=request.data).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
-
-        open_entry.enter_contact_us(doc=request.data)
-
-        Thread(
-            target=service.sns,
-            kwargs={
-                "payload": {
-                    "message": f'New Query Received! \n Name:{validate.get("name")} \n \
-                Email: {validate.get("email")} \n \
-                Message: {validate.get("message")} \n \
-                Phone Number: {validate.get("phone_number")}',
-                    "subject": "[QUERY]: https://githubsrm.tech",
-                }
-            },
-        ).start()
-
-        return JsonResponse(data={"success": True}, status=201)
+    return JsonResponse(data={"success": True}, status=201)

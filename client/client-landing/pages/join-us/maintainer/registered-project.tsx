@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import { Layout } from "../../../components/shared";
-import { ExistingProject } from "../../../components/join-us/maintainer/existing-project";
+import { RegisteredProject } from "../../../components/join-us/maintainer/registered-project";
 
 const ContributorPage = () => {
   return (
@@ -14,7 +14,7 @@ const ContributorPage = () => {
         />
       </Head>
       <Layout>
-        <ExistingProject />
+        <RegisteredProject />
       </Layout>
     </>
   );

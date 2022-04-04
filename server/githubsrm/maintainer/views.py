@@ -1,44 +1,27 @@
-from hashlib import sha256
 from threading import Thread
 
 from administrator import jwt_keys
 from administrator.utils import get_token
 from core.aws import service
 from core.settings import PostThrottle
+from core.utils import api_view
 from django.http.response import JsonResponse
-from rest_framework import status
 from rest_framework.views import APIView
 
 from maintainer import entry
 
-from . import entry
 from .definitions import MaintainerSchema, RejectionSchema
 from .utils import RequestSetPassword, project_pagination, project_single_project
-
-from core.errorfactory import ContributorErrors
-
-
-db = entry.db
 
 
 class Projects(APIView):
 
     throttle_classes = [PostThrottle]
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Accept contributors.
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-
-        validate = MaintainerSchema(request.data, path=request.path).valid()
-
-        if "error" in validate:
-            return JsonResponse(data=validate, status=400)
+    def post(self, request) -> JsonResponse:
+        validate = MaintainerSchema(
+            request.data, path=request.path.split("maintainer/")[1]
+        ).valid()
 
         doc = entry.approve_contributor(
             validate.get("project_id"), validate.get("contributor_id")
@@ -56,14 +39,6 @@ class Projects(APIView):
 
     @staticmethod
     def _remove_contributor(request) -> JsonResponse:
-        """Send sns for contributor removal
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
         contributor = entry.find_contributor_for_removal(
             request.data.get("contributor_id"), request.decoded.get("project_id")
         )
@@ -93,19 +68,8 @@ class Projects(APIView):
             data={"removed": request.data.get("contributor_id")}, status=200
         )
 
-    def delete(self, request, **kwargs) -> JsonResponse:
-        """Remove contributors
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-        validate = RejectionSchema(data=request.data).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": "Invalid data"}, status=400)
-
+    def delete(self, request) -> JsonResponse:
+        RejectionSchema(data=request.data).valid()
         _, token = get_token(request_header=request.headers)
         decoded = jwt_keys.verify_key(token)
         if decoded:
@@ -114,137 +78,93 @@ class Projects(APIView):
             return JsonResponse(data={"error": "Invalid key"}, status=401)
         return self._remove_contributor(request=request)
 
-    def get(self, request, **kwargs) -> JsonResponse:
-        """Projects get view for maintainer portal.
+    def get(self, request) -> JsonResponse:
+        pagination = ["page"]
+        single_project = ["projectId", "maintainer", "contributor"]
 
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-        Pagination = ["page"]
-        SingleProject = ["projectId", "maintainer", "contributor"]
-
-        RequestQueryKeys = list(request.GET.keys())
-        if len(set(Pagination) & set(RequestQueryKeys)) == 1:
-            response = project_pagination(request, **kwargs)
+        request_query_keys = list(request.GET.keys())
+        if len(set(pagination) & set(request_query_keys)) == 1:
+            response = project_pagination(request)
             if "error" in response:
-                return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+                return JsonResponse(response, status=401)
             else:
-                return JsonResponse(response, status=status.HTTP_200_OK)
+                return JsonResponse(response, status=200)
 
-        elif len(set(SingleProject) & set(RequestQueryKeys)) == 3:
+        elif len(set(single_project) & set(request_query_keys)) == 3:
             return JsonResponse(
-                project_single_project(request, **kwargs),
-                status=status.HTTP_200_OK,
+                project_single_project(request),
+                status=200,
                 safe=False,
             )
 
         else:
             return JsonResponse(
                 data={"error": "invalid query parameters"},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=400,
             )
 
 
-class Login(APIView):
+@api_view(["POST"])
+def login(request) -> JsonResponse:
+    MaintainerSchema(request.data, path=request.path.split("maintainer/")[1]).valid()
+    user_credentials = entry.find_Maintainer_credentials_with_email(
+        request.data["email"]
+    )
 
-    throttle_classes = [PostThrottle]
-
-    def post(self, request, **kwargs) -> JsonResponse:
-        """
-        Login route get email and password make jwt and send.
-        """
-
-        validate = MaintainerSchema(request.data, path=request.path).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
-
-        user_credentials = entry.find_Maintainer_credentials_with_email(
-            request.data["email"]
+    if not user_credentials:
+        return JsonResponse(
+            data={"error": "Maintainer not found / Not approved"}, status=400
         )
 
-        if not user_credentials:
-            return JsonResponse(
-                data={"error": "Maintainer not found / Not approved"}, status=400
-            )
+    entry.check_hash(request.data["email"], request.data["password"])
+    doc_list = list(entry.find_all_Maintainer_with_email(request.data["email"]))
 
-        entry.check_hash(request.data["email"], request.data["password"])
-        doc_list = list(entry.find_all_Maintainer_with_email(request.data["email"]))
+    if doc_list:
+        payload = {}
+        payload["email"] = doc_list[0]["email"]
+        payload["name"] = doc_list[0]["name"]
+        payload["project_id"] = [i["project_id"] for i in doc_list]
 
-        if doc_list:
-            payload = {}
-            payload["email"] = doc_list[0]["email"]
-            payload["name"] = doc_list[0]["name"]
-            payload["project_id"] = [i["project_id"] for i in doc_list]
+        jwt = jwt_keys.issue_key(payload, get_refresh_token=True)
+        return JsonResponse(data=jwt, status=200)
 
-            jwt = jwt_keys.issue_key(payload, get_refresh_token=True)
-            return JsonResponse(data=jwt, status=status.HTTP_200_OK)
-
-        return JsonResponse(data={"error": "Email not found"}, status=400)
+    return JsonResponse(data={"error": "Email not found"}, status=400)
 
 
-class SetPassword(APIView):
+@api_view(["POST"])
+def set_password(request) -> JsonResponse:
+    MaintainerSchema(request.data, path=request.path.split("maintainer/")[1]).valid()
 
-    throttle_classes = [PostThrottle]
+    try:
+        token = request.headers.get("Authorization").split()
+        token_type, token = token[0], token[1]
+        assert token_type == "Bearer"
+    except (ValueError, AssertionError):
+        return JsonResponse(data={"error": "Invalid token"}, status=400)
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """set password
-
-        Args:
-            request
-
-        Returns:
-            JsonResponse
-        """
-        validate = MaintainerSchema(data=request.data, path=request.path).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
-
-        try:
-            token = request.headers.get("Authorization").split()
-            token_type, token = token[0], token[1]
-            assert token_type == "Bearer"
-        except (ValueError, AssertionError):
-            return JsonResponse(data={"error": "Invalid token"}, status=400)
-
-        password = request.data.get("password")
-        jwt_keys.verify_key(key=token)
-        entry.set_password(key=token, password=password)
-        return JsonResponse(data={}, status=200)
+    password = request.data.get("password")
+    jwt_keys.verify_key(key=token)
+    entry.set_password(key=token, password=password)
+    return JsonResponse(data={}, status=200)
 
 
-class ResetPassword(APIView):
+@api_view(["POST"])
+def reset_password(request) -> JsonResponse:
+    MaintainerSchema(request.data, path=request.path.split("maintainer/")[1]).valid()
 
-    throttle_classes = [PostThrottle]
+    email = request.data.get("email")
+    doc = entry.find_Maintainer_credentials_with_email(email)
+    # send 200 even if email is not found
+    if not doc:
+        return JsonResponse({}, status=200)
 
-    def post(self, request, **kwargs) -> JsonResponse:
-        """Handle reset password
+    maintainer = entry.find_Maintainer_with_email(email)
 
-        Args:
-            request
+    jwt_link = RequestSetPassword(email)
+    service.wrapper_email(
+        role="forgot_password",
+        data={"name": maintainer["name"], "email": email, "reset_token": jwt_link},
+    )
 
-        Returns:
-            JsonResponse
-        """
-        validate = MaintainerSchema(data=request.data, path=request.path).valid()
-        if "error" in validate:
-            return JsonResponse(data={"error": validate.get("error")}, status=400)
-
-        email = request.data.get("email")
-        doc = entry.find_Maintainer_credentials_with_email(email)
-        # send 200 even if email is not found
-        if not doc:
-            return JsonResponse({}, status=status.HTTP_200_OK)
-
-        maintainer = entry.find_Maintainer_with_email(email)
-
-        jwt_link = RequestSetPassword(email)
-        service.wrapper_email(
-            role="forgot_password",
-            data={"name": maintainer["name"], "email": email, "reset_token": jwt_link},
-        )
-
-        # send 200 in all cases
-        return JsonResponse({}, status=status.HTTP_200_OK)
+    # send 200 in all cases
+    return JsonResponse({}, status=200)
