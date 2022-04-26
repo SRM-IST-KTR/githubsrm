@@ -78,3 +78,14 @@ export interface ContributorFormData
 
 export interface ContactUsFormData
   extends Yup.InferType<typeof contactUsValidation> {}
+
+export interface LinkProps {
+  source: {
+    href: string;
+    title?: string;
+    subTitle?: string;
+    content?: string;
+    name?: string;
+    icon?: JSX.Element;
+  };
+}
