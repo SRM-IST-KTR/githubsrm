@@ -45,9 +45,12 @@ def verify_github_details(verify_user=False, **kwargs):
     if verify_user:
         response = session.get(f"{github_api}/users/{kwargs['user_id']}")
         res = response.json()
-        if(res['type']=="User" and response.status_code == 200):
-            return response.status_code == 200
-        elif(res['type']!="User" and response.status_code == 200):
+        if(response.status_code == 200):
+            if(res['type']=="User" ):
+                return True
+            else:
+                return False
+        else:
             return False
     else:
         # Todo: move to github apis after discussion on porting
