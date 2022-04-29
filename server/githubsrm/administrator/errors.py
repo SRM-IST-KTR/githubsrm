@@ -53,3 +53,9 @@ class InvalidUserError(AuthenticationErrors):
     def __init__(self, *args, **kwargs):
         detail = kwargs.get("detail", {"error": "Invalid User!"})
         super().__init__(detail=detail)
+
+
+class InvalidMember(AdminErrors):
+    def __init__(self, *args, **kwargs):
+        detail = kwargs.get("detail", {"error": "Invalid Member!"})
+        super().__init__(detail=detail)
