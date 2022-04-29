@@ -20,6 +20,7 @@ from .errors import (
     MaintainerApprovedError,
     MaintainerNotFoundError,
     ProjectNotFoundError,
+    InvalidMember,
 )
 
 
@@ -368,6 +369,7 @@ class AdminEntry(BaseModel):
 
         project_name = self.db.project.find_one({"_id": project_id})["project_name"]
 
+        #! Why does this exist?
         project = self.db.project.find_one_and_delete(
             {"_id": project_id, "maintainer_id": {"$exists": False}}
         )
@@ -439,3 +441,20 @@ class AdminEntry(BaseModel):
             return maintainer["email"]
 
         return False
+
+    def register_member(self, doc: Dict[str, Any]):
+        # Using admin db to register members since members are pseudo admins :)
+        doc["member"] = True
+        self.insert_admin(doc)
+
+    def verify_member(self, doc: Dict[str, Any]):
+        member = self.db.admin.find_one(
+            {
+                "email": doc["email"],
+                "password": hashlib.sha256(doc["password"]),
+                "member": True,
+            }
+        )
+        if member:
+            return member
+        raise InvalidMember()

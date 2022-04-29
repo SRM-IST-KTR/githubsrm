@@ -315,3 +315,13 @@ def refresh(request) -> JsonResponse:
 @api_view(["GET"])
 def verify(request) -> JsonResponse:
     return JsonResponse(data={"success": True}, status=200)
+
+
+@api_view(["POST"])
+def register_member(request):
+    ...
+
+
+@api_view(["POST"])
+def login_member(request):
+    ...
